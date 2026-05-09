@@ -1,11 +1,24 @@
-"use client"
+import { useRouter } from "@tanstack/react-router"
+import { createContext, type PropsWithChildren, use } from "react"
+import { setThemeServerFn, type Theme } from "@/lib/theme"
 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
+type ThemeContextVal = { theme: Theme; setTheme: (val: Theme) => void }
+type Props = PropsWithChildren<{ theme: Theme }>
 
-export function ThemeProvider({
-  children,
-  ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+const ThemeContext = createContext<ThemeContextVal | null>(null)
+
+export function ThemeProvider({ children, theme }: Props) {
+  const router = useRouter()
+
+  function setTheme(val: Theme) {
+    setThemeServerFn({ data: val }).then(() => router.invalidate())
+  }
+
+  return <ThemeContext value={{ theme, setTheme }}>{children}</ThemeContext>
+}
+
+export function useTheme() {
+  const val = use(ThemeContext)
+  if (!val) throw new Error("useTheme called outside of ThemeProvider!")
+  return val
 }
