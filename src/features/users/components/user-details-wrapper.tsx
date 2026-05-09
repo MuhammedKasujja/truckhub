@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import { getUserProfileById } from "@/features/users/service";
 import { formatDate } from "@/lib/format";
@@ -32,7 +32,7 @@ export function UserDetailsWrapper({ promises }: UserDetailsWrapperProps) {
           <CardTitle>{user?.name}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link href={`/users/${user?.id}/edit`}>
+              <Link to={`/users/${user?.id}/edit`}>
                 <Edit2Icon />
               </Link>
             </Button>

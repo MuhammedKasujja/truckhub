@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/empty";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { ArrowUpRight, PlusIcon } from "lucide-react";
 import { Booking } from "@/features/bookings/types";
 
@@ -37,7 +37,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
         <CardTitle>Recent Bookings</CardTitle>
         <CardAction>
           <Button type="button" variant={"secondary"} asChild>
-            <Link href={"/bookings"}>
+            <Link to={"/bookings"}>
               View
               <ArrowUpRight />
             </Link>
@@ -78,7 +78,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           <Button type="button" asChild size={"icon"}>
-                            <Link href={"/bookings/new"}>
+                            <Link to={"/bookings/new"}>
                               <PlusIcon />
                             </Link>
                           </Button>

@@ -9,7 +9,7 @@ import { getCustomers } from "@/features/clients/service";
 import React from "react";
 import { getCustomerTableColumns } from "./customer-table-columns";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { HasPermission } from "@/components/has-permission";

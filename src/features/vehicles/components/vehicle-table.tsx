@@ -9,7 +9,7 @@ import { getVehicles } from "@/features/vehicles/service";
 import React from "react";
 import { getVehicleTableColumns } from "./vehicle-table-columns";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { HasPermission } from "@/components/has-permission";
@@ -42,7 +42,7 @@ export function VehicleTable(props: VehicleTableProps) {
       <DataTableToolbar table={table}>
         <HasPermission permission={"vehicles:create"}>
           <Button asChild>
-            <Link href={"/vehicles/new"}>
+            <Link to={"/vehicles/new"}>
               <PlusIcon />
               New Vehicle
             </Link>

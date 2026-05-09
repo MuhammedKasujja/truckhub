@@ -14,7 +14,7 @@ import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-sear
 import { vehicleAssignDriver } from "@/features/vehicles/service";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import { toast } from "sonner";
 import { getDriverDetailsById } from "@/features/drivers/service";
@@ -49,7 +49,7 @@ export function DriverDetails({ promises }: DriverDetailsProps) {
           <CardTitle>{driver?.fullname}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link href={`/drivers/${driver?.id}/edit`}>
+              <Link to={`/drivers/${driver?.id}/edit`}>
                 <Edit2Icon />
               </Link>
             </Button>

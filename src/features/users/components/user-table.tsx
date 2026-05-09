@@ -9,7 +9,7 @@ import { getUsers } from "@/features/users/service";
 import React from "react";
 import { getUserTableColumns } from "./user-table-columns";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { HasPermission } from "@/components/has-permission";
@@ -43,7 +43,7 @@ export function UserTable(props: UserTableProps) {
       <DataTableToolbar table={table}>
         <HasPermission permission="users:create">
           <Button asChild>
-            <Link href={"/users/new"}>
+            <Link to={"/users/new"}>
               <PlusIcon />
               Add User
             </Link>

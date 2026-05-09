@@ -15,7 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { usePathname } from "@tanstack/react-router";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import type { Route } from "next";
 import { GlobalKeys, useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -146,7 +146,7 @@ export function NavMain({ items }: { items: SidebarItem[] }) {
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <HasPermission permission={item.permission}>
-                <Link href={item.url}>
+                <Link to={item.url}>
                   <SidebarMenuButton
                     tooltip={tr(item.title)}
                     className={cn(

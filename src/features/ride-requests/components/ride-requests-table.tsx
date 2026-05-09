@@ -9,7 +9,7 @@ import { getRideRequests } from "@/features/ride-requests/service";
 import React from "react";
 import { getRideRequestTableColumns } from "./ride-request-table-columns";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { MapIcon } from "lucide-react";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 
@@ -41,7 +41,7 @@ export function RideRequestTable(props: TripTableProps) {
     <DataTable table={table}>
       <DataTableToolbar table={table}>
         <Button size={"sm"} asChild>
-            <Link href={"/rides/live"}>
+            <Link to={"/rides/live"}>
               <MapIcon />
               Live
             </Link>

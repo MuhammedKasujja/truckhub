@@ -5,7 +5,7 @@ import { deleteVehicleById } from "@/features/vehicles/service";
 import { Vehicle } from "@/features/vehicles/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { toast } from "sonner";
 import { Can } from "@/components/has-permission";
 
@@ -18,7 +18,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
         return (
           <Can permission={"vehicles:view"}>
             <Button variant={"link"} asChild>
-              <Link href={`/vehicles/${row.original.id}/view`}>
+              <Link to={`/vehicles/${row.original.id}/view`}>
                 {row.original.number}
               </Link>
             </Button>
@@ -72,7 +72,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
         ) : (
           <Can permission="drivers:view">
             <Button variant={"link"} asChild>
-              <Link href={`/drivers/${row.original.id}/view`}>
+              <Link to={`/drivers/${row.original.id}/view`}>
                 {driver.name}
               </Link>
             </Button>
@@ -94,14 +94,14 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
           <div className="flex gap-2">
             <Can permission={"vehicles:view"}>
               <Button variant={"outline"} size={"icon"}>
-                <Link href={`/vehicles/${row.original.id}/view`}>
+                <Link to={`/vehicles/${row.original.id}/view`}>
                   <EyeIcon />
                 </Link>
               </Button>
             </Can>
             <Can permission={"vehicles:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link href={`/vehicles/${row.original.id}/edit`}>
+                <Link to={`/vehicles/${row.original.id}/edit`}>
                   <EditIcon />
                 </Link>
               </Button>

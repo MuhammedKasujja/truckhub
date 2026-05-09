@@ -17,7 +17,7 @@ import {
 } from "@/features/vehicles/service";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import { toast } from "sonner";
 
@@ -57,7 +57,7 @@ export function VehicleDetails({ promises }: VehicleDetailsProps) {
           <CardTitle>{vehicle?.display_name}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link href={`/vehicles/${vehicle?.id}/edit`}>
+              <Link to={`/vehicles/${vehicle?.id}/edit`}>
                 <Edit2Icon />
               </Link>
             </Button>

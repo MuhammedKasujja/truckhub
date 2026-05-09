@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Passenger } from "../types";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission";
 import { MailIcon, PhoneIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -31,7 +31,7 @@ export function RidePassenger({ passenger }: RidePassengerProps) {
         <CardAction>
           <Can permission="clients:view">
             <Button variant={"secondary"} asChild>
-              <Link href={`/customers/${passenger.id}/view`}>View</Link>
+              <Link to={`/customers/${passenger.id}/view`}>View</Link>
             </Button>
           </Can>
         </CardAction>

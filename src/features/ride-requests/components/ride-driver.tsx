@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Driver } from "../types";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -31,7 +31,7 @@ export function RideDriver({ driver }: RideDriverProps) {
         <CardAction>
           <Can permission="drivers:view">
             <Button variant={"secondary"} asChild>
-              <Link href={`/drivers/${driver?.id}/view`}>View</Link>
+              <Link to={`/drivers/${driver?.id}/view`}>View</Link>
             </Button>
           </Can>
         </CardAction>

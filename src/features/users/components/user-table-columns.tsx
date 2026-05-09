@@ -5,7 +5,7 @@ import { deleteUserById } from "@/features/users/service";
 import { SystemUser } from "@/features/users/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { toast } from "sonner";
 import { HasPermission } from "@/components/has-permission";
 
@@ -17,7 +17,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link href={`/users/${row.original.id}/view`}>
+            <Link to={`/users/${row.original.id}/view`}>
               {row.original.name}
             </Link>
           </Button>
@@ -52,14 +52,14 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
           <div className="flex gap-2">
             <HasPermission permission={"users:view"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link href={`/users/${row.original.id}/view`}>
+                <Link to={`/users/${row.original.id}/view`}>
                   <EyeIcon />
                 </Link>
               </Button>
             </HasPermission>
             <HasPermission permission={"users:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link href={`/users/${row.original.id}/edit`}>
+                <Link to={`/users/${row.original.id}/edit`}>
                   <EditIcon />
                 </Link>
               </Button>

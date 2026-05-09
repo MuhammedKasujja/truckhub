@@ -4,7 +4,7 @@ import { formatDateTime, formatPrice } from "@/lib/format";
 import { RideRequest, RideStatusList } from "@/features/ride-requests/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Status } from "@/components/ui/status";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { HasPermission } from "@/components/has-permission";
 import { EditIcon, EyeIcon } from "lucide-react";
 
@@ -16,7 +16,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link href={`/rides/${row.original.id}/view`}>
+            <Link to={`/rides/${row.original.id}/view`}>
               {row.original.number}
             </Link>
           </Button>
@@ -45,7 +45,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link href={`/customers/${row.original.customer.id}/view`}>
+            <Link to={`/customers/${row.original.customer.id}/view`}>
               {row.original.customer.fullname}
             </Link>
           </Button>
@@ -91,7 +91,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
             {ride.status !== "completed" && (
               <HasPermission permission={"rides:view"}>
                 <Button variant={"outline"} size={"icon"} asChild>
-                  <Link href={`/rides/${ride.id}/view`}>
+                  <Link to={`/rides/${ride.id}/view`}>
                     <EyeIcon />
                   </Link>
                 </Button>
@@ -99,7 +99,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
             )}
             <HasPermission permission={"rides:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link href={`/rides/${ride.id}/edit`}>
+                <Link to={`/rides/${ride.id}/edit`}>
                   <EditIcon />
                 </Link>
               </Button>

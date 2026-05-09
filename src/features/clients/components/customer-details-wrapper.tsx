@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import {
   getCustomerDetailsById,
@@ -90,7 +90,7 @@ export function CustomerDetailsWrapper({
               />
             </HasPermission>
             <Button asChild size={"icon"}>
-              <Link href={`/customers/${customer?.id}/edit`}>
+              <Link to={`/customers/${customer?.id}/edit`}>
                 <Edit2Icon />
               </Link>
             </Button>
@@ -152,7 +152,7 @@ export function CustomerDetailsWrapper({
                   {formatPrice(latestBooking.amount)}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link href={`/bookings/${latestBooking.id}/view`}>
+                  <Link to={`/bookings/${latestBooking.id}/view`}>
                     View booking
                   </Link>
                 </Button>
@@ -184,7 +184,7 @@ export function CustomerDetailsWrapper({
                   {latestRide.origin} → {latestRide.destination}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link href={`/rides/${latestRide.id}/view`}>View ride</Link>
+                  <Link to={`/rides/${latestRide.id}/view`}>View ride</Link>
                 </Button>
               </div>
             ) : (

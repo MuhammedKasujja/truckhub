@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { Button } from "./ui/button";
 import {
   Card,
@@ -25,7 +25,7 @@ export function NoPermissionCard({
       </CardContent>
       <CardFooter>
         <Button asChild>
-          <Link href="/dashboard">Go to Dashboard</Link>
+          <Link to="/dashboard">Go to Dashboard</Link>
         </Button>
       </CardFooter>
     </Card>

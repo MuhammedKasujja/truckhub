@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { formatDateTime, formatPrice } from "@/lib/format";
 import { Booking } from "@/features/bookings/types";
 import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { HasPermission } from "@/components/has-permission";
 import { EditIcon, EyeIcon } from "lucide-react";
 import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal";
@@ -18,7 +18,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link href={`/bookings/${row.original.id}/view`}>
+            <Link to={`/bookings/${row.original.id}/view`}>
               {row.original.number}
             </Link>
           </Button>
@@ -34,7 +34,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link href={`/customers/${row.original.customer.id}/view`}>
+            <Link to={`/customers/${row.original.customer.id}/view`}>
               {row.original.customer.fullname}
             </Link>
           </Button>
@@ -80,7 +80,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
             {booking.status !== "completed" && (
               <HasPermission permission={"bookings:view"}>
                 <Button variant={"outline"} size={"icon"} asChild>
-                  <Link href={`/bookings/${booking.id}/view`}>
+                  <Link to={`/bookings/${booking.id}/view`}>
                     <EyeIcon />
                   </Link>
                 </Button>
@@ -88,7 +88,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
             )}
             <HasPermission permission={"bookings:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link href={`/bookings/${booking.id}/edit`}>
+                <Link to={`/bookings/${booking.id}/edit`}>
                   <EditIcon />
                 </Link>
               </Button>

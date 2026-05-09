@@ -10,7 +10,7 @@ import { Service, ServiceGroup } from "@/features/services/types";
 import { formatPrice } from "@/lib/format";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { toast } from "sonner";
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
@@ -53,7 +53,7 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
               <EyeIcon />
             </Button>
             <Button variant={"outline"} size={"icon"}>
-              {/* <Link href={`/services/${row.original.id}/edit`}> */}
+              {/* <Link to={`/services/${row.original.id}/edit`}> */}
               <EditIcon />
               {/* </Link> */}
             </Button>
@@ -88,7 +88,7 @@ function ServiceListItem({ service }: { service: Service }) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button asChild variant={"outline"}>
-          <Link href={`/services/${service.id}/edit`}>{service.name}</Link>
+          <Link to={`/services/${service.id}/edit`}>{service.name}</Link>
         </Button>
       </TooltipTrigger>
       <TooltipContent side="right" align="center">

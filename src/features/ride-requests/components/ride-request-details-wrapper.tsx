@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { CircleDotIcon, Edit2Icon, MapPin } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import { getRideRequestDetailsById } from "@/features/ride-requests/service";
 import {
@@ -96,7 +96,7 @@ export function RideRequestDetailsWrapper({
               )}
               <Status>{ride?.status}</Status>
               <Button asChild>
-                <Link href={`/rides/${ride?.id}/edit`}>
+                <Link to={`/rides/${ride?.id}/edit`}>
                   <Edit2Icon />
                 </Link>
               </Button>

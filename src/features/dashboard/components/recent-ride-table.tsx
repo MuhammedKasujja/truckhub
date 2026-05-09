@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/empty";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { PlusIcon, ChevronRightIcon } from "lucide-react";
 import { RideRequest } from "@/features/ride-requests/types";
 
@@ -37,7 +37,7 @@ export function RecentRideTable({ rides }: RecentRideTableProps) {
         <CardTitle>Recent Rides</CardTitle>
         <CardAction>
           <Button type="button" variant={"secondary"} asChild>
-            <Link href={"/rides"}>
+            <Link to={"/rides"}>
               View
               <ChevronRightIcon />
             </Link>
@@ -78,7 +78,7 @@ export function RecentRideTable({ rides }: RecentRideTableProps) {
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
                           <Button type="button" asChild size={"icon"}>
-                            <Link href={"/rides/new"}>
+                            <Link to={"/rides/new"}>
                               <PlusIcon />
                             </Link>
                           </Button>

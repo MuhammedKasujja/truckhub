@@ -23,7 +23,7 @@ import {
 import { formatDate, formatPrice } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Payment } from "@/features/payments/types";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { ArrowUpRight } from "lucide-react";
 
 type PaymentTableprops = {
@@ -37,7 +37,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
         <CardTitle>Recent Payments</CardTitle>
         <CardAction>
           <Button type="button" variant={"secondary"} asChild>
-            <Link href={"/payments"}>View<ArrowUpRight/></Link>
+            <Link to={"/payments"}>View<ArrowUpRight/></Link>
           </Button>
         </CardAction>
       </CardHeader>

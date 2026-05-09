@@ -7,7 +7,7 @@ import { ServiceTable } from "./service-table";
 import { ServiceList } from "./service-list";
 import React, { Activity } from "react";
 import { Can } from "@/components/has-permission";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { PageTitle, PageHeader, PageAction } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,7 +30,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         <PageAction className="gap-5">
           <Can permission={"services:create"}>
             <Button asChild>
-              <Link href={"/services/new"}>
+              <Link to={"/services/new"}>
                 <PlusIcon />
               </Link>
             </Button>

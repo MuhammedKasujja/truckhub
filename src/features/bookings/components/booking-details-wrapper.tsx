@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { CreditCard, Edit2Icon } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 import { getBookingDetailsById } from "@/features/bookings/services";
 import { formatDate, formatPrice } from "@/lib/format";
@@ -69,7 +69,7 @@ export function BookingDetailsWrapper({
               <Status>{booking?.status}</Status>
               <Can permission={"bookings:edit"}>
                 <Button asChild>
-                  <Link href={`/bookings/${booking?.id}/edit`}>
+                  <Link to={`/bookings/${booking?.id}/edit`}>
                     <Edit2Icon />
                   </Link>
                 </Button>

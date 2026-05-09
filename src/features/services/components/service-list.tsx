@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ServiceGroup } from "@/features/services/types";
 import { formatPrice } from "@/lib/format";
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import React from "react";
 
 type ServiceListProps = {
@@ -68,7 +68,7 @@ export function ServiceList({ services }: ServiceListProps) {
               <span>{service.is_truck ? "Truck" : "Car"}</span>
               <HasPermission permission={"services:edit"}>
                 <Button size="sm" variant="outline" asChild>
-                  <Link href={`/services/${service.id}/edit`}>Edit</Link>
+                  <Link to={`/services/${service.id}/edit`}>Edit</Link>
                 </Button>
               </HasPermission>
             </div>
