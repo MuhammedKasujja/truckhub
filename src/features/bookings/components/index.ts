@@ -1,0 +1,1 @@
+export { BookingStatisticsCard } from "./booking-statistics-card";
