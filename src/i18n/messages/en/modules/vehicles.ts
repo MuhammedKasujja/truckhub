@@ -1,0 +1,16 @@
+export const en = {
+  module: "Vehicles",
+  new_vehicle: "New Vehicle",
+  edit_vehicle: "Edit Vehicle",
+  create_new_vehicle: "Create new vehicle",
+  vehicle_created_successfully: "Vehicle created successfully",
+  plate_number: "Plate number",
+  color: "Color",
+  interior_color: "Interior color",
+  cylinders: "Cylinders",
+  tank_capacity: "Tank capacity",
+  fuel_type: "Fuel Type",
+  gearbox: "Gearbox",
+  year_of_manufacture: "Year of Manufacture",
+  seating_capacity: "Seating Capacity",
+} as const;

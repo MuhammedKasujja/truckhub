@@ -1,6 +1,4 @@
-import "server-only";
-
-import { headers } from "next/headers";
+import { HEADERS } from "@tanstack/react-start/server";
 
 /**
  * Get user country code in order to make seach basing on the current user location

@@ -15,6 +15,9 @@ function App() {
           <Button className="mt-2" asChild>
             <Link to="/users">Users</Link>
           </Button>
+          <Button className="mt-2" asChild>
+            <Link to="/login">Login</Link>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,0 +1,20 @@
+export const en = {
+  modules: {
+    rides: "Rides",
+    bookings: "Bookings",
+    services: "Services",
+    client: "Clients",
+    drivers: "Drivers",
+    payments: "Payments",
+    users: "Users",
+    vehicles: "Vehicles",
+  },
+  "create:booking": "Create Booking",
+  "create:ride": "Create Ride",
+  "create:user": "Create User",
+  "create:driver": "Create Driver",
+  "create:client": "Create Client",
+  "create:service": "Create Service",
+  "create:vehicle": "Create Vehicle",
+  "create:payment": "Create Payment",
+} as const;

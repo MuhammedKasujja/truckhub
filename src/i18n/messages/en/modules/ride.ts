@@ -1,0 +1,15 @@
+export const en = {
+  module: "Rides",
+  new_ride: "New Ride",
+  create_ride_help: "Create Ride",
+  edit_ride: "Edit Ride",
+  ride_created_successfully: "Ride created successfully",
+  ride_updated_successfully: "Ride updated successfully",
+  needs_fuel: "Needs Fuel",
+  needs_loaders: "Needs Loaders",
+  discount: "Discount",
+  amount: "Amount",
+  payment_method: "Payment Method",
+  booking: "Booking",
+  select_payment_method: "Select payment method",
+} as const;
