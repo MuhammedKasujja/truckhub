@@ -1,24 +1,24 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react";
+} from "@/components/ui/card"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
+import React from "react"
 import {
   getCustomerDetailsById,
   getCustomerPayments,
   getCustomerBookings,
   getCustomerRides,
-} from "@/features/clients/service";
-import { formatDate, formatPrice } from "@/lib/format";
+} from "@/features/clients/service"
+import { formatDate, formatPrice } from "@/lib/format"
 import {
   Table,
   TableBody,
@@ -26,20 +26,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 import {
   Empty,
   EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { HasPermission } from "@/components/has-permission";
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { logger } from "@/lib/logger";
-import { EntityId } from "@/types";
+} from "@/components/ui/empty"
+import { Can } from "@/components/has-permission"
+import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { EntityId } from "@/types"
+import { clientQueryOptions } from "../query-options"
 
 type CustomerDetailsWrapperProps = {
   promises: Promise<
@@ -49,32 +49,26 @@ type CustomerDetailsWrapperProps = {
       Awaited<ReturnType<typeof getCustomerBookings>>,
       Awaited<ReturnType<typeof getCustomerRides>>,
     ]
-  >;
+  >
   customerId: EntityId
-};
+}
 
 export function CustomerDetailsWrapper({
   promises,
   customerId,
 }: CustomerDetailsWrapperProps) {
-  const [
-    { data: customer, error },
-    { data: payments },
-    { data: bookings },
-    { data: rides },
-  ] = React.use(promises);
+  const [{ error }, { data: payments }, { data: bookings }, { data: rides }] =
+    React.use(promises)
 
-  useFetchEror(error);
+  useFetchEror(error)
 
-  const { data } = useSuspenseQuery({
-    queryKey: ["client-details", customerId],
-    queryFn: () => getCustomerDetailsById(customerId),
-  });
-  logger.error(`Client data fetched ->> ${data.data?.fullname}`);
+  const {
+    data: { data: customer },
+  } = useSuspenseQuery(clientQueryOptions(customerId))
 
-  const latestBooking = bookings?.find((ele) => ele.amount);
-  const latestPayment = payments?.find((ele) => ele.date);
-  const latestRide = rides?.find((ele) => ele.created_at);
+  const latestBooking = bookings?.find((ele) => ele.amount)
+  const latestPayment = payments?.find((ele) => ele.date)
+  const latestRide = rides?.find((ele) => ele.created_at)
 
   return (
     <div className="grid gap-5">
@@ -82,13 +76,13 @@ export function CustomerDetailsWrapper({
         <CardHeader>
           <CardTitle>{customer?.fullname}</CardTitle>
           <CardAction className="flex gap-4">
-            <HasPermission permission={"payments:create"}>
+            <Can permission={"payments:create"}>
               <EditPaymentModal
                 initialData={{
                   type: "booking",
                 }}
               />
-            </HasPermission>
+            </Can>
             <Button asChild size={"icon"}>
               <Link to={`/customers/${customer?.id}/edit`}>
                 <Edit2Icon />
@@ -372,5 +366,5 @@ export function CustomerDetailsWrapper({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

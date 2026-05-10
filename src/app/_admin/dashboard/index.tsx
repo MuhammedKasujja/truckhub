@@ -6,7 +6,6 @@ import {
   StatTrend,
   StatValue,
 } from "@/components/ui/stat"
-import { getDashboardStatistics } from "@/features/dashboard/service"
 import { RecentPaymentsTable } from "@/features/dashboard/components/recent-payments-table"
 import { RecentBookingTable } from "@/features/dashboard/components/recent-booking-table"
 import { RecentRideTable } from "@/features/dashboard/components/recent-ride-table"
@@ -15,10 +14,12 @@ import { formatPrice } from "@/lib/format"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-picker"
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
+import { dashboardQueryOptions } from "@/features/dashboard/query-options"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
-  loader: async () => await getDashboardStatistics(),
+  loader: async ({ context }) =>
+    context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })
 
 function RouteComponent() {

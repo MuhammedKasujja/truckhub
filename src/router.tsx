@@ -2,18 +2,22 @@ import { QueryClient } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 import { routeTree } from "./routeTree.gen"
-import { DefaultCatchBoundary } from "./components/DefaultCatchBoundary"
-import { NotFound } from "@/components/not-found"
 
 export function getRouter() {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        // With SSR, we usually want to set some default staleTime
+        // above 0 to avoid refetching immediately on the client
+        staleTime: 60 * 1000,
+      },
+    },
+  })
 
   const router = createRouter({
     routeTree,
-    context: { queryClient },
+    context: { queryClient }, // expose QueryClient via router context
     defaultPreload: "intent",
-    defaultErrorComponent: DefaultCatchBoundary,
-    defaultNotFoundComponent: () => <NotFound />,
   })
   setupRouterSsrQueryIntegration({
     router,
