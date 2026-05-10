@@ -5,6 +5,9 @@ import { TanStackDevtools } from "@tanstack/react-devtools"
 import appCss from "../styles.css?url"
 import { Providers } from "@/components/providers"
 import { getThemeServerFn } from "@/lib/theme"
+import { NotFound } from "@/components/not-found"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { getTranslationsData } from "@/i18n/request"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -27,25 +30,32 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  loader: () => getThemeServerFn(),
-  notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
-    </main>
-  ),
+  loader: async () => {
+    return {
+      i18n: await getTranslationsData(),
+      theme: await getThemeServerFn(),
+    }
+  },
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    )
+  },
+  notFoundComponent: () => <NotFound />,
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const theme = Route.useLoaderData()
+  const { theme, i18n } = Route.useLoaderData()
   return (
-    <html lang="en" className={theme} suppressHydrationWarning>
+    <html lang={i18n.locale} className={theme} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <Providers theme={theme} locale="en">
+        <Providers theme={theme} locale={i18n.locale} messages={i18n.messages}>
           {children}
         </Providers>
         <TanStackDevtools

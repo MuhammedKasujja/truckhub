@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
+import { useTranslation } from "@/i18n";
 
 export const Route = createFileRoute("/")({ component: App })
 
 function App() {
+  const tr = useTranslation();
   return (
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
@@ -16,7 +18,7 @@ function App() {
             <Link to="/users">Users</Link>
           </Button>
           <Button className="mt-2" asChild>
-            <Link to="/login">Login</Link>
+            <Link to="/login">{tr('common.form.login')}</Link>
           </Button>
         </div>
       </div>

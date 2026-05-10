@@ -1,36 +1,36 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { useTranslation } from "@/i18n";
-import { useRouter } from "@tanstack/react-router";
-import z from "zod";
-import { toast } from "sonner";
-import { login } from "@/features/auth/service";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { EmailField, PasswordField } from "@/components/ui/form-fields";
-import { SubmitButton } from "@/components/ui/submit-button";
+import { Card, CardContent } from "@/components/ui/card"
+import { Field, FieldGroup } from "@/components/ui/field"
+import { useTranslation } from "@/i18n"
+import { useRouter } from "@tanstack/react-router"
+import z from "zod"
+import { toast } from "sonner"
+import { login } from "@/features/auth/service"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { EmailField, PasswordField } from "@/components/ui/form-fields"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 const formSchema = z.object({
   email: z.email({ message: "Please enter a valid email." }).trim(),
   password: z.string().trim(),
-});
+})
 
 export function LoginForm() {
-  const router = useRouter();
+  const router = useRouter()
 
-  const tr = useTranslation();
+  const tr = useTranslation()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { isSuccess, error } = await login(values);
+    const { isSuccess, error } = await login({ data: values })
     if (isSuccess) {
-      toast.success(`${tr("login_successfully")}`);
-      router.replace("/dashboard");
+      toast.success(`${tr("login_successfully")}`)
+      router.replace("/dashboard")
     } else {
-      toast.error(error!.message);
+      toast.error(error!.message)
     }
   }
 
@@ -41,7 +41,7 @@ export function LoginForm() {
           <FieldGroup>
             <div className="flex flex-col items-center gap-2 text-center">
               <h1 className="text-2xl font-bold">{tr("welcome_back")}</h1>
-              <p className="text-muted-foreground text-balance">
+              <p className="text-balance text-muted-foreground">
                 {tr("welcome_back_info")}
               </p>
             </div>
@@ -65,7 +65,7 @@ export function LoginForm() {
             </Field>
           </FieldGroup>
         </form>
-        <div className="bg-muted relative hidden md:block">
+        <div className="relative hidden bg-muted md:block">
           <img
             src="/global.svg"
             alt="logo"
@@ -74,5 +74,5 @@ export function LoginForm() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

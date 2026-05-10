@@ -1,17 +1,20 @@
-import { IntlProvider } from "use-intl"
+import { IntlProvider, Messages } from "use-intl"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme/provider"
 import { Theme } from "@/lib/theme"
+import { DeepPartial } from "@/types"
 // import { NuqsAdapter } from "nuqs/adapters/next/app";
 // import { QueryClientProvider } from "./query-client-provider";
 
 export function Providers({
   locale,
   theme,
+  messages,
   children,
 }: Readonly<{
   locale: string
+  messages: DeepPartial<Messages>
   theme: Theme
   children: React.ReactNode
 }>) {
@@ -24,7 +27,7 @@ export function Providers({
       // disableTransitionOnChange
     >
       {/* <NuqsAdapter> */}
-      <IntlProvider locale={locale} messages={{}}>
+      <IntlProvider locale={locale} messages={messages}>
         <TooltipProvider>
           {/* <QueryClientProvider> */}
           {children}

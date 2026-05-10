@@ -1,10 +1,8 @@
-import { getUserLocale } from "@/server/locale";
-import { getRequestConfig } from "use-intl/server";
+// import { getUserLocale } from "@/server/locale"
+import { createServerFn } from "@tanstack/react-start"
 
-export default getRequestConfig(async () => {
-  const locale = await getUserLocale();
-  return {
-    locale,
-    messages: (await import(`./messages/${locale}/index.ts`)).default,
-  };
-});
+export const getTranslationsData = createServerFn({ method: "GET" }).handler(async () => {
+  const locale = "en" // detect from cookie/header/URL
+  const messages = (await import(`./messages/${locale}/index.ts`)).default
+  return { locale, messages }
+})

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useLocale } from "next-intl";
+import { useLocale } from "use-intl";
 import { setUserLocale } from "@/server/locale";
 import { Locale, supportedLocales } from "@/i18n/config";
 import { useTranslation } from "@/i18n";
