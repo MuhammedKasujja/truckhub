@@ -10,7 +10,7 @@ export const searchPlaces = async (searchText: string) => {
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchText)}&limit=5&addressdetails=1`,
       {
         headers: {
-          "User-Agent": "MyMapApp/1.0 (contact@yourdomain.com)",
+          "User-Agent": "Truckhub/1.0 (muhammedkasujja.1@gmail.com)",
         },
       }
     )

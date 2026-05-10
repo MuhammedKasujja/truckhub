@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/session"
 import { createFileRoute, redirect } from "@tanstack/react-router"
 
@@ -11,9 +12,11 @@ export const Route = createFileRoute("/_admin")({
         search: { redirect: location.href },
       })
     }
+    return { user }
   },
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin"!</div>
+  const { user } = Route.useRouteContext()
+  return <AuthProvider value={user}>Hello "/_admin"!{user.email}</AuthProvider>
 }
