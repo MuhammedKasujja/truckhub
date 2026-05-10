@@ -1,6 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+} from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
+import type { QueryClient } from "@tanstack/react-query"
 
 import appCss from "../styles.css?url"
 import { Providers } from "@/components/providers"
@@ -8,8 +13,11 @@ import { getThemeServerFn } from "@/lib/theme"
 import { NotFound } from "@/components/not-found"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { getTranslationsData } from "@/i18n/request"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient
+}>()({
   head: () => ({
     meta: [
       {
@@ -69,6 +77,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           ]}
         />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
         <Scripts />
       </body>
     </html>

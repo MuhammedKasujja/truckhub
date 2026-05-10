@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme/provider"
 import { Theme } from "@/lib/theme"
 import { DeepPartial } from "@/types"
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router"
-// import { QueryClientProvider } from "./query-client-provider";
 
 export function Providers({
   locale,
@@ -28,11 +27,7 @@ export function Providers({
     >
       <NuqsAdapter>
         <IntlProvider locale={locale} messages={messages}>
-          <TooltipProvider>
-            {/* <QueryClientProvider> */}
-            {children}
-            {/* </QueryClientProvider> */}
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </IntlProvider>
         <Toaster position={"top-right"} />
       </NuqsAdapter>
