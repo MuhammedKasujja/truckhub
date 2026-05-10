@@ -28,7 +28,7 @@ export function LoginForm() {
     const { isSuccess, error } = await login({ data: values })
     if (isSuccess) {
       toast.success(`${tr("login_successfully")}`)
-      router.replace("/dashboard")
+      router.navigate({ to: "/dashboard", replace: true })
     } else {
       toast.error(error!.message)
     }

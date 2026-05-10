@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Select,
@@ -8,18 +8,18 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useLocale } from "use-intl";
-import { setUserLocale } from "@/server/locale";
-import { Locale, supportedLocales } from "@/i18n/config";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/select"
+import { useLocale } from "use-intl"
+import { Locale, supportedLocales } from "@/i18n/config"
+import { useTranslation } from "@/i18n"
+import { setAppLocale } from "@/i18n/request"
 
 export function LocaleSwitcher() {
-  const tr = useTranslation("common");
-  const locale = useLocale();
+  const tr = useTranslation("common")
+  const locale = useLocale()
 
   function onChange(locale: Locale) {
-    setUserLocale(locale);
+    setAppLocale({ data: { locale } })
   }
   return (
     <Select onValueChange={onChange} defaultValue={locale}>
@@ -37,5 +37,5 @@ export function LocaleSwitcher() {
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
+  )
 }
