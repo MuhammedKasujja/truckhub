@@ -11,6 +11,7 @@ import {
   BookingListSearchParams,
   BookingUpdateSchemaType,
   BookingCreateSchemaType,
+  BookingSearchParamsCache,
 } from "@/features/bookings/schemas"
 import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
@@ -18,20 +19,22 @@ import { generateApiSearchParams } from "@/lib/search-params"
 import { LocationDistanceTime } from "@/server/actions/location"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
-export async function getBookings(input: BookingListSearchParams) {
-  const { page, perPage } = input
-  const params = generateApiSearchParams(input)
+export const getBookings = createServerFn({ method: "POST" })
+  .inputValidator((data) => BookingSearchParamsCache.parse(data))
+  .handler(async ({ data: input }) => {
+    const { page, perPage } = input
+    const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Booking[]>(`/v1/bookings/?${params}`)
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
+    const {
+      data,
+      isSuccess,
+      error,
+      pagination: paginator,
+    } = await apiClient.getPaginatedFn<Booking[]>(`/v1/bookings/?${params}`)
+    const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
 
-  return { data: isSuccess ? data! : [], error, pagination }
-}
+    return { data: isSuccess ? data! : [], error, pagination }
+  })
 
 export async function getBookingsByQuery({ search }: SearchQuery) {
   return getBookings({

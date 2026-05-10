@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './app/__root'
 import { Route as UsersRouteImport } from './app/users'
 import { Route as AdminRouteRouteImport } from './app/_admin/route'
 import { Route as IndexRouteImport } from './app/index'
+import { Route as AuthUnauthorizedRouteImport } from './app/_auth/unauthorized'
 import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
 import { Route as AuthLoginRouteImport } from './app/_auth/login'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
@@ -26,6 +27,7 @@ import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/inde
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
+import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
@@ -39,6 +41,11 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthUnauthorizedRoute = AuthUnauthorizedRouteImport.update({
+  id: '/_auth/unauthorized',
+  path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLogoutRoute = AuthLogoutRouteImport.update({
@@ -111,12 +118,18 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   path: '/bookings/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminBookingsNewIndexRoute = AdminBookingsNewIndexRouteImport.update({
+  id: '/bookings/new/',
+  path: '/bookings/new/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/users': typeof UsersRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
+  '/unauthorized': typeof AuthUnauthorizedRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
@@ -129,12 +142,14 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AdminSettingsIndexRoute
   '/users/': typeof AdminUsersIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
+  '/bookings/new/': typeof AdminBookingsNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
+  '/unauthorized': typeof AuthUnauthorizedRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
@@ -146,6 +161,7 @@ export interface FileRoutesByTo {
   '/services': typeof AdminServicesIndexRoute
   '/settings': typeof AdminSettingsIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
+  '/bookings/new': typeof AdminBookingsNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -154,6 +170,7 @@ export interface FileRoutesById {
   '/users': typeof UsersRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
+  '/_auth/unauthorized': typeof AuthUnauthorizedRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -166,6 +183,7 @@ export interface FileRoutesById {
   '/_admin/settings/': typeof AdminSettingsIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
+  '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -174,6 +192,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/login'
     | '/logout'
+    | '/unauthorized'
     | '/bookings/'
     | '/clients/'
     | '/dashboard/'
@@ -186,12 +205,14 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/users/'
     | '/vehicles/'
+    | '/bookings/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/users'
     | '/login'
     | '/logout'
+    | '/unauthorized'
     | '/bookings'
     | '/clients'
     | '/dashboard'
@@ -203,6 +224,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/settings'
     | '/vehicles'
+    | '/bookings/new'
   id:
     | '__root__'
     | '/'
@@ -210,6 +232,7 @@ export interface FileRouteTypes {
     | '/users'
     | '/_auth/login'
     | '/_auth/logout'
+    | '/_auth/unauthorized'
     | '/_admin/bookings/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
@@ -222,6 +245,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/'
     | '/_admin/users/'
     | '/_admin/vehicles/'
+    | '/_admin/bookings/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -230,6 +254,7 @@ export interface RootRouteChildren {
   UsersRoute: typeof UsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
+  AuthUnauthorizedRoute: typeof AuthUnauthorizedRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -253,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/unauthorized': {
+      id: '/_auth/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof AuthUnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/logout': {
@@ -353,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/bookings/new/': {
+      id: '/_admin/bookings/new/'
+      path: '/bookings/new'
+      fullPath: '/bookings/new/'
+      preLoaderRoute: typeof AdminBookingsNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
   }
 }
 
@@ -369,6 +408,7 @@ interface AdminRouteRouteChildren {
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
+  AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -384,6 +424,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
+  AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
@@ -396,6 +437,7 @@ const rootRouteChildren: RootRouteChildren = {
   UsersRoute: UsersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
+  AuthUnauthorizedRoute: AuthUnauthorizedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

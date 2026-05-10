@@ -9,6 +9,6 @@ export async function requirePermission(permission: UserPermission) {
 
   const func = hasPermission(user)
   if (!func(permission)) {
-    redirect("/unauthorized")
+    redirect({ to: "/unauthorized" })
   }
 }

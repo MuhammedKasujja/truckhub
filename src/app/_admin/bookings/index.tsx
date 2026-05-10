@@ -16,28 +16,30 @@ import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
+  beforeLoad: async () => {
+    await requirePermission("bookings:view")
+  },
   loader: async ({ location }) => {
     // awaited immediately
-    console.log("Serach Params", location.search)
     const statistics = await getBookingStatistics()
 
-    // const searchParams = await generatePageSearchParams(
-    //   location.search,
-    //   BookingSearchParamsCache
-    // )
-
+    const searchParams = await generatePageSearchParams(
+      location.search,
+      BookingSearchParamsCache
+    )
+    console.log("Serach Params", searchParams)
     // // deferred
-    // const bookingsPromise = getBookings(searchParams)
+    const bookingsPromise = getBookings({ data: searchParams })
 
     return {
       statistics: statistics.data,
-      // bookingsPromise,
+      bookingsPromise,
     }
   },
 })
 
 function RouteComponent() {
-  const { statistics } = Route.useLoaderData()
+  const { statistics, bookingsPromise } = Route.useLoaderData()
   return (
     <Suspense fallback={<BookingTableSkeleton />}>
       <PageHeader>
@@ -54,13 +56,15 @@ function RouteComponent() {
         </PageAction>
       </PageHeader>
       <BookingStatisticsCard statistics={statistics} />
-      {/* <Suspense fallback={<BookingTableSkeleton />}>
-        <Await promise={bookingsPromise}>
+
+      <Suspense fallback={<BookingTableSkeleton />}>
+        <BookingTable promises={Promise.all([bookingsPromise])} />
+        {/* <Await promise={bookingsPromise}>
           {(bookings) => (
             <BookingTable promises={Promise.all([bookingsPromise])} />
           )}
-        </Await>
-      </Suspense> */}
+        </Await> */}
+      </Suspense>
     </Suspense>
   )
 }

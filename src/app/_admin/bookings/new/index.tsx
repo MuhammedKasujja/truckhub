@@ -1,0 +1,19 @@
+import { getCustomersByQuery } from "@/features/clients/service"
+import { getServicesByQuery } from "@/features/services/service"
+import { requirePermission } from "@/lib/auth"
+import { createFileRoute } from "@tanstack/react-router"
+
+export const Route = createFileRoute("/_admin/bookings/new/")({
+  component: RouteComponent,
+  beforeLoad: async () => await requirePermission("bookings:create"),
+  loader: () => {
+    const promises = Promise.all([
+      getServicesByQuery({}),
+      getCustomersByQuery({}),
+    ])
+  },
+})
+
+function RouteComponent() {
+  return <div>Hello "/_admin/bookings/new/"!</div>
+}
