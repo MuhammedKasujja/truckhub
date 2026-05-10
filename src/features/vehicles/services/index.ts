@@ -1,33 +1,18 @@
-"use server"
-
-import * as apiClient from "@/lib/api-client"
 import { Vehicle } from "@/features/vehicles/types"
 import {
-  VehicleCreateSchemaType,
-  VehicleListSearchParams,
-  VehicleUpdateSchemaType,
+  VehicleUpdateSchema,
+  VehicleCreateSchema,
   VehicleSearchParamsCache,
 } from "@/features/vehicles/schemas"
 import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
-import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
+import { createVehicle, getVehicles, updateVehicle } from "./data"
 
 export const getVehiclesFn = createServerFn()
   .inputValidator((data) => VehicleSearchParamsCache.parse(data))
-  .handler(async ({ data: input }) => {
-    const { page, perPage } = input
-    const params = generateApiSearchParams(input)
-
-    const {
-      data,
-      isSuccess,
-      error,
-      pagination: paginator,
-    } = await apiClient.getPaginatedFn<Vehicle[]>(`/v1/vehicles/?${params}`)
-
-    const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-    return { data: isSuccess ? data! : [], error, pagination }
+  .handler(async ({ data }) => {
+    return await getVehicles(data)
   })
 
 export async function getVehiclesByQueryFn({ search }: SearchQuery) {
@@ -44,11 +29,11 @@ export async function getVehiclesByQueryFn({ search }: SearchQuery) {
   })
 }
 
-export async function getVehicleById(vehicleId: EntityId) {
+export async function getVehicleByIdFn(vehicleId: EntityId) {
   return await apiClient.getFn<Vehicle>(`/v1/vehicles/${vehicleId}`)
 }
 
-export async function getVehicleDetailsById(vehicleId: EntityId) {
+export async function getVehicleDetailsByIdFn(vehicleId: EntityId) {
   return await apiClient.getFn<Vehicle>(`/v1/vehicles/${vehicleId}`)
 }
 
@@ -56,14 +41,18 @@ export async function deleteVehicleById(vehicleId: EntityId) {
   return await apiClient.deleteFn(`/v1/vehicles/${vehicleId}`)
 }
 
-export async function updateVehicle(data: VehicleUpdateSchemaType) {
-  const { id: vehicleId, ...rest } = data
-  return await apiClient.putFn(`/v1/vehicles/${vehicleId}`, rest)
-}
+export const updateVehicleFn = createServerFn()
+  .inputValidator((data) => VehicleUpdateSchema.parse(data))
+  .handler(async ({ data }) => {
+    return await updateVehicle(data)
+  })
 
-export async function createVehicle(data: VehicleCreateSchemaType) {
-  return await apiClient.postFn("/v1/vehicles", data)
-}
+export const createVehicleFn = createServerFn()
+  .inputValidator((data) => VehicleCreateSchema.parse(data))
+  .handler(async ({ data: input }) => {
+    const response = await createVehicle(input)
+    return response
+  })
 
 export async function vehicleAssignDriver({
   vehicle_id,

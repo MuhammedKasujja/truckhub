@@ -19,5 +19,5 @@ export const login = createServerFn({ method: "POST" })
 
 export const logout = createServerFn({ method: "POST" }).handler(async () => {
   await deleteUserSession()
-  redirect("/login")
+  throw redirect({ to: "/login", replace: true })
 })

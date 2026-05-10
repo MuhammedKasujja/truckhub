@@ -1,7 +1,7 @@
 "use server";
 
-import { SystemUser } from "./types";
 import * as apiClient from "@/lib/api-client";
+import { SystemUser } from "@/features/users/types";
 import {
   UserCreateSchemaType,
   UserListSearchParams,

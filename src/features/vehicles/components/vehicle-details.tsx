@@ -14,7 +14,7 @@ import { DriverSearchFilter } from "@/features/drivers/components/driver-search-
 import {
   getVehicleDetailsById,
   vehicleAssignDriver,
-} from "@/features/vehicles/service";
+} from "@/features/vehicles/services";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
 import { Link } from "@tanstack/react-router"

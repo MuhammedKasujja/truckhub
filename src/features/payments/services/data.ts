@@ -4,7 +4,7 @@ import * as apiClient from "@/lib/api-client";
 import { EntityId, SearchQuery } from "@/types";
 import { generateApiSearchParams } from "@/lib/search-params";
 import { Payment, PaymentStatistics } from "@/features/payments/types";
-import { PaymentEditSchemaType, PaymentListSearchParams } from "./schemas";
+import { PaymentEditSchemaType, PaymentListSearchParams } from "@/features/payments/schemas";
 
 export async function getPayments(input: PaymentListSearchParams) {
   const { page, perPage } = input;

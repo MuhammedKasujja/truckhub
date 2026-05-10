@@ -16,7 +16,7 @@ import {
   TextField,
 } from "@/components/ui/form-fields";
 import { useTranslation } from "@/i18n";
-import { getServicesByQuery } from "@/features/services/service";
+import { getServicesByQuery } from "@/features/services/services";
 import React from "react";
 import { getCustomersByQueryFn } from "@/features/clients/services";
 import { LocationAutoComplete } from "@/components/location-autocomplete";

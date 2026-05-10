@@ -6,7 +6,7 @@ import {
   ServiceListSearchParams,
   ServiceUpdateSchemaType,
   ServiceCreateSchemaType,
-} from "./schemas";
+} from "@/features/services/schemas";
 import { SearchQuery } from "@/types";
 import { jsonFormatter, logger } from "@/lib/logger";
 import { generateApiSearchParams } from "@/lib/search-params";

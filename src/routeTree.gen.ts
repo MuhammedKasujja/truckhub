@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
-import { Route as UsersRouteImport } from './app/users'
 import { Route as AdminRouteRouteImport } from './app/_admin/route'
 import { Route as IndexRouteImport } from './app/index'
 import { Route as AuthUnauthorizedRouteImport } from './app/_auth/unauthorized'
@@ -30,11 +29,6 @@ import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/in
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => rootRouteImport,
@@ -132,7 +126,6 @@ const AdminBookingsNewIndexRoute = AdminBookingsNewIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/users': typeof UsersRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
@@ -153,7 +146,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/users': typeof AdminUsersIndexRoute
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
@@ -167,6 +159,7 @@ export interface FileRoutesByTo {
   '/rides': typeof AdminRidesIndexRoute
   '/services': typeof AdminServicesIndexRoute
   '/settings': typeof AdminSettingsIndexRoute
+  '/users': typeof AdminUsersIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
@@ -175,7 +168,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteRouteWithChildren
-  '/users': typeof UsersRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
@@ -198,7 +190,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/users'
     | '/login'
     | '/logout'
     | '/unauthorized'
@@ -219,7 +210,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/users'
     | '/login'
     | '/logout'
     | '/unauthorized'
@@ -233,6 +223,7 @@ export interface FileRouteTypes {
     | '/rides'
     | '/services'
     | '/settings'
+    | '/users'
     | '/vehicles'
     | '/bookings/new'
     | '/clients/new'
@@ -240,7 +231,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_admin'
-    | '/users'
     | '/_auth/login'
     | '/_auth/logout'
     | '/_auth/unauthorized'
@@ -263,7 +253,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
-  UsersRoute: typeof UsersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthUnauthorizedRoute: typeof AuthUnauthorizedRoute
@@ -271,13 +260,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_admin': {
       id: '/_admin'
       path: ''
@@ -455,7 +437,6 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
-  UsersRoute: UsersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthLogoutRoute: AuthLogoutRoute,
   AuthUnauthorizedRoute: AuthUnauthorizedRoute,

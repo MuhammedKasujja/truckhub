@@ -1,39 +1,58 @@
+"use server"
+
 import * as apiClient from "@/lib/api-client"
 import {
+  Booking,
   LocationPoint,
+  BookingDetails,
   BookingStatistics,
 } from "@/features/bookings/types"
 import {
   BookingUpdateSchemaType,
   BookingCreateSchemaType,
-  BookingSearchParamsCache,
+  BookingListSearchParams,
 } from "@/features/bookings/schemas"
 import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
+import { generateApiSearchParams } from "@/lib/search-params"
 import { LocationDistanceTime } from "@/server/actions/location"
-import {
-  getBookings,
-  getBookingById,
-  getBookingsByQuery,
-  getBookingDetailsById,
-} from "./data"
+import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
-export const getBookingsFn = createServerFn({ method: "POST" })
-  .inputValidator((data) => BookingSearchParamsCache.parse(data))
-  .handler(async ({ data }) => {
-    return getBookings(data)
+export async function getBookings(input: BookingListSearchParams) {
+  const { page, perPage } = input
+  const params = generateApiSearchParams(input)
+
+  const {
+    data,
+    isSuccess,
+    error,
+    pagination: paginator,
+  } = await apiClient.getPaginatedFn<Booking[]>(`/v1/bookings/?${params}`)
+  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
+
+  return { data: isSuccess ? data! : [], error, pagination }
+}
+
+export async function getBookingsByQuery({ search }: SearchQuery) {
+  return getBookings({
+    page: 1,
+    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
+    sort: [],
+    search: search ?? "",
+    created_at: [],
+    filters: [],
+    joinOperator: "and",
   })
-
-export async function getBookingsByQueryFn({ search }: SearchQuery) {
-  return getBookingsByQuery({ search })
 }
 
-export async function getBookingByIdFn(bookingId: EntityId) {
-  return await getBookingById(bookingId)
+export async function getBookingById(bookingId: EntityId) {
+  return await apiClient.getFn<Booking>(`/v1/bookings/${bookingId}?view=edit`)
 }
 
-export async function getBookingDetailsByIdFn(bookingId: EntityId) {
-  return await getBookingDetailsById(bookingId)
+export async function getBookingDetailsById(bookingId: EntityId) {
+  return await apiClient.getFn<BookingDetails>(
+    `/v1/bookings/${bookingId}?view=full`
+  )
 }
 
 export async function deleteBookingById(bookingId: EntityId) {
@@ -49,7 +68,7 @@ export async function createBooking(data: BookingCreateSchemaType) {
   return await apiClient.postFn("/v1/bookings", data)
 }
 
-export const getBookingStatisticsFn = createServerFn().handler(async () => {
+export const getBookingStatistics = createServerFn().handler(async () => {
   return await apiClient.getFn<BookingStatistics>("/v1/bookings/statistics")
 })
 

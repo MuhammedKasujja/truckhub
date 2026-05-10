@@ -5,7 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { deleteServiceById } from "@/features/services/service";
+import { deleteServiceById } from "@/features/services/services";
 import { Service, ServiceGroup } from "@/features/services/types";
 import { formatPrice } from "@/lib/format";
 import { ColumnDef } from "@tanstack/react-table";

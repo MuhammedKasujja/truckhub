@@ -1,14 +1,15 @@
 "use server"
 
-import * as apiClient from "@/lib/api-client";
-import { EditSettingsSchemaType, Settings } from "@/features/settings/schemas";
+import * as apiClient from "@/lib/api-client"
+import { createServerFn } from "@tanstack/react-start"
+import { EditSettingsSchemaType, Settings } from "@/features/settings/schemas"
 
-const endpoint = "/v1/settings";
+const endpoint = "/v1/settings"
 
-export async function getSettings() {
-  return await apiClient.getFn<Settings>(`${endpoint}`);
-}
+export const getSettingsFn = createServerFn().handler(async () => {
+  return await apiClient.getFn<Settings>(`${endpoint}`)
+})
 
 export async function updateSettings(data: EditSettingsSchemaType) {
-  return await apiClient.patchFn(endpoint, data);
+  return await apiClient.patchFn(endpoint, data)
 }

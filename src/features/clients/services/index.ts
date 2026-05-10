@@ -1,5 +1,3 @@
-"use server"
-
 import * as apiClient from "@/lib/api-client"
 import { Booking } from "@/features/bookings/types"
 import { Customer } from "@/features/clients/types"

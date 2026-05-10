@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter";
-import { vehicleAssignDriver } from "@/features/vehicles/service";
+import { vehicleAssignDriver } from "@/features/vehicles/services";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
 import { Link } from "@tanstack/react-router"

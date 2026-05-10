@@ -9,10 +9,10 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { useTranslation } from "@/i18n";
 import { getAuditLogTableColumns } from "./audit-log-table-columns";
-import { getAuditLogs } from "@/features/audit_logs/service";
+import { getAuditLogsFn } from "@/features/audit_logs/service";
 
 type AuditLogTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getAuditLogs>>]>;
+  promises: Promise<[Awaited<ReturnType<typeof getAuditLogsFn>>]>;
 };
 
 export function AuditLogTable(props: AuditLogTableProps) {

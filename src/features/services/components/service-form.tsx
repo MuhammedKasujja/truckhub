@@ -20,7 +20,7 @@ import {
   ServiceCreateSchema,
   ServiceUpdateSchema,
 } from "@/features/services/schemas";
-import { createService, updateService } from "@/features/services/service";
+import { createService, updateService } from "@/features/services/services";
 import { getVehicleSettings } from "@/server/settings";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";

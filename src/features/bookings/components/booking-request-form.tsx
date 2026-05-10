@@ -20,7 +20,7 @@ import {
   DateTimePickerField,
 } from "@/components/ui/form-fields";
 import { getCustomersByQueryFn } from "@/features/clients/services";
-import { getServicesByQuery } from "@/features/services/service";
+import { getServicesByQuery } from "@/features/services/services";
 import { useTranslation } from "@/i18n";
 import React, { Activity, useMemo, useState } from "react";
 import z from "zod";

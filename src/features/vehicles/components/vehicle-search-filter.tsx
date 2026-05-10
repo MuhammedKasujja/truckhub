@@ -2,7 +2,7 @@
 
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Vehicle } from "@/features/vehicles/types";
-import { getVehiclesByQueryFn } from "@/features/vehicles/service";
+import { getVehiclesByQueryFn } from "@/features/vehicles/services";
 import { useState } from "react";
 
 interface VehicleSearchFilterProps {

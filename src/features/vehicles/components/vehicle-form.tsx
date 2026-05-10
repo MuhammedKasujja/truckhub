@@ -21,7 +21,7 @@ import {
   VehicleUpdateSchema,
 } from "@/features/vehicles/schemas";
 import { getVehicleSettings } from "@/server/settings";
-import { createVehicle, updateVehicle } from "@/features/vehicles/service";
+import { createVehicle, updateVehicle } from "@/features/vehicles/services";
 import { EngineTypes, Gearboxes } from "@/features/vehicles/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";

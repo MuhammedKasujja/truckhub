@@ -1,5 +1,5 @@
 import { BookingSearchParamsCache } from "@/features/bookings/schemas"
-import { getBookings, getBookingStatistics } from "@/features/bookings/services"
+import { getBookingsFn, getBookingStatisticsFn } from "@/features/bookings/services"
 import { generatePageSearchParams } from "@/lib/search-params"
 import { Await, createFileRoute, Link } from "@tanstack/react-router"
 import { Suspense } from "react"
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_admin/bookings/")({
   },
   loader: async ({ location }) => {
     // awaited immediately
-    const statistics = await getBookingStatistics()
+    const statistics = await getBookingStatisticsFn()
 
     const searchParams = await generatePageSearchParams(
       location.search,
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_admin/bookings/")({
     )
     console.log("Serach Params", searchParams)
     // // deferred
-    const bookingsPromise = getBookings({ data: searchParams })
+    const bookingsPromise = getBookingsFn({ data: searchParams })
 
     return {
       statistics: statistics.data,
