@@ -6,13 +6,13 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
-import { getPayments } from "@/features/payments/service";
+import { getPaymentsFn } from "@/features/payments/services";
 import { getPaymentTableColumns } from "./payment-table-columns";
 import { useFetchEror } from "@/hooks/use-fetch-error";
 import { useTranslation } from "@/i18n";
 
 type PaymentTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getPayments>>]>;
+  promises: Promise<[Awaited<ReturnType<typeof getPaymentsFn>>]>;
 };
 
 export function PaymentTable(props: PaymentTableProps) {

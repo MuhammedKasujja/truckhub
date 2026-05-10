@@ -9,7 +9,7 @@ export const serviceQueryKeys = {
   detail: (id: string) => [...serviceQueryKeys.details(), id],
 }
 
-export const usersQueryOprions = (search: ServiceListSearchParams) =>
+export const serviceQueryOprions = (search: ServiceListSearchParams) =>
   queryOptions({
     queryKey: [...serviceQueryKeys.list(), search],
     queryFn: () => getServicesFn({ data: search }),

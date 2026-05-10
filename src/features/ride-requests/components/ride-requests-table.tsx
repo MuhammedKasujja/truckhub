@@ -1,28 +1,29 @@
-"use client";
+"use client"
 
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getRideRequests } from "@/features/ride-requests/service";
-import React from "react";
-import { getRideRequestTableColumns } from "./ride-request-table-columns";
-import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router"
-import { MapIcon } from "lucide-react";
-import { useFetchEror } from "@/hooks/use-fetch-error";
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import { getRidesFn } from "@/features/ride-requests/services"
+import React from "react"
+import { getRideRequestTableColumns } from "./ride-request-table-columns"
+import { Button } from "@/components/ui/button"
+import { Link, useSearch } from "@tanstack/react-router"
+import { MapIcon } from "lucide-react"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { ridesQueryOprions } from "../query-options"
 
-type TripTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getRideRequests>>]>;
-};
+export function RideRequestTable() {
+  const search = useSearch({ from: "/_admin/rides/" })
 
-export function RideRequestTable(props: TripTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
+  const response = useSuspenseQuery(ridesQueryOprions(search))
+  const { data, error, pagination } = response.data
 
-  const columns = React.useMemo(() => getRideRequestTableColumns(), []);
+  const columns = React.useMemo(() => getRideRequestTableColumns(), [])
 
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -35,21 +36,21 @@ export function RideRequestTable(props: TripTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
         <Button size={"sm"} asChild>
-            <Link to={"/rides/live"}>
-              <MapIcon />
-              Live
-            </Link>
-          </Button>
+          <Link to={"/rides/live"}>
+            <MapIcon />
+            Live
+          </Link>
+        </Button>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function RideRequestTableSkeleton() {
@@ -59,5 +60,5 @@ export function RideRequestTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }

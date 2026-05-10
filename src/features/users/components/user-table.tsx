@@ -1,29 +1,28 @@
-"use client";
+"use client"
 
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getUsers } from "@/features/users/service";
-import React from "react";
-import { getUserTableColumns } from "./user-table-columns";
-import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { HasPermission } from "@/components/has-permission";
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import React from "react"
+import { getUserTableColumns } from "./user-table-columns"
+import { Button } from "@/components/ui/button"
+import { Link, useSearch } from "@tanstack/react-router"
+import { PlusIcon } from "lucide-react"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { Can } from "@/components/has-permission"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { usersQueryOprions } from "../query-options"
 
-type UserTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getUsers>>]>;
-};
+export function UserTable() {
+  const search = useSearch({ from: "/_admin/users/" })
+  const response = useSuspenseQuery(usersQueryOprions(search))
+  const { data, error, pagination } = response.data
 
-export function UserTable(props: UserTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
+  const columns = React.useMemo(() => getUserTableColumns(), [])
 
-  const columns = React.useMemo(() => getUserTableColumns(), []);
-
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -36,23 +35,23 @@ export function UserTable(props: UserTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <HasPermission permission="users:create">
+        <Can permission="users:create">
           <Button asChild>
             <Link to={"/users/new"}>
               <PlusIcon />
               Add User
             </Link>
           </Button>
-        </HasPermission>
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function UserTableSkeleton() {
@@ -62,5 +61,5 @@ export function UserTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }

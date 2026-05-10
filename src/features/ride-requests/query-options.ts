@@ -9,7 +9,7 @@ export const rideQueryKeys = {
   detail: (id: string) => [...rideQueryKeys.details(), id],
 }
 
-export const usersQueryOprions = (search: RideRequestListSearchParams) =>
+export const ridesQueryOprions = (search: RideRequestListSearchParams) =>
   queryOptions({
     queryKey: [...rideQueryKeys.list(), search],
     queryFn: () => getRidesFn({ data: search }),

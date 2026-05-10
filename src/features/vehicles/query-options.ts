@@ -9,7 +9,7 @@ export const vehicleQueryKeys = {
   detail: (id: string) => [...vehicleQueryKeys.details(), id],
 }
 
-export const usersQueryOprions = (search: VehicleListSearchParams) =>
+export const vehiclesQueryOprions = (search: VehicleListSearchParams) =>
   queryOptions({
     queryKey: [...vehicleQueryKeys.list(), search],
     queryFn: () => getVehiclesFn({ data: search }),

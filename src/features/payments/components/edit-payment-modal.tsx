@@ -24,7 +24,7 @@ import {
   NumberField,
 } from "@/components/ui/form-fields";
 import { toast } from "sonner";
-import { updatePayment, createPayment } from "../service";
+import { updatePayment, createPayment } from "../services";
 import React from "react";
 import { PaymentModeList } from "@/config/constants";
 

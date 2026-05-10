@@ -26,8 +26,10 @@ import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/inde
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
+import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
+import { Route as AdminUsersUserIdViewRouteImport } from './app/_admin/users/$userId.view'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/_admin',
@@ -113,6 +115,11 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   path: '/bookings/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
+  id: '/users/new/',
+  path: '/users/new/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminClientsNewIndexRoute = AdminClientsNewIndexRouteImport.update({
   id: '/clients/new/',
   path: '/clients/new/',
@@ -121,6 +128,11 @@ const AdminClientsNewIndexRoute = AdminClientsNewIndexRouteImport.update({
 const AdminBookingsNewIndexRoute = AdminBookingsNewIndexRouteImport.update({
   id: '/bookings/new/',
   path: '/bookings/new/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminUsersUserIdViewRoute = AdminUsersUserIdViewRouteImport.update({
+  id: '/users/$userId/view',
+  path: '/users/$userId/view',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 
@@ -141,8 +153,10 @@ export interface FileRoutesByFullPath {
   '/settings/': typeof AdminSettingsIndexRoute
   '/users/': typeof AdminUsersIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
+  '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
+  '/users/new/': typeof AdminUsersNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -161,8 +175,10 @@ export interface FileRoutesByTo {
   '/settings': typeof AdminSettingsIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
+  '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
+  '/users/new': typeof AdminUsersNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -183,8 +199,10 @@ export interface FileRoutesById {
   '/_admin/settings/': typeof AdminSettingsIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
+  '/_admin/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
+  '/_admin/users/new/': typeof AdminUsersNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -205,8 +223,10 @@ export interface FileRouteTypes {
     | '/settings/'
     | '/users/'
     | '/vehicles/'
+    | '/users/$userId/view'
     | '/bookings/new/'
     | '/clients/new/'
+    | '/users/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -225,8 +245,10 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/vehicles'
+    | '/users/$userId/view'
     | '/bookings/new'
     | '/clients/new'
+    | '/users/new'
   id:
     | '__root__'
     | '/'
@@ -246,8 +268,10 @@ export interface FileRouteTypes {
     | '/_admin/settings/'
     | '/_admin/users/'
     | '/_admin/vehicles/'
+    | '/_admin/users/$userId/view'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
+    | '/_admin/users/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -379,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/users/new/': {
+      id: '/_admin/users/new/'
+      path: '/users/new'
+      fullPath: '/users/new/'
+      preLoaderRoute: typeof AdminUsersNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/clients/new/': {
       id: '/_admin/clients/new/'
       path: '/clients/new'
@@ -391,6 +422,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings/new'
       fullPath: '/bookings/new/'
       preLoaderRoute: typeof AdminBookingsNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/users/$userId/view': {
+      id: '/_admin/users/$userId/view'
+      path: '/users/$userId/view'
+      fullPath: '/users/$userId/view'
+      preLoaderRoute: typeof AdminUsersUserIdViewRouteImport
       parentRoute: typeof AdminRouteRoute
     }
   }
@@ -409,8 +447,10 @@ interface AdminRouteRouteChildren {
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
+  AdminUsersUserIdViewRoute: typeof AdminUsersUserIdViewRoute
   AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
+  AdminUsersNewIndexRoute: typeof AdminUsersNewIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -426,8 +466,10 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
+  AdminUsersUserIdViewRoute: AdminUsersUserIdViewRoute,
   AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
+  AdminUsersNewIndexRoute: AdminUsersNewIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

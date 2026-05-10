@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/form-fields";
 import { useTranslation } from "@/i18n";
 import { PaymentEditSchemaType, createEditPaymentSchema } from "@/features/payments/schemas";
-import { createPayment, updatePayment } from "@/features/payments/service";
+import { createPayment, updatePayment } from "@/features/payments/services";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
