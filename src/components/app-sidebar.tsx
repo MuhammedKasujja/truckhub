@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
-import { VersionSwitcher } from "@/components/version-switcher";
+import { VersionSwitcher } from "@/components/version-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -13,13 +13,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { usePathname } from "@tanstack/react-router";
+} from "@/components/ui/sidebar"
+import { useLocation, useMatchRoute } from "@tanstack/react-router"
 import { Link } from "@tanstack/react-router"
-import type { Route } from "next";
-import { GlobalKeys, useTranslation } from "@/i18n";
-import { cn } from "@/lib/utils";
-import type { LucideIcon } from "lucide-react";
+import { GlobalKeys, useTranslation } from "@/i18n"
+import { cn } from "@/lib/utils"
+import type { LucideIcon } from "lucide-react"
 import {
   DatabaseSearch,
   Users,
@@ -31,21 +30,21 @@ import {
   CreditCard,
   CalendarCheck,
   SettingsIcon,
-} from "lucide-react";
-import { UserPermission } from "@/features/auth/permissions";
-import { HasPermission } from "./has-permission";
+} from "lucide-react"
+import { UserPermission } from "@/features/auth/permissions"
+import { HasPermission } from "./has-permission"
 
 type SidebarItem = {
-  title: GlobalKeys;
-  url: Route;
-  icon?: LucideIcon;
-  permission: UserPermission;
-};
+  title: GlobalKeys
+  url: string
+  icon?: LucideIcon
+  permission: UserPermission
+}
 
 type SidebarMenuStruct = {
-  versions: string[];
-  items: SidebarItem[];
-};
+  versions: string[]
+  items: SidebarItem[]
+}
 
 const data: SidebarMenuStruct = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
@@ -117,7 +116,7 @@ const data: SidebarMenuStruct = {
       permission: "config:view",
     },
   ],
-};
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -133,12 +132,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }
 
 export function NavMain({ items }: { items: SidebarItem[] }) {
-  const pathname = usePathname();
-  const tr = useTranslation();
+  const location = useLocation()
+  const tr = useTranslation()
+  const matchRoute = useMatchRoute();
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -150,8 +150,8 @@ export function NavMain({ items }: { items: SidebarItem[] }) {
                   <SidebarMenuButton
                     tooltip={tr(item.title)}
                     className={cn(
-                      pathname.includes(item.url) &&
-                        "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear",
+                      location.pathname.includes(item.url) &&
+                        "min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
                     )}
                   >
                     {item.icon && <item.icon />}
@@ -164,5 +164,5 @@ export function NavMain({ items }: { items: SidebarItem[] }) {
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  );
+  )
 }

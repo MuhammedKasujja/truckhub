@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme/provider"
 import { Theme } from "@/lib/theme"
 import { DeepPartial } from "@/types"
-// import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { NuqsAdapter } from "nuqs/adapters/tanstack-router"
 // import { QueryClientProvider } from "./query-client-provider";
 
 export function Providers({
@@ -26,16 +26,16 @@ export function Providers({
       // enableSystem
       // disableTransitionOnChange
     >
-      {/* <NuqsAdapter> */}
-      <IntlProvider locale={locale} messages={messages}>
-        <TooltipProvider>
-          {/* <QueryClientProvider> */}
-          {children}
-          {/* </QueryClientProvider> */}
-        </TooltipProvider>
-      </IntlProvider>
-      <Toaster position={"top-right"} />
-      {/* </NuqsAdapter> */}
+      <NuqsAdapter>
+        <IntlProvider locale={locale} messages={messages}>
+          <TooltipProvider>
+            {/* <QueryClientProvider> */}
+            {children}
+            {/* </QueryClientProvider> */}
+          </TooltipProvider>
+        </IntlProvider>
+        <Toaster position={"top-right"} />
+      </NuqsAdapter>
     </ThemeProvider>
   )
 }
