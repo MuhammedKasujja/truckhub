@@ -17,8 +17,10 @@ import { usersQueryOprions } from "../query-options"
 
 export function UserTable() {
   const search = useSearch({ from: "/_admin/users/" })
-  const response = useSuspenseQuery(usersQueryOprions(search))
-  const { data, error, pagination } = response.data
+  const {
+    data: { data, pagination },
+    error,
+  } = useSuspenseQuery(usersQueryOprions(search))
 
   const columns = React.useMemo(() => getUserTableColumns(), [])
 

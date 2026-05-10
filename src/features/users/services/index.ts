@@ -14,8 +14,12 @@ import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export const getUsersFn = createServerFn()
   .inputValidator((data) => UserSearchParamsCache.parse(data))
-  .handler(async ({ data }) => {
-    return getUsers(data)
+  .handler(async ({ data: query }) => {
+    const { data, pagination, error } = await getUsers(query)
+    if (error) {
+    }
+
+    return { data, pagination }
   })
 
 export async function getUsersByQuery({ search }: SearchQuery) {

@@ -7,7 +7,7 @@ import { AppErrorDetails, Prettify } from "@/types";
  * Automatically logs out user on `NOT_AUTHENTICATED` api status error
  * @param error AppErrorDetails
  */
-export function useFetchEror(error?: Prettify<AppErrorDetails>) {
+export function useFetchEror(error?: Prettify<AppErrorDetails> | null) {
   React.useEffect(() => {
     if (error) {
       if (error.status === "NOT_AUTHENTICATED") {

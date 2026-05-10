@@ -1,25 +1,25 @@
-"use client";
+"use client"
 
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getBookings } from "@/features/bookings/services";
-import React from "react";
-import { getBookingTableColumns } from "./booking-table-columns";
-import { useFetchEror } from "@/hooks/use-fetch-error";
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import React from "react"
+import { getBookingTableColumns } from "./booking-table-columns"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { useSearch } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { bookingQueryOptions } from "../queries-options"
 
-type TripTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getBookings>>]>;
-};
+export function BookingTable() {
+  const search = useSearch({ from: "/_admin/bookings/" })
+  const response = useSuspenseQuery(bookingQueryOptions(search))
+  const { data, error, pagination } = response.data
 
-export function BookingTable(props: TripTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
+  const columns = React.useMemo(() => getBookingTableColumns(), [])
 
-  const columns = React.useMemo(() => getBookingTableColumns(), []);
-
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -32,7 +32,7 @@ export function BookingTable(props: TripTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
@@ -40,7 +40,7 @@ export function BookingTable(props: TripTableProps) {
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function BookingTableSkeleton() {
@@ -50,5 +50,5 @@ export function BookingTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }
