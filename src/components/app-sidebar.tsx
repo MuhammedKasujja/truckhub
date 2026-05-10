@@ -81,7 +81,7 @@ const data: SidebarMenuStruct = {
     },
     {
       title: "routes.customers",
-      url: "/customers",
+      url: "/clients",
       icon: Users,
       permission: "clients:view",
     },
