@@ -17,7 +17,7 @@ import {
   getCustomerPayments,
   getCustomerBookings,
   getCustomerRides,
-} from "@/features/clients/service"
+} from "@/features/clients/services"
 import { formatDate, formatPrice } from "@/lib/format"
 import {
   Table,

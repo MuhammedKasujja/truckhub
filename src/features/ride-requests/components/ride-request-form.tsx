@@ -18,7 +18,7 @@ import {
 import { useTranslation } from "@/i18n";
 import { getServicesByQuery } from "@/features/services/service";
 import React from "react";
-import { getCustomersByQuery } from "@/features/clients/service";
+import { getCustomersByQueryFn } from "@/features/clients/services";
 import { LocationAutoComplete } from "@/components/location-autocomplete";
 import { formatDistance, formatDuration, formatPrice } from "@/lib/format";
 import {
@@ -44,7 +44,7 @@ type RideRequestFormProps = {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getServicesByQuery>>,
-      Awaited<ReturnType<typeof getCustomersByQuery>>,
+      Awaited<ReturnType<typeof getCustomersByQueryFn>>,
     ]
   >;
 };

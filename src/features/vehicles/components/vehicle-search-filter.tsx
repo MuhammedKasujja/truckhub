@@ -2,7 +2,7 @@
 
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { Vehicle } from "@/features/vehicles/types";
-import { getVehiclesByQuery } from "@/features/vehicles/service";
+import { getVehiclesByQueryFn } from "@/features/vehicles/service";
 import { useState } from "react";
 
 interface VehicleSearchFilterProps {
@@ -17,7 +17,7 @@ export function VehicleSearchFilter({ onSelected, className }: VehicleSearchFilt
       triggerClassName={className}
       fetcher={async (search) => {
         // if (!search || search.length < 3) return [];
-        const { data } = await getVehiclesByQuery({ search });
+        const { data } = await getVehiclesByQueryFn({ search });
         return data ?? [];
       }}
       renderOption={(vehicle) => (

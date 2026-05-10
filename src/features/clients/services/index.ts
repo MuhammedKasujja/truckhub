@@ -9,34 +9,22 @@ import {
   CustomerUpdateSchemaType,
   CustomerSearchParamsCache,
 } from "@/features/clients/schemas"
+import { getCustomers } from "./data"
 import { EntityId, SearchQuery } from "@/types"
 import { Payment } from "@/features/payments/types"
 import { createServerFn } from "@tanstack/react-start"
-import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 const endpoint = "/v1/clients"
 
-export const getCustomers = createServerFn()
-  .inputValidator(CustomerSearchParamsCache.parse)
-  .handler(async ({ data: input }) => {
-    const { page, perPage } = input
-
-    const params = generateApiSearchParams(input)
-
-    const {
-      data,
-      isSuccess,
-      error,
-      pagination: paginator,
-    } = await apiClient.getPaginatedFn<Customer[]>(`${endpoint}?${params}`)
-
-    const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-    return { data: isSuccess ? data! : [], error, pagination }
+export const getCustomersFn = createServerFn()
+  .inputValidator((data) => CustomerSearchParamsCache.parse(data))
+  .handler(async ({ data }) => {
+    return await getCustomers(data)
   })
 
-export async function getCustomersByQuery({ search }: SearchQuery) {
-  return getCustomers({
+export async function getCustomersByQueryFn({ search }: SearchQuery) {
+  return getCustomersFn({
     data: {
       page: 1,
       perPage: DEFAULT_FITER_QUERY_PER_PAGE,

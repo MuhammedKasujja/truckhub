@@ -1,7 +1,7 @@
 import { ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/format";
-import { deleteCustomerById } from "@/features/clients/service";
+import { deleteCustomerById } from "@/features/clients/services";
 import { Customer } from "@/features/clients/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
