@@ -34,9 +34,9 @@ export async function deleteReviewById(reviewId: number | string) {
 
 export async function updateReview(data: ReviewUpdateSchemaType) {
   const { id: reviewId, ...rest } = data;
-  return await apiClient.putFn(`/v1/reviews/${reviewId}`, rest);
+  return await apiClient.putFn<Review>(`/v1/reviews/${reviewId}`, rest);
 }
 
 export async function createReview(data: ReviewCreateSchemaType) {
-  return await apiClient.postFn("/v1/reviews", data);
+  return await apiClient.postFn<Review>("/v1/reviews", data);
 }

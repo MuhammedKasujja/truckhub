@@ -11,7 +11,7 @@ import {
   RideRequestUpdateSchemaType,
   RideRequestCreateSchemaType,
 } from "@/features/ride-requests/schemas";
-import { EntityId, SearchQuery } from "@/types";
+import { EntityId, SearchQuery } from "@/schemas";
 import { generateApiSearchParams } from "@/lib/search-params";
 import { LocationDistanceTime } from "@/server/actions/location";
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants";
@@ -63,11 +63,11 @@ export async function deleteRideRequestById(bookingId: EntityId) {
 
 export async function updateRideRequest(data: RideRequestUpdateSchemaType) {
   const { id: bookingId, ...rest } = data;
-  return await apiClient.putFn(`/v1/ride_requests/${bookingId}`, rest);
+  return await apiClient.putFn<RideRequest>(`/v1/ride_requests/${bookingId}`, rest);
 }
 
 export async function createRideRequest(data: RideRequestCreateSchemaType) {
-  return await apiClient.postFn("/v1/ride_requests", data);
+  return await apiClient.postFn<RideRequest>("/v1/ride_requests", data);
 }
 
 /**

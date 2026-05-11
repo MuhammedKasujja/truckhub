@@ -1,11 +1,9 @@
 import { LocationPoint } from "@/features/ride-requests/types"
 import {
-  RideRequestUpdateSchemaType,
-  RideRequestCreateSchemaType,
-  RideRequestListSearchParams,
+  RideRequestUpdateSchema,
+  RideRequestCreateSchema,
   RideRequestSearchParamsCache,
 } from "@/features/ride-requests/schemas"
-import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
 import {
   getActiveRides,
@@ -18,6 +16,7 @@ import {
   getRideRequestDetailsById,
   computeRideRequestEsimatedFare,
 } from "./server"
+import { EntityIdSchema, SearchQuerySchema, EntityId } from "@/schemas"
 
 export const getRidesFn = createServerFn()
   .inputValidator((data) => RideRequestSearchParamsCache.parse(data))
@@ -25,29 +24,41 @@ export const getRidesFn = createServerFn()
     return getRideRequests(data)
   })
 
-export async function getRideRequestsByQueryFn({ search }: SearchQuery) {
-  return getRideRequestsByQuery({ search })
-}
+export const getRideRequestsByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getRideRequestsByQuery(data)
+  })
 
-export async function getRideRequestByIdFn(bookingId: EntityId) {
-  return getRideRequestById(bookingId)
-}
+export const getRideRequestByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getRideRequestById(data.id)
+  })
 
-export async function getRideRequestDetailsByIdFn(bookingId: EntityId) {
-  return getRideRequestDetailsById(bookingId)
-}
+export const getRideDetailsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getRideRequestDetailsById(data.id)
+  })
 
-export function deleteRideRequestByFn(bookingId: EntityId) {
-  return deleteRideRequestById(bookingId)
-}
+export const deleteRideFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteRideRequestById(data.id)
+  })
 
-export async function updateRideRequestFn(data: RideRequestUpdateSchemaType) {
-  return await updateRideRequest(data)
-}
+export const updateRideFn = createServerFn()
+  .inputValidator(RideRequestUpdateSchema)
+  .handler(async ({ data }) => {
+    return updateRideRequest(data)
+  })
 
-export function createRideRequestFn(data: RideRequestCreateSchemaType) {
-  return createRideRequest(data)
-}
+export const createRideRequestFn = createServerFn()
+  .inputValidator(RideRequestCreateSchema)
+  .handler(async ({ data }) => {
+    return createRideRequest(data)
+  })
 
 /**
  * Get the estimated trip fare between the trip origin and destination
@@ -73,6 +84,6 @@ export async function computeRideRequestEsimatedFareFn({
   })
 }
 
-export async function getActiveRidesFn() {
+export const getActiveRidesFn = createServerFn().handler(async () => {
   return getActiveRides()
-}
+})

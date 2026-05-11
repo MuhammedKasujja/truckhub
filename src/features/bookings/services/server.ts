@@ -12,7 +12,7 @@ import {
   BookingCreateSchemaType,
   BookingListSearchParams,
 } from "@/features/bookings/schemas"
-import { EntityId, SearchQuery } from "@/types"
+import { EntityId, SearchQuery } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { LocationDistanceTime } from "@/server/actions/location"
@@ -61,11 +61,11 @@ export async function deleteBookingById(bookingId: EntityId) {
 
 export async function updateBooking(data: BookingUpdateSchemaType) {
   const { id: bookingId, ...rest } = data
-  return await apiClient.putFn(`/v1/bookings/${bookingId}`, rest)
+  return await apiClient.putFn<Booking>(`/v1/bookings/${bookingId}`, rest)
 }
 
 export async function createBooking(data: BookingCreateSchemaType) {
-  return await apiClient.postFn("/v1/bookings", data)
+  return await apiClient.postFn<Booking>("/v1/bookings", data)
 }
 
 export const getBookingStatistics = createServerFn().handler(async () => {

@@ -7,7 +7,7 @@ import {
   ServiceUpdateSchemaType,
   ServiceCreateSchemaType,
 } from "@/features/services/schemas";
-import { SearchQuery } from "@/types";
+import { SearchQuery } from "@/schemas";
 import { jsonFormatter, logger } from "@/lib/logger";
 import { generateApiSearchParams } from "@/lib/search-params";
 
@@ -47,9 +47,9 @@ export async function deleteServiceById(serviceId: number | string) {
 
 export async function updateService(data: ServiceUpdateSchemaType) {
   const { id: serviceId, ...rest } = data;
-  return await apiClient.putFn(`/v1/services/${serviceId}`, rest);
+  return await apiClient.putFn<Service>(`/v1/services/${serviceId}`, rest);
 }
 
 export async function createService(data: ServiceCreateSchemaType) {
-  return await apiClient.postFn("/v1/services", data);
+  return await apiClient.postFn<Service>("/v1/services", data);
 }

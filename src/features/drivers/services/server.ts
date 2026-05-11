@@ -7,7 +7,7 @@ import {
   DriverListSearchParams,
   DriverUpdateSchemaType,
 } from "@/features/drivers/schemas";
-import { EntityId, SearchQuery } from "@/types";
+import { EntityId, SearchQuery } from "@/schemas";
 import { generateApiSearchParams } from "@/lib/search-params";
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants";
 
@@ -52,9 +52,9 @@ export async function deleteDriverById(driverId: number | string) {
 
 export async function updateDriver(data: DriverUpdateSchemaType) {
   const { id: driverId, ...rest } = data;
-  return await apiClient.putFn(`/v1/drivers/${driverId}`, rest);
+  return await apiClient.putFn<Driver>(`/v1/drivers/${driverId}`, rest);
 }
 
 export async function createDriver(data: DriverCreateSchemaType) {
-  return await apiClient.postFn("/v1/drivers", data);
+  return await apiClient.postFn<Driver>("/v1/drivers", data);
 }

@@ -1,19 +1,22 @@
-import * as apiClient from "@/lib/api-client"
-import { Booking } from "@/features/bookings/types"
-import { Customer } from "@/features/clients/types"
-import { RideRequest } from "@/features/ride-requests/types"
 import {
-  CustomerCreateSchemaType,
-  CustomerUpdateSchemaType,
+  CustomerUpdateSchema,
+  CustomerCreateSchema,
   CustomerSearchParamsCache,
 } from "@/features/clients/schemas"
-import { getCustomers } from "./data"
-import { EntityId, SearchQuery } from "@/types"
-import { Payment } from "@/features/payments/types"
 import { createServerFn } from "@tanstack/react-start"
-import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
-
-const endpoint = "/v1/clients"
+import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
+import {
+  getCustomers,
+  createClient,
+  updateClient,
+  getClientRides,
+  getCustomerById,
+  getClientBookings,
+  getClientPayments,
+  deleteCustomerById,
+  getCustomersByQuery,
+  getCustomerDetailsById,
+} from "./server"
 
 export const getCustomersFn = createServerFn()
   .inputValidator((data) => CustomerSearchParamsCache.parse(data))
@@ -21,49 +24,56 @@ export const getCustomersFn = createServerFn()
     return await getCustomers(data)
   })
 
-export async function getCustomersByQueryFn({ search }: SearchQuery) {
-  return getCustomersFn({
-    data: {
-      page: 1,
-      perPage: DEFAULT_FITER_QUERY_PER_PAGE,
-      sort: [],
-      search: search ?? "",
-      created_at: [],
-      filters: [],
-      joinOperator: "and",
-    },
+export const getClientsByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getCustomersByQuery(data)
   })
-}
 
-export async function getCustomerById(passengerId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${passengerId}`)
-}
+export const getClientByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getCustomerById(data.id)
+  })
 
-export async function getCustomerDetailsById(customerId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${customerId}`)
-}
+export const getClientProfileFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getCustomerDetailsById(data.id)
+  })
 
-export async function deleteCustomerById(passengerId: EntityId) {
-  return await apiClient.deleteFn(`${endpoint}/${passengerId}`)
-}
+export const deleteClientFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteCustomerById(data.id)
+  })
 
-export async function updateCustomer(data: CustomerUpdateSchemaType) {
-  const { id: passengerId, ...rest } = data
-  return await apiClient.putFn(`${endpoint}/${passengerId}`, rest)
-}
+export const updateClientFn = createServerFn({ method: "POST" })
+  .inputValidator(CustomerUpdateSchema)
+  .handler(async ({ data }) => {
+    return updateClient(data)
+  })
 
-export async function createCustomer(data: CustomerCreateSchemaType) {
-  return await apiClient.postFn(endpoint, data)
-}
+export const createClientFn = createServerFn({ method: "POST" })
+  .inputValidator(CustomerCreateSchema)
+  .handler(async ({ data }) => {
+    return createClient(data)
+  })
 
-export async function getCustomerPayments(customerId: EntityId) {
-  return await apiClient.getFn<Payment[]>(`${endpoint}/${customerId}/payments`)
-}
+export const getClientPaymentsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientPayments(data.id)
+  })
 
-export async function getCustomerBookings(customerId: EntityId) {
-  return await apiClient.getFn<Booking[]>(`${endpoint}/${customerId}/bookings`)
-}
+export const getClientBookingsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientBookings(data.id)
+  })
 
-export async function getCustomerRides(customerId: EntityId) {
-  return await apiClient.getFn<RideRequest[]>(`${endpoint}/${customerId}/rides`)
-}
+export const getClientRidesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientRides(data.id)
+  })

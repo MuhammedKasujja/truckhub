@@ -1,22 +1,22 @@
-import * as apiClient from "@/lib/api-client"
+import { LocationPoint } from "@/features/bookings/types"
 import {
-  LocationPoint,
-  BookingStatistics,
-} from "@/features/bookings/types"
-import {
-  BookingUpdateSchemaType,
-  BookingCreateSchemaType,
+  BookingUpdateSchema,
+  BookingCreateSchema,
   BookingSearchParamsCache,
 } from "@/features/bookings/schemas"
-import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
-import { LocationDistanceTime } from "@/server/actions/location"
+import { EntityId, EntityIdSchema, SearchQuerySchema } from "@/schemas"
 import {
   getBookings,
+  updateBooking,
+  createBooking,
   getBookingById,
+  deleteBookingById,
   getBookingsByQuery,
+  getBookingStatistics,
   getBookingDetailsById,
-} from "./data"
+  computeBookingEsimatedFare,
+} from "./server"
 
 export const getBookingsFn = createServerFn({ method: "POST" })
   .inputValidator((data) => BookingSearchParamsCache.parse(data))
@@ -24,33 +24,44 @@ export const getBookingsFn = createServerFn({ method: "POST" })
     return getBookings(data)
   })
 
-export async function getBookingsByQueryFn({ search }: SearchQuery) {
-  return getBookingsByQuery({ search })
-}
+export const getBookingsByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getBookingsByQuery(data)
+  })
 
-export async function getBookingByIdFn(bookingId: EntityId) {
-  return await getBookingById(bookingId)
-}
+export const getBookingByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getBookingById(data.id)
+  })
 
-export async function getBookingDetailsByIdFn(bookingId: EntityId) {
-  return await getBookingDetailsById(bookingId)
-}
+export const getBookingDetailsByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getBookingDetailsById(data.id)
+  })
 
-export async function deleteBookingById(bookingId: EntityId) {
-  return await apiClient.deleteFn(`/v1/bookings/${bookingId}`)
-}
+export const deleteBookingFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteBookingById(data.id)
+  })
 
-export async function updateBooking(data: BookingUpdateSchemaType) {
-  const { id: bookingId, ...rest } = data
-  return await apiClient.putFn(`/v1/bookings/${bookingId}`, rest)
-}
+export const updateBookingFn = createServerFn()
+  .inputValidator(BookingUpdateSchema)
+  .handler(async ({ data }) => {
+    return updateBooking(data)
+  })
 
-export async function createBooking(data: BookingCreateSchemaType) {
-  return await apiClient.postFn("/v1/bookings", data)
-}
+export const createBookingFn = createServerFn()
+  .inputValidator(BookingCreateSchema)
+  .handler(async ({ data }) => {
+    return createBooking(data)
+  })
 
 export const getBookingStatisticsFn = createServerFn().handler(async () => {
-  return await apiClient.getFn<BookingStatistics>("/v1/bookings/statistics")
+  return getBookingStatistics()
 })
 
 /**
@@ -61,7 +72,7 @@ export const getBookingStatisticsFn = createServerFn().handler(async () => {
  * @param destination booking destination
  * @returns
  */
-export async function computeBookingEsimatedFare({
+export async function computeBookingEsimatedFareFn({
   serviceId,
   origin,
   destination,
@@ -70,12 +81,5 @@ export async function computeBookingEsimatedFare({
   origin: LocationPoint
   destination: LocationPoint
 }) {
-  return await apiClient.postFn<LocationDistanceTime>(
-    "/v1/bookings/compute-fare",
-    {
-      service_id: serviceId,
-      origin,
-      destination,
-    }
-  )
+  return computeBookingEsimatedFare({ serviceId, origin, destination })
 }

@@ -1,13 +1,18 @@
-import { getPayments } from "./data"
-import * as apiClient from "@/lib/api-client"
-import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
-import { generateApiSearchParams } from "@/lib/search-params"
-import { Payment, PaymentStatistics } from "@/features/payments/types"
 import {
-  PaymentEditSchemaType,
+  getPayments,
+  updatePayment,
+  createPayment,
+  getPaymentById,
+  deletePaymentById,
+  getPaymentsByQuery,
+  getPaymentsStatistics,
+} from "./server"
+import {
+  createEditPaymentSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
+import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getPaymentsFn = createServerFn()
   .inputValidator((data) => PaymentSearchParamsCache.parse(data))
@@ -15,32 +20,36 @@ export const getPaymentsFn = createServerFn()
     return await getPayments(data)
   })
 
-export async function getPaymentsByQuery(query: SearchQuery) {
-  const params = generateApiSearchParams(query)
+export const getPaymentsByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getPaymentsByQuery(data)
+  })
 
-  const { data, isSuccess, error } = await apiClient.getFn<Payment[]>(
-    `/v1/payments?${params}`
-  )
-  return { data: isSuccess ? data! : [], error }
-}
+export const getPaymentDetailsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getPaymentById(data.id)
+  })
 
-export async function getPaymentById(paymentId: EntityId) {
-  return await apiClient.getFn<Payment>(`/v1/payments/${paymentId}`)
-}
+export const deletePaymentFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deletePaymentById(data.id)
+  })
 
-export async function deletePaymentById(paymentId: EntityId) {
-  return await apiClient.deleteFn(`/v1/payments/${paymentId}`)
-}
+export const updatePaymentFn = createServerFn()
+  .inputValidator(createEditPaymentSchema())
+  .handler(async ({ data }) => {
+    return updatePayment(data)
+  })
 
-export async function updatePayment(data: PaymentEditSchemaType) {
-  const { id: serviceId, ...rest } = data
-  return await apiClient.putFn(`/v1/payments/${serviceId}`, rest)
-}
+export const createPaymentFn = createServerFn()
+  .inputValidator(createEditPaymentSchema())
+  .handler(async ({ data }) => {
+    return createPayment(data)
+  })
 
-export async function createPayment(data: PaymentEditSchemaType) {
-  return await apiClient.postFn("/v1/payments", data)
-}
-
-export async function getPaymentsStatistics() {
-  return await apiClient.getFn<PaymentStatistics>("/v1/payments/statistics")
-}
+export const getPaymentsStatisticsFn = createServerFn().handler(async () => {
+  return getPaymentsStatistics()
+})

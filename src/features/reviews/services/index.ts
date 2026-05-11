@@ -1,6 +1,6 @@
 import {
-  ReviewCreateSchemaType,
-  ReviewUpdateSchemaType,
+  ReviewUpdateSchema,
+  ReviewCreateSchema,
   ReviewSearchParamsCache,
 } from "@/features/reviews/schemas"
 import { createServerFn } from "@tanstack/react-start"
@@ -11,23 +11,32 @@ import {
   getReviewById,
   deleteReviewById,
 } from "./data"
+import { EntityIdSchema } from "@/schemas"
 
 export const getReviewsFn = createServerFn()
   .inputValidator((data) => ReviewSearchParamsCache.parse(data))
   .handler(async ({ data }) => getReviews(data))
 
-export async function getReviewByIdFn(reviewId: number | string) {
-  return await getReviewById(reviewId)
-}
+export const getReviewByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getReviewById(data.id)
+  })
 
-export async function deleteReviewByIdFn(reviewId: number | string) {
-  return deleteReviewById(reviewId)
-}
+export const deleteReviewFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteReviewById(data.id)
+  })
 
-export async function updateReviewFn(data: ReviewUpdateSchemaType) {
-  return await updateReview(data)
-}
+export const updateReviewFn = createServerFn()
+  .inputValidator(ReviewUpdateSchema)
+  .handler(async ({ data }) => {
+    return updateReview(data)
+  })
 
-export async function createReviewFn(data: ReviewCreateSchemaType) {
-  return await createReview(data)
-}
+export const createReviewFn = createServerFn()
+  .inputValidator(ReviewCreateSchema)
+  .handler(async ({ data }) => {
+    return createReview(data)
+  })

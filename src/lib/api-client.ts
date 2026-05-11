@@ -91,7 +91,7 @@ export async function patchFn<T>(
   }
 }
 
-export async function deleteFn<T>(url: string): Promise<ApiResponse<T>> {
+export async function deleteFn<T = null>(url: string): Promise<ApiResponse<T>> {
   try {
     const response = await api.delete(url)
     return {

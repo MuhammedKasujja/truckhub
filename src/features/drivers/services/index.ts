@@ -1,16 +1,19 @@
-"use server"
-
-import * as apiClient from "@/lib/api-client"
-import { Driver } from "@/features/drivers/types"
 import {
-  DriverCreateSchemaType,
-  DriverUpdateSchemaType,
+  DriverUpdateSchema,
+  DriverCreateSchema,
   DriverSearchParamsCache,
 } from "@/features/drivers/schemas"
-import { getDrivers } from "./data"
-import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
-import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
+import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
+import {
+  getDrivers,
+  updateDriver,
+  createDriver,
+  getDriverById,
+  deleteDriverById,
+  getDriversByQuery,
+  getDriverDetailsById,
+} from "./server"
 
 export const getDriversFn = createServerFn()
   .inputValidator((data) => DriverSearchParamsCache.parse(data))
@@ -18,35 +21,38 @@ export const getDriversFn = createServerFn()
     return getDrivers(data)
   })
 
-export async function getDriversByQueryFn({ search }: SearchQuery) {
-  return getDrivers({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
-    sort: [],
-    search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
+export const getDriversByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getDriversByQuery(data)
   })
-}
 
-export async function getDriverById(driverId: EntityId) {
-  return await apiClient.getFn<Driver>(`/v1/drivers/${driverId}`)
-}
+export const getDriverByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getDriverById(data.id)
+  })
 
-export async function getDriverDetailsById(driverId: EntityId) {
-  return await apiClient.getFn<Driver>(`/v1/drivers/${driverId}`)
-}
+export const getDriverProfileFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getDriverDetailsById(data.id)
+  })
 
-export async function deleteDriverById(driverId: number | string) {
-  return await apiClient.deleteFn(`/v1/drivers/${driverId}`)
-}
+export const deleteDriverFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteDriverById(data.id)
+  })
 
-export async function updateDriver(data: DriverUpdateSchemaType) {
-  const { id: driverId, ...rest } = data
-  return await apiClient.putFn(`/v1/drivers/${driverId}`, rest)
-}
+export const updateDriverFn = createServerFn()
+  .inputValidator(DriverUpdateSchema)
+  .handler(async ({ data }) => {
+    return updateDriver(data)
+  })
 
-export async function createDriver(data: DriverCreateSchemaType) {
-  return await apiClient.postFn("/v1/drivers", data)
-}
+export const createDriverFn = createServerFn()
+  .inputValidator(DriverCreateSchema)
+  .handler(async ({ data }) => {
+    return createDriver(data)
+  })

@@ -9,7 +9,7 @@ import {
   CustomerUpdateSchemaType,
   CustomerListSearchParams,
 } from "@/features/clients/schemas"
-import { EntityId, SearchQuery } from "@/types"
+import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
@@ -56,23 +56,23 @@ export async function deleteCustomerById(passengerId: EntityId) {
   return await apiClient.deleteFn(`${endpoint}/${passengerId}`)
 }
 
-export async function updateCustomer(data: CustomerUpdateSchemaType) {
+export async function updateClient(data: CustomerUpdateSchemaType) {
   const { id: passengerId, ...rest } = data
-  return await apiClient.putFn(`${endpoint}/${passengerId}`, rest)
+  return await apiClient.putFn<Customer>(`${endpoint}/${passengerId}`, rest)
 }
 
-export async function createCustomer(data: CustomerCreateSchemaType) {
-  return await apiClient.postFn(endpoint, data)
+export async function createClient(data: CustomerCreateSchemaType) {
+  return await apiClient.postFn<Customer>(endpoint, data)
 }
 
-export async function getCustomerPayments(customerId: EntityId) {
+export async function getClientPayments(customerId: EntityId) {
   return await apiClient.getFn<Payment[]>(`${endpoint}/${customerId}/payments`)
 }
 
-export async function getCustomerBookings(customerId: EntityId) {
+export async function getClientBookings(customerId: EntityId) {
   return await apiClient.getFn<Booking[]>(`${endpoint}/${customerId}/bookings`)
 }
 
-export async function getCustomerRides(customerId: EntityId) {
+export async function getClientRides(customerId: EntityId) {
   return await apiClient.getFn<RideRequest[]>(`${endpoint}/${customerId}/rides`)
 }

@@ -1,11 +1,11 @@
 import z from "zod"
 
-const IdSchema = z.union([z.string(), z.number()])
+export const IDSchema = z.union([z.string(), z.number()])
 
-export type EntityId = z.infer<typeof IdSchema>
+export type EntityId = z.infer<typeof IDSchema>
 
 export const EntityIdSchema = z.object({
-  id: IdSchema,
+  id: IDSchema,
 })
 
 export const SearchQuerySchema = z.object({

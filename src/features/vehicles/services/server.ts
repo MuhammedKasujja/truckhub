@@ -3,11 +3,12 @@
 import * as apiClient from "@/lib/api-client"
 import { Vehicle } from "@/features/vehicles/types"
 import {
+  AssignDriverVehicleType,
   VehicleCreateSchemaType,
   VehicleListSearchParams,
   VehicleUpdateSchemaType,
 } from "@/features/vehicles/schemas"
-import { ApiResponse, EntityId, SearchQuery } from "@/types"
+import { EntityId, SearchQuery } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
@@ -47,26 +48,20 @@ export async function getVehicleDetailsById(vehicleId: EntityId) {
 }
 
 export async function deleteVehicleById(vehicleId: EntityId) {
-  return await apiClient.deleteFn(`/v1/vehicles/${vehicleId}`)
+  return await apiClient.deleteFn<null>(`/v1/vehicles/${vehicleId}`)
 }
 
-export async function updateVehicle(data: VehicleUpdateSchemaType):Promise<ApiResponse<unknown>> {
+export async function updateVehicle(data: VehicleUpdateSchemaType) {
   const { id: vehicleId, ...rest } = data
-  return await apiClient.putFn(`/v1/vehicles/${vehicleId}`, rest)
+  return await apiClient.putFn<Vehicle>(`/v1/vehicles/${vehicleId}`, rest)
 }
 
-export async function createVehicle(data: VehicleCreateSchemaType):Promise<ApiResponse<unknown>> {
-  return await apiClient.postFn("/v1/vehicles", data)
+export async function createVehicle(data: VehicleCreateSchemaType) {
+  return await apiClient.postFn<Vehicle>("/v1/vehicles", data)
 }
 
-export async function vehicleAssignDriver({
-  vehicle_id,
-  driver_id,
-}: {
-  vehicle_id: EntityId
-  driver_id: EntityId
-}) {
-  return await apiClient.postFn(`/v1/vehicles/${vehicle_id}/driver`, {
-    driver_id,
+export async function vehicleAssignDriver(data: AssignDriverVehicleType) {
+  return await apiClient.postFn<null>(`/v1/vehicles/${data.vehicleId}/driver`, {
+    driver_id: data.driverId,
   })
 }

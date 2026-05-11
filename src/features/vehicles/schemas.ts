@@ -1,13 +1,14 @@
-import z from "zod";
+import z from "zod"
 import {
   parseAsString,
   parseAsArrayOf,
   parseAsInteger,
   parseAsStringEnum,
   createSearchParamsCache,
-} from "nuqs/server";
-import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
+} from "nuqs/server"
+import { IDSchema } from "@/schemas"
+import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
 
 export const VehicleCreateSchema = z.object({
   plate_number: z.string(),
@@ -26,16 +27,16 @@ export const VehicleCreateSchema = z.object({
   car_model_id: z.number(),
   drive_train_id: z.number(),
   tonnage_id: z.number().optional().nullable(),
-});
+})
 
 export const VehicleUpdateSchema = z.object({
   id: z.number(),
   ...VehicleCreateSchema.partial().shape,
-});
+})
 
-export type VehicleCreateSchemaType = z.infer<typeof VehicleCreateSchema>;
+export type VehicleCreateSchemaType = z.infer<typeof VehicleCreateSchema>
 
-export type VehicleUpdateSchemaType = z.infer<typeof VehicleUpdateSchema>;
+export type VehicleUpdateSchemaType = z.infer<typeof VehicleUpdateSchema>
 
 export const VehicleSearchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -48,8 +49,15 @@ export const VehicleSearchParamsCache = createSearchParamsCache({
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+})
 
 export type VehicleListSearchParams = Awaited<
   ReturnType<typeof VehicleSearchParamsCache.parse>
->;
+>
+
+export const AssignDriverVehicleSchema = z.object({
+  vehicleId: IDSchema,
+  driverId: IDSchema,
+})
+
+export type AssignDriverVehicleType = z.infer<typeof AssignDriverVehicleSchema>
