@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import React, { startTransition } from "react";
-import { logout } from "@/features/auth/service";
+import { logoutFn } from "@/features/auth/services";
 import { AppErrorDetails, Prettify } from "@/types";
 
 /**
@@ -12,7 +12,7 @@ export function useFetchEror(error?: Prettify<AppErrorDetails> | null) {
     if (error) {
       if (error.status === "NOT_AUTHENTICATED") {
         startTransition(async () => {
-          await logout();
+          await logoutFn();
         });
       } else {
         toast.error(error.message);

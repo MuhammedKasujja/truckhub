@@ -26,8 +26,11 @@ import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/inde
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
+import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
+import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
 import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
+import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminUsersUserIdViewRouteImport } from './app/_admin/users/$userId.view'
@@ -116,6 +119,16 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   path: '/bookings/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
+  id: '/rides/new',
+  path: '/rides/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
+  id: '/drivers/new',
+  path: '/drivers/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
   id: '/users/new/',
   path: '/users/new/',
@@ -124,6 +137,11 @@ const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
 const AdminServicesNewIndexRoute = AdminServicesNewIndexRouteImport.update({
   id: '/services/new/',
   path: '/services/new/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminReportsAuditsIndexRoute = AdminReportsAuditsIndexRouteImport.update({
+  id: '/reports/audits/',
+  path: '/reports/audits/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminClientsNewIndexRoute = AdminClientsNewIndexRouteImport.update({
@@ -147,6 +165,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
+  '/drivers/new': typeof AdminDriversNewRoute
+  '/rides/new': typeof AdminRidesNewRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
@@ -162,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
+  '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/users/new/': typeof AdminUsersNewIndexRoute
 }
@@ -170,6 +191,8 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
+  '/drivers/new': typeof AdminDriversNewRoute
+  '/rides/new': typeof AdminRidesNewRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
@@ -185,6 +208,7 @@ export interface FileRoutesByTo {
   '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
+  '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/users/new': typeof AdminUsersNewIndexRoute
 }
@@ -195,6 +219,8 @@ export interface FileRoutesById {
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
+  '/_admin/drivers/new': typeof AdminDriversNewRoute
+  '/_admin/rides/new': typeof AdminRidesNewRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -210,6 +236,7 @@ export interface FileRoutesById {
   '/_admin/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
+  '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/users/new/': typeof AdminUsersNewIndexRoute
 }
@@ -220,6 +247,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/unauthorized'
+    | '/drivers/new'
+    | '/rides/new'
     | '/bookings/'
     | '/clients/'
     | '/dashboard/'
@@ -235,6 +264,7 @@ export interface FileRouteTypes {
     | '/users/$userId/view'
     | '/bookings/new/'
     | '/clients/new/'
+    | '/reports/audits/'
     | '/services/new/'
     | '/users/new/'
   fileRoutesByTo: FileRoutesByTo
@@ -243,6 +273,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/unauthorized'
+    | '/drivers/new'
+    | '/rides/new'
     | '/bookings'
     | '/clients'
     | '/dashboard'
@@ -258,6 +290,7 @@ export interface FileRouteTypes {
     | '/users/$userId/view'
     | '/bookings/new'
     | '/clients/new'
+    | '/reports/audits'
     | '/services/new'
     | '/users/new'
   id:
@@ -267,6 +300,8 @@ export interface FileRouteTypes {
     | '/_auth/login'
     | '/_auth/logout'
     | '/_auth/unauthorized'
+    | '/_admin/drivers/new'
+    | '/_admin/rides/new'
     | '/_admin/bookings/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
@@ -282,6 +317,7 @@ export interface FileRouteTypes {
     | '/_admin/users/$userId/view'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
+    | '/_admin/reports/audits/'
     | '/_admin/services/new/'
     | '/_admin/users/new/'
   fileRoutesById: FileRoutesById
@@ -415,6 +451,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/rides/new': {
+      id: '/_admin/rides/new'
+      path: '/rides/new'
+      fullPath: '/rides/new'
+      preLoaderRoute: typeof AdminRidesNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/drivers/new': {
+      id: '/_admin/drivers/new'
+      path: '/drivers/new'
+      fullPath: '/drivers/new'
+      preLoaderRoute: typeof AdminDriversNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/users/new/': {
       id: '/_admin/users/new/'
       path: '/users/new'
@@ -427,6 +477,13 @@ declare module '@tanstack/react-router' {
       path: '/services/new'
       fullPath: '/services/new/'
       preLoaderRoute: typeof AdminServicesNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/reports/audits/': {
+      id: '/_admin/reports/audits/'
+      path: '/reports/audits'
+      fullPath: '/reports/audits/'
+      preLoaderRoute: typeof AdminReportsAuditsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/clients/new/': {
@@ -454,6 +511,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminDriversNewRoute: typeof AdminDriversNewRoute
+  AdminRidesNewRoute: typeof AdminRidesNewRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
@@ -469,11 +528,14 @@ interface AdminRouteRouteChildren {
   AdminUsersUserIdViewRoute: typeof AdminUsersUserIdViewRoute
   AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
+  AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
   AdminServicesNewIndexRoute: typeof AdminServicesNewIndexRoute
   AdminUsersNewIndexRoute: typeof AdminUsersNewIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminDriversNewRoute: AdminDriversNewRoute,
+  AdminRidesNewRoute: AdminRidesNewRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
@@ -489,6 +551,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminUsersUserIdViewRoute: AdminUsersUserIdViewRoute,
   AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
+  AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,
   AdminServicesNewIndexRoute: AdminServicesNewIndexRoute,
   AdminUsersNewIndexRoute: AdminUsersNewIndexRoute,
 }

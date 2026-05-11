@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Drawer,
   DrawerClose,
@@ -9,57 +9,62 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { CreditCard, Loader2 } from "lucide-react";
-import { useTranslation } from "@/i18n";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { PaymentEditSchemaType, createEditPaymentSchema } from "../schemas";
-import z from "zod";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/drawer"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { CreditCard, Loader2 } from "lucide-react"
+import { useTranslation } from "@/i18n"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import {
+  PaymentEditSchemaType,
+  createEditPaymentSchema,
+} from "@/features/payments/schemas"
+import z from "zod"
+import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   TextareaField,
   NumberField,
-} from "@/components/ui/form-fields";
-import { toast } from "sonner";
-import { updatePayment, createPayment } from "../services";
-import React from "react";
-import { PaymentModeList } from "@/config/constants";
+} from "@/components/ui/form-fields"
+import { toast } from "sonner"
+import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
+import React from "react"
+import { PaymentModeList } from "@/config/constants"
 
 type PaymentFormProps = {
-  initialData?: Partial<PaymentEditSchemaType>;
-  trigger?: React.ReactNode;
-};
+  initialData?: Partial<PaymentEditSchemaType>
+  trigger?: React.ReactNode
+}
 
 export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
-  const isMobile = useIsMobile();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const isMobile = useIsMobile()
+  const [isOpen, setIsOpen] = React.useState(false)
 
-  const tr = useTranslation();
+  const tr = useTranslation()
 
-  const isEdit = !!initialData && "id" in initialData;
+  const isEdit = !!initialData && "id" in initialData
 
-  const formSchema = createEditPaymentSchema(initialData?.amount);
+  const formSchema = createEditPaymentSchema(initialData?.amount)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
     mode: "onChange",
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updatePayment(values) : createPayment(values);
+      "id" in values
+        ? updatePaymentFn({ data: values })
+        : createPaymentFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
-      form.reset();
-      setIsOpen(false);
+      toast.success(message)
+      form.reset()
+      setIsOpen(false)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
   return (
@@ -84,7 +89,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
         <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              console.log(errors);
+              console.log(errors)
             })}
             id="form-payment"
           >
@@ -136,5 +141,5 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

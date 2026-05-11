@@ -5,7 +5,6 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { getRidesFn } from "@/features/ride-requests/services"
 import React from "react"
 import { getRideRequestTableColumns } from "./ride-request-table-columns"
 import { Button } from "@/components/ui/button"
@@ -13,13 +12,14 @@ import { Link, useSearch } from "@tanstack/react-router"
 import { MapIcon } from "lucide-react"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { ridesQueryOprions } from "../query-options"
+import { createRidesQueryOptions } from "../query-options"
 
 export function RideRequestTable() {
   const search = useSearch({ from: "/_admin/rides/" })
 
-  const response = useSuspenseQuery(ridesQueryOprions(search))
-  const { data, error, pagination } = response.data
+  const {
+    data: { data, error, pagination },
+  } = useSuspenseQuery(createRidesQueryOptions(search))
 
   const columns = React.useMemo(() => getRideRequestTableColumns(), [])
 

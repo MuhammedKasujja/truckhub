@@ -14,7 +14,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error";
 import { CreditCard, Edit2Icon } from "lucide-react";
 import { Link } from "@tanstack/react-router"
 import React from "react";
-import { getBookingDetailsById } from "@/features/bookings/services";
+import { getBookingDetailsFn } from "@/features/bookings/services";
 import { formatDate, formatPrice } from "@/lib/format";
 import { Status } from "@/components/ui/status";
 import {
@@ -38,7 +38,7 @@ import { BookingClientWidget } from "./booking-client";
 import { BookingServiceList } from "./booking-serive-list";
 
 type BookingDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getBookingDetailsById>>]>;
+  promises: Promise<[Awaited<ReturnType<typeof getBookingDetailsFn>>]>;
 };
 
 export function BookingDetailsWrapper({

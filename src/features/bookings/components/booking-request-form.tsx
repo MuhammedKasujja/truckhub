@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Card,
@@ -8,8 +8,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   HiddenField,
@@ -18,24 +18,24 @@ import {
   DiscountField,
   MoneyField,
   DateTimePickerField,
-} from "@/components/ui/form-fields";
-import { getCustomersByQueryFn } from "@/features/clients/services";
-import { getServicesByQuery } from "@/features/services/services";
-import { useTranslation } from "@/i18n";
-import React, { Activity, useMemo, useState } from "react";
-import z from "zod";
-import { BookingCreateSchema } from "@/features/bookings/schemas";
-import { toast } from "sonner";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { ListIcon, Trash2Icon } from "lucide-react";
-import { createBooking } from "@/features/bookings/services";
-import { AutoComplete } from "@/components/ui/autocomplete";
-import { Service } from "@/features/services/types";
-import { formatPrice } from "@/lib/format";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/components/ui/form-fields"
+import { getCustomersByQueryFn } from "@/features/clients/services"
+import { getServicesByQuery } from "@/features/services/services"
+import { useTranslation } from "@/i18n"
+import React, { Activity, useMemo, useState } from "react"
+import z from "zod"
+import { BookingCreateSchema } from "@/features/bookings/schemas"
+import { toast } from "sonner"
+import { useFieldArray, useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
+import { ListIcon, Trash2Icon } from "lucide-react"
+import { createBookingFn } from "@/features/bookings/services"
+import { AutoComplete } from "@/components/ui/autocomplete"
+import { Service } from "@/features/services/types"
+import { formatPrice } from "@/lib/format"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type BookingRequestFormProps = {
   promises: Promise<
@@ -43,15 +43,13 @@ type BookingRequestFormProps = {
       Awaited<ReturnType<typeof getServicesByQuery>>,
       Awaited<ReturnType<typeof getCustomersByQuery>>,
     ]
-  >;
-};
+  >
+}
 
 export function BookingRequestForm({ promises }: BookingRequestFormProps) {
-  const tr = useTranslation();
-  const [activeServiceTab, setActiveServiceTab] = useState<
-    string | undefined
-  >();
-  const [serviceView, setServiceView] = useState<"list" | "single">("list");
+  const tr = useTranslation()
+  const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
+  const [serviceView, setServiceView] = useState<"list" | "single">("list")
 
   const { control, handleSubmit, formState, watch } = useForm<
     z.infer<typeof BookingCreateSchema>
@@ -61,21 +59,21 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
       services: [],
     },
     mode: "onChange",
-  });
+  })
 
   const { fields, remove, prepend } = useFieldArray({
     control,
     name: "services",
-  });
+  })
 
-  const [{ data: services }, { data: passengers }] = React.use(promises);
+  const [{ data: services }, { data: passengers }] = React.use(promises)
 
   async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
-    const { isSuccess, error } = await createBooking(values);
+    const { isSuccess, error } = await createBookingFn({ data: values })
     if (isSuccess) {
-      toast.success(`${tr("trips.trip_created_successfully")}`);
+      toast.success(`${tr("trips.trip_created_successfully")}`)
     } else {
-      toast.error(error!.message);
+      toast.error(error!.message)
     }
   }
 
@@ -83,34 +81,34 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
     control,
     name: "services",
     defaultValue: [],
-  });
+  })
 
-  const partialAmount = watch("partial");
-  const discount = watch("discount");
+  const partialAmount = watch("partial")
+  const discount = watch("discount")
 
   const calculatedServicesTotals = useMemo(() => {
     return watchedServiceItems.map((item) => {
-      const qty = item.total_items || 0;
-      const price = Number(item.cost_per_item) || 0;
-      const discount = item.discount || 0;
+      const qty = item.total_items || 0
+      const price = Number(item.cost_per_item) || 0
+      const discount = item.discount || 0
 
-      const subtotalBeforeDiscount = qty * price;
-      const discountAmount = subtotalBeforeDiscount * (discount / 100);
-      const lineTotal = subtotalBeforeDiscount - discountAmount;
+      const subtotalBeforeDiscount = qty * price
+      const discountAmount = subtotalBeforeDiscount * (discount / 100)
+      const lineTotal = subtotalBeforeDiscount - discountAmount
 
       return {
         ...item,
         lineTotal: Math.round(lineTotal * 100) / 100, // 2 decimal places
-      };
-    });
-  }, [watchedServiceItems]);
+      }
+    })
+  }, [watchedServiceItems])
 
   const grandTotal = useMemo(() => {
     return calculatedServicesTotals.reduce(
       (sum, item) => sum + (item.lineTotal || 0),
-      0,
-    );
-  }, [calculatedServicesTotals]);
+      0
+    )
+  }, [calculatedServicesTotals])
 
   return (
     <Card>
@@ -125,10 +123,10 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
       </CardHeader>
       <form
         onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
-        <CardContent className="grid gap-5 grid-cols-1 md:grid-cols-2 pb-5">
+        <CardContent className="grid grid-cols-1 gap-5 pb-5 md:grid-cols-2">
           <Card>
             <CardContent>
               <FieldGroup className="pb-5">
@@ -173,7 +171,7 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                   <AutoComplete<Service>
                     triggerClassName="flex-1"
                     fetcher={async (_) => {
-                      return services;
+                      return services
                     }}
                     renderOption={(service) => (
                       <div className="flex items-center gap-2">
@@ -206,8 +204,8 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                           cost_per_item: service.booking_fee.toString(),
                           total_items: 1,
                           discount: 0,
-                        });
-                      setActiveServiceTab(`services.0`);
+                        })
+                      setActiveServiceTab(`services.0`)
                     }}
                   />
                   <Button
@@ -216,8 +214,8 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                     variant={"secondary"}
                     onClick={() => {
                       setServiceView((prev) =>
-                        prev === "list" ? "single" : "list",
-                      );
+                        prev === "list" ? "single" : "list"
+                      )
                     }}
                   >
                     <ListIcon />
@@ -233,7 +231,7 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                   <Tabs
                     value={activeServiceTab}
                     onValueChange={(val) => {
-                      setActiveServiceTab(val);
+                      setActiveServiceTab(val)
                     }}
                   >
                     <TabsList>
@@ -247,7 +245,7 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                       ))}
                     </TabsList>
                     {fields.map((service, index) => {
-                      const serviceWithTotal = calculatedServicesTotals[index];
+                      const serviceWithTotal = calculatedServicesTotals[index]
                       return (
                         <TabsContent
                           key={`services.${index}`}
@@ -261,8 +259,8 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                                   variant={"destructive"}
                                   size={"icon-sm"}
                                   onClick={() => {
-                                    remove(index);
-                                    setActiveServiceTab("services.0");
+                                    remove(index)
+                                    setActiveServiceTab("services.0")
                                   }}
                                 >
                                   <Trash2Icon />
@@ -309,13 +307,13 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                             </CardFooter>
                           </Card>
                         </TabsContent>
-                      );
+                      )
                     })}
                   </Tabs>
                 </Activity>
                 <Activity mode={serviceView === "list" ? "visible" : "hidden"}>
                   {fields.map((service, index) => {
-                    const serviceWithTotal = calculatedServicesTotals[index];
+                    const serviceWithTotal = calculatedServicesTotals[index]
                     return (
                       <Card key={`${service.id}*${index}`}>
                         <CardContent
@@ -357,7 +355,7 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                           })}
                         </CardFooter>
                       </Card>
-                    );
+                    )
                   })}
                 </Activity>
               </FieldGroup>
@@ -373,5 +371,5 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

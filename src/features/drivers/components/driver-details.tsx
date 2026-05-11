@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -9,41 +9,43 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter";
-import { vehicleAssignDriver } from "@/features/vehicles/services";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { Edit2Icon } from "lucide-react";
+} from "@/components/ui/card"
+import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter"
+import { vehicleAssignDriverFn } from "@/features/vehicles/services"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
-import { toast } from "sonner";
-import { getDriverDetailsById } from "@/features/drivers/service";
-import { SubmitButton } from "@/components/ui/submit-button";
+import React from "react"
+import { toast } from "sonner"
+import { getDriverProfileFn } from "@/features/drivers/services"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type DriverDetailsProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getDriverDetailsById>>]>;
-};
+  promises: Promise<[Awaited<ReturnType<typeof getDriverProfileFn>>]>
+}
 
 export function DriverDetails({ promises }: DriverDetailsProps) {
-  const [{ data: driver, error }] = React.use(promises);
-  const [vehicleId, setVehicleId] = React.useState<number | null>();
+  const [{ data: driver, error }] = React.use(promises)
+  const [vehicleId, setVehicleId] = React.useState<number | null>()
 
-  useFetchEror(error);
+  useFetchEror(error)
 
   async function assignDriver() {
-    const { isSuccess, error, message } = await vehicleAssignDriver({
-      driver_id: driver!.id,
-      vehicle_id: vehicleId!,
-    });
+    const { isSuccess, error, message } = await vehicleAssignDriverFn({
+      data: {
+        driverId: driver!.id,
+        vehicleId: vehicleId!,
+      },
+    })
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
   return (
-    <div className="grid grid-cols-5 grid-flow-col gap-5">
+    <div className="grid grid-flow-col grid-cols-5 gap-5">
       <Card className="col-span-3">
         <CardHeader>
           <CardTitle>{driver?.fullname}</CardTitle>
@@ -79,5 +81,5 @@ export function DriverDetails({ promises }: DriverDetailsProps) {
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }

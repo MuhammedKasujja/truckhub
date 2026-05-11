@@ -30,7 +30,7 @@ export const getUsersByQueryFn = createServerFn()
     return getUsersByQuery(data)
   })
 
-export const getUserProfileByIdFn = createServerFn()
+export const getUserProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getUserProfileById(data.id)

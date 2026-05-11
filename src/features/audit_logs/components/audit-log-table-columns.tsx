@@ -45,7 +45,7 @@ export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
     },
     {
       id: "actions",
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <div className="flex gap-2">
             <ActionButton

@@ -1,26 +1,28 @@
-"use client";
+"use client"
 
-import React from "react";
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getPaymentsFn } from "@/features/payments/services";
-import { getPaymentTableColumns } from "./payment-table-columns";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { useTranslation } from "@/i18n";
+import React from "react"
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import { getPaymentTableColumns } from "./payment-table-columns"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { useTranslation } from "@/i18n"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { paymentsQueryOptions } from "../query-options"
+import { useSearch } from "@tanstack/react-router"
 
-type PaymentTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getPaymentsFn>>]>;
-};
+export function PaymentTable() {
+  const search = useSearch({ from: "/_admin/payments/" })
+  const {
+    data: { data, error, pagination },
+  } = useSuspenseQuery(paymentsQueryOptions(search))
 
-export function PaymentTable(props: PaymentTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
-  const tr = useTranslation();
-  const columns = React.useMemo(() => getPaymentTableColumns(tr), [tr]);
+  const tr = useTranslation()
+  const columns = React.useMemo(() => getPaymentTableColumns(tr), [tr])
 
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -33,7 +35,7 @@ export function PaymentTable(props: PaymentTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
@@ -41,9 +43,9 @@ export function PaymentTable(props: PaymentTableProps) {
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function PaymentTableSkeleton() {
-  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />;
+  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />
 }

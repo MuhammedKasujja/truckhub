@@ -4,7 +4,7 @@ import { useTranslation } from "@/i18n"
 import { useRouter } from "@tanstack/react-router"
 import z from "zod"
 import { toast } from "sonner"
-import { login } from "@/features/auth/service"
+import { loginFn } from "@/features/auth/services"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailField, PasswordField } from "@/components/ui/form-fields"
@@ -25,7 +25,7 @@ export function LoginForm() {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { isSuccess, error } = await login({ data: values })
+    const { isSuccess, error } = await loginFn({ data: values })
     if (isSuccess) {
       toast.success(`${tr("login_successfully")}`)
       router.navigate({ to: "/dashboard", replace: true })

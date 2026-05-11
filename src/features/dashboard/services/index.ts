@@ -1,4 +1,4 @@
-import { getDashboardStatistics } from "../service"
+import { getDashboardStatistics } from "./server"
 import { createServerFn } from "@tanstack/react-start"
 
 export const getDashboardStatisticsFn = createServerFn({

@@ -2,7 +2,7 @@
 
 import { api } from "@/lib/api"
 import { AxiosError } from "axios"
-import { logout } from "@/features/auth/service"
+import { logoutFn } from "@/features/auth/services"
 import type {
   Prettify,
   ApiResponse,
@@ -130,5 +130,5 @@ async function logoutOnServerActions(error: unknown) {
   logger.info(
     `API Error with status code ${statusCode} and message: ${(error as any)?.message}`
   )
-  if (statusCode === "NOT_AUTHENTICATED") return logout()
+  if (statusCode === "NOT_AUTHENTICATED") return logoutFn()
 }

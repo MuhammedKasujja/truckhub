@@ -5,13 +5,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { deleteServiceById } from "@/features/services/services";
 import { Service, ServiceGroup } from "@/features/services/types";
 import { formatPrice } from "@/lib/format";
 import { ColumnDef } from "@tanstack/react-table";
 import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react";
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner";
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
   return [

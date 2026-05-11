@@ -1,24 +1,28 @@
-"use client";
+"use client"
 
-import { AutoComplete } from "@/components/ui/autocomplete";
-import { Driver } from "../types";
-import { getDriversByQuery } from "../service";
-import { useState } from "react";
+import { AutoComplete } from "@/components/ui/autocomplete"
+import { Driver } from "../types"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { createDriverSearchQueryOptions } from "../queries"
 
 interface DriverSearchFilterProps {
-  onSelected: (driver?: Driver | null) => void;
-  className?: string 
-};
+  onSelected: (driver?: Driver | null) => void
+  className?: string
+}
 
-export function DriverSearchFilter({ onSelected, className }: DriverSearchFilterProps) {
-  const [driverId, setDriverId] = useState<string>("");
+export function DriverSearchFilter({
+  onSelected,
+  className,
+}: DriverSearchFilterProps) {
+  const [driverId, setDriverId] = useState<string>("")
   return (
     <AutoComplete<Driver>
       triggerClassName={className}
       fetcher={async (search) => {
-        if (!search || search.length < 3) return [];
-        const { data } = await getDriversByQuery({ search });
-        return data ?? [];
+        if (!search || search.length < 3) return []
+        const { data } = useQuery(createDriverSearchQueryOptions(search))
+        return data?.data ?? []
       }}
       renderOption={(driver) => (
         <div className="flex items-center gap-2">
@@ -42,9 +46,9 @@ export function DriverSearchFilter({ onSelected, className }: DriverSearchFilter
       placeholder="Search driver..."
       value={driverId}
       onChange={async (driver) => {
-        setDriverId(driver?.id.toString() ?? "");
-        onSelected(driver);
+        setDriverId(driver?.id.toString() ?? "")
+        onSelected(driver)
       }}
     />
-  );
+  )
 }

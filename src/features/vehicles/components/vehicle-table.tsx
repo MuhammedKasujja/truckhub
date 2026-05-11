@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getVehicles } from "@/features/vehicles/services";
-import React from "react";
-import { getVehicleTableColumns } from "./vehicle-table-columns";
-import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { HasPermission } from "@/components/has-permission";
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import React from "react"
+import { getVehicleTableColumns } from "./vehicle-table-columns"
+import { Button } from "@/components/ui/button"
+import { Link, useSearch } from "@tanstack/react-router"
+import { PlusIcon } from "lucide-react"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { HasPermission } from "@/components/has-permission"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createVehiclesListQueryOptions } from "../query-options"
 
-type VehicleTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getVehicles>>]>;
-};
+export function VehicleTable() {
+  const search = useSearch({ from: "/_admin/vehicles/" })
+  const {
+    data: { data, error, pagination },
+  } = useSuspenseQuery(createVehiclesListQueryOptions(search))
+  const columns = React.useMemo(() => getVehicleTableColumns(), [])
 
-export function VehicleTable(props: VehicleTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
-  const columns = React.useMemo(() => getVehicleTableColumns(), []);
-
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -35,7 +35,7 @@ export function VehicleTable(props: VehicleTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
@@ -51,7 +51,7 @@ export function VehicleTable(props: VehicleTableProps) {
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function VehicleTableSkeleton() {
@@ -61,5 +61,5 @@ export function VehicleTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }

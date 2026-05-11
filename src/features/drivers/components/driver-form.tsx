@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Card,
   CardContent,
@@ -6,49 +6,51 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
   PasswordField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   DriverCreateSchema,
   DriverUpdateSchema,
-} from "@/features/drivers/schemas";
-import { createDriver, updateDriver } from "@/features/drivers/service";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/features/drivers/schemas"
+import { createDriverFn, updateDriverFn } from "@/features/drivers/services"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type DriverFormProps = {
-  initialData?: z.infer<typeof DriverUpdateSchema>;
-};
+  initialData?: z.infer<typeof DriverUpdateSchema>
+}
 
 export function DriverForm({ initialData }: DriverFormProps) {
-  const tr = useTranslation();
-  const isEdit = !!initialData;
+  const tr = useTranslation()
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? DriverUpdateSchema : DriverCreateSchema;
+  const formSchema = isEdit ? DriverUpdateSchema : DriverCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateDriver(values) : createDriver(values);
+      "id" in values
+        ? updateDriverFn({ data: values })
+        : createDriverFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -60,7 +62,7 @@ export function DriverForm({ initialData }: DriverFormProps) {
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
@@ -104,5 +106,5 @@ export function DriverForm({ initialData }: DriverFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

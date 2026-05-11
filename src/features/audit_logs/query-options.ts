@@ -1,4 +1,4 @@
-import { getAuditLogsFn } from "./service"
+import { getAuditLogsFn } from "./services"
 import { AuditLogSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 

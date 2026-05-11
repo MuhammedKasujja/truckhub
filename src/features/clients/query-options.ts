@@ -1,7 +1,7 @@
 import { EntityId } from "@/types"
 import { CustomerListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { getCustomerDetailsById, getCustomersFn } from "./services"
+import { getClientProfileFn, getCustomersFn } from "./services"
 
 export const clientsQueryOptions = (input: CustomerListSearchParams) =>
   queryOptions({
@@ -12,5 +12,5 @@ export const clientsQueryOptions = (input: CustomerListSearchParams) =>
 export const clientQueryOptions = (customerId: EntityId) =>
   queryOptions({
     queryKey: ["client-details", customerId],
-    queryFn: () => getCustomerDetailsById(customerId),
+    queryFn: () => getClientProfileFn({ data: { id: customerId } }),
   })

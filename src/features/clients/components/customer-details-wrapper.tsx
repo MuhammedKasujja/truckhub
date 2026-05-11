@@ -13,7 +13,7 @@ import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import {
-  getCustomerDetailsById,
+  getClientProfileFn,
   getCustomerPayments,
   getCustomerBookings,
   getCustomerRides,
@@ -44,7 +44,7 @@ import { clientQueryOptions } from "../query-options"
 type CustomerDetailsWrapperProps = {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getCustomerDetailsById>>,
+      Awaited<ReturnType<typeof getClientProfileFn>>,
       Awaited<ReturnType<typeof getCustomerPayments>>,
       Awaited<ReturnType<typeof getCustomerBookings>>,
       Awaited<ReturnType<typeof getCustomerRides>>,
@@ -241,7 +241,7 @@ export function CustomerDetailsWrapper({
                               <EmptyTitle>No Payments Found</EmptyTitle>
                             </EmptyHeader>
                             <EmptyContent>
-                              <HasPermission permission={"payments:create"}>
+                              <Can permission={"payments:create"}>
                                 <EditPaymentModal
                                   initialData={{
                                     type: "booking",
@@ -252,7 +252,7 @@ export function CustomerDetailsWrapper({
                                     </Button>
                                   }
                                 />
-                              </HasPermission>
+                              </Can>
                             </EmptyContent>
                           </Empty>
                         </TableCell>

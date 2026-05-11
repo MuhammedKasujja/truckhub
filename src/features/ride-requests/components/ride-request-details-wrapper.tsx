@@ -14,7 +14,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error";
 import { CircleDotIcon, Edit2Icon, MapPin } from "lucide-react";
 import { Link } from "@tanstack/react-router"
 import React from "react";
-import { getRideRequestDetailsById } from "@/features/ride-requests/service";
+import { getRideDetailsFn } from "@/features/ride-requests/services";
 import {
   formatDate,
   formatDistance,
@@ -62,7 +62,7 @@ const timelineItems = [
 ];
 
 type RideRequestDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getRideRequestDetailsById>>]>;
+  promises: Promise<[Awaited<ReturnType<typeof getRideDetailsFn>>]>;
 };
 
 export function RideRequestDetailsWrapper({

@@ -36,7 +36,7 @@ export const getBookingByIdFn = createServerFn()
     return getBookingById(data.id)
   })
 
-export const getBookingDetailsByIdFn = createServerFn()
+export const getBookingDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getBookingDetailsById(data.id)

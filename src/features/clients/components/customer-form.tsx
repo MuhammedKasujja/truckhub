@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Card,
   CardContent,
@@ -6,49 +6,51 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
   PasswordField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   CustomerCreateSchema,
   CustomerUpdateSchema,
-} from "@/features/clients/schemas";
-import { createCustomer, updateCustomer } from "@/features/clients/services";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/features/clients/schemas"
+import { createClientFn, updateClientFn } from "@/features/clients/services"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type ClientFormProps = {
-  initialData?: z.infer<typeof CustomerUpdateSchema>;
-};
+  initialData?: z.infer<typeof CustomerUpdateSchema>
+}
 
-export function CustomerForm({ initialData }: ClientFormProps) {
-  const tr = useTranslation();
-  const isEdit = !!initialData;
+export function ClientForm({ initialData }: ClientFormProps) {
+  const tr = useTranslation()
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema;
+  const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateCustomer(values) : createCustomer(values);
+      "id" in values
+        ? updateClientFn({ data: values })
+        : createClientFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -60,7 +62,7 @@ export function CustomerForm({ initialData }: ClientFormProps) {
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
@@ -110,5 +112,5 @@ export function CustomerForm({ initialData }: ClientFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

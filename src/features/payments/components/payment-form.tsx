@@ -1,53 +1,58 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { FieldGroup } from "@/components/ui/field";
+"use client"
+import { Button } from "@/components/ui/button"
+import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   NumberField,
   TextareaField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
-import { PaymentEditSchemaType, createEditPaymentSchema } from "@/features/payments/schemas";
-import { createPayment, updatePayment } from "@/features/payments/services";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { PaymentModeList } from "@/config/constants";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
+import {
+  PaymentEditSchemaType,
+  createEditPaymentSchema,
+} from "@/features/payments/schemas"
+import { createPaymentFn, updatePaymentFn } from "@/features/payments/services"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { PaymentModeList } from "@/config/constants"
 
 type PaymentFormProps = {
-  initialData?: Partial<PaymentEditSchemaType>;
-};
+  initialData?: Partial<PaymentEditSchemaType>
+}
 
 export function PaymentForm({ initialData }: PaymentFormProps) {
-  const tr = useTranslation();
+  const tr = useTranslation()
 
-  const isEdit = !!initialData && 'id' in initialData;
+  const isEdit = !!initialData && "id" in initialData
 
   const schema = createEditPaymentSchema(initialData?.amount)
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof schema>) {
     const promise =
-      "id" in values ? updatePayment(values) : createPayment(values);
+      "id" in values
+        ? updatePaymentFn({ data: values })
+        : createPaymentFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (errors) => {
-        console.log(errors);
+        console.log(errors)
       })}
     >
       <FieldGroup className="grid grid-flow-row grid-cols-1">
@@ -86,5 +91,5 @@ export function PaymentForm({ initialData }: PaymentFormProps) {
           : `${tr("common.form.submit")}`}
       </Button>
     </form>
-  );
+  )
 }

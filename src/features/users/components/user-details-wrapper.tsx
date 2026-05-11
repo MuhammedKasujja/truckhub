@@ -13,11 +13,11 @@ import { useFetchEror } from "@/hooks/use-fetch-error";
 import { Edit2Icon } from "lucide-react";
 import { Link } from "@tanstack/react-router"
 import React from "react";
-import { getUserProfileById } from "@/features/users/service";
+import { getUserProfileFn } from "@/features/users/services";
 import { formatDate } from "@/lib/format";
 
 type UserDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getUserProfileById>>]>;
+  promises: Promise<[Awaited<ReturnType<typeof getUserProfileFn>>]>;
 };
 
 export function UserDetailsWrapper({ promises }: UserDetailsWrapperProps) {

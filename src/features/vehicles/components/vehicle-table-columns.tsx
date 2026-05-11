@@ -1,13 +1,13 @@
-import { ActionButton } from "@/components/ui/action-button";
-import { Button } from "@/components/ui/button";
-import { formatDateTime } from "@/lib/format";
-import { deleteVehicleById } from "@/features/vehicles/services";
-import { Vehicle } from "@/features/vehicles/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
+import { ActionButton } from "@/components/ui/action-button"
+import { Button } from "@/components/ui/button"
+import { formatDateTime } from "@/lib/format"
+import { deleteVehicleFn } from "@/features/vehicles/services"
+import { Vehicle } from "@/features/vehicles/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner";
-import { Can } from "@/components/has-permission";
+import { toast } from "sonner"
+import { Can } from "@/components/has-permission"
 
 export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
   return [
@@ -23,14 +23,14 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
               </Link>
             </Button>
           </Can>
-        );
+        )
       },
     },
     {
       accessorKey: "plate_number",
       header: "License",
       cell: ({ row }) => {
-        return <>{row.original.plate_number}</>;
+        return <>{row.original.plate_number}</>
       },
     },
     {
@@ -41,7 +41,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
           <p>
             {row.original.engine_type}/ {row.original.gearbox}
           </p>
-        );
+        )
       },
     },
     {
@@ -52,39 +52,37 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
           <p>
             {row.original.color}/ {row.original.interior_color}
           </p>
-        );
+        )
       },
     },
     {
       accessorKey: "year",
       header: "Year",
       cell: ({ row }) => {
-        return <p>{row.original.year}</p>;
+        return <p>{row.original.year}</p>
       },
     },
     {
       id: "driver",
       header: "Driver",
       cell: ({ row }) => {
-        const driver = row.original.driver;
+        const driver = row.original.driver
         return driver == null ? (
           <p>-</p>
         ) : (
           <Can permission="drivers:view">
             <Button variant={"link"} asChild>
-              <Link to={`/drivers/${row.original.id}/view`}>
-                {driver.name}
-              </Link>
+              <Link to={`/drivers/${row.original.id}/view`}>{driver.name}</Link>
             </Button>
           </Can>
-        );
+        )
       },
     },
     {
       accessorKey: "created_at",
       header: "Date",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>;
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
     {
@@ -112,14 +110,14 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
                 size={"icon"}
                 requireAreYouSure
                 action={async () => {
-                  const { isSuccess, error, message } = await deleteVehicleById(
-                    row.original.id,
-                  );
+                  const { isSuccess, error, message } = await deleteVehicleFn({
+                    data: { id: row.original.id },
+                  })
                   if (isSuccess) {
-                    toast.success(message);
-                    return { error: false };
+                    toast.success(message)
+                    return { error: false }
                   } else {
-                    return { error: true, message: error?.message };
+                    return { error: true, message: error?.message }
                   }
                 }}
               >
@@ -127,8 +125,8 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
               </ActionButton>
             </Can>
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }

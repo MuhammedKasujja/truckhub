@@ -3,8 +3,6 @@
 import React from "react";
 import { DataTable } from "@/components/data-table";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
 import { getServiceTableColumns } from "./service-table-columns";
 import { ServiceGroup } from "@/features/services/types";

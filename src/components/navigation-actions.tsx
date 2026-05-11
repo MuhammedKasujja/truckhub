@@ -1,8 +1,8 @@
-"use client";
-import { useRouter } from "@tanstack/react-router";
-import { LocaleSwitcher } from "./locale-switcher";
-import { ThemeToggle } from "./theme/toggler";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client"
+import { useRouter } from "@tanstack/react-router"
+import { LocaleSwitcher } from "./locale-switcher"
+import { ThemeToggle } from "./theme/toggler"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,9 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { logout } from "@/features/auth/service";
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { logoutFn } from "@/features/auth/services"
 
 export function NavigationActions() {
   return (
@@ -21,15 +21,15 @@ export function NavigationActions() {
       <ThemeToggle />
       <ProfileDropdown />
     </div>
-  );
+  )
 }
 
 function ProfileDropdown() {
-  const router = useRouter();
+  const router = useRouter()
 
   async function logoutUser() {
-    await logout();
-    router.replace("/login");
+    await logoutFn()
+    router.navigate({ to: "/login", replace: true })
   }
   return (
     <DropdownMenu>
@@ -55,5 +55,5 @@ function ProfileDropdown() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

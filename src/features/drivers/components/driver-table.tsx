@@ -1,24 +1,25 @@
-"use client";
+"use client"
 
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getDrivers } from "@/features/drivers/service";
-import React, { useMemo } from "react";
-import { getDriverTableColumns } from "./driver-table-columns";
-import { useFetchEror } from "@/hooks/use-fetch-error";
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
+import { useMemo } from "react"
+import { getDriverTableColumns } from "./driver-table-columns"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createDriverListQueryOptions } from "../queries"
+import { useSearch } from "@tanstack/react-router"
 
-type DriverTableProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getDrivers>>]>;
-};
+export function DriverTable() {
+  const search = useSearch({ from: "/_admin/drivers/" })
+  const {
+    data: { data, error, pagination },
+  } = useSuspenseQuery(createDriverListQueryOptions(search))
+  const columns = useMemo(() => getDriverTableColumns(), [])
 
-export function DriverTable(props: DriverTableProps) {
-  const [{ data, error, pagination }] = React.use(props.promises);
-  const columns = useMemo(() => getDriverTableColumns(), []);
-
-  useFetchEror(error);
+  useFetchEror(error)
 
   const { table } = useDataTable({
     data,
@@ -31,7 +32,7 @@ export function DriverTable(props: DriverTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
   return (
     <DataTable table={table}>
@@ -39,7 +40,7 @@ export function DriverTable(props: DriverTableProps) {
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
-  );
+  )
 }
 
 export function DriverTableSkeleton() {
@@ -49,5 +50,5 @@ export function DriverTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }
