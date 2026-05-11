@@ -2,6 +2,7 @@
 
 import * as apiClient from "@/lib/api-client"
 import { createServerFn } from "@tanstack/react-start"
+import { VehicleConfigurations } from "@/types/setting"
 import { EditSettingsSchema, Settings } from "@/features/settings/schemas"
 
 const endpoint = "/v1/settings"
@@ -15,3 +16,9 @@ export const updateSettingsFn = createServerFn()
   .handler(async ({ data }) => {
     return await apiClient.patchFn<Settings>(endpoint, data)
   })
+
+export const getVehicleSettingsFn = createServerFn().handler(async () => {
+  return await apiClient.getFn<VehicleConfigurations>(
+    "/v1/settings/vehicle-config"
+  )
+})

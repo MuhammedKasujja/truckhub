@@ -3,11 +3,11 @@ import { UserListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 
 export const usersKeys = {
-  all: () => ["users"],
-  list: () => [...usersKeys.all(), "list"],
-  details: () => [...usersKeys.all(), "detail"],
-  detail: (id: string) => [...usersKeys.details(), id],
-}
+  all: () => ["users"] as const,
+  list: () => [...usersKeys.all(), "list"] as const,
+  details: () => [...usersKeys.all(), "detail"] as const,
+  detail: (id: string) => [...usersKeys.details(), id] as const,
+} as const
 
 export const usersQueryOprions = (search: UserListSearchParams) =>
   queryOptions({

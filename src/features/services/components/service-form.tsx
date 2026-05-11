@@ -20,25 +20,21 @@ import {
   ServiceUpdateSchema,
 } from "@/features/services/schemas"
 import { createServiceFn, updateServiceFn } from "@/features/services/services"
-import { getVehicleSettings } from "@/server/settings"
 import { zodResolver } from "@hookform/resolvers/zod"
-import React from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQuery } from "@tanstack/react-query"
+import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 
 type ServiceFormProps = {
-  vehicleConfigPromise: Promise<Awaited<ReturnType<typeof getVehicleSettings>>>
   initialData?: z.infer<typeof ServiceUpdateSchema>
 }
 
-export function ServiceForm({
-  vehicleConfigPromise,
-  initialData,
-}: ServiceFormProps) {
+export function ServiceForm({ initialData }: ServiceFormProps) {
   const tr = useTranslation()
-  const { data } = React.use(vehicleConfigPromise)
+  const { data } = useQuery(createVehicleConfigurationsQueryOptions())
 
   const isEdit = !!initialData
 
@@ -85,7 +81,7 @@ export function ServiceForm({
               placeholder="Select Vehicle"
               emptyPlaceholder="No vehicles found"
               options={
-                data?.vehicle_types.map((opt) => ({
+                data?.data?.vehicle_types.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []
