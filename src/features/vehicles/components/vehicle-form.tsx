@@ -1,5 +1,4 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
 import {
   Card,
   CardContent,
@@ -7,105 +6,107 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { Field, FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   NumberField,
   SelectField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   VehicleCreateSchema,
   VehicleUpdateSchema,
-} from "@/features/vehicles/schemas";
-import { getVehicleSettings } from "@/server/settings";
-import { createVehicle, updateVehicle } from "@/features/vehicles/services";
-import { EngineTypes, Gearboxes } from "@/features/vehicles/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { EntityId } from "@/types";
-import { VehicleCylinderList } from "@/config/constants";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { CarModel, DriveTrain } from "@/types/setting";
+} from "@/features/vehicles/schemas"
+import { getVehicleSettings } from "@/server/settings"
+import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
+import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
+import { zodResolver } from "@hookform/resolvers/zod"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { EntityId } from "@/types"
+import { VehicleCylinderList } from "@/config/constants"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { CarModel, DriveTrain } from "@/types/setting"
 
 type VehicleFormProps = {
-  configPromises: Promise<[Awaited<ReturnType<typeof getVehicleSettings>>]>;
-  initialData?: z.infer<typeof VehicleUpdateSchema>;
-};
+  configPromises: Promise<[Awaited<ReturnType<typeof getVehicleSettings>>]>
+  initialData?: z.infer<typeof VehicleUpdateSchema>
+}
 
 export function VehicleForm({ configPromises, initialData }: VehicleFormProps) {
-  const tr = useTranslation();
-  const [{ data: vehicleCofig }] = React.use(configPromises);
+  const tr = useTranslation()
+  const [{ data: vehicleCofig }] = React.use(configPromises)
   const [vehicleType, setVehicleType] = React.useState<
     | {
-        name: string;
-        is_truck: boolean;
-        id: EntityId;
+        name: string
+        is_truck: boolean
+        id: EntityId
       }
     | undefined
-  >();
+  >()
 
   const [driveTrains, setDriveTrains] = React.useState<DriveTrain[]>(
-    vehicleCofig?.drive_trains ?? [],
-  );
+    vehicleCofig?.drive_trains ?? []
+  )
 
   const [carModels, setCarModels] = React.useState<CarModel[]>(
-    vehicleCofig?.car_models ?? [],
-  );
+    vehicleCofig?.car_models ?? []
+  )
 
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? VehicleUpdateSchema : VehicleCreateSchema;
+  const formSchema = isEdit ? VehicleUpdateSchema : VehicleCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
-  const selectedCarBrandId = form.watch("car_brand_id");
-  const selectedCarModelId = form.watch("car_model_id");
+  const selectedCarBrandId = form.watch("car_brand_id")
+  const selectedCarModelId = form.watch("car_model_id")
 
   //  Track vehicle type when car model changes to populate drive trains for small cars and trucks
   React.useEffect(() => {
     const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
-      carModels.find((model) => model.vehicle_type_id === ele.id),
-    );
-    form.setValue("vehicle_type_id", Number(vehicleType?.id));
-    setVehicleType(vehicleType);
+      carModels.find((model) => model.vehicle_type_id === ele.id)
+    )
+    form.setValue("vehicle_type_id", Number(vehicleType?.id))
+    setVehicleType(vehicleType)
     setDriveTrains(
       vehicleCofig?.drive_trains.filter(
-        (ele) => ele.is_truck === vehicleType?.is_truck,
-      ) ?? [],
-    );
+        (ele) => ele.is_truck === vehicleType?.is_truck
+      ) ?? []
+    )
     // form.reset({ drive_train_id: undefined, tonnage_id: undefined });
-  }, [vehicleCofig, selectedCarModelId]);
+  }, [vehicleCofig, selectedCarModelId])
 
   //  Populate car models basing on selected car make
   React.useEffect(() => {
     const carBrand = vehicleCofig?.car_brands.find(
-      (ele) => ele.id === selectedCarBrandId,
-    );
+      (ele) => ele.id === selectedCarBrandId
+    )
     setCarModels(
       vehicleCofig?.car_models.filter(
-        (ele) => ele.car_brand_id === carBrand?.id,
-      ) ?? [],
-    );
-  }, [selectedCarBrandId, vehicleCofig]);
+        (ele) => ele.car_brand_id === carBrand?.id
+      ) ?? []
+    )
+  }, [selectedCarBrandId, vehicleCofig])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateVehicle(values) : createVehicle(values);
+      "id" in values
+        ? updateVehicleFn({ data: values })
+        : createVehicleFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -117,11 +118,11 @@ export function VehicleForm({ configPromises, initialData }: VehicleFormProps) {
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-6">
+          <div className="grid grid-cols-1 gap-5 pb-6 md:grid-cols-2">
             <FieldGroup>
               <TextField
                 label={tr("plate_number")}
@@ -263,5 +264,5 @@ export function VehicleForm({ configPromises, initialData }: VehicleFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

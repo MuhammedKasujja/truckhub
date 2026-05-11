@@ -1,60 +1,64 @@
-import { EntityId } from "@/types";
+import { EntityId } from "@/types"
 
 export type Setting = {
-  key: string;
-  value: unknown;
-};
+  key: string
+  value:
+    | string
+    | number
+    | boolean
+    | Record<string, string | number | boolean | null>
+}
 
 export type DriveTrain = {
-  name: string;
-  is_truck: boolean;
-  id: EntityId;
-};
+  name: string
+  is_truck: boolean
+  id: EntityId
+}
 
 export type CarModel = {
-  name: string;
-  id: EntityId;
-  car_brand_id: EntityId;
-  vehicle_type_id: EntityId;
-};
+  name: string
+  id: EntityId
+  car_brand_id: EntityId
+  vehicle_type_id: EntityId
+}
 
 export type VehicleFeature = {
-  id: number;
-  name: string;
-  position: number;
-};
+  id: number
+  name: string
+  position: number
+}
 
 export type VehicleConfigurations = {
   vehicle_types: [
     {
-      name: string;
-      is_truck: boolean;
-      id: EntityId;
+      name: string
+      is_truck: boolean
+      id: EntityId
     },
-  ];
+  ]
   car_brands: [
     {
-      name: string;
-      id: EntityId;
+      name: string
+      id: EntityId
     },
-  ];
-  car_models: CarModel[];
+  ]
+  car_models: CarModel[]
   truck_tonnages: [
     {
-      id: EntityId;
-      tonnage: string;
-      tonnage_min: number;
-      tonnage_max: number;
+      id: EntityId
+      tonnage: string
+      tonnage_min: number
+      tonnage_max: number
     },
-  ];
+  ]
   vehicle_capacities: [
     {
-      name: string;
-      capacity: number;
-      vehicle_type_id: number;
-      id: EntityId;
+      name: string
+      capacity: number
+      vehicle_type_id: number
+      id: EntityId
     },
-  ];
-  drive_trains: DriveTrain[];
-  features: VehicleFeature;
-};
+  ]
+  drive_trains: DriveTrain[]
+  features: VehicleFeature
+}

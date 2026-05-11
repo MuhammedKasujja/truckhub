@@ -1,18 +1,18 @@
 import {
   UserCreateSchema,
-  UserUpdateSchemaType,
+  UserUpdateSchema,
   UserSearchParamsCache,
 } from "@/features/users/schemas"
-import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
-import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 import {
   getUsers,
   createUser,
   updateUser,
   deleteUserById,
+  getUsersByQuery,
   getUserProfileById,
-} from "./data"
+} from "./server"
+import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getUsersFn = createServerFn()
   .inputValidator((data) => UserSearchParamsCache.parse(data))
@@ -24,46 +24,32 @@ export const getUsersFn = createServerFn()
     return { data, pagination }
   })
 
-export async function getUsersByQuery({ search }: SearchQuery) {
-  return getUsers({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
-    sort: [],
-    search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
+export const getUsersByQueryFn = createServerFn()
+  .inputValidator(SearchQuerySchema)
+  .handler(async ({ data }) => {
+    return getUsersByQuery(data)
   })
-}
 
-export async function getUserProfileByIdFn(userId: EntityId) {
-  return await getUserProfileById(userId)
-}
+export const getUserProfileByIdFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getUserProfileById(data.id)
+  })
 
-export async function deleteUserFn(userId: EntityId) {
-  return await deleteUserById(userId)
-}
+export const deleteUserFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteUserById(data.id)
+  })
 
 export const updateUserFn = createServerFn({ method: "POST" })
-  .inputValidator(
-    (data: { userId: EntityId; data: Partial<UserUpdateSchemaType> }) => ({
-      userId: data.userId,
-      data: data.data,
-    })
-  )
+  .inputValidator(UserUpdateSchema)
   .handler(async ({ data }) => {
-    return await updateUser(data.userId, data.data)
+    return updateUser(data)
   })
 
 export const createUserFn = createServerFn({ method: "POST" })
   .inputValidator(UserCreateSchema)
   .handler(async ({ data }) => {
-    return await createUser(data)
+    return createUser(data)
   })
-
-// export async function editUser(
-//   data: UserCreateSchemaType | UserUpdateSchemaType,
-// ) {
-//   if (data instanceof UserCreateSchemaType)
-//   return createUser(data);
-// }

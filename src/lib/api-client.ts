@@ -9,6 +9,7 @@ import type {
   ErrorStatusCode,
   ApiPaginatedResponse,
 } from "@/types"
+import { logger } from "@/lib/logger"
 
 export async function getFn<T>(url: string): Promise<Prettify<ApiResponse<T>>> {
   try {
@@ -90,7 +91,7 @@ export async function patchFn<T>(
   }
 }
 
-export async function deleteFn(url: string): Promise<ApiResponse> {
+export async function deleteFn<T>(url: string): Promise<ApiResponse<T>> {
   try {
     const response = await api.delete(url)
     return {
@@ -126,5 +127,8 @@ function handleErrorCodes(error: unknown): ErrorStatusCode | undefined {
 
 async function logoutOnServerActions(error: unknown) {
   const statusCode = handleErrorCodes(error)
+  logger.info(
+    `API Error with status code ${statusCode} and message: ${(error as any)?.message}`
+  )
   if (statusCode === "NOT_AUTHENTICATED") return logout()
 }

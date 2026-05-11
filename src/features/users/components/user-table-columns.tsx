@@ -1,13 +1,13 @@
-import { ActionButton } from "@/components/ui/action-button";
-import { Button } from "@/components/ui/button";
-import { formatDateTime } from "@/lib/format";
-import { deleteUserFn } from "@/features/users/services";
-import { SystemUser } from "@/features/users/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
+import { ActionButton } from "@/components/ui/action-button"
+import { Button } from "@/components/ui/button"
+import { formatDateTime } from "@/lib/format"
+import { deleteUserFn } from "@/features/users/services"
+import { SystemUser } from "@/features/users/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner";
-import { HasPermission } from "@/components/has-permission";
+import { toast } from "sonner"
+import { HasPermission } from "@/components/has-permission"
 
 export function getUserTableColumns(): ColumnDef<SystemUser>[] {
   return [
@@ -21,28 +21,28 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
               {row.original.name}
             </Link>
           </Button>
-        );
+        )
       },
     },
     {
       accessorKey: "email",
       header: "Email",
       cell: ({ row }) => {
-        return <p>{row.original.email}</p>;
+        return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
       header: "Phone",
       cell: ({ row }) => {
-        return <p>{row.original.phone}</p>;
+        return <p>{row.original.phone}</p>
       },
     },
     {
       accessorKey: "created_at",
       header: "Date",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>;
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
     {
@@ -70,14 +70,14 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
                 size={"icon"}
                 requireAreYouSure
                 action={async () => {
-                  const { isSuccess, error, message } = await deleteUserFn(
-                    row.original.id,
-                  );
+                  const { isSuccess, error, message } = await deleteUserFn({
+                    data: { id: row.original.id },
+                  })
                   if (isSuccess) {
-                    toast.success(message);
-                    return { error: false };
+                    toast.success(message)
+                    return { error: false }
                   } else {
-                    return { error: true, message: error?.message };
+                    return { error: true, message: error?.message }
                   }
                 }}
               >
@@ -85,8 +85,8 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
               </ActionButton>
             </HasPermission>
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }

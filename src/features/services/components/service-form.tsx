@@ -1,5 +1,4 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
 import {
   Card,
   CardContent,
@@ -7,59 +6,60 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { Field, FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   NumberField,
   TextareaField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   ServiceCreateSchema,
   ServiceUpdateSchema,
-} from "@/features/services/schemas";
-import { createService, updateService } from "@/features/services/services";
-import { getVehicleSettings } from "@/server/settings";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/features/services/schemas"
+import { createServiceFn, updateServiceFn } from "@/features/services/services"
+import { getVehicleSettings } from "@/server/settings"
+import { zodResolver } from "@hookform/resolvers/zod"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type ServiceFormProps = {
-  vehicleConfigPromise: Promise<Awaited<ReturnType<typeof getVehicleSettings>>>;
-  initialData?: z.infer<typeof ServiceUpdateSchema>;
-};
+  vehicleConfigPromise: Promise<Awaited<ReturnType<typeof getVehicleSettings>>>
+  initialData?: z.infer<typeof ServiceUpdateSchema>
+}
 
 export function ServiceForm({
   vehicleConfigPromise,
   initialData,
 }: ServiceFormProps) {
-  const tr = useTranslation();
-  const { data } = React.use(vehicleConfigPromise);
+  const tr = useTranslation()
+  const { data } = React.use(vehicleConfigPromise)
 
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? ServiceUpdateSchema : ServiceCreateSchema;
+  const formSchema = isEdit ? ServiceUpdateSchema : ServiceCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateService(values) : createService(values);
+      "id" in values
+        ? updateServiceFn({ data: values })
+        : createServiceFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -73,7 +73,7 @@ export function ServiceForm({
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
@@ -175,5 +175,5 @@ export function ServiceForm({
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

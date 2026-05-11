@@ -1,9 +1,9 @@
 import {
-  ServiceUpdateSchemaType,
-  ServiceCreateSchemaType,
+  ServiceUpdateSchema,
+  ServiceCreateSchema,
   ServiceSearchParamsCache,
 } from "@/features/services/schemas"
-import { SearchQuery } from "@/types"
+import { EntityId, SearchQuery } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
 import {
   getServices,
@@ -12,7 +12,7 @@ import {
   getServiceById,
   deleteServiceById,
   getServicesByQuery,
-} from "./data"
+} from "./server"
 
 export const getServicesFn = createServerFn()
   .inputValidator((data) => ServiceSearchParamsCache.parse(data))
@@ -24,18 +24,22 @@ export function getServicesByQueryFn(query: SearchQuery) {
   return getServicesByQuery(query)
 }
 
-export async function getServiceByIdFn(serviceId: number | string) {
+export async function getServiceByIdFn(serviceId: EntityId) {
   return getServiceById(serviceId)
 }
 
-export async function deleteServiceByIdFn(serviceId: number | string) {
+export async function deleteServiceByIdFn(serviceId: EntityId) {
   return await deleteServiceById(serviceId)
 }
 
-export async function updateServiceFn(data: ServiceUpdateSchemaType) {
-  return await updateService(data)
-}
+export const updateServiceFn = createServerFn({ method: "POST" })
+  .inputValidator((data) => ServiceUpdateSchema.parse(data))
+  .handler(async ({ data }) => {
+    return updateService(data)
+  })
 
-export async function createServiceFn(data: ServiceCreateSchemaType) {
-  return await createService(data)
-}
+export const createServiceFn = createServerFn({ method: "POST" })
+  .inputValidator((data) => ServiceCreateSchema.parse(data))
+  .handler(async ({ data }) => {
+    return createService(data)
+  })

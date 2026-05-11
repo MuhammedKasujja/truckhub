@@ -44,7 +44,7 @@ export function UserForm({ initialData }: UserFormProps) {
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     const promise =
       "id" in values
-        ? updateUserFn({ data: { userId: initialData!.id!, data: values } })
+        ? updateUserFn({ data: values })
         : createUserFn({ data: values })
 
     const { isSuccess, error, message } = await promise

@@ -17,7 +17,7 @@ import {
   getRideRequestsByQuery,
   getRideRequestDetailsById,
   computeRideRequestEsimatedFare,
-} from "./data"
+} from "./server"
 
 export const getRidesFn = createServerFn()
   .inputValidator((data) => RideRequestSearchParamsCache.parse(data))
