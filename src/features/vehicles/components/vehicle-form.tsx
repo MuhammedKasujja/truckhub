@@ -19,7 +19,6 @@ import {
   VehicleCreateSchema,
   VehicleUpdateSchema,
 } from "@/features/vehicles/schemas"
-import { getVehicleSettings } from "@/server/settings"
 import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
 import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -31,15 +30,18 @@ import { EntityId } from "@/types"
 import { VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { CarModel, DriveTrain } from "@/types/setting"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 
 type VehicleFormProps = {
-  configPromises: Promise<[Awaited<ReturnType<typeof getVehicleSettings>>]>
   initialData?: z.infer<typeof VehicleUpdateSchema>
 }
 
-export function VehicleForm({ configPromises, initialData }: VehicleFormProps) {
+export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()
-  const [{ data: vehicleCofig }] = React.use(configPromises)
+  const {
+    data: { data: vehicleCofig },
+  } = useSuspenseQuery(createVehicleConfigurationsQueryOptions())
   const [vehicleType, setVehicleType] = React.useState<
     | {
         name: string

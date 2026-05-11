@@ -28,6 +28,7 @@ import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/inde
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
+import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
@@ -129,6 +130,11 @@ const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
   path: '/drivers/new',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminVehiclesNewIndexRoute = AdminVehiclesNewIndexRouteImport.update({
+  id: '/vehicles/new/',
+  path: '/vehicles/new/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
   id: '/users/new/',
   path: '/users/new/',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/users/new/': typeof AdminUsersNewIndexRoute
+  '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/users/new': typeof AdminUsersNewIndexRoute
+  '/vehicles/new': typeof AdminVehiclesNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/users/new/': typeof AdminUsersNewIndexRoute
+  '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/reports/audits/'
     | '/services/new/'
     | '/users/new/'
+    | '/vehicles/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/reports/audits'
     | '/services/new'
     | '/users/new'
+    | '/vehicles/new'
   id:
     | '__root__'
     | '/'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/_admin/reports/audits/'
     | '/_admin/services/new/'
     | '/_admin/users/new/'
+    | '/_admin/vehicles/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -465,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDriversNewRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/vehicles/new/': {
+      id: '/_admin/vehicles/new/'
+      path: '/vehicles/new'
+      fullPath: '/vehicles/new/'
+      preLoaderRoute: typeof AdminVehiclesNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/users/new/': {
       id: '/_admin/users/new/'
       path: '/users/new'
@@ -531,6 +550,7 @@ interface AdminRouteRouteChildren {
   AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
   AdminServicesNewIndexRoute: typeof AdminServicesNewIndexRoute
   AdminUsersNewIndexRoute: typeof AdminUsersNewIndexRoute
+  AdminVehiclesNewIndexRoute: typeof AdminVehiclesNewIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
@@ -554,6 +574,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,
   AdminServicesNewIndexRoute: AdminServicesNewIndexRoute,
   AdminUsersNewIndexRoute: AdminUsersNewIndexRoute,
+  AdminVehiclesNewIndexRoute: AdminVehiclesNewIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
