@@ -1,4 +1,4 @@
-import { getCustomersByQueryFn } from "@/features/clients/services"
+import { getClientsByQueryFn } from "@/features/clients/services"
 import { getServicesByQueryFn } from "@/features/services/services"
 import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_admin/bookings/new/")({
   loader: () => {
     const promises = Promise.all([
       getServicesByQueryFn({}),
-      getCustomersByQueryFn({}),
+      getClientsByQueryFn({}),
     ])
   },
 })

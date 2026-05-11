@@ -27,9 +27,9 @@ export async function deleteVehicleTypeById(vehicleTypeId: number | string) {
 
 export async function updateVehicleType(data: VehicleTypeUpdateSchemaType) {
   const { id: vehicleTypeId, ...rest } = data;
-  return await apiClient.putFn(`${endpoint}/${vehicleTypeId}`, rest);
+  return await apiClient.putFn<VehicleType>(`${endpoint}/${vehicleTypeId}`, rest);
 }
 
 export async function createVehicleType(data: VehicleTypeCreateSchemaType) {
-  return await apiClient.postFn(endpoint, data);
+  return await apiClient.postFn<VehicleType>(endpoint, data);
 }

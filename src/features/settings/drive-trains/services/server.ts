@@ -24,9 +24,9 @@ export async function deleteDriveTrainById(driveTrainId: number | string) {
 
 export async function updateDriveTrain(data: DriveTrainUpdateSchemaType) {
   const { id: driveTrainId, ...rest } = data;
-  return await apiClient.putFn(`/v1/drive-trains/${driveTrainId}`, rest);
+  return await apiClient.putFn<DriveTrain>(`/v1/drive-trains/${driveTrainId}`, rest);
 }
 
 export async function createDriveTrain(data: DriveTrainCreateSchemaType) {
-  return await apiClient.postFn("/v1/drive-trains", data);
+  return await apiClient.postFn<DriveTrain>("/v1/drive-trains", data);
 }

@@ -13,9 +13,9 @@ export async function getTonnages() {
   return { data: isSuccess ? data! : [], error };
 }
 
-// export async function getTonnageById(tonnageId: number | string) {
-//   return await apiClient.get<Tonnage>(`/v1/tonnages/${tonnageId}`);
-// }
+export async function getTonnageById(tonnageId: number | string) {
+  return await apiClient.getFn<Tonnage>(`/v1/tonnages/${tonnageId}`);
+}
 
 export async function deleteTonnageById(tonnageId: number | string) {
   return await apiClient.deleteFn(`/v1/tonnages/${tonnageId}`);
@@ -23,9 +23,9 @@ export async function deleteTonnageById(tonnageId: number | string) {
 
 export async function updateTonnage(data: TonnageUpdateSchemaType) {
   const { id: tonnageId, ...rest } = data;
-  return await apiClient.putFn(`/v1/tonnages/${tonnageId}`, rest);
+  return await apiClient.putFn<Tonnage>(`/v1/tonnages/${tonnageId}`, rest);
 }
 
 export async function createTonnage(data: TonnageCreateSchemaType) {
-  return await apiClient.postFn("/v1/tonnages", data);
+  return await apiClient.postFn<Tonnage>("/v1/tonnages", data);
 }

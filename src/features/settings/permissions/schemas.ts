@@ -1,4 +1,5 @@
 import z from "zod";
+import { IDSchema } from "@/schemas";
 
 export const RoleCreateSchema = z.object({
   name: z.string(),
@@ -9,6 +10,13 @@ export const RoleUpdateSchema = z.object({
   id: z.number(),
   ...RoleCreateSchema.partial().shape,
 });
+
+export const AssignPermissionsToRoleSchema = z.object({
+  roleId: IDSchema,
+  permissions: z.array(z.string()),
+});
+
+export type AssignPermissionsToRoleSchemaType = z.infer<typeof AssignPermissionsToRoleSchema>;
 
 export type RoleCreateSchemaType = z.infer<typeof RoleCreateSchema>;
 

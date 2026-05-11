@@ -2,14 +2,16 @@
 
 import * as apiClient from "@/lib/api-client"
 import { createServerFn } from "@tanstack/react-start"
-import { EditSettingsSchemaType, Settings } from "@/features/settings/schemas"
+import { EditSettingsSchema, Settings } from "@/features/settings/schemas"
 
 const endpoint = "/v1/settings"
 
 export const getSettingsFn = createServerFn().handler(async () => {
-  return await apiClient.getFn<Settings>(`${endpoint}`)
+  return await apiClient.getFn<Settings>(endpoint)
 })
 
-export async function updateSettings(data: EditSettingsSchemaType) {
-  return await apiClient.patchFn(endpoint, data)
-}
+export const updateSettingsFn = createServerFn()
+  .inputValidator(EditSettingsSchema)
+  .handler(async ({ data }) => {
+    return await apiClient.patchFn<Settings>(endpoint, data)
+  })

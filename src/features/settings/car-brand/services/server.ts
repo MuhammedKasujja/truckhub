@@ -24,9 +24,9 @@ export async function deleteCarBrandById(carBrandId: number | string) {
 
 export async function updateCarBrand(data: CarBrandUpdateSchemaType) {
   const { id: carBrandId, ...rest } = data;
-  return await apiClient.putFn(`/v1/car-brands/${carBrandId}`, rest);
+  return await apiClient.putFn<CarBrand>(`/v1/car-brands/${carBrandId}`, rest);
 }
 
 export async function createCarBrand(data: CarBrandCreateSchemaType) {
-  return await apiClient.postFn("/v1/car-brands", data);
+  return await apiClient.postFn<CarBrand>("/v1/car-brands", data);
 }
