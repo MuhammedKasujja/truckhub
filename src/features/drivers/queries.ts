@@ -18,7 +18,7 @@ export const driverQueryKeys = {
 
 export function createDriverListQueryOptions(input: DriverListSearchParams) {
   return queryOptions({
-    queryKey: driverQueryKeys.all(),
+    queryKey: [...driverQueryKeys.all(), input],
     queryFn: () => getDriversFn({ data: input }),
   })
 }

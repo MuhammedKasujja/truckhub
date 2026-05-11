@@ -10,12 +10,13 @@ import { getBookingTableColumns } from "./booking-table-columns"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { bookingQueryOptions } from "../queries-options"
+import { createBookingQueryOptions } from "../queries-options"
 
 export function BookingTable() {
   const search = useSearch({ from: "/_admin/bookings/" })
-  const response = useSuspenseQuery(bookingQueryOptions(search))
-  const { data, error, pagination } = response.data
+  const {
+    data: { data, error, pagination },
+  } = useSuspenseQuery(createBookingQueryOptions(search))
 
   const columns = React.useMemo(() => getBookingTableColumns(), [])
 

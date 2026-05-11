@@ -1,45 +1,39 @@
 import { BookingSearchParamsCache } from "@/features/bookings/schemas"
-import { getBookingsFn, getBookingStatisticsFn } from "@/features/bookings/services"
 import { generatePageSearchParams } from "@/lib/search-params"
-import { Await, createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { Suspense } from "react"
 import {
   BookingTable,
   BookingTableSkeleton,
 } from "@/features/bookings/components/booking-table"
-import { requirePermission } from "@/lib/auth"
+import { hasPermission } from "@/lib/auth"
 import { BookingStatisticsCard } from "@/features/bookings/components"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
+import {
+  createBookingQueryOptions,
+  createBookingStatisticsQueryOptions,
+} from "@/features/bookings/queries-options"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
-  beforeLoad: async () => {
-    await requirePermission("bookings:view")
-  },
-  loader: async ({ location }) => {
-    // awaited immediately
-    const statistics = await getBookingStatisticsFn()
-
+  beforeLoad: async () => hasPermission("bookings:view"),
+  loader: async ({ context, location }) => {
     const searchParams = await generatePageSearchParams(
       location.search,
       BookingSearchParamsCache
     )
-    console.log("Serach Params", searchParams)
-    // // deferred
-    const bookingsPromise = getBookingsFn({ data: searchParams })
-
-    return {
-      statistics: statistics.data,
-      bookingsPromise,
-    }
+    context.queryClient.prefetchQuery(createBookingQueryOptions(searchParams))
+    return context.queryClient.ensureQueryData(
+      createBookingStatisticsQueryOptions()
+    )
   },
 })
 
 function RouteComponent() {
-  const { statistics, bookingsPromise } = Route.useLoaderData()
+  const { data: statistics } = Route.useLoaderData()
   return (
     <Suspense fallback={<BookingTableSkeleton />}>
       <PageHeader>
@@ -56,14 +50,8 @@ function RouteComponent() {
         </PageAction>
       </PageHeader>
       <BookingStatisticsCard statistics={statistics} />
-
       <Suspense fallback={<BookingTableSkeleton />}>
-        <BookingTable promises={Promise.all([bookingsPromise])} />
-        {/* <Await promise={bookingsPromise}>
-          {(bookings) => (
-            <BookingTable promises={Promise.all([bookingsPromise])} />
-          )}
-        </Await> */}
+        <BookingTable />
       </Suspense>
     </Suspense>
   )
