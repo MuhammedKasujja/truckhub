@@ -1,9 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { UserForm } from "@/features/users/components/user-form"
+import { hasPermission } from "@/lib/auth"
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute('/_admin/users/new/')({
+export const Route = createFileRoute("/_admin/users/new/")({
   component: RouteComponent,
+  beforeLoad: () => hasPermission("users:create"),
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/users/new/"!</div>
+  return <UserForm/>
 }

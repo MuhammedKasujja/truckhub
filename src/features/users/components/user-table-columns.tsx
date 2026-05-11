@@ -1,7 +1,7 @@
 import { ActionButton } from "@/components/ui/action-button";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/format";
-import { deleteUserById } from "@/features/users/services";
+import { deleteUserFn } from "@/features/users/services";
 import { SystemUser } from "@/features/users/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react";
@@ -70,7 +70,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
                 size={"icon"}
                 requireAreYouSure
                 action={async () => {
-                  const { isSuccess, error, message } = await deleteUserById(
+                  const { isSuccess, error, message } = await deleteUserFn(
                     row.original.id,
                   );
                   if (isSuccess) {

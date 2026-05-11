@@ -1,14 +1,18 @@
 import { getCurrentUser } from "@/lib/session"
 import { redirect } from "@tanstack/react-router"
-import { hasPermission } from "@/lib/permissions"
 import type { UserPermission } from "@/features/auth/permissions"
+import { hasPermission as permissionHandler } from "@/lib/permissions"
 
 export async function requirePermission(permission: UserPermission) {
   const user = await getCurrentUser()
   if (!user) throw redirect({ to: "/login", replace: true })
 
-  const func = hasPermission(user)
+  const func = permissionHandler(user)
   if (!func(permission)) {
-    redirect({ to: "/unauthorized" })
+    throw redirect({ to: "/unauthorized" })
   }
+}
+
+export async function hasPermission(permission: UserPermission) {
+  return await requirePermission(permission)
 }

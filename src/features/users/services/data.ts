@@ -56,11 +56,11 @@ export async function updateUser(
   userId: EntityId,
   data: Partial<UserUpdateSchemaType>,
 ) {
-  return await apiClient.patchFn(`/v1/users/${userId}`, data);
+  return await apiClient.patchFn<SystemUser>(`/v1/users/${userId}`, data);
 }
 
 export async function createUser(data: UserCreateSchemaType) {
-  return await apiClient.postFn("/v1/users", data);
+  return await apiClient.postFn<SystemUser>("/v1/users", data);
 }
 
 // export async function editUser(

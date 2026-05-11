@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Card,
   CardContent,
@@ -6,52 +6,52 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
   PasswordField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   UserCreateSchema,
   UserUpdateSchema,
   UserUpdateSchemaType,
-} from "@/features/users/schemas";
-import { createUser, updateUser } from "@/features/users/services";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/features/users/schemas"
+import { createUserFn, updateUserFn } from "@/features/users/services"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type UserFormProps = {
-  initialData?: Partial<UserUpdateSchemaType>;
-};
+  initialData?: Partial<UserUpdateSchemaType>
+}
 
 export function UserForm({ initialData }: UserFormProps) {
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? UserUpdateSchema : UserCreateSchema;
+  const formSchema = isEdit ? UserUpdateSchema : UserCreateSchema
 
-  const tr = useTranslation();
+  const tr = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
     const promise =
       "id" in values
-        ? updateUser(initialData!.id!, values)
-        : createUser(values);
+        ? updateUserFn({ data: { userId: initialData!.id!, data: values } })
+        : createUserFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error!.message);
+      toast.error(error!.message)
     }
   }
 
@@ -63,7 +63,7 @@ export function UserForm({ initialData }: UserFormProps) {
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
@@ -107,5 +107,5 @@ export function UserForm({ initialData }: UserFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }
