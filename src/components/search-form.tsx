@@ -52,7 +52,7 @@ export function SearchForm({ ...props }: React.ComponentProps<"div">) {
             </Button>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm ring-4">
           <DialogHeader>
             <DialogTitle>Search Truckhub</DialogTitle>
             <DialogDescription>

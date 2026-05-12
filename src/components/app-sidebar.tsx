@@ -32,7 +32,7 @@ import {
   SettingsIcon,
 } from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
-import { HasPermission } from "./has-permission"
+import { Can } from "./has-permission"
 
 type SidebarItem = {
   title: GlobalKeys
@@ -145,7 +145,7 @@ export function NavMain({ items }: { items: SidebarItem[] }) {
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <HasPermission permission={item.permission}>
+              <Can permission={item.permission}>
                 <Link to={item.url}>
                   <SidebarMenuButton
                     tooltip={tr(item.title)}
@@ -158,7 +158,7 @@ export function NavMain({ items }: { items: SidebarItem[] }) {
                     <span>{tr(item.title)}</span>
                   </SidebarMenuButton>
                 </Link>
-              </HasPermission>
+              </Can>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
