@@ -1,5 +1,5 @@
-import { LocationPoint } from "@/features/ride-requests/types"
 import {
+  EstimateRideFareSchema,
   RideRequestUpdateSchema,
   RideRequestCreateSchema,
   RideRequestSearchParamsCache,
@@ -13,10 +13,10 @@ import {
   getRideRequestById,
   deleteRideRequestById,
   getRideRequestsByQuery,
+  computeRideEsimatedFare,
   getRideRequestDetailsById,
-  computeRideRequestEsimatedFare,
 } from "./server"
-import { EntityIdSchema, SearchQuerySchema, EntityId } from "@/schemas"
+import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getRidesFn = createServerFn()
   .inputValidator((data) => RideRequestSearchParamsCache.parse(data))
@@ -60,29 +60,11 @@ export const createRideRequestFn = createServerFn()
     return createRideRequest(data)
   })
 
-/**
- * Get the estimated trip fare between the trip origin and destination
- * basing on the provided service
- * @param serviceId service selected
- * @param origin booking origin
- * @param destination booking destination
- * @returns
- */
-export async function computeRideRequestEsimatedFareFn({
-  serviceId,
-  origin,
-  destination,
-}: {
-  serviceId: EntityId
-  origin: LocationPoint
-  destination: LocationPoint
-}) {
-  return computeRideRequestEsimatedFare({
-    serviceId,
-    origin,
-    destination,
+export const computeRideEsimatedFareFn = createServerFn()
+  .inputValidator(EstimateRideFareSchema)
+  .handler(async ({ data }) => {
+    return computeRideEsimatedFare(data)
   })
-}
 
 export const getActiveRidesFn = createServerFn().handler(async () => {
   return getActiveRides()

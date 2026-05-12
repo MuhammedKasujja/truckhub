@@ -15,7 +15,7 @@ import {
 import { EntityId, SearchQuery } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { generateApiSearchParams } from "@/lib/search-params"
-import { LocationDistanceTime } from "@/server/actions/location"
+import { LocationDistanceTime } from "@/server/actions/schemas"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export async function getBookings(input: BookingListSearchParams) {

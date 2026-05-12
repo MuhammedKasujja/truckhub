@@ -72,12 +72,3 @@ export const RideTypeList = [
 ] as const;
 
 export type RideType = (typeof RideTypeList)[number];
-
-export interface LocationPoint {
-  lat: number;
-  lng: number;
-}
-
-export interface Location extends LocationPoint {
-  name: string;
-}

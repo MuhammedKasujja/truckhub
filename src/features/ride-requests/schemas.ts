@@ -1,20 +1,26 @@
-import z from "zod";
-import { RideRequest } from "@/features/ride-requests/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
+import z from "zod"
+import { RideRequest } from "@/features/ride-requests/types"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
 import {
   parseAsString,
   parseAsArrayOf,
   parseAsInteger,
   parseAsStringEnum,
   createSearchParamsCache,
-} from "nuqs/server";
+} from "nuqs/server"
+import { IDSchema } from "@/schemas"
+
+export const LocationPointSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+})
 
 export const LocationSchema = z.object({
   name: z.string(),
   lat: z.number(),
   lng: z.number(),
   place_id: z.string(),
-});
+})
 
 export const CheckpointSchema = z.object({
   name: z.string(),
@@ -23,8 +29,8 @@ export const CheckpointSchema = z.object({
   distance: z.number(),
   time: z.number(),
   estimated_fare: z.number(),
-  position: z.number()
-});
+  position: z.number(),
+})
 
 export const RideRequestCreateSchema = z.object({
   service_id: z.number(),
@@ -42,20 +48,20 @@ export const RideRequestCreateSchema = z.object({
   partial: z.number().optional().nullable(),
   discount: z.number().optional().nullable(),
   checkpoints: z.array(CheckpointSchema).optional().nullable(),
-});
+})
 
 export const RideRequestUpdateSchema = z.object({
   id: z.number(),
   ...RideRequestCreateSchema.partial().shape,
-});
+})
 
 export type RideRequestCreateSchemaType = z.infer<
   typeof RideRequestCreateSchema
->;
+>
 
 export type RideRequestUpdateSchemaType = z.infer<
   typeof RideRequestUpdateSchema
->;
+>
 
 export const RideRequestSearchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -68,8 +74,22 @@ export const RideRequestSearchParamsCache = createSearchParamsCache({
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+})
 
 export type RideRequestListSearchParams = Awaited<
   ReturnType<typeof RideRequestSearchParamsCache.parse>
->;
+>
+
+export type LocationPoint = z.infer<typeof LocationPointSchema>
+
+export interface Location extends LocationPoint {
+  name: string
+}
+
+export const EstimateRideFareSchema = z.object({
+  serviceId: IDSchema,
+  origin: LocationPointSchema,
+  destination: LocationPointSchema,
+})
+
+export type EstimateRideFareDto = z.infer<typeof EstimateRideFareSchema>

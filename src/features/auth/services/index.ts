@@ -9,7 +9,7 @@ export const loginFn = createServerFn({ method: "POST" })
     return login(data)
   })
 
-export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
+export const logoutFn = createServerFn().handler(async () => {
   logger.info("+++++++++++++++ Logging out user +++++++++++++++++++++++++++++++++++++++=")
   return await logout()
 })

@@ -9,7 +9,7 @@ import { RideRequestCreateSchema } from "@/features/ride-requests/schemas";
 import { LocationDistanceTime, PlaceDetails } from "@/server/actions/schemas";
 import {
   createRideRequestFn,
-  computeRideRequestEsimatedFareFn,
+  computeRideEsimatedFareFn,
 } from "@/features/ride-requests/services";
 
 export function useRideForm(services: Service[]) {
@@ -51,11 +51,11 @@ export function useRideForm(services: Service[]) {
       });
       return;
     }
-    const { data, error, isSuccess } = await computeRideRequestEsimatedFareFn({
+    const { data, error, isSuccess } = await computeRideEsimatedFareFn({data:{
       serviceId: serviceId,
       origin: { lat: pickup.lat, lng: pickup.lng },
       destination: { lat: destination.lat, lng: destination.lng },
-    });
+    }});
 
     if (error) {
       toast.error(error.message);
