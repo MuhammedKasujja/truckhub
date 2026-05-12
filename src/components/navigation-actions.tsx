@@ -28,7 +28,7 @@ function ProfileDropdown() {
   const router = useRouter()
 
   async function logoutUser() {
-    await logoutFn()
+    // await logoutFn()
     router.navigate({ to: "/login", replace: true })
   }
   return (

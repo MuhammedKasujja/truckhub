@@ -1,6 +1,6 @@
-import z from "zod";
-import { Payment } from "@/features/payments/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
+import z from "zod"
+import { Payment } from "@/features/payments/types"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
 import {
   parseAsString,
   parseAsArrayOf,
@@ -8,9 +8,23 @@ import {
   parseAsStringEnum,
   parseAsStringLiteral,
   createSearchParamsCache,
-} from "nuqs/server";
-import { formatPrice } from "@/lib/format";
-import { PaymentStatuses, PaymentModeList } from "@/config/constants";
+} from "nuqs/server"
+import { formatPrice } from "@/lib/format"
+import { PaymentStatuses } from "@/config/constants"
+
+export const EditPaymentBaseSchema = z.object({
+  id: z.number().optional().nullable(),
+  entity_id: z.number(),
+  payment_mode: z.string(),
+  transaction_ref: z.string().optional().nullable(),
+  type: z.enum(["booking", "ride"]),
+})
+
+export const EditPaymentSchema = z.object({
+  amount:z.number().min(1),
+  ...EditPaymentBaseSchema.shape,
+})
+
 
 /**
  *
@@ -19,38 +33,30 @@ import { PaymentStatuses, PaymentModeList } from "@/config/constants";
  */
 export const createEditPaymentSchema = (maxAmount: number = 0) => {
   // TODO: get company min amount from settings
-  const companyMinAmount = 5;
+  const companyMinAmount = 5
 
   const minAmount =
-    maxAmount > 0 && maxAmount < companyMinAmount
-      ? maxAmount
-      : companyMinAmount;
+    maxAmount > 0 && maxAmount < companyMinAmount ? maxAmount : companyMinAmount
 
   return z.object({
-    id: z.number().optional().nullable(),
-    entity_id: z.number(),
     amount: z
       .number()
       .min(minAmount)
       .max(maxAmount, {
         error: `Payment amount cannot exceed ${formatPrice(maxAmount, { showZeroAsNumber: true })}`,
       }),
-    payment_mode: z.string(),
-    transaction_ref: z.string().optional().nullable(),
-    type: z.enum(["booking", "ride"]),
-  });
-};
+    ...EditPaymentBaseSchema.shape
+  })
+}
 
 export type PaymentEditSchemaType = z.infer<
   ReturnType<typeof createEditPaymentSchema>
->;
+>
 
 export const PaymentSearchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
   perPage: parseAsInteger.withDefault(10),
-  status: parseAsArrayOf(
-    parseAsStringLiteral(PaymentStatuses),
-  ).withDefault([]),
+  status: parseAsArrayOf(parseAsStringLiteral(PaymentStatuses)).withDefault([]),
   sort: getSortingStateParser<Payment>().withDefault([
     { id: "date", desc: true },
   ]),
@@ -59,8 +65,8 @@ export const PaymentSearchParamsCache = createSearchParamsCache({
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+})
 
 export type PaymentListSearchParams = Awaited<
   ReturnType<typeof PaymentSearchParamsCache.parse>
->;
+>

@@ -9,7 +9,7 @@ import {
   getPaymentsStatistics,
 } from "./server"
 import {
-  createEditPaymentSchema,
+  EditPaymentSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -39,13 +39,13 @@ export const deletePaymentFn = createServerFn()
   })
 
 export const updatePaymentFn = createServerFn()
-  .inputValidator(createEditPaymentSchema())
+  .inputValidator(EditPaymentSchema)
   .handler(async ({ data }) => {
     return updatePayment(data)
   })
 
 export const createPaymentFn = createServerFn()
-  .inputValidator(createEditPaymentSchema())
+  .inputValidator(EditPaymentSchema.omit({ id: true }))
   .handler(async ({ data }) => {
     return createPayment(data)
   })
