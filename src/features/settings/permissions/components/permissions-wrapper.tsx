@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -8,54 +8,49 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SystemPermissions } from "@/features/auth/permissions";
-import {
-  assignPermissionsToRole,
-  getRoles,
-} from "@/features/settings/permissions/service";
-import { use, useMemo, useState } from "react";
-import { toast } from "sonner";
-import { EditRoleDialog } from "./edit-role-modal";
-import { Can } from "@/components/has-permission";
+} from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SystemPermissions } from "@/features/auth/permissions"
+import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
+import { useMemo, useState } from "react"
+import { toast } from "sonner"
+import { EditRoleDialog } from "./edit-role-modal"
+import { Can } from "@/components/has-permission"
+import { useQuery } from "@tanstack/react-query"
+import { createRolesListQueryOptions } from "../query-options"
 
-const modules = Object.keys(SystemPermissions);
+const modules = Object.keys(SystemPermissions)
 
-type PermissionsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getRoles>>]>;
-};
+export function PermissionsWrapper() {
+  const { data } = useQuery(createRolesListQueryOptions())
 
-export function PermissionsWrapper({ promises }: PermissionsWrapperProps) {
-  const [{ data: roles }] = use(promises);
-
-  const [_, setPermissionCount] = useState<Map<string, number>>(new Map());
+  const [_, setPermissionCount] = useState<Map<string, number>>(new Map())
 
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(
-    new Set(),
-  );
-  const [roleId, setRoleId] = useState<string | undefined>();
+    new Set()
+  )
+  const [roleId, setRoleId] = useState<string | undefined>()
 
   const groupedPermissions = useMemo(
     () => Object.entries(SystemPermissions),
-    [],
-  );
+    []
+  )
 
   const isAllSelected = (permissions: string[]) =>
-    permissions.every((p) => selectedPermissions.has(p));
+    permissions.every((p) => selectedPermissions.has(p))
 
   const togglePermissions = (permissions: string[]) => {
     setPermissionCount((prev) => {
       // 1️⃣ Create a copy (immutability for React state)
-      const next = new Map(prev);
+      const next = new Map(prev)
 
       // 2️⃣ Check if ALL permissions in this group are currently selected
-      const allSelected = permissions.every((p) => next.get(p));
+      const allSelected = permissions.every((p) => next.get(p))
 
       // 3️⃣ Loop through each permission in the group
       permissions.forEach((p) => {
         // 4️⃣ Get current count (how many groups added this permission)
-        const count = next.get(p) || 0;
+        const count = next.get(p) || 0
 
         if (allSelected) {
           // 5️⃣ If group is already fully selected → we REMOVE it
@@ -64,52 +59,54 @@ export function PermissionsWrapper({ promises }: PermissionsWrapperProps) {
           if (count <= 1) {
             // 6️⃣ If this was the only group contributing this permission
             // → completely remove it
-            next.delete(p);
+            next.delete(p)
           } else {
             // 7️⃣ Otherwise, just reduce its count
-            next.set(p, count - 1);
+            next.set(p, count - 1)
           }
         } else {
           // 8️⃣ If group is NOT fully selected → we ADD it
 
           // increment count (track another group using it)
-          next.set(p, count + 1);
+          next.set(p, count + 1)
         }
-      });
+      })
 
       // 9️⃣ Sync the Set with current active permissions
       // Map keys = permissions that still have count > 0
-      setSelectedPermissions(new Set(next.keys()));
+      setSelectedPermissions(new Set(next.keys()))
 
       // 🔟 Return updated Map (React state update)
-      return next;
-    });
-  };
+      return next
+    })
+  }
 
   async function saveRolePermissions() {
     if (!roleId) {
-      toast.error("Please select a role");
-      return;
+      toast.error("Please select a role")
+      return
     }
-    const { error, isSuccess } = await assignPermissionsToRole({
-      roleId,
-      permissions: [...selectedPermissions],
-    });
+    const { error, isSuccess } = await assignPermissionsToRoleFn({
+      data: {
+        roleId,
+        permissions: [...selectedPermissions],
+      },
+    })
 
     if (isSuccess) {
-      toast.success("Permissions successfully assigned roles");
+      toast.success("Permissions successfully assigned roles")
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between gap-5 flex-wrap">
+      <div className="flex flex-wrap justify-between gap-5">
         <Select
           value={roleId}
           onValueChange={(role) => {
-            setRoleId(role);
+            setRoleId(role)
           }}
         >
           <SelectTrigger>
@@ -117,7 +114,7 @@ export function PermissionsWrapper({ promises }: PermissionsWrapperProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {(roles ?? []).map((opt) => (
+              {(data?.data ?? []).map((opt) => (
                 <SelectItem key={opt.id} value={opt.id.toString()}>
                   {opt.name}
                 </SelectItem>
@@ -157,5 +154,5 @@ export function PermissionsWrapper({ promises }: PermissionsWrapperProps) {
       </Tabs>
       {selectedPermissions}
     </div>
-  );
+  )
 }

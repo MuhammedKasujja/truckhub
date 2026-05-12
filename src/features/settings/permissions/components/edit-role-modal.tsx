@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,51 +8,56 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   RoleCreateSchema,
   RoleUpdateSchemaType,
   RoleUpdateSchema,
-} from "@/features/settings/permissions/schemas";
-import { TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { useTranslation } from "@/i18n";
-import { createRole, updateRole } from "@/features/settings/permissions/service";
+} from "@/features/settings/permissions/schemas"
+import { TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useTranslation } from "@/i18n"
+import {
+  createRoleFn,
+  updateRoleFn,
+} from "@/features/settings/permissions/services"
 
 type EditRoleDialogProps = {
-  trigger?: React.ReactNode;
-  initialData?: RoleUpdateSchemaType;
-};
+  trigger?: React.ReactNode
+  initialData?: RoleUpdateSchemaType
+}
 
 export function EditRoleDialog({ initialData }: EditRoleDialogProps) {
-  const tr = useTranslation();
-  const [open, setOpen] = React.useState(false);
+  const tr = useTranslation()
+  const [open, setOpen] = React.useState(false)
 
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? RoleUpdateSchema : RoleCreateSchema;
+  const formSchema = isEdit ? RoleUpdateSchema : RoleCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateRole(values) : createRole(values);
+      "id" in values
+        ? updateRoleFn({ data: values })
+        : createRoleFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -82,5 +87,5 @@ export function EditRoleDialog({ initialData }: EditRoleDialogProps) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

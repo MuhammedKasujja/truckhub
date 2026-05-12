@@ -8,7 +8,7 @@ import {
   AssignPermissionsToRoleSchemaType,
 } from "@/features/settings/permissions/schemas"
 
-const endpoint = "/v1/permissions/roles"
+const endpoint = "/v1/roles"
 
 export async function getRoles() {
   return await apiClient.getFn<Role[]>(endpoint)
@@ -35,12 +35,9 @@ export async function assignPermissionsToRole({
   roleId,
   permissions,
 }: AssignPermissionsToRoleSchemaType) {
-  return await apiClient.postFn<Role>(
-    `/v1/permissions/roles/${roleId}/permissions`,
-    {
-      permissions,
-    }
-  )
+  return await apiClient.postFn<Role>(`${endpoint}/${roleId}/permissions`, {
+    permissions,
+  })
 }
 
 export async function fetchPermissions() {

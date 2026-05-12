@@ -9,3 +9,6 @@ default:
 # Start the dev server
 dev:
     pnpm tauri dev
+
+run:
+    pnpm tauri dev

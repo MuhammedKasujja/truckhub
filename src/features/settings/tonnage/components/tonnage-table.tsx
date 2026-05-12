@@ -1,25 +1,22 @@
-"use client";
+"use client"
 
-import React from "react";
-import { DataTable } from "@/components/data-table";
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
-import { useDataTable } from "@/hooks/use-data-table";
-import { getTonnages } from "@/features/settings/tonnage/service";
-import { getTonnageColumns } from "./tonnage-table-columns";
-import { useFetchEror } from "@/hooks/use-fetch-error";
+import React from "react"
+import { DataTable } from "@/components/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { useDataTable } from "@/hooks/use-data-table"
+import { getTonnageColumns } from "./tonnage-table-columns"
+import { useFetchEror } from "@/hooks/use-fetch-error"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createTonnagesQueryOptions } from "../query-options"
 
-type TonnageTableProps = {
-  tonnageListPromise: Promise<Awaited<ReturnType<typeof getTonnages>>>;
-};
+export function TonnageTable() {
+  const { data } = useSuspenseQuery(createTonnagesQueryOptions())
+  const columns = React.useMemo(() => getTonnageColumns(), [])
 
-export function TonnageTable(props: TonnageTableProps) {
-  const { data, error } = React.use(props.tonnageListPromise);
-  const columns = React.useMemo(() => getTonnageColumns(), []);
-
-  useFetchEror(error);
+  useFetchEror(data.error)
 
   const { table } = useDataTable({
-    data,
+    data: data.data,
     columns,
     pageCount: 1,
     initialState: {
@@ -29,9 +26,9 @@ export function TonnageTable(props: TonnageTableProps) {
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
-  });
+  })
 
-  return <DataTable table={table} showPagination={false} />;
+  return <DataTable table={table} showPagination={false} />
 }
 
 export function TonnageTableSkeleton() {
@@ -41,5 +38,5 @@ export function TonnageTableSkeleton() {
       filterCount={1}
       shrinkZero
     />
-  );
+  )
 }

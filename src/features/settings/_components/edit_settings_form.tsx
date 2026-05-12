@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Card,
   CardContent,
@@ -6,41 +6,43 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
-import { NumberField } from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
+import { NumberField } from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
 import {
   EditSettingsSchema,
   EditSettingsSchemaType,
-} from "@/features/settings/schemas";
-import { updateSettings } from "@/features/settings/service";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod";
-import { SubmitButton } from "@/components/ui/submit-button";
+} from "@/features/settings/schemas"
+import { updateSettingsFn } from "@/features/settings/service"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import z from "zod"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type EditSettingsFormProps = {
-  settings?: EditSettingsSchemaType;
-};
+  settings?: EditSettingsSchemaType
+}
 
 export function EditSettingsForm({ settings }: EditSettingsFormProps) {
-  const tr = useTranslation();
+  const tr = useTranslation()
 
-  const formSchema = EditSettingsSchema;
+  const formSchema = EditSettingsSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: settings,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { isSuccess, error, message } = await updateSettings(values);
+    const { isSuccess, error, message } = await updateSettingsFn({
+      data: values,
+    })
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -52,7 +54,7 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors);
+          console.log(errors)
         })}
       >
         <CardContent className="pb-6">
@@ -77,5 +79,5 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
         </CardFooter>
       </form>
     </Card>
-  );
+  )
 }

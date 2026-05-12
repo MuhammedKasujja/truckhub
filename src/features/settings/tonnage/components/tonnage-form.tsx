@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,53 +8,55 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   TonnageCreateSchema,
   TonnageUpdateSchema,
-} from "@/features/settings/tonnage/schemas";
+} from "@/features/settings/tonnage/schemas"
 import {
-  createTonnage,
-  updateTonnage,
-} from "@/features/settings/tonnage/service";
-import { NumberField, TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { FieldGroup } from "@/components/ui/field";
-import { useTranslation } from "@/i18n";
-import { SubmitButton } from "@/components/ui/submit-button";
+  createTonnageFn,
+  updateTonnageFn,
+} from "@/features/settings/tonnage/services"
+import { NumberField, TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { FieldGroup } from "@/components/ui/field"
+import { useTranslation } from "@/i18n"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type TonnageFormProps = {
-  trigger?: React.ReactNode;
-  initialData?: z.infer<typeof TonnageUpdateSchema>;
-};
+  trigger?: React.ReactNode
+  initialData?: z.infer<typeof TonnageUpdateSchema>
+}
 
 export function TonnageForm({ trigger, initialData }: TonnageFormProps) {
-  const tr = useTranslation();
-  const [open, setOpen] = React.useState(false);
-  const isEdit = !!initialData;
+  const tr = useTranslation()
+  const [open, setOpen] = React.useState(false)
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? TonnageUpdateSchema : TonnageCreateSchema;
+  const formSchema = isEdit ? TonnageUpdateSchema : TonnageCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateTonnage(values) : createTonnage(values);
+      "id" in values
+        ? updateTonnageFn({ data: values })
+        : createTonnageFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -71,7 +73,7 @@ export function TonnageForm({ trigger, initialData }: TonnageFormProps) {
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
-            <DialogTitle className="flex gap-2 items-center">
+            <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
                 <PlusIcon />
               </Button>
@@ -103,5 +105,5 @@ export function TonnageForm({ trigger, initialData }: TonnageFormProps) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

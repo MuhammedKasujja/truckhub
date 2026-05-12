@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,52 +8,54 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   DriveTrainCreateSchema,
   DriveTrainUpdateSchema,
-} from "@/features/settings/drive-trains/schemas";
+} from "@/features/settings/drive-trains/schemas"
 import {
-  createDriveTrain,
-  updateDriveTrain,
-} from "@/features/settings/drive-trains/service";
-import { SwitchField, TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { useTranslation } from "@/i18n";
+  createDriveTrainFn,
+  updateDriveTrainFn,
+} from "@/features/settings/drive-trains/services"
+import { SwitchField, TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useTranslation } from "@/i18n"
 
 type Props = {
-  trigger?: React.ReactNode;
-  initialData?: z.infer<typeof DriveTrainUpdateSchema>;
-};
+  trigger?: React.ReactNode
+  initialData?: z.infer<typeof DriveTrainUpdateSchema>
+}
 
 export function DriveTrainForm({ trigger, initialData }: Props) {
-  const tr = useTranslation();
-  const [open, setOpen] = React.useState(false);
-  const isEdit = !!initialData;
+  const tr = useTranslation()
+  const [open, setOpen] = React.useState(false)
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? DriveTrainUpdateSchema : DriveTrainCreateSchema;
+  const formSchema = isEdit ? DriveTrainUpdateSchema : DriveTrainCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateDriveTrain(values) : createDriveTrain(values);
+      "id" in values
+        ? updateDriveTrainFn({ data: values })
+        : createDriveTrainFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -93,5 +95,5 @@ export function DriveTrainForm({ trigger, initialData }: Props) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

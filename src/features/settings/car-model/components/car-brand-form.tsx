@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,60 +8,59 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   CarModelCreateSchema,
   CarModelUpdateSchemaType,
   CarModelUpdateSchema,
-} from "@/features/settings/car-model/schemas";
+} from "@/features/settings/car-model/schemas"
 import {
-  createCarModel,
-  updateCarModel,
-} from "@/features/settings/car-model/service";
-import { AutoCompleteField, TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { FieldGroup } from "@/components/ui/field";
-import { useTranslation } from "@/i18n";
-import { VehicleConfigurations } from "@/types/setting";
-import { SubmitButton } from "@/components/ui/submit-button";
+  createCarModelFn,
+  updateCarModelFn,
+} from "@/features/settings/car-model/services"
+import { AutoCompleteField, TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { FieldGroup } from "@/components/ui/field"
+import { useTranslation } from "@/i18n"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useQuery } from "@tanstack/react-query"
+import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 
 type CarModelFormProps = {
-  vehicleConfigurations: VehicleConfigurations | undefined;
-  trigger?: React.ReactNode;
-  initialData?: CarModelUpdateSchemaType;
-};
+  trigger?: React.ReactNode
+  initialData?: CarModelUpdateSchemaType
+}
 
-export function CarModelForm({
-  trigger,
-  vehicleConfigurations,
-  initialData,
-}: CarModelFormProps) {
-  const tr = useTranslation();
-  const [open, setOpen] = React.useState(false);
-  const isEdit = !!initialData;
+export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
+  const { data } = useQuery(createVehicleConfigurationsQueryOptions())
+  const tr = useTranslation()
+  const [open, setOpen] = React.useState(false)
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? CarModelUpdateSchema : CarModelCreateSchema;
+  const formSchema = isEdit ? CarModelUpdateSchema : CarModelCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateCarModel(values) : createCarModel(values);
+      "id" in values
+        ? updateCarModelFn({ data: values })
+        : createCarModelFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -78,7 +77,7 @@ export function CarModelForm({
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
-            <DialogTitle className="flex gap-2 items-center">
+            <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
                 <PlusIcon />
               </Button>
@@ -95,7 +94,7 @@ export function CarModelForm({
               placeholder="Select Car Brand"
               emptyPlaceholder="No Car Brand found"
               options={
-                vehicleConfigurations?.car_brands.map((opt) => ({
+                data?.data?.car_brands.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []
@@ -108,7 +107,7 @@ export function CarModelForm({
               placeholder="Select Vehicle type"
               emptyPlaceholder="No Vehicle type found"
               options={
-                vehicleConfigurations?.vehicle_types.map((opt) => ({
+                data?.data?.vehicle_types.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []
@@ -124,5 +123,5 @@ export function CarModelForm({
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

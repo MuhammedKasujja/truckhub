@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { CarModel } from "@/features/settings/car-model/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { EditIcon, EyeIcon } from "lucide-react";
-import { CarModelForm } from "./car-brand-form";
+import { Button } from "@/components/ui/button"
+import { CarModel } from "@/features/settings/car-model/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { EditIcon, EyeIcon } from "lucide-react"
+import { CarModelForm } from "./car-brand-form"
 
 export function getCarModelColumns(): ColumnDef<CarModel>[] {
   return [
@@ -10,14 +10,14 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
       accessorKey: "id",
       header: "ID",
       cell: ({ row }) => {
-        return <p>{row.original.id}</p>;
+        return <p>{row.original.id}</p>
       },
     },
     {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-        return <p>{row.original.name}</p>;
+        return <p>{row.original.name}</p>
       },
     },
     {
@@ -28,17 +28,17 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
             <Button variant={"outline"} size={"icon"}>
               <EyeIcon />
             </Button>
-            {/* <CarModelForm
+            <CarModelForm
               initialData={{ ...row.original }}
-              trigger={ */}
-            <Button variant={"outline"} size={"icon"}>
-              <EditIcon />
-            </Button>
-            {/* }
-            /> */}
+              trigger={
+                <Button variant={"outline"} size={"icon"}>
+                  <EditIcon />
+                </Button>
+              }
+            />
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }

@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,54 +8,56 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   CarBrandCreateSchema,
   CarBrandUpdateSchema,
   CarBrandUpdateSchemaType,
-} from "@/features/settings/car-brand/schemas";
+} from "@/features/settings/car-brand/schemas"
 import {
-  createCarBrand,
-  updateCarBrand,
-} from "@/features/settings/car-brand/service";
-import { TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { useTranslation } from "@/i18n";
-import { SubmitButton } from "@/components/ui/submit-button";
+  createCarBrandFn,
+  updateCarBrandFn,
+} from "@/features/settings/car-brand/services"
+import { TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { useTranslation } from "@/i18n"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type Props = {
-  trigger?: React.ReactNode;
-  initialData?: CarBrandUpdateSchemaType;
-};
+  trigger?: React.ReactNode
+  initialData?: CarBrandUpdateSchemaType
+}
 
 export function CarBrandForm({ trigger, initialData }: Props) {
-  const tr = useTranslation();
+  const tr = useTranslation()
 
-  const [open, setOpen] = React.useState(false);
-  const isEdit = !!initialData;
+  const [open, setOpen] = React.useState(false)
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? CarBrandUpdateSchema : CarBrandCreateSchema;
+  const formSchema = isEdit ? CarBrandUpdateSchema : CarBrandCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateCarBrand(values) : createCarBrand(values);
+      "id" in values
+        ? updateCarBrandFn({ data: values })
+        : createCarBrandFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -91,5 +93,5 @@ export function CarBrandForm({ trigger, initialData }: Props) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

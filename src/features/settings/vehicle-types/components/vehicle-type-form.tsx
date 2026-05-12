@@ -1,5 +1,5 @@
-"use client";
-import { Button } from "@/components/ui/button";
+"use client"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -8,55 +8,57 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { PlusIcon } from "lucide-react";
-import z from "zod";
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
 import {
   VehicleTypeCreateSchema,
   VehicleTypeUpdateSchemaType,
   VehicleTypeUpdateSchema,
-} from "@/features/settings/vehicle-types/schemas";
+} from "@/features/settings/vehicle-types/schemas"
 import {
-  createVehicleType,
-  updateVehicleType,
-} from "@/features/settings/vehicle-types/service";
-import { SwitchField, TextField } from "@/components/ui/form-fields";
-import React from "react";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { useTranslation } from "@/i18n";
+  createVehicleTypeFn,
+  updateVehicleTypeFn,
+} from "@/features/settings/vehicle-types/services"
+import { SwitchField, TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useTranslation } from "@/i18n"
 
 type Props = {
-  trigger?: React.ReactNode;
-  initialData?: VehicleTypeUpdateSchemaType;
-};
+  trigger?: React.ReactNode
+  initialData?: VehicleTypeUpdateSchemaType
+}
 
 export function VehicleTypeForm({ trigger, initialData }: Props) {
-  const tr = useTranslation();
-  const [open, setOpen] = React.useState(false);
-  console.table(initialData);
+  const tr = useTranslation()
+  const [open, setOpen] = React.useState(false)
+  console.table(initialData)
 
-  const isEdit = !!initialData;
+  const isEdit = !!initialData
 
-  const formSchema = isEdit ? VehicleTypeUpdateSchema : VehicleTypeCreateSchema;
+  const formSchema = isEdit ? VehicleTypeUpdateSchema : VehicleTypeCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
-  });
+  })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
-      "id" in values ? updateVehicleType(values) : createVehicleType(values);
+      "id" in values
+        ? updateVehicleTypeFn({ data: values })
+        : createVehicleTypeFn({ data: values })
 
-    const { isSuccess, error, message } = await promise;
+    const { isSuccess, error, message } = await promise
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
@@ -98,5 +100,5 @@ export function VehicleTypeForm({ trigger, initialData }: Props) {
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }
