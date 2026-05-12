@@ -40,12 +40,13 @@ import { useRideForm } from "../hooks/use-ride-form"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
+import { RideRequestUpdateSchemaType } from "../schemas"
 
 type RideRequestFormProps = {
-  ride?: any
+  initialData?: RideRequestUpdateSchemaType
 }
 
-export function RideRequestForm({ ride }: RideRequestFormProps) {
+export function RideRequestForm({ initialData }: RideRequestFormProps) {
   const {
     data: { data: serviceList },
   } = useSuspenseQuery(servicesSearchQueryOptions())
@@ -64,7 +65,7 @@ export function RideRequestForm({ ride }: RideRequestFormProps) {
     appendCheckpoint,
     onDestinationChanged,
     onSubmit,
-  } = useRideForm(serviceList)
+  } = useRideForm(serviceList, initialData)
 
   return (
     <div className="grid gap-5 md:grid-cols-2">
@@ -248,8 +249,8 @@ export function RideRequestForm({ ride }: RideRequestFormProps) {
                       <Map
                         ref={mapRef}
                         center={[
-                          form.getValues("pickup_location").lng,
-                          form.getValues("pickup_location").lat,
+                          form.getValues("pickup_location")!.lng,
+                          form.getValues("pickup_location")!.lat,
                         ]}
                         zoom={11.0}
                         styles={{
@@ -265,8 +266,8 @@ export function RideRequestForm({ ride }: RideRequestFormProps) {
                           opacity={1}
                         />
                         {[
-                          form.getValues("pickup_location"),
-                          form.getValues("destination_location"),
+                          form.getValues("pickup_location")!,
+                          form.getValues("destination_location")!,
                         ].map((stop, index) => (
                           <MapMarker
                             key={stop.name}

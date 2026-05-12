@@ -12,5 +12,5 @@ export const Route = createFileRoute("/_admin/rides/$rideId/edit")({
 
 function RouteComponent() {
   const { data } = Route.useLoaderData()
-  return <RideRequestForm ride={data} />
+  return <RideRequestForm initialData={data} />
 }

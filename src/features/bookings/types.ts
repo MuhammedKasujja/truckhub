@@ -62,7 +62,7 @@ export interface LocationPoint {
   lng: number;
 }
 
-export interface Location extends LocationPoint {
+export interface LocationData extends LocationPoint {
   name: string;
 }
 

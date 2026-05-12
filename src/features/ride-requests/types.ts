@@ -1,3 +1,5 @@
+import { LocationData } from "../bookings/types";
+
 export type Passenger = {
   id: number;
   fullname: string;
@@ -34,8 +36,8 @@ export type RideRequest = {
 export type RideRequestDetails = {
   id: number;
   number: string;
-  origin: Location;
-  destination: Location;
+  origin: LocationData;
+  destination: LocationData;
   created_at: string;
   polyline_route: string | undefined;
   request_start_time: Date;
@@ -50,7 +52,7 @@ export type RideRequestDetails = {
   customer: Passenger;
   driver: Driver | undefined;
   type: RideType;
-  checkpoints: Location[];
+  checkpoints: LocationData[];
 };
 
 export const RideStatusList = [

@@ -54,7 +54,7 @@ export const updateRideFn = createServerFn()
     return updateRideRequest(data)
   })
 
-export const createRideRequestFn = createServerFn()
+export const createRideFn = createServerFn()
   .inputValidator(RideRequestCreateSchema)
   .handler(async ({ data }) => {
     return createRideRequest(data)
