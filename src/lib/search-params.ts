@@ -10,11 +10,11 @@ import { createSearchParamsCache } from "nuqs/server";
  * 3. Return strongly-typed result + augmented filters
  * */
 
-export async function generatePageSearchParams<Parsers extends ParserMap>(
-  searchParamsPromise: Promise<Record<string, string | string[] | undefined>>,
+export function generatePageSearchParams<Parsers extends ParserMap>(
+  searchParamsPromise: Record<string, string | string[] | undefined>,
   cache: ReturnType<typeof createSearchParamsCache<Parsers>>, // ← infer from the factory
 ) {
-  const raw = await searchParamsPromise;
+  const raw = searchParamsPromise;
   const parsed = cache.parse(raw);
 
   // If your parsers object always includes 'filters' (or make it conditional)

@@ -1,5 +1,3 @@
-import { BookingSearchParamsCache } from "@/features/bookings/schemas"
-import { generatePageSearchParams } from "@/lib/search-params"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Suspense } from "react"
 import {
@@ -21,11 +19,9 @@ export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
   beforeLoad: async () => hasPermission("bookings:view"),
   loader: async ({ context, location }) => {
-    const searchParams = await generatePageSearchParams(
-      location.search,
-      BookingSearchParamsCache
+    context.queryClient.prefetchQuery(
+      createBookingQueryOptions(location.search)
     )
-    context.queryClient.prefetchQuery(createBookingQueryOptions(searchParams))
     return context.queryClient.ensureQueryData(
       createBookingStatisticsQueryOptions()
     )
