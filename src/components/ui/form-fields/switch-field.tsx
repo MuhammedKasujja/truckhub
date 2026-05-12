@@ -5,18 +5,21 @@ import {
   FieldError,
   FieldLabel,
   FieldTitle,
-} from "@/components/ui/field";
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { Switch } from "@/components/ui/switch";
-import { RequiredLabelIcon } from "@/components/required-label-icon";
+} from "@/components/ui/field"
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
+import { Switch } from "@/components/ui/switch"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
 
 type SwitchFieldProps<T extends FieldValues> = {
-  label?: string;
-  control: Control<T>;
-  name: FieldPath<T>;
-  description?: string;
-  required?: boolean;
-};
+  label?: string
+  control: Control<T>
+  name: FieldPath<T>
+  description?: string
+  required?: boolean
+  // optional string mapping
+  trueValue?: string | boolean | number
+  falseValue?: string | boolean | number
+}
 
 export function SwitchField<T extends FieldValues>({
   control,
@@ -24,7 +27,10 @@ export function SwitchField<T extends FieldValues>({
   label,
   required = false,
   description,
+  trueValue,
+  falseValue,
 }: Readonly<SwitchFieldProps<T>>) {
+  const isStringMode = trueValue && falseValue
   return (
     <Controller
       name={name}
@@ -44,13 +50,19 @@ export function SwitchField<T extends FieldValues>({
             <Switch
               {...field}
               id={field.name}
-              checked={field.value}
+              checked={
+                isStringMode ? field.value === trueValue : Boolean(field.value)
+              }
               aria-invalid={fieldState.invalid}
-              onCheckedChange={field.onChange}
+              onCheckedChange={(checked) => {
+                field.onChange(
+                  isStringMode ? (checked ? trueValue : falseValue) : checked
+                )
+              }}
             />
           </Field>
         </FieldLabel>
       )}
     />
-  );
+  )
 }

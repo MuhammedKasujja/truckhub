@@ -82,6 +82,8 @@ export function DriveTrainForm({ trigger, initialData }: Props) {
                 label="Truck"
                 control={form.control}
                 name={"type"}
+                trueValue="truck"
+                falseValue="small"
                 description="When checked it means the drive train is for trucks"
               />
             </div>
