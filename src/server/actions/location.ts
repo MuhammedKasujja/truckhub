@@ -1,61 +1,39 @@
-"use server";
+"use server"
 
-import { ActionResult, Prettify } from "@/types";
-import { jsonFormatter, logger } from "@/lib/logger";
-import { getGeolocation } from "@/utils/get-geolocation";
+import { ActionResult, Prettify } from "@/types"
+import { jsonFormatter, logger } from "@/lib/logger"
+import { getGeolocation } from "@/utils/get-geolocation"
+import {
+  PlaceDetails,
+  SearchLocationDto,
+  LocationSuggestion,
+  QueryPlaceDetailsDto,
+} from "./schemas"
 
 export interface RouteData {
-  coordinates: [number, number][];
-  duration: number; // seconds
-  distance: number; // meters
+  coordinates: [number, number][]
+  duration: number // seconds
+  distance: number // meters
 }
-
-export interface PlaceDetails {
-  placeId: string;
-  address1: string;
-  address2: string;
-  formattedAddress: string;
-  city: string;
-  region: string;
-  postalCode: string;
-  country: string;
-  lat: number;
-  lng: number;
-}
-
-export type LocationSuggestion = {
-  placeId: string;
-  name: string;
-};
-
-export type LocationDistanceTime = {
-  estimated_cost: string;
-  distance: number;
-  duration: number;
-  polyline: string;
-};
 
 export type Coordinates = {
-  lat: number;
-  lng: number;
-};
+  lat: number
+  lng: number
+}
 
 export async function getLocationSuggestions({
   query,
   sessionId,
-}: {
-  query: string;
-  sessionId?: string;
-}) {
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+}: SearchLocationDto) {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY
   if (!apiKey) {
-    return { error: "Missing API Key", data: null };
+    return { error: "Missing API Key", data: null }
   }
-  logger.debug(`Session Suggestion: ${sessionId}`);
+  logger.debug(`Session Suggestion: ${sessionId}`)
 
   // Check if the hosting provider gives you the country code
-  const country = await getGeolocation();
-  const url = "https://places.googleapis.com/v1/places:autocomplete";
+  const country = await getGeolocation()
+  const url = "https://places.googleapis.com/v1/places:autocomplete"
 
   const primaryTypes = [
     "street_address",
@@ -63,7 +41,7 @@ export async function getLocationSuggestions({
     "route",
     "street_number",
     "landmark",
-  ];
+  ]
 
   try {
     const response = await fetch(url, {
@@ -82,31 +60,31 @@ export async function getLocationSuggestions({
         includedRegionCodes: [country],
         sessionToken: sessionId,
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     // logger.info(data);
 
     const suggestions: LocationSuggestion[] = data.suggestions
       ? data.suggestions.map(
           (suggestion: {
-            placePrediction: { placeId: string; text: { text: string } };
+            placePrediction: { placeId: string; text: { text: string } }
           }) => ({
             placeId: suggestion.placePrediction.placeId,
             name: suggestion.placePrediction.text.text,
-          }),
+          })
         )
-      : [];
+      : []
 
-    return { data: suggestions, error: null };
+    return { data: suggestions, error: null }
   } catch (error) {
-    logger.info("Error fetching autocomplete suggestions:");
-    logger.error(error);
-    return { error: error, data: null };
+    logger.info("Error fetching autocomplete suggestions:")
+    logger.error(error)
+    return { error: `${error}`, data: null }
   }
 }
 /**
@@ -119,24 +97,21 @@ export async function getLocationSuggestions({
 export async function getLocationDetailsByPlaceId({
   placeId,
   sessionId,
-}: {
-  placeId: string;
-  sessionId?: string;
-}): Promise<Prettify<ActionResult<PlaceDetails>>> {
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+}: QueryPlaceDetailsDto): Promise<Prettify<ActionResult<PlaceDetails>>> {
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY
 
   if (!apiKey) {
-    return { error: "Missing API Key", data: null };
+    return { error: "Missing API Key", data: null }
   }
 
-  logger.debug(`Session Place details: ${sessionId} --> ${placeId}`);
-  let url = `https://places.googleapis.com/v1/places/${placeId}`;
+  logger.debug(`Session Place details: ${sessionId} --> ${placeId}`)
+  let url = `https://places.googleapis.com/v1/places/${placeId}`
 
   // Use sessionId only when the place id is coming from the autocomplete api.
   // This make the call to be a single api call and reduces the cost
 
   if (sessionId) {
-    url = `${url}?sessionToken=${sessionId}`;
+    url = `${url}?sessionToken=${sessionId}`
   }
 
   try {
@@ -148,31 +123,31 @@ export async function getLocationDetailsByPlaceId({
           "adrFormatAddress,shortFormattedAddress,formattedAddress,location,addressComponents",
         "Content-Type": "application/json",
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json();
+    const data = await response.json()
     // logger.debug(jsonFormatter(data));
 
     const dataFinderRegx = (c: string) => {
-      const regx = new RegExp(`<span class="${c}">([^<]+)<\/span>`);
-      const match = data.adrFormatAddress.match(regx);
-      return match ? match[1] : "";
-    };
+      const regx = new RegExp(`<span class="${c}">([^<]+)<\/span>`)
+      const match = data.adrFormatAddress.match(regx)
+      return match ? match[1] : ""
+    }
 
-    const address1 = dataFinderRegx("street-address");
-    const address2 = "";
-    const city = dataFinderRegx("locality");
-    const region = dataFinderRegx("region");
-    const postalCode = dataFinderRegx("postal-code");
-    const country = dataFinderRegx("country-name");
-    const lat = data.location.latitude;
-    const lng = data.location.longitude;
+    const address1 = dataFinderRegx("street-address")
+    const address2 = ""
+    const city = dataFinderRegx("locality")
+    const region = dataFinderRegx("region")
+    const postalCode = dataFinderRegx("postal-code")
+    const country = dataFinderRegx("country-name")
+    const lat = data.location.latitude
+    const lng = data.location.longitude
 
-    const formattedAddress = data.formattedAddress;
+    const formattedAddress = data.formattedAddress
 
     const formattedData: PlaceDetails = {
       placeId,
@@ -185,15 +160,15 @@ export async function getLocationDetailsByPlaceId({
       country,
       lat,
       lng,
-    };
-    logger.debug(jsonFormatter(formattedData));
+    }
+    logger.debug(jsonFormatter(formattedData))
     return {
       data: formattedData,
       error: null,
-    };
+    }
   } catch (err) {
-    console.error("Error fetching place details:", err);
-    return { error: err, data: null };
+    console.error("Error fetching place details:", err)
+    return { error: `${err}`, data: null }
   }
 }
 
@@ -202,34 +177,34 @@ export async function fetchRoutes({
   destination,
   waypoints = [],
 }: {
-  origin: Coordinates;
-  destination: Coordinates;
-  waypoints?: Coordinates[];
+  origin: Coordinates
+  destination: Coordinates
+  waypoints?: Coordinates[]
 }): Promise<RouteData[] | undefined> {
   try {
     const response = await fetch(
-      `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?overview=full&geometries=geojson&alternatives=true`,
-    );
-    const data = await response.json();
+      `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?overview=full&geometries=geojson&alternatives=true`
+    )
+    const data = await response.json()
 
     if (data.routes?.length > 0) {
       const routeData: RouteData[] = data.routes.map(
         (route: {
-          geometry: { coordinates: [number, number][] };
-          duration: number;
-          distance: number;
+          geometry: { coordinates: [number, number][] }
+          duration: number
+          distance: number
         }) => ({
           coordinates: route.geometry.coordinates,
           duration: route.duration,
           distance: route.distance,
-        }),
-      );
-      console.log("Fetched route data:", routeData);
-      return routeData;
+        })
+      )
+      console.log("Fetched route data:", routeData)
+      return routeData
     }
   } catch (error) {
-    logger.error("Failed to fetch routes:");
-    logger.error(error);
-    return;
+    logger.error("Failed to fetch routes:")
+    logger.error(error)
+    return
   }
 }

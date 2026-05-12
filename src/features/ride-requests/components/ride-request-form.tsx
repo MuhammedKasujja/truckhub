@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Card,
   CardContent,
@@ -6,21 +6,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { FieldGroup } from "@/components/ui/field";
+} from "@/components/ui/card"
+import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   DateTimePickerField,
   NumberField,
   SwitchField,
   TextField,
-} from "@/components/ui/form-fields";
-import { useTranslation } from "@/i18n";
-import { getServicesByQuery } from "@/features/services/services";
-import React from "react";
-import { getCustomersByQueryFn } from "@/features/clients/services";
-import { LocationAutoComplete } from "@/components/location-autocomplete";
-import { formatDistance, formatDuration, formatPrice } from "@/lib/format";
+} from "@/components/ui/form-fields"
+import { useTranslation } from "@/i18n"
+import React from "react"
+import { LocationAutoComplete } from "@/components/location-autocomplete"
+import { formatDistance, formatDuration, formatPrice } from "@/lib/format"
 import {
   Map,
   MapMarker,
@@ -28,32 +26,34 @@ import {
   MarkerContent,
   MarkerTooltip,
   type MapRef,
-} from "@/components/ui/map";
-import polyline from "@mapbox/polyline";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+} from "@/components/ui/map"
+import polyline from "@mapbox/polyline"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { Button } from "@/components/ui/button"
+import { PlusIcon } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useRideForm } from "../hooks/use-ride-form";
+} from "@/components/ui/tooltip"
+import { useRideForm } from "../hooks/use-ride-form"
+import { clientsSearchQueryOptions } from "@/features/clients/query-options"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { servicesSearchQueryOptions } from "@/features/services/query-options"
 
 type RideRequestFormProps = {
-  promises: Promise<
-    [
-      Awaited<ReturnType<typeof getServicesByQuery>>,
-      Awaited<ReturnType<typeof getCustomersByQueryFn>>,
-    ]
-  >;
-};
+  ride?: any
+}
 
-export function RideRequestForm({ promises }: RideRequestFormProps) {
-  const [{ data: serviceList }, { data: passengers }] = React.use(promises);
-  const mapRef = React.useRef<MapRef>(null);
+export function RideRequestForm({ ride }: RideRequestFormProps) {
+  const {
+    data: { data: serviceList },
+  } = useSuspenseQuery(servicesSearchQueryOptions())
 
-  const tr = useTranslation();
+  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const mapRef = React.useRef<MapRef>(null)
+
+  const tr = useTranslation()
 
   const {
     service,
@@ -64,10 +64,10 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
     appendCheckpoint,
     onDestinationChanged,
     onSubmit,
-  } = useRideForm(serviceList);
+  } = useRideForm(serviceList)
 
   return (
-    <div className="grid md:grid-cols-2 gap-5">
+    <div className="grid gap-5 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle>{tr("trips.new_trip")}</CardTitle>
@@ -75,7 +75,7 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
         </CardHeader>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {
-            console.log(errors);
+            console.log(errors)
           })}
         >
           <CardContent>
@@ -84,7 +84,7 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
                 label={tr("common.passenger")}
                 name={"customer_id"}
                 control={form.control}
-                options={passengers.map((ele) => ({
+                options={(clientsResponse?.data ?? []).map((ele) => ({
                   label: ele.fullname,
                   value: ele.id,
                 }))}
@@ -190,11 +190,11 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
                 <div>{checkpoint.name}</div>
               </div>
             ))}
-            <div className="flex gap-4 items-end">
+            <div className="flex items-end gap-4">
               <LocationAutoComplete
                 label="Destination"
                 onPlaceLoaded={async (place) => {
-                  await onDestinationChanged(place);
+                  await onDestinationChanged(place)
                 }}
               />
               <Tooltip>
@@ -210,34 +210,34 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
             </div>
             {locationDistanceTime && service && (
               <div className="space-y-5">
-                <div className="grid md:grid-flow-col gap-5">
+                <div className="grid gap-5 md:grid-flow-col">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="font-light text-sm">
+                      <CardTitle className="text-sm font-light">
                         Estimated price
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="font-semibold text-lg">
+                    <CardContent className="text-lg font-semibold">
                       {formatPrice(
-                        parseFloat(locationDistanceTime.estimated_cost),
+                        parseFloat(locationDistanceTime.estimated_cost)
                       )}
                     </CardContent>
                   </Card>
                   <Card>
                     <CardHeader>
-                      <CardTitle className="font-light text-sm">
+                      <CardTitle className="text-sm font-light">
                         Distance
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="font-semibold text-lg">
+                    <CardContent className="text-lg font-semibold">
                       {formatDistance(locationDistanceTime.distance)}
                     </CardContent>
                   </Card>
                   <Card>
                     <CardHeader>
-                      <CardTitle className="font-light text-sm">Time</CardTitle>
+                      <CardTitle className="text-sm font-light">Time</CardTitle>
                     </CardHeader>
-                    <CardContent className="font-semibold text-lg">
+                    <CardContent className="text-lg font-semibold">
                       {formatDuration(locationDistanceTime.duration)}
                     </CardContent>
                   </Card>
@@ -274,7 +274,7 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
                             latitude={stop.lat}
                           >
                             <MarkerContent>
-                              <div className="size-4.5 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-semibold">
+                              <div className="flex size-4.5 items-center justify-center rounded-full border-2 border-white bg-primary text-xs font-semibold text-white shadow-lg">
                                 {index == 0 ? "P" : "D"}
                               </div>
                             </MarkerContent>
@@ -291,5 +291,5 @@ export function RideRequestForm({ promises }: RideRequestFormProps) {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

@@ -6,11 +6,11 @@ import { Service } from "@/features/services/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { RideRequestCreateSchema } from "@/features/ride-requests/schemas";
-import { LocationDistanceTime, PlaceDetails } from "@/server/actions/location";
+import { LocationDistanceTime, PlaceDetails } from "@/server/actions/schemas";
 import {
-  createRideRequest,
-  computeRideRequestEsimatedFare,
-} from "@/features/ride-requests/service";
+  createRideRequestFn,
+  computeRideRequestEsimatedFareFn,
+} from "@/features/ride-requests/services";
 
 export function useRideForm(services: Service[]) {
   const [locationDistanceTime, setLocationDistanceTime] = React.useState<
@@ -25,7 +25,7 @@ export function useRideForm(services: Service[]) {
   });
 
   async function onSubmit(values: z.infer<typeof RideRequestCreateSchema>) {
-    const { isSuccess, error } = await createRideRequest(values);
+    const { isSuccess, error } = await createRideRequestFn({data:values});
     if (isSuccess) {
       toast.success(`${tr("trips.trip_created_successfully")}`);
     } else {
@@ -51,7 +51,7 @@ export function useRideForm(services: Service[]) {
       });
       return;
     }
-    const { data, error, isSuccess } = await computeRideRequestEsimatedFare({
+    const { data, error, isSuccess } = await computeRideRequestEsimatedFareFn({
       serviceId: serviceId,
       origin: { lat: pickup.lat, lng: pickup.lng },
       destination: { lat: destination.lat, lng: destination.lng },

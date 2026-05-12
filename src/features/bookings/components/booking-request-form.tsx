@@ -20,7 +20,7 @@ import {
   DateTimePickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import React, { Activity, useMemo, useState } from "react"
+import { Activity, useMemo, useState } from "react"
 import z from "zod"
 import { BookingCreateSchema } from "@/features/bookings/schemas"
 import { toast } from "sonner"

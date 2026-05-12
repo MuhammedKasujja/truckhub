@@ -11,5 +11,5 @@ export const loginFn = createServerFn({ method: "POST" })
 
 export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
   logger.info("+++++++++++++++ Logging out user +++++++++++++++++++++++++++++++++++++++=")
-  return logout()
+  return await logout()
 })

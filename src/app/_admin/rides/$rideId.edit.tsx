@@ -1,15 +1,16 @@
-import { hasPermission } from '@/lib/auth'
-import { createFileRoute } from '@tanstack/react-router'
+import { RideRequestForm } from "@/features/ride-requests/components"
+import { rideDetailsQueryOptions } from "@/features/ride-requests/query-options"
+import { hasPermission } from "@/lib/auth"
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute('/_admin/rides/$rideId/edit')({
+export const Route = createFileRoute("/_admin/rides/$rideId/edit")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission('rides:edit'),
+  beforeLoad: () => hasPermission("rides:edit"),
   loader: ({ context, params }) =>
-      context.queryClient.ensureQueryData(
-        serviceDetailsQueryOptions(params.serviceId)
-      ),
+    context.queryClient.ensureQueryData(rideDetailsQueryOptions(params.rideId)),
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/rides/$rideId/edit"!</div>
+  const { data } = Route.useLoaderData()
+  return <RideRequestForm ride={data} />
 }

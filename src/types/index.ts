@@ -64,7 +64,7 @@ export type SearchQuery = { search?: string }
 
 export type ActionResult<T> = {
   data: T | null
-  error: string | unknown | null
+  error: string | undefined | null 
 }
 
 export class ApiError extends Error {

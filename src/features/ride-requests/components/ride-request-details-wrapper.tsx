@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -9,24 +9,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { CircleDotIcon, Edit2Icon, MapPin } from "lucide-react";
+} from "@/components/ui/card"
+import { CircleDotIcon, Edit2Icon, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
-import { getRideDetailsFn } from "@/features/ride-requests/services";
 import {
   formatDate,
   formatDistance,
   formatDuration,
   formatPrice,
-} from "@/lib/format";
-import { Status } from "@/components/ui/status";
-import { Can } from "@/components/has-permission";
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal";
-import { RideRequestMap } from "./ride-request-map";
-import { RidePassenger } from "./ride-passenger";
-import { Layers, Rocket } from "lucide-react";
+} from "@/lib/format"
+import { Status } from "@/components/ui/status"
+import { Can } from "@/components/has-permission"
+import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
+import { RideRequestMap } from "./ride-request-map"
+import { RidePassenger } from "./ride-passenger"
+import { Layers, Rocket } from "lucide-react"
 
 import {
   Timeline,
@@ -38,9 +35,11 @@ import {
   TimelineTitle,
   TimelineTime,
   TimelineDescription,
-} from "@/components/ui/timeline";
-import { RideTimeline } from "./ride-timeline";
-import { RideDriver } from "./ride-driver";
+} from "@/components/ui/timeline"
+import { RideTimeline } from "./ride-timeline"
+import { RideDriver } from "./ride-driver"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { rideDetailsQueryOptions } from "../query-options"
 
 const timelineItems = [
   {
@@ -59,26 +58,21 @@ const timelineItems = [
     description: "Created wireframes and mockups.",
     icon: Layers,
   },
-];
+]
 
 type RideRequestDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getRideDetailsFn>>]>;
-};
+  rideId: string
+}
 
 export function RideRequestDetailsWrapper({
-  promises,
+  rideId,
 }: RideRequestDetailsWrapperProps) {
-  const [{ data: ride, error }] = React.use(promises);
-
-  useFetchEror(error);
-
-  if (error) {
-    return <div>Ride details not found</div>;
-  }
-
+  const {
+    data: { data: ride },
+  } = useSuspenseQuery(rideDetailsQueryOptions(rideId))
   return (
     <div className="grid gap-5">
-      <div className="grid md:grid-flow-col gap-4">
+      <div className="grid gap-4 md:grid-flow-col">
         <Card>
           <CardHeader>
             <CardTitle>R-{ride?.number}</CardTitle>
@@ -130,7 +124,7 @@ export function RideRequestDetailsWrapper({
               ))}
             </Timeline>
           </CardContent>
-          <CardFooter className="space-y-4 flex items-center gap-2">
+          <CardFooter className="flex items-center gap-2 space-y-4">
             <Button>{formatPrice(ride?.amount)}</Button>
             <Button>{formatPrice(ride?.balance)}</Button>
             <Button variant={"outline"}>
@@ -182,5 +176,5 @@ export function RideRequestDetailsWrapper({
         </div>
       </div>
     </div>
-  );
+  )
 }
