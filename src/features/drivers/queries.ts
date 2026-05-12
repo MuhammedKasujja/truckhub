@@ -30,7 +30,7 @@ export function createDriverEditQueryOptions(driverId: EntityId) {
   })
 }
 
-export function createDriverProfileQueryOptions(driverId: EntityId) {
+export function driverProfileQueryOptions(driverId: EntityId) {
   return queryOptions({
     queryKey: driverQueryKeys.profile(driverId),
     queryFn: () => getDriverProfileFn({ data: { id: driverId } }),

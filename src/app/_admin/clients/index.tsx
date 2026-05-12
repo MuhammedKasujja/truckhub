@@ -13,7 +13,7 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 import { PlusIcon } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { clientsQueryOptions } from "@/features/clients/query-options"
@@ -37,14 +37,14 @@ function RouteComponent() {
         </PageTitle>
         {/* <PageDescription>Manage your projects and team members</PageDescription> */}
         <PageAction>
-          <HasPermission permission={"clients:create"}>
+          <Can permission={"clients:create"}>
             <Button asChild>
               <Link to={"/clients/new"}>
                 <PlusIcon />
                 New Customer
               </Link>
             </Button>
-          </HasPermission>
+          </Can>
         </PageAction>
       </PageHeader>
       <CustomerTable />

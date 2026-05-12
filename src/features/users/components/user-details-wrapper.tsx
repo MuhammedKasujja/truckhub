@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -8,23 +8,17 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { Edit2Icon } from "lucide-react";
+} from "@/components/ui/card"
+import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
-import { getUserProfileFn } from "@/features/users/services";
-import { formatDate } from "@/lib/format";
+import { formatDate } from "@/lib/format"
+import { SystemUser } from "../types"
 
 type UserDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getUserProfileFn>>]>;
-};
+  user: SystemUser | undefined
+}
 
-export function UserDetailsWrapper({ promises }: UserDetailsWrapperProps) {
-  const [{ data: user, error }] = React.use(promises);
-
-  useFetchEror(error);
-
+export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
   return (
     <div className="grid gap-5">
       <Card>
@@ -32,7 +26,7 @@ export function UserDetailsWrapper({ promises }: UserDetailsWrapperProps) {
           <CardTitle>{user?.name}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link to={`/users/${user?.id}/edit`}>
+              <Link to={"/users/$userId/edit"} params={{ userId: user!.id }}>
                 <Edit2Icon />
               </Link>
             </Button>
@@ -46,5 +40,5 @@ export function UserDetailsWrapper({ promises }: UserDetailsWrapperProps) {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

@@ -11,13 +11,6 @@ import {
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react"
-import {
-  getClientProfileFn,
-  getCustomerPayments,
-  getCustomerBookings,
-  getCustomerRides,
-} from "@/features/clients/services"
 import { formatDate, formatPrice } from "@/lib/format"
 import {
   Table,
@@ -37,34 +30,42 @@ import {
 import { Can } from "@/components/has-permission"
 import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
 import { EntityId } from "@/types"
-import { clientQueryOptions } from "../query-options"
+import {
+  clientBookingsQueryOptions,
+  clientPaymentsQueryOptions,
+  clientProfileQueryOptions,
+  clientRidesQueryOptions,
+} from "../query-options"
 
 type CustomerDetailsWrapperProps = {
-  promises: Promise<
-    [
-      Awaited<ReturnType<typeof getClientProfileFn>>,
-      Awaited<ReturnType<typeof getCustomerPayments>>,
-      Awaited<ReturnType<typeof getCustomerBookings>>,
-      Awaited<ReturnType<typeof getCustomerRides>>,
-    ]
-  >
-  customerId: EntityId
+  clientId: EntityId
 }
 
 export function CustomerDetailsWrapper({
-  promises,
-  customerId,
+  clientId,
 }: CustomerDetailsWrapperProps) {
-  const [{ error }, { data: payments }, { data: bookings }, { data: rides }] =
-    React.use(promises)
-
+  const {
+    data: { data: customer, error },
+  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
   useFetchEror(error)
 
-  const {
-    data: { data: customer },
-  } = useSuspenseQuery(clientQueryOptions(customerId))
+  const [
+    { data: paymentsResponse },
+    { data: bookingsResponse },
+    { data: ridesResponse },
+  ] = useQueries({
+    queries: [
+      clientPaymentsQueryOptions(clientId),
+      clientBookingsQueryOptions(clientId),
+      clientRidesQueryOptions(clientId),
+    ],
+  })
+
+  const payments = paymentsResponse?.data
+  const bookings = bookingsResponse?.data
+  const rides = ridesResponse?.data
 
   const latestBooking = bookings?.find((ele) => ele.amount)
   const latestPayment = payments?.find((ele) => ele.date)
@@ -84,7 +85,10 @@ export function CustomerDetailsWrapper({
               />
             </Can>
             <Button asChild size={"icon"}>
-              <Link to={`/customers/${customer?.id}/edit`}>
+              <Link
+                to={"/clients/$clientId/edit"}
+                params={{ clientId: customer?.id }}
+              >
                 <Edit2Icon />
               </Link>
             </Button>

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -9,49 +9,45 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { DriverSearchFilter } from "@/features/drivers/components/driver-search-filter";
-import {
-  getVehicleDetailsById,
-  vehicleAssignDriver,
-} from "@/features/vehicles/services";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { Edit2Icon } from "lucide-react";
+} from "@/components/ui/card"
+import { DriverSearchFilter } from "@/features/drivers/components/driver-search-filter"
+import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
-import { toast } from "sonner";
+import React from "react"
+import { toast } from "sonner"
+import { Vehicle } from "../types"
+import { vehicleAssignDriverFn } from "../services"
 
 type VehicleDetailsProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getVehicleDetailsById>>]>;
-};
+  vehicle: Vehicle | undefined
+}
 
-export function VehicleDetails({ promises }: VehicleDetailsProps) {
-  const [{ data: vehicle, error }] = React.use(promises);
+export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
   const [driverId, setDriverId] = React.useState<number | undefined>(
-    vehicle?.driver?.id,
-  );
-  const driver = vehicle?.driver;
-
-  useFetchEror(error);
+    vehicle?.driver?.id
+  )
+  const driver = vehicle?.driver
 
   async function assignDriver() {
     if (!driverId) {
-      toast.error("Please select a driver");
-      return;
+      toast.error("Please select a driver")
+      return
     }
-    const { isSuccess, error, message } = await vehicleAssignDriver({
-      vehicle_id: vehicle!.id,
-      driver_id: driverId!,
-    });
+    const { isSuccess, error, message } = await vehicleAssignDriverFn({
+      data: {
+        vehicleId: vehicle!.id,
+        driverId: driverId!,
+      },
+    })
     if (isSuccess) {
-      toast.success(message);
+      toast.success(message)
     } else {
-      toast.error(error?.message);
+      toast.error(error?.message)
     }
   }
 
   return (
-    <div className="grid grid-cols-5 grid-flow-col gap-5">
+    <div className="grid grid-flow-col grid-cols-5 gap-5">
       <Card className="col-span-3">
         <CardHeader>
           <CardTitle>{vehicle?.display_name}</CardTitle>
@@ -72,7 +68,7 @@ export function VehicleDetails({ promises }: VehicleDetailsProps) {
             <CardTitle>Driver</CardTitle>
             <CardDescription>{driver.name}</CardDescription>
           </CardHeader>
-          <CardContent className="flex gap-4 flex-col">
+          <CardContent className="flex flex-col gap-4">
             <p>{driver.phone}</p>
             <p>{driver.email}</p>
           </CardContent>
@@ -96,7 +92,7 @@ export function VehicleDetails({ promises }: VehicleDetailsProps) {
             <DriverSearchFilter
               className="flex-1"
               onSelected={(driver) => {
-                setDriverId(driver?.id);
+                setDriverId(driver?.id)
               }}
             />
           </CardContent>
@@ -108,5 +104,5 @@ export function VehicleDetails({ promises }: VehicleDetailsProps) {
         </Card>
       )}
     </div>
-  );
+  )
 }

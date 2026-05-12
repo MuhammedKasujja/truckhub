@@ -17,7 +17,10 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/customers/${row.original.id}/view`}>
+            <Link
+              to={"/clients/$clientId/view"}
+              params={{ clientId: row.original.id }}
+            >
               {row.original.fullname}
             </Link>
           </Button>
@@ -52,14 +55,20 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
           <div className="flex gap-2">
             <HasPermission permission={"clients:view"}>
               <Button variant={"outline"} size={"icon"}>
-                <Link to={`/customers/${row.original.id}/view`}>
+                <Link
+                  to={"/clients/$clientId/view"}
+                  params={{ clientId: row.original.id }}
+                >
                   <EyeIcon />
                 </Link>
               </Button>
             </HasPermission>
             <HasPermission permission={"clients:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/customers/${row.original.id}/edit`}>
+                <Link
+                  to={"/clients/$clientId/edit"}
+                  params={{ clientId: row.original.id }}
+                >
                   <EditIcon />
                 </Link>
               </Button>

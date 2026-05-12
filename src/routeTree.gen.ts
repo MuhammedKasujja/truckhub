@@ -37,7 +37,20 @@ import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
+import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/vehicles/$vehicleId.view'
+import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
 import { Route as AdminUsersUserIdViewRouteImport } from './app/_admin/users/$userId.view'
+import { Route as AdminUsersUserIdEditRouteImport } from './app/_admin/users/$userId.edit'
+import { Route as AdminServicesServiceIdViewRouteImport } from './app/_admin/services/$serviceId.view'
+import { Route as AdminServicesServiceIdEditRouteImport } from './app/_admin/services/$serviceId.edit'
+import { Route as AdminRidesRideIdViewRouteImport } from './app/_admin/rides/$rideId.view'
+import { Route as AdminRidesRideIdEditRouteImport } from './app/_admin/rides/$rideId.edit'
+import { Route as AdminDriversDriverIdViewRouteImport } from './app/_admin/drivers/$driverId.view'
+import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drivers/$driverId.edit'
+import { Route as AdminClientsClientIdViewRouteImport } from './app/_admin/clients/$clientId.view'
+import { Route as AdminClientsClientIdEditRouteImport } from './app/_admin/clients/$clientId.edit'
+import { Route as AdminBookingsBookingIdViewRouteImport } from './app/_admin/bookings/$bookingId.view'
+import { Route as AdminBookingsBookingEditRouteImport } from './app/_admin/bookings/$booking.edit'
 import { Route as AdminSettingsVehicleConfigVehicleTypesIndexRouteImport } from './app/_admin/settings/_vehicle-config/vehicle-types/index'
 import { Route as AdminSettingsVehicleConfigTonnagesIndexRouteImport } from './app/_admin/settings/_vehicle-config/tonnages/index'
 import { Route as AdminSettingsVehicleConfigDriveTrainsIndexRouteImport } from './app/_admin/settings/_vehicle-config/drive-trains/index'
@@ -185,11 +198,86 @@ const AdminBookingsNewIndexRoute = AdminBookingsNewIndexRouteImport.update({
   path: '/bookings/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminVehiclesVehicleIdViewRoute =
+  AdminVehiclesVehicleIdViewRouteImport.update({
+    id: '/vehicles/$vehicleId/view',
+    path: '/vehicles/$vehicleId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminVehiclesVehicleIdEditRoute =
+  AdminVehiclesVehicleIdEditRouteImport.update({
+    id: '/vehicles/$vehicleId/edit',
+    path: '/vehicles/$vehicleId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminUsersUserIdViewRoute = AdminUsersUserIdViewRouteImport.update({
   id: '/users/$userId/view',
   path: '/users/$userId/view',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminUsersUserIdEditRoute = AdminUsersUserIdEditRouteImport.update({
+  id: '/users/$userId/edit',
+  path: '/users/$userId/edit',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminServicesServiceIdViewRoute =
+  AdminServicesServiceIdViewRouteImport.update({
+    id: '/services/$serviceId/view',
+    path: '/services/$serviceId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminServicesServiceIdEditRoute =
+  AdminServicesServiceIdEditRouteImport.update({
+    id: '/services/$serviceId/edit',
+    path: '/services/$serviceId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminRidesRideIdViewRoute = AdminRidesRideIdViewRouteImport.update({
+  id: '/rides/$rideId/view',
+  path: '/rides/$rideId/view',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminRidesRideIdEditRoute = AdminRidesRideIdEditRouteImport.update({
+  id: '/rides/$rideId/edit',
+  path: '/rides/$rideId/edit',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDriversDriverIdViewRoute =
+  AdminDriversDriverIdViewRouteImport.update({
+    id: '/drivers/$driverId/view',
+    path: '/drivers/$driverId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminDriversDriverIdEditRoute =
+  AdminDriversDriverIdEditRouteImport.update({
+    id: '/drivers/$driverId/edit',
+    path: '/drivers/$driverId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminClientsClientIdViewRoute =
+  AdminClientsClientIdViewRouteImport.update({
+    id: '/clients/$clientId/view',
+    path: '/clients/$clientId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminClientsClientIdEditRoute =
+  AdminClientsClientIdEditRouteImport.update({
+    id: '/clients/$clientId/edit',
+    path: '/clients/$clientId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminBookingsBookingIdViewRoute =
+  AdminBookingsBookingIdViewRouteImport.update({
+    id: '/bookings/$bookingId/view',
+    path: '/bookings/$bookingId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminBookingsBookingEditRoute =
+  AdminBookingsBookingEditRouteImport.update({
+    id: '/bookings/$booking/edit',
+    path: '/bookings/$booking/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminSettingsVehicleConfigVehicleTypesIndexRoute =
   AdminSettingsVehicleConfigVehicleTypesIndexRouteImport.update({
     id: '/vehicle-types/',
@@ -240,7 +328,20 @@ export interface FileRoutesByFullPath {
   '/services/': typeof AdminServicesIndexRoute
   '/users/': typeof AdminUsersIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
+  '/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
+  '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
+  '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
+  '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
+  '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
+  '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
+  '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/users/$userId/edit': typeof AdminUsersUserIdEditRoute
   '/users/$userId/view': typeof AdminUsersUserIdViewRoute
+  '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
+  '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
@@ -274,7 +375,20 @@ export interface FileRoutesByTo {
   '/services': typeof AdminServicesIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
+  '/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
+  '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
+  '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
+  '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
+  '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
+  '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
+  '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/users/$userId/edit': typeof AdminUsersUserIdEditRoute
   '/users/$userId/view': typeof AdminUsersUserIdViewRoute
+  '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
+  '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
@@ -311,7 +425,20 @@ export interface FileRoutesById {
   '/_admin/services/': typeof AdminServicesIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
+  '/_admin/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
+  '/_admin/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
+  '/_admin/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/_admin/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
+  '/_admin/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/_admin/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
+  '/_admin/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
+  '/_admin/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
+  '/_admin/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/_admin/users/$userId/edit': typeof AdminUsersUserIdEditRoute
   '/_admin/users/$userId/view': typeof AdminUsersUserIdViewRoute
+  '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
+  '/_admin/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
@@ -347,7 +474,20 @@ export interface FileRouteTypes {
     | '/services/'
     | '/users/'
     | '/vehicles/'
+    | '/bookings/$booking/edit'
+    | '/bookings/$bookingId/view'
+    | '/clients/$clientId/edit'
+    | '/clients/$clientId/view'
+    | '/drivers/$driverId/edit'
+    | '/drivers/$driverId/view'
+    | '/rides/$rideId/edit'
+    | '/rides/$rideId/view'
+    | '/services/$serviceId/edit'
+    | '/services/$serviceId/view'
+    | '/users/$userId/edit'
     | '/users/$userId/view'
+    | '/vehicles/$vehicleId/edit'
+    | '/vehicles/$vehicleId/view'
     | '/bookings/new/'
     | '/clients/new/'
     | '/reports/audits/'
@@ -381,7 +521,20 @@ export interface FileRouteTypes {
     | '/services'
     | '/users'
     | '/vehicles'
+    | '/bookings/$booking/edit'
+    | '/bookings/$bookingId/view'
+    | '/clients/$clientId/edit'
+    | '/clients/$clientId/view'
+    | '/drivers/$driverId/edit'
+    | '/drivers/$driverId/view'
+    | '/rides/$rideId/edit'
+    | '/rides/$rideId/view'
+    | '/services/$serviceId/edit'
+    | '/services/$serviceId/view'
+    | '/users/$userId/edit'
     | '/users/$userId/view'
+    | '/vehicles/$vehicleId/edit'
+    | '/vehicles/$vehicleId/view'
     | '/bookings/new'
     | '/clients/new'
     | '/reports/audits'
@@ -417,7 +570,20 @@ export interface FileRouteTypes {
     | '/_admin/services/'
     | '/_admin/users/'
     | '/_admin/vehicles/'
+    | '/_admin/bookings/$booking/edit'
+    | '/_admin/bookings/$bookingId/view'
+    | '/_admin/clients/$clientId/edit'
+    | '/_admin/clients/$clientId/view'
+    | '/_admin/drivers/$driverId/edit'
+    | '/_admin/drivers/$driverId/view'
+    | '/_admin/rides/$rideId/edit'
+    | '/_admin/rides/$rideId/view'
+    | '/_admin/services/$serviceId/edit'
+    | '/_admin/services/$serviceId/view'
+    | '/_admin/users/$userId/edit'
     | '/_admin/users/$userId/view'
+    | '/_admin/vehicles/$vehicleId/edit'
+    | '/_admin/vehicles/$vehicleId/view'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
     | '/_admin/reports/audits/'
@@ -639,11 +805,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/vehicles/$vehicleId/view': {
+      id: '/_admin/vehicles/$vehicleId/view'
+      path: '/vehicles/$vehicleId/view'
+      fullPath: '/vehicles/$vehicleId/view'
+      preLoaderRoute: typeof AdminVehiclesVehicleIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/vehicles/$vehicleId/edit': {
+      id: '/_admin/vehicles/$vehicleId/edit'
+      path: '/vehicles/$vehicleId/edit'
+      fullPath: '/vehicles/$vehicleId/edit'
+      preLoaderRoute: typeof AdminVehiclesVehicleIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/users/$userId/view': {
       id: '/_admin/users/$userId/view'
       path: '/users/$userId/view'
       fullPath: '/users/$userId/view'
       preLoaderRoute: typeof AdminUsersUserIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/users/$userId/edit': {
+      id: '/_admin/users/$userId/edit'
+      path: '/users/$userId/edit'
+      fullPath: '/users/$userId/edit'
+      preLoaderRoute: typeof AdminUsersUserIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/services/$serviceId/view': {
+      id: '/_admin/services/$serviceId/view'
+      path: '/services/$serviceId/view'
+      fullPath: '/services/$serviceId/view'
+      preLoaderRoute: typeof AdminServicesServiceIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/services/$serviceId/edit': {
+      id: '/_admin/services/$serviceId/edit'
+      path: '/services/$serviceId/edit'
+      fullPath: '/services/$serviceId/edit'
+      preLoaderRoute: typeof AdminServicesServiceIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/rides/$rideId/view': {
+      id: '/_admin/rides/$rideId/view'
+      path: '/rides/$rideId/view'
+      fullPath: '/rides/$rideId/view'
+      preLoaderRoute: typeof AdminRidesRideIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/rides/$rideId/edit': {
+      id: '/_admin/rides/$rideId/edit'
+      path: '/rides/$rideId/edit'
+      fullPath: '/rides/$rideId/edit'
+      preLoaderRoute: typeof AdminRidesRideIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/drivers/$driverId/view': {
+      id: '/_admin/drivers/$driverId/view'
+      path: '/drivers/$driverId/view'
+      fullPath: '/drivers/$driverId/view'
+      preLoaderRoute: typeof AdminDriversDriverIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/drivers/$driverId/edit': {
+      id: '/_admin/drivers/$driverId/edit'
+      path: '/drivers/$driverId/edit'
+      fullPath: '/drivers/$driverId/edit'
+      preLoaderRoute: typeof AdminDriversDriverIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/clients/$clientId/view': {
+      id: '/_admin/clients/$clientId/view'
+      path: '/clients/$clientId/view'
+      fullPath: '/clients/$clientId/view'
+      preLoaderRoute: typeof AdminClientsClientIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/clients/$clientId/edit': {
+      id: '/_admin/clients/$clientId/edit'
+      path: '/clients/$clientId/edit'
+      fullPath: '/clients/$clientId/edit'
+      preLoaderRoute: typeof AdminClientsClientIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/bookings/$bookingId/view': {
+      id: '/_admin/bookings/$bookingId/view'
+      path: '/bookings/$bookingId/view'
+      fullPath: '/bookings/$bookingId/view'
+      preLoaderRoute: typeof AdminBookingsBookingIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/bookings/$booking/edit': {
+      id: '/_admin/bookings/$booking/edit'
+      path: '/bookings/$booking/edit'
+      fullPath: '/bookings/$booking/edit'
+      preLoaderRoute: typeof AdminBookingsBookingEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/_vehicle-config/vehicle-types/': {
@@ -742,7 +999,20 @@ interface AdminRouteRouteChildren {
   AdminServicesIndexRoute: typeof AdminServicesIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
+  AdminBookingsBookingEditRoute: typeof AdminBookingsBookingEditRoute
+  AdminBookingsBookingIdViewRoute: typeof AdminBookingsBookingIdViewRoute
+  AdminClientsClientIdEditRoute: typeof AdminClientsClientIdEditRoute
+  AdminClientsClientIdViewRoute: typeof AdminClientsClientIdViewRoute
+  AdminDriversDriverIdEditRoute: typeof AdminDriversDriverIdEditRoute
+  AdminDriversDriverIdViewRoute: typeof AdminDriversDriverIdViewRoute
+  AdminRidesRideIdEditRoute: typeof AdminRidesRideIdEditRoute
+  AdminRidesRideIdViewRoute: typeof AdminRidesRideIdViewRoute
+  AdminServicesServiceIdEditRoute: typeof AdminServicesServiceIdEditRoute
+  AdminServicesServiceIdViewRoute: typeof AdminServicesServiceIdViewRoute
+  AdminUsersUserIdEditRoute: typeof AdminUsersUserIdEditRoute
   AdminUsersUserIdViewRoute: typeof AdminUsersUserIdViewRoute
+  AdminVehiclesVehicleIdEditRoute: typeof AdminVehiclesVehicleIdEditRoute
+  AdminVehiclesVehicleIdViewRoute: typeof AdminVehiclesVehicleIdViewRoute
   AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
   AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
@@ -766,7 +1036,20 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminServicesIndexRoute: AdminServicesIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
+  AdminBookingsBookingEditRoute: AdminBookingsBookingEditRoute,
+  AdminBookingsBookingIdViewRoute: AdminBookingsBookingIdViewRoute,
+  AdminClientsClientIdEditRoute: AdminClientsClientIdEditRoute,
+  AdminClientsClientIdViewRoute: AdminClientsClientIdViewRoute,
+  AdminDriversDriverIdEditRoute: AdminDriversDriverIdEditRoute,
+  AdminDriversDriverIdViewRoute: AdminDriversDriverIdViewRoute,
+  AdminRidesRideIdEditRoute: AdminRidesRideIdEditRoute,
+  AdminRidesRideIdViewRoute: AdminRidesRideIdViewRoute,
+  AdminServicesServiceIdEditRoute: AdminServicesServiceIdEditRoute,
+  AdminServicesServiceIdViewRoute: AdminServicesServiceIdViewRoute,
+  AdminUsersUserIdEditRoute: AdminUsersUserIdEditRoute,
   AdminUsersUserIdViewRoute: AdminUsersUserIdViewRoute,
+  AdminVehiclesVehicleIdEditRoute: AdminVehiclesVehicleIdEditRoute,
+  AdminVehiclesVehicleIdViewRoute: AdminVehiclesVehicleIdViewRoute,
   AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
   AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,

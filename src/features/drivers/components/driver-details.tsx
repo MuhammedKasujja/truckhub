@@ -12,23 +12,19 @@ import {
 } from "@/components/ui/card"
 import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter"
 import { vehicleAssignDriverFn } from "@/features/vehicles/services"
-import { useFetchEror } from "@/hooks/use-fetch-error"
 import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
-import { getDriverProfileFn } from "@/features/drivers/services"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { Driver } from "../types"
 
 type DriverDetailsProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getDriverProfileFn>>]>
+  driver: Driver | undefined
 }
 
-export function DriverDetails({ promises }: DriverDetailsProps) {
-  const [{ data: driver, error }] = React.use(promises)
+export function DriverDetails({ driver }: DriverDetailsProps) {
   const [vehicleId, setVehicleId] = React.useState<number | null>()
-
-  useFetchEror(error)
 
   async function assignDriver() {
     const { isSuccess, error, message } = await vehicleAssignDriverFn({
@@ -51,7 +47,10 @@ export function DriverDetails({ promises }: DriverDetailsProps) {
           <CardTitle>{driver?.fullname}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link to={`/drivers/${driver?.id}/edit`}>
+              <Link
+                to={"/drivers/$driverId/edit"}
+                params={{ driverId: driver?.id }}
+              >
                 <Edit2Icon />
               </Link>
             </Button>
