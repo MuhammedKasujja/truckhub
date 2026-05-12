@@ -8,6 +8,7 @@ import {
   getClientProfileFn,
   getClientBookingsFn,
   getClientPaymentsFn,
+  getClientsByQueryFn,
 } from "./services"
 
 export const clientQueryKeys = {
@@ -20,6 +21,11 @@ export const clientQueryKeys = {
   payments: (id: EntityId) => [...clientQueryKeys.details(), "payments", id],
   bookings: (id: EntityId) => [...clientQueryKeys.details(), "bookings", id],
   rides: (id: EntityId) => [...clientQueryKeys.details(), "rides", id],
+  search: (query?: string | undefined) => [
+    ...clientQueryKeys.details(),
+    "search",
+    query,
+  ],
 } as const
 
 export const clientsQueryOptions = (input: CustomerListSearchParams) =>
@@ -32,6 +38,12 @@ export const clientProfileQueryOptions = (customerId: EntityId) =>
   queryOptions({
     queryKey: clientQueryKeys.profile(customerId),
     queryFn: () => getClientProfileFn({ data: { id: customerId } }),
+  })
+
+export const clientsSearchQueryOptions = (query?: string | undefined) =>
+  queryOptions({
+    queryKey: clientQueryKeys.search(query),
+    queryFn: () => getClientsByQueryFn({ data: { search: query } }),
   })
 
 export const clientEditQueryOptions = (customerId: EntityId) =>

@@ -15,7 +15,7 @@ export function BookingClientWidget({ client }: BookingClientWidgetProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         {/* <Button variant={"secondary"} asChild>
-          <Link to={`/customers/${client.id}/view`}>{client.fullname}</Link>
+          <Link to={`/clients/${client.id}/view`}>{client.fullname}</Link>
         </Button> */}
         <div>{client.email}</div>
         <div>{client.phone}</div>

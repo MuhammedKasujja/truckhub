@@ -19,8 +19,6 @@ import {
   MoneyField,
   DateTimePickerField,
 } from "@/components/ui/form-fields"
-import { getCustomersByQueryFn } from "@/features/clients/services"
-import { getServicesByQuery } from "@/features/services/services"
 import { useTranslation } from "@/i18n"
 import React, { Activity, useMemo, useState } from "react"
 import z from "zod"
@@ -36,17 +34,15 @@ import { Service } from "@/features/services/types"
 import { formatPrice } from "@/lib/format"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { servicesSearchQueryOptions } from "@/features/services/query-options"
+import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 
 type BookingRequestFormProps = {
-  promises: Promise<
-    [
-      Awaited<ReturnType<typeof getServicesByQuery>>,
-      Awaited<ReturnType<typeof getCustomersByQuery>>,
-    ]
-  >
+  booking?: unknown
 }
 
-export function BookingRequestForm({ promises }: BookingRequestFormProps) {
+export function BookingRequestForm({ booking }: BookingRequestFormProps) {
   const tr = useTranslation()
   const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
   const [serviceView, setServiceView] = useState<"list" | "single">("list")
@@ -66,7 +62,11 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
     name: "services",
   })
 
-  const [{ data: services }, { data: passengers }] = React.use(promises)
+  const {
+    data: { data: services },
+  } = useSuspenseQuery(servicesSearchQueryOptions())
+
+  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
 
   async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
     const { isSuccess, error } = await createBookingFn({ data: values })
@@ -134,7 +134,7 @@ export function BookingRequestForm({ promises }: BookingRequestFormProps) {
                   label={tr("client")}
                   name={"customer_id"}
                   control={control}
-                  options={passengers.map((ele) => ({
+                  options={(clientsResponse?.data ?? [])?.map((ele) => ({
                     label: ele.fullname,
                     value: ele.id,
                   }))}

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -9,14 +9,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useFetchEror } from "@/hooks/use-fetch-error";
-import { CreditCard, Edit2Icon } from "lucide-react";
+} from "@/components/ui/card"
+import { CreditCard, Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import React from "react";
-import { getBookingDetailsFn } from "@/features/bookings/services";
-import { formatDate, formatPrice } from "@/lib/format";
-import { Status } from "@/components/ui/status";
+import { formatDate, formatPrice } from "@/lib/format"
+import { Status } from "@/components/ui/status"
 import {
   Table,
   TableBody,
@@ -24,33 +21,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal";
-import { Can } from "@/components/has-permission";
+} from "@/components/ui/table"
+import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
+import { Can } from "@/components/has-permission"
 import {
   Empty,
   EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { BookingClientWidget } from "./booking-client";
-import { BookingServiceList } from "./booking-serive-list";
+} from "@/components/ui/empty"
+import { BookingClientWidget } from "./booking-client"
+import { BookingServiceList } from "./booking-serive-list"
+import { BookingDetails } from "../types"
 
 type BookingDetailsWrapperProps = {
-  promises: Promise<[Awaited<ReturnType<typeof getBookingDetailsFn>>]>;
-};
+  booking: BookingDetails | undefined
+}
 
-export function BookingDetailsWrapper({
-  promises,
-}: BookingDetailsWrapperProps) {
-  const [{ data: booking, error }] = React.use(promises);
-
-  useFetchEror(error);
-
+export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
   return (
     <div className="grid gap-5">
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>{booking?.number}</CardTitle>
@@ -84,7 +76,7 @@ export function BookingDetailsWrapper({
             <div>{formatPrice(booking?.balance)}</div>
             <div>{formatDate(booking?.created_at)}</div>
           </CardContent>
-          <CardFooter className="space-y-4 flex items-center gap-2">
+          <CardFooter className="flex items-center gap-2 space-y-4">
             <Button variant={"outline"}>
               Partial: {formatPrice(booking?.partial)}
             </Button>
@@ -94,7 +86,7 @@ export function BookingDetailsWrapper({
         </Card>
         <BookingClientWidget client={booking!.customer} />
       </div>
-      <div className="grid  md:grid-flow-col gap-4">
+      <div className="grid gap-4 md:grid-flow-col">
         <BookingServiceList services={booking?.services ?? []} />
         <Card>
           <CardHeader>
@@ -164,5 +156,5 @@ export function BookingDetailsWrapper({
         </Card>
       </div>
     </div>
-  );
+  )
 }

@@ -45,7 +45,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/customers/${row.original.customer.id}/view`}>
+            <Link to={`/clients/${row.original.customer.id}/view`}>
               {row.original.customer.fullname}
             </Link>
           </Button>

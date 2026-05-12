@@ -50,7 +50,7 @@ import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drive
 import { Route as AdminClientsClientIdViewRouteImport } from './app/_admin/clients/$clientId.view'
 import { Route as AdminClientsClientIdEditRouteImport } from './app/_admin/clients/$clientId.edit'
 import { Route as AdminBookingsBookingIdViewRouteImport } from './app/_admin/bookings/$bookingId.view'
-import { Route as AdminBookingsBookingEditRouteImport } from './app/_admin/bookings/$booking.edit'
+import { Route as AdminBookingsBookingIdEditRouteImport } from './app/_admin/bookings/$bookingId.edit'
 import { Route as AdminSettingsVehicleConfigVehicleTypesIndexRouteImport } from './app/_admin/settings/_vehicle-config/vehicle-types/index'
 import { Route as AdminSettingsVehicleConfigTonnagesIndexRouteImport } from './app/_admin/settings/_vehicle-config/tonnages/index'
 import { Route as AdminSettingsVehicleConfigDriveTrainsIndexRouteImport } from './app/_admin/settings/_vehicle-config/drive-trains/index'
@@ -272,10 +272,10 @@ const AdminBookingsBookingIdViewRoute =
     path: '/bookings/$bookingId/view',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const AdminBookingsBookingEditRoute =
-  AdminBookingsBookingEditRouteImport.update({
-    id: '/bookings/$booking/edit',
-    path: '/bookings/$booking/edit',
+const AdminBookingsBookingIdEditRoute =
+  AdminBookingsBookingIdEditRouteImport.update({
+    id: '/bookings/$bookingId/edit',
+    path: '/bookings/$bookingId/edit',
     getParentRoute: () => AdminRouteRoute,
   } as any)
 const AdminSettingsVehicleConfigVehicleTypesIndexRoute =
@@ -328,7 +328,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof AdminServicesIndexRoute
   '/users/': typeof AdminUsersIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
-  '/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
@@ -375,7 +375,7 @@ export interface FileRoutesByTo {
   '/services': typeof AdminServicesIndexRoute
   '/users': typeof AdminUsersIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
-  '/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
@@ -425,7 +425,7 @@ export interface FileRoutesById {
   '/_admin/services/': typeof AdminServicesIndexRoute
   '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
-  '/_admin/bookings/$booking/edit': typeof AdminBookingsBookingEditRoute
+  '/_admin/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/_admin/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/_admin/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
@@ -474,7 +474,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/users/'
     | '/vehicles/'
-    | '/bookings/$booking/edit'
+    | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
     | '/clients/$clientId/edit'
     | '/clients/$clientId/view'
@@ -521,7 +521,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/users'
     | '/vehicles'
-    | '/bookings/$booking/edit'
+    | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
     | '/clients/$clientId/edit'
     | '/clients/$clientId/view'
@@ -570,7 +570,7 @@ export interface FileRouteTypes {
     | '/_admin/services/'
     | '/_admin/users/'
     | '/_admin/vehicles/'
-    | '/_admin/bookings/$booking/edit'
+    | '/_admin/bookings/$bookingId/edit'
     | '/_admin/bookings/$bookingId/view'
     | '/_admin/clients/$clientId/edit'
     | '/_admin/clients/$clientId/view'
@@ -896,11 +896,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsBookingIdViewRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/_admin/bookings/$booking/edit': {
-      id: '/_admin/bookings/$booking/edit'
-      path: '/bookings/$booking/edit'
-      fullPath: '/bookings/$booking/edit'
-      preLoaderRoute: typeof AdminBookingsBookingEditRouteImport
+    '/_admin/bookings/$bookingId/edit': {
+      id: '/_admin/bookings/$bookingId/edit'
+      path: '/bookings/$bookingId/edit'
+      fullPath: '/bookings/$bookingId/edit'
+      preLoaderRoute: typeof AdminBookingsBookingIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/_vehicle-config/vehicle-types/': {
@@ -999,7 +999,7 @@ interface AdminRouteRouteChildren {
   AdminServicesIndexRoute: typeof AdminServicesIndexRoute
   AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
-  AdminBookingsBookingEditRoute: typeof AdminBookingsBookingEditRoute
+  AdminBookingsBookingIdEditRoute: typeof AdminBookingsBookingIdEditRoute
   AdminBookingsBookingIdViewRoute: typeof AdminBookingsBookingIdViewRoute
   AdminClientsClientIdEditRoute: typeof AdminClientsClientIdEditRoute
   AdminClientsClientIdViewRoute: typeof AdminClientsClientIdViewRoute
@@ -1036,7 +1036,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminServicesIndexRoute: AdminServicesIndexRoute,
   AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
-  AdminBookingsBookingEditRoute: AdminBookingsBookingEditRoute,
+  AdminBookingsBookingIdEditRoute: AdminBookingsBookingIdEditRoute,
   AdminBookingsBookingIdViewRoute: AdminBookingsBookingIdViewRoute,
   AdminClientsClientIdEditRoute: AdminClientsClientIdEditRoute,
   AdminClientsClientIdViewRoute: AdminClientsClientIdViewRoute,

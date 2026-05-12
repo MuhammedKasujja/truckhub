@@ -1,6 +1,6 @@
 import { BookingListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { getBookingsFn, getBookingStatisticsFn } from "./services"
+import { getBookingDetailsFn, getBookingsFn, getBookingStatisticsFn } from "./services"
 
 export const bookingsQueryKeys = {
   all: () => ["bookings"],
@@ -20,4 +20,10 @@ export const createBookingStatisticsQueryOptions = () =>
   queryOptions({
     queryKey: bookingsQueryKeys.statistics(),
     queryFn: () => getBookingStatisticsFn(),
+  })
+
+export const bookingDetailsQueryOptions = (bookingId: string) =>
+  queryOptions({
+    queryKey: bookingsQueryKeys.detail(bookingId),
+    queryFn: () => getBookingDetailsFn({ data: {id: bookingId} }),
   })
