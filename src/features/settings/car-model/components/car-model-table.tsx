@@ -15,7 +15,7 @@ import { useSearch } from "@tanstack/react-router"
 
 export function CarModelTable() {
   const search = useSearch({
-    from: "/_admin/settings/_vehicle-config/car-models/",
+    from: "/_admin/settings/vehicle-config/car-models/",
   })
   const {
     data: { data: carModels, error },

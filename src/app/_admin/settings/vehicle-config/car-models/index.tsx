@@ -3,7 +3,7 @@ import { createCarModelsListQueryOptions } from "@/features/settings/car-model/q
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
-  "/_admin/settings/_vehicle-config/car-models/"
+  "/_admin/settings/vehicle-config/car-models/"
 )({
   component: RouteComponent,
   loader: ({ context, location }) =>

@@ -16,7 +16,7 @@ import { useSearch } from "@tanstack/react-router"
 
 export function DriveTrainTable() {
   const search = useSearch({
-    from: "/_admin/settings/_vehicle-config/drive-trains/",
+    from: "/_admin/settings/vehicle-config/drive-trains/",
   })
   const {
     data: { data, error },

@@ -15,7 +15,7 @@ import { useSearch } from "@tanstack/react-router"
 
 export function VehicleTypeTable() {
   const search = useSearch({
-    from: "/_admin/settings/_vehicle-config/vehicle-types/",
+    from: "/_admin/settings/vehicle-config/vehicle-types/",
   })
   const { data } = useSuspenseQuery(createVehicleTypesQueryOptions(search))
   const columns = React.useMemo(() => getVehicleTypeColumns(), [])

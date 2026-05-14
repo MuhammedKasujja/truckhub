@@ -2,31 +2,36 @@ import { createFileRoute, Outlet } from "@tanstack/react-router"
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useLocation, useRouter } from "@tanstack/react-router"
+import { Route as CarBrandsRoute } from "@/app/_admin/settings/vehicle-config/car-brands"
+import { Route as CarModelsRoute } from "@/app/_admin/settings/vehicle-config/car-models"
+import { Route as DriverTrainsRoute } from "@/app/_admin/settings/vehicle-config/drive-trains"
+import { Route as TonnagesRoute } from "@/app/_admin/settings/vehicle-config/tonnages"
+import { Route as VehicleTypesRoute } from "@/app/_admin/settings/vehicle-config/vehicle-types"
 
 const vehicleConfigSections = [
   {
     name: "Car Makes",
-    route: "/settings/car-brands",
+    route: CarBrandsRoute.to,
   },
   {
     name: "Car Models",
-    route: "/settings/car-models",
+    route: CarModelsRoute.to,
   },
   {
     name: "Drive Trains",
-    route: "/settings/drive-trains",
+    route: DriverTrainsRoute.to,
   },
   {
     name: "Vehicle Types",
-    route: "/settings/vehicle-types",
+    route: VehicleTypesRoute.to,
   },
   {
     name: "Tonnages",
-    route: "/settings/tonnages",
+    route: TonnagesRoute.to,
   },
 ] as const
 
-export const Route = createFileRoute("/_admin/settings/_vehicle-config")({
+export const Route = createFileRoute("/_admin/settings/vehicle-config")({
   component: RouteComponent,
 })
 

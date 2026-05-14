@@ -1,13 +1,5 @@
 "use client"
-import {
-  Bell,
-  Globe,
-  Home,
-  Keyboard,
-  Lock,
-  Paintbrush,
-  Settings,
-} from "lucide-react"
+import { Bell, Globe, Home, Keyboard, Lock, Settings } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,45 +10,33 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "@tanstack/react-router"
+import { Route as VehicleConfigDefaultRoute } from "@/app/_admin/settings/vehicle-config/car-brands"
+import { Route as CompanyDetailsRoute } from "@/app/_admin/settings/company-details"
+import { Route as PermissionsRoute } from "@/app/_admin/settings/permissions"
+import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
+import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
 
 const data = {
   nav: [
-    { name: "Company Details", icon: Home, route: "/settings/company-details" as const },
-    { name: "Car Brands", icon: Home, route: "/settings/car-brands" as const },
-    {
-      name: "Car Models",
-      icon: Paintbrush,
-      route: "/settings/car-models" as const,
-    },
-    { name: "Tonnages", icon: Globe, route: "/settings/tonnages" as const },
-    {
-      name: "Vehicle Types",
-      icon: Globe,
-      route: "/settings/vehicle-types" as const,
-    },
-    {
-      name: "Drive Trains",
-      icon: Globe,
-      route: "/settings/drive-trains" as const,
-    },
+    { name: "Company Details", icon: Home, route: CompanyDetailsRoute.to },
     {
       name: "Pricing Plans",
       icon: Globe,
-      route: "/settings/pricing-config" as const,
+      route: PricingConfigRoute.to,
     },
-    // {
-    //   name: "Vehicle Config",
-    //   icon: Globe,
-    //   route: "/settings/_vehicle-config" as const,
-    // },
+    {
+      name: "Vehicle Config",
+      icon: Globe,
+      route: VehicleConfigDefaultRoute.to,
+    },
     { name: "Privacy & visibility", icon: Lock },
     {
       name: "Permissions",
       icon: Keyboard,
-      route: "/settings/permissions" as const,
+      route: PermissionsRoute.to,
     },
     { name: "Notifications", icon: Bell },
-    { name: "Advanced", route: "/settings/advanced" as const, icon: Settings },
+    { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
   ],
 }
 
@@ -70,7 +50,10 @@ export function SettingsSidebar() {
             <SidebarMenu>
               {data.nav.map((item) => (
                 <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild isActive={item.route == location.pathname}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.route == location.pathname}
+                  >
                     {item.route ? (
                       <Link to={item.route}>
                         <item.icon />

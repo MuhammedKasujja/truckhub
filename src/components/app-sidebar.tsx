@@ -33,6 +33,17 @@ import {
 } from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
+import { Route as DashboardRoute } from "@/app/_admin/dashboard"
+import { Route as RidesRoute } from "@/app/_admin/rides"
+import { Route as BookingsRoute } from "@/app/_admin/bookings"
+import { Route as PaymentsRoute } from "@/app/_admin/payments"
+import { Route as ServicesRoute } from "@/app/_admin/services"
+import { Route as ClientsRoute } from "@/app/_admin/clients"
+import { Route as DriversRoute } from "@/app/_admin/drivers"
+import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
+import { Route as UsersRoute } from "@/app/_admin/users"
+import { Route as ReportsRoute } from "@/app/_admin/reports"
+import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 
 type SidebarItem = {
   title: GlobalKeys
@@ -47,71 +58,71 @@ type SidebarMenuStruct = {
 }
 
 const data: SidebarMenuStruct = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
+  versions: ["1.0.1"],
   items: [
     {
       title: "routes.dashboard",
-      url: "/dashboard",
+      url: DashboardRoute.to,
       icon: LayoutDashboard,
       permission: "bookings:view",
     },
     {
       title: "routes.rides",
-      url: "/rides",
+      url: RidesRoute.to,
       icon: DatabaseSearch,
       permission: "rides:view",
     },
     {
       title: "routes.bookings",
-      url: "/bookings",
+      url: BookingsRoute.to,
       icon: CalendarCheck,
       permission: "bookings:view",
     },
     {
       title: "routes.payments",
-      url: "/payments",
+      url: PaymentsRoute.to,
       icon: CreditCard,
       permission: "payments:view",
     },
     {
       title: "routes.services",
-      url: "/services",
+      url: ServicesRoute.to,
       icon: MonitorCog,
       permission: "services:view",
     },
     {
       title: "routes.customers",
-      url: "/clients",
+      url: ClientsRoute.to,
       icon: Users,
       permission: "clients:view",
     },
     {
       title: "routes.drivers",
-      url: "/drivers",
+      url: DriversRoute.to,
       icon: ShieldUser,
       permission: "drivers:view",
     },
     {
       title: "routes.vehicles",
-      url: "/vehicles",
+      url: VehiclesRoute.to,
       icon: BusFront,
       permission: "vehicles:view",
     },
     {
       title: "routes.users",
-      url: "/users",
+      url: UsersRoute.to,
       icon: Users,
       permission: "users:view",
     },
     {
       title: "routes.reports",
-      url: "/reports",
+      url: ReportsRoute.to,
       icon: ChartLine,
       permission: "config:view",
     },
     {
       title: "routes.settings",
-      url: "/settings",
+      url: SettingsDefaultRoute.to,
       icon: SettingsIcon,
       permission: "config:view",
     },
@@ -138,7 +149,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 export function NavMain({ items }: { items: SidebarItem[] }) {
   const location = useLocation()
   const tr = useTranslation()
-  const matchRoute = useMatchRoute();
+  const matchRoute = useMatchRoute()
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">

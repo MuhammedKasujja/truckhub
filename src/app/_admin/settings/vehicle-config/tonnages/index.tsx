@@ -3,7 +3,7 @@ import { createTonnagesQueryOptions } from "@/features/settings/tonnage/query-op
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
-  "/_admin/settings/_vehicle-config/tonnages/"
+  "/_admin/settings/vehicle-config/tonnages/"
 )({
   component: RouteComponent,
   loader: ({ context }) =>

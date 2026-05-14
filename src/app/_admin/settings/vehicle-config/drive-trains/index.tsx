@@ -3,7 +3,7 @@ import { createDriveTrainsListQueryOptions } from "@/features/settings/drive-tra
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
-  "/_admin/settings/_vehicle-config/drive-trains/"
+  "/_admin/settings/vehicle-config/drive-trains/"
 )({
   component: RouteComponent,
   loader: ({ context, location }) =>
