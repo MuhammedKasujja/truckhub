@@ -91,7 +91,7 @@ const data: SidebarMenuStruct = {
       permission: "services:view",
     },
     {
-      title: "routes.customers",
+      title: "routes.clients",
       url: ClientsRoute.to,
       icon: Users,
       permission: "clients:view",

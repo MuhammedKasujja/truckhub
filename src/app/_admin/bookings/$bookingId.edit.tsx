@@ -21,5 +21,5 @@ export const Route = createFileRoute("/_admin/bookings/$bookingId/edit")({
 
 function RouteComponent() {
   const [{ data: booking }] = Route.useLoaderData()
-  return <BookingRequestForm booking={booking} />
+  return <BookingRequestForm initialData={booking} />
 }

@@ -22,7 +22,10 @@ import {
 import { useTranslation } from "@/i18n"
 import { Activity, useMemo, useState } from "react"
 import z from "zod"
-import { BookingCreateSchema } from "@/features/bookings/schemas"
+import {
+  BookingCreateSchema,
+  BookingUpdateSchemaType,
+} from "@/features/bookings/schemas"
 import { toast } from "sonner"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -39,13 +42,15 @@ import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 
 type BookingRequestFormProps = {
-  booking?: unknown
+  initialData?: BookingUpdateSchemaType
 }
 
-export function BookingRequestForm({ booking }: BookingRequestFormProps) {
+export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   const tr = useTranslation()
   const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
   const [serviceView, setServiceView] = useState<"list" | "single">("list")
+
+  const isEdit = !!initialData
 
   const { control, handleSubmit, formState, watch } = useForm<
     z.infer<typeof BookingCreateSchema>
@@ -113,7 +118,7 @@ export function BookingRequestForm({ booking }: BookingRequestFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{tr("new_booking")}</CardTitle>
+        <CardTitle>{isEdit ? tr("edit_booking") : tr("new_booking")}</CardTitle>
         <CardDescription>{tr("create_booking_help")}</CardDescription>
         <CardAction>
           <CardTitle>

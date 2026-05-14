@@ -98,6 +98,7 @@ const en = {
       email: "Email",
       phone: "Phone",
       date: "Date",
+      assigned: "Assigned",
       description: "Description",
     },
     change_password: "Change Password",
@@ -108,7 +109,7 @@ const en = {
   },
   routes: {
     drivers: "Drivers",
-    customers: "Customers",
+    clients: "Clients",
     settings: "Settings",
     dashboard: "Dashboard",
     vehicles: "Vehicles",
