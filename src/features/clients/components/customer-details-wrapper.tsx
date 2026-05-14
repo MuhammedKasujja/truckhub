@@ -38,6 +38,7 @@ import {
   clientProfileQueryOptions,
   clientRidesQueryOptions,
 } from "../query-options"
+import { ClientRoutePricingForm } from "./client-route-pricing-form"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -77,6 +78,7 @@ export function CustomerDetailsWrapper({
         <CardHeader>
           <CardTitle>{customer?.fullname}</CardTitle>
           <CardAction className="flex gap-4">
+            <ClientRoutePricingForm/>
             <Can permission={"payments:create"}>
               <EditPaymentModal
                 initialData={{

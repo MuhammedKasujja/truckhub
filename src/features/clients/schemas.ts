@@ -1,13 +1,13 @@
-import z from "zod";
-import { Customer } from "@/features/clients/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
+import z from "zod"
+import { Customer } from "@/features/clients/types"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
 import {
   parseAsString,
   parseAsArrayOf,
   parseAsInteger,
   parseAsStringEnum,
   createSearchParamsCache,
-} from "nuqs/server";
+} from "nuqs/server"
 
 export const CustomerCreateSchema = z.object({
   first_name: z.string(),
@@ -18,16 +18,16 @@ export const CustomerCreateSchema = z.object({
   password: z.string(),
   tin_number: z.string(),
   asssigned_user_id: z.number().optional().nullable(),
-});
+})
 
 export const CustomerUpdateSchema = z.object({
   id: z.number(),
   ...CustomerCreateSchema.partial().shape,
-});
+})
 
-export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>;
+export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>
 
-export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>;
+export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>
 
 export const CustomerSearchParamsCache = createSearchParamsCache({
   page: parseAsInteger.withDefault(1),
@@ -40,8 +40,31 @@ export const CustomerSearchParamsCache = createSearchParamsCache({
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+})
 
 export type CustomerListSearchParams = Awaited<
   ReturnType<typeof CustomerSearchParamsCache.parse>
->;
+>
+
+export const TonnagePricingSchema = z.object({
+  tonnage_min: z.number(),
+  tonnage_max: z.number(),
+  price: z.number(),
+})
+
+export const DistanceTonnagePricingSchema = z.object({
+  route: z.string().min(1, "Route is required"),
+  distance_km: z.number().positive("Distance is required"),
+  delivery_min_hrs: z.number(),
+  delivery_max_hrs: z.number(),
+  tonnages: z
+    .array(TonnagePricingSchema)
+    .min(1, "At least one tonnage pricing is required"),
+})
+
+export const RoutePricingSchema = z.object({
+  effective_date: z.date(),
+  routes_pricings: z.array(DistanceTonnagePricingSchema),
+})
+
+export type RoutePricingType = z.infer<typeof RoutePricingSchema>
