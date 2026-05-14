@@ -2,7 +2,7 @@ import z from "zod";
 import { IDSchema } from "@/schemas";
 
 export const RoleCreateSchema = z.object({
-  name: z.string(),
+  name: z.string("Name is required").min(1, "Name is required"),
   description: z.string().optional().nullable(),
 });
 

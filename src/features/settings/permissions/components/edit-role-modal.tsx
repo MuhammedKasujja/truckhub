@@ -20,7 +20,7 @@ import {
   RoleUpdateSchemaType,
   RoleUpdateSchema,
 } from "@/features/settings/permissions/schemas"
-import { TextField } from "@/components/ui/form-fields"
+import { TextareaField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
@@ -75,8 +75,14 @@ export function EditRoleDialog({ initialData }: EditRoleDialogProps) {
             <DialogTitle>{isEdit ? "Edit Role" : "New Role"}</DialogTitle>
             <DialogDescription>Create user role</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-2">
+          <div className="grid items-center gap-4">
             <TextField label="Name" control={form.control} name={"name"} />
+            <TextareaField
+              label="Description"
+              control={form.control}
+              name={"description"}
+              required={false}
+            />
           </div>
           <DialogFooter className="sm:justify-end">
             <SubmitButton

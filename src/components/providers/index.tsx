@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme/provider"
 import { Theme } from "@/lib/theme"
 import { DeepPartial } from "@/types"
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router"
+import { HotkeysProvider } from "react-hotkeys-hook"
 
 export function Providers({
   locale,
@@ -18,19 +19,21 @@ export function Providers({
   children: React.ReactNode
 }>) {
   return (
-    <ThemeProvider
-      theme={theme}
-      // attribute="class"
-      // defaultTheme="system"
-      // enableSystem
-      // disableTransitionOnChange
-    >
-      <NuqsAdapter>
-        <IntlProvider locale={locale} messages={messages}>
-          <TooltipProvider>{children}</TooltipProvider>
-        </IntlProvider>
-        <Toaster position={"top-right"} />
-      </NuqsAdapter>
-    </ThemeProvider>
+    <HotkeysProvider initiallyActiveScopes={['main']}>
+      <ThemeProvider
+        theme={theme}
+        // attribute="class"
+        // defaultTheme="system"
+        // enableSystem
+        // disableTransitionOnChange
+      >
+        <NuqsAdapter>
+          <IntlProvider locale={locale} messages={messages}>
+            <TooltipProvider>{children}</TooltipProvider>
+          </IntlProvider>
+          <Toaster position={"top-right"} />
+        </NuqsAdapter>
+      </ThemeProvider>
+    </HotkeysProvider>
   )
 }

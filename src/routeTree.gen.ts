@@ -31,7 +31,9 @@ import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/_vehicle-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
+import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPermissionsIndexRouteImport } from './app/_admin/settings/permissions/index'
+import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
@@ -166,10 +168,22 @@ const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
   path: '/users/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminSettingsPricingConfigIndexRoute =
+  AdminSettingsPricingConfigIndexRouteImport.update({
+    id: '/pricing-config/',
+    path: '/pricing-config/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminSettingsPermissionsIndexRoute =
   AdminSettingsPermissionsIndexRouteImport.update({
     id: '/permissions/',
     path: '/permissions/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsCompanyDetailsIndexRoute =
+  AdminSettingsCompanyDetailsIndexRouteImport.update({
+    id: '/company-details/',
+    path: '/company-details/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsAdvancedIndexRoute =
@@ -347,7 +361,9 @@ export interface FileRoutesByFullPath {
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
+  '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/users/new/': typeof AdminUsersNewIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/settings/car-brands/': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
@@ -394,7 +410,9 @@ export interface FileRoutesByTo {
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions': typeof AdminSettingsPermissionsIndexRoute
+  '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
   '/users/new': typeof AdminUsersNewIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
   '/settings/car-brands': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
@@ -444,7 +462,9 @@ export interface FileRoutesById {
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
+  '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/_admin/users/new/': typeof AdminUsersNewIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/_admin/settings/_vehicle-config/car-brands/': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
@@ -493,7 +513,9 @@ export interface FileRouteTypes {
     | '/reports/audits/'
     | '/services/new/'
     | '/settings/advanced/'
+    | '/settings/company-details/'
     | '/settings/permissions/'
+    | '/settings/pricing-config/'
     | '/users/new/'
     | '/vehicles/new/'
     | '/settings/car-brands/'
@@ -540,7 +562,9 @@ export interface FileRouteTypes {
     | '/reports/audits'
     | '/services/new'
     | '/settings/advanced'
+    | '/settings/company-details'
     | '/settings/permissions'
+    | '/settings/pricing-config'
     | '/users/new'
     | '/vehicles/new'
     | '/settings/car-brands'
@@ -589,7 +613,9 @@ export interface FileRouteTypes {
     | '/_admin/reports/audits/'
     | '/_admin/services/new/'
     | '/_admin/settings/advanced/'
+    | '/_admin/settings/company-details/'
     | '/_admin/settings/permissions/'
+    | '/_admin/settings/pricing-config/'
     | '/_admin/users/new/'
     | '/_admin/vehicles/new/'
     | '/_admin/settings/_vehicle-config/car-brands/'
@@ -763,11 +789,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/settings/pricing-config/': {
+      id: '/_admin/settings/pricing-config/'
+      path: '/pricing-config'
+      fullPath: '/settings/pricing-config/'
+      preLoaderRoute: typeof AdminSettingsPricingConfigIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/settings/permissions/': {
       id: '/_admin/settings/permissions/'
       path: '/permissions'
       fullPath: '/settings/permissions/'
       preLoaderRoute: typeof AdminSettingsPermissionsIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/company-details/': {
+      id: '/_admin/settings/company-details/'
+      path: '/company-details'
+      fullPath: '/settings/company-details/'
+      preLoaderRoute: typeof AdminSettingsCompanyDetailsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/advanced/': {
@@ -971,14 +1011,18 @@ const AdminSettingsVehicleConfigRouteRouteWithChildren =
 interface AdminSettingsRouteRouteChildren {
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
+  AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsPermissionsIndexRoute: typeof AdminSettingsPermissionsIndexRoute
+  AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
 }
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsVehicleConfigRouteRoute:
     AdminSettingsVehicleConfigRouteRouteWithChildren,
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
+  AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsPermissionsIndexRoute: AdminSettingsPermissionsIndexRoute,
+  AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
 }
 
 const AdminSettingsRouteRouteWithChildren =

@@ -1,6 +1,11 @@
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/session"
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useRouter,
+} from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarProvider,
@@ -10,6 +15,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { NavigationActions } from "@/components/navigation-actions"
 import { SearchForm } from "@/components/search-form"
+import { useHotkeys } from "react-hotkeys-hook"
+import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 
 export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
@@ -27,6 +34,7 @@ export const Route = createFileRoute("/_admin")({
 
 function RouteComponent() {
   const { user } = Route.useRouteContext()
+  useGlobalShortcuts()
   return (
     <AuthProvider value={user}>
       <SidebarProvider className="overflow-x-hidden">

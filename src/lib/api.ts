@@ -1,6 +1,6 @@
-import { getAccessToken } from "@/lib/session";
-import { jsonFormatter, logger } from "@/lib/logger";
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { jsonFormatter, logger } from "@/lib/logger"
+import { getAccessTokenFn } from "@/features/auth/services"
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios"
 
 const api = axios.create({
   baseURL: `${process.env.BACKEND_URL}`,
@@ -9,51 +9,51 @@ const api = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-});
+})
 
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     if (process.env.NODE_ENV === "development") {
-      logger.info(`Request data **************`);
-      if (config.data) logger.debug(jsonFormatter(config.data));
+      logger.info(`Request data **************`)
+      if (config.data) logger.debug(jsonFormatter(config.data))
     }
     // Skip adding token to login / refresh endpoints
     // const noAuthEndpoints = ["/login", "/refresh-token"];
 
     if (config.url?.includes("login")) {
-      return config;
+      return config
     }
-    const accessToken = await getAccessToken();
-    config.headers.Authorization = `Bearer ${accessToken}`;
-    return config;
+    const accessToken = await getAccessTokenFn()
+    config.headers.Authorization = `Bearer ${accessToken}`
+    return config
   },
   (error) => {
     // logger.error(error);
-    return Promise.reject(error);
-  },
-);
+    return Promise.reject(error)
+  }
+)
 
 api.interceptors.response.use(
   (response) => {
     if (process.env.NODE_ENV === "development") {
-      logger.info(`Api ************** ${response.config.url}`);
-      logger.debug(jsonFormatter(response.data));
+      logger.info(`Api ************** ${response.config.url}`)
+      logger.debug(jsonFormatter(response.data))
     }
-    return response;
+    return response
   },
   async (error: AxiosError) => {
     if (process.env.NODE_ENV === "development") {
       logger.info(
-        `Endpoint  ${error.config?.url} [ ${error.request.method} ] ${error.code} --> ${error.status}\n`,
-      );
+        `Endpoint  ${error.config?.url} [ ${error.request.method} ] ${error.code} --> ${error.status}\n`
+      )
       // logger.error(error)
       logger.error(
         jsonFormatter({
           ErrorCode: error.code,
           Response: error.response?.data,
           Status: error.response?.status,
-        }),
-      );
+        })
+      )
     }
     if (error.code === "ECONNABORTED") {
       return Promise.reject({
@@ -68,7 +68,7 @@ api.interceptors.response.use(
             },
           },
         },
-      });
+      })
     }
     if (
       error.code === "ECONNREFUSED" ||
@@ -87,14 +87,14 @@ api.interceptors.response.use(
             },
           },
         },
-      });
+      })
     }
     // This handles when the API endpoint is Not Found
     if (error.status === 404 && !(error.response?.data as any).error) {
       if (process.env.NODE_ENV === "development") {
         logger.error(
-          `${error.request.method} ${error.request.path} 404 - NOT FOUND`,
-        );
+          `${error.request.method} ${error.request.path} 404 - NOT FOUND`
+        )
       }
       return Promise.reject({
         ...error,
@@ -108,13 +108,13 @@ api.interceptors.response.use(
             },
           },
         },
-      });
+      })
     }
 
     if (error.response?.status === 401) {
       // TODO: refresh auth token
       // TODO: clear user session from cookies as this is not allowed to call server actions
-      logger.debug("Logging out user.....");
+      logger.debug("Logging out user.....")
       // const base = typeof window !== 'undefined'
       //   ? window.location.origin
       //   : '';  // fallback – won't be used on server anyway
@@ -129,8 +129,8 @@ api.interceptors.response.use(
       //   logger.info("LOGOUT FAILED", error);
       // }
     }
-    return Promise.reject(error);
-  },
-);
+    return Promise.reject(error)
+  }
+)
 
-export { api };
+export { api }
