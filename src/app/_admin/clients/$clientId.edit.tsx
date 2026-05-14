@@ -1,4 +1,4 @@
-import { ClientForm } from "@/features/clients/components/customer-form"
+import { ClientForm } from "@/features/clients/components"
 import { clientEditQueryOptions } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { hasPermission } from "@/lib/auth"

@@ -1,4 +1,4 @@
-import { ClientForm } from "@/features/clients/components/customer-form"
+import { ClientForm } from "@/features/clients/components"
 import { hasPermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
