@@ -35,6 +35,14 @@ function RouteComponent() {
         <PageTitle>{data?.fullname}</PageTitle>
         <PageAction>
           <Button asChild variant={"secondary"}>
+            <Link
+              to="/clients/$clientId/pdf"
+              params={{ clientId: params.clientId }}
+            >
+              Pdf
+            </Link>
+          </Button>
+          <Button asChild variant={"secondary"}>
             <Link to="/clients/rates">Rates</Link>
           </Button>
           <Button asChild variant={"secondary"}>

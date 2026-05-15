@@ -3,8 +3,6 @@ import {
   CustomerTable,
   CustomerTableSkeleton,
 } from "@/features/clients/components/customer-table"
-import { generatePageSearchParams } from "@/lib/search-params"
-import { CustomerSearchParamsCache } from "@/features/clients/schemas"
 import { requirePermission } from "@/lib/auth"
 import {
   PageAction,
