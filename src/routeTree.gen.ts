@@ -28,6 +28,9 @@ import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/inde
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
+import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rates'
+import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clients/pricing-rates'
+import { Route as AdminClientsPricingRouteImport } from './app/_admin/clients/pricing'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
@@ -151,6 +154,22 @@ const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
 const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
   id: '/drivers/new',
   path: '/drivers/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminClientsRatesRoute = AdminClientsRatesRouteImport.update({
+  id: '/clients/rates',
+  path: '/clients/rates',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminClientsPricingRatesRoute =
+  AdminClientsPricingRatesRouteImport.update({
+    id: '/clients/pricing-rates',
+    path: '/clients/pricing-rates',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminClientsPricingRoute = AdminClientsPricingRouteImport.update({
+  id: '/clients/pricing',
+  path: '/clients/pricing',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminSettingsVehicleConfigRouteRoute =
@@ -331,6 +350,9 @@ export interface FileRoutesByFullPath {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
+  '/clients/pricing': typeof AdminClientsPricingRoute
+  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
+  '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings/': typeof AdminBookingsIndexRoute
@@ -381,6 +403,9 @@ export interface FileRoutesByTo {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
+  '/clients/pricing': typeof AdminClientsPricingRoute
+  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
+  '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings': typeof AdminBookingsIndexRoute
@@ -433,6 +458,9 @@ export interface FileRoutesById {
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
+  '/_admin/clients/pricing': typeof AdminClientsPricingRoute
+  '/_admin/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
+  '/_admin/clients/rates': typeof AdminClientsRatesRoute
   '/_admin/drivers/new': typeof AdminDriversNewRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
@@ -485,6 +513,9 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/settings/vehicle-config'
+    | '/clients/pricing'
+    | '/clients/pricing-rates'
+    | '/clients/rates'
     | '/drivers/new'
     | '/rides/new'
     | '/bookings/'
@@ -535,6 +566,9 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/settings/vehicle-config'
+    | '/clients/pricing'
+    | '/clients/pricing-rates'
+    | '/clients/rates'
     | '/drivers/new'
     | '/rides/new'
     | '/bookings'
@@ -586,6 +620,9 @@ export interface FileRouteTypes {
     | '/_auth/logout'
     | '/_auth/unauthorized'
     | '/_admin/settings/vehicle-config'
+    | '/_admin/clients/pricing'
+    | '/_admin/clients/pricing-rates'
+    | '/_admin/clients/rates'
     | '/_admin/drivers/new'
     | '/_admin/rides/new'
     | '/_admin/bookings/'
@@ -771,6 +808,27 @@ declare module '@tanstack/react-router' {
       path: '/drivers/new'
       fullPath: '/drivers/new'
       preLoaderRoute: typeof AdminDriversNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/clients/rates': {
+      id: '/_admin/clients/rates'
+      path: '/clients/rates'
+      fullPath: '/clients/rates'
+      preLoaderRoute: typeof AdminClientsRatesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/clients/pricing-rates': {
+      id: '/_admin/clients/pricing-rates'
+      path: '/clients/pricing-rates'
+      fullPath: '/clients/pricing-rates'
+      preLoaderRoute: typeof AdminClientsPricingRatesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/clients/pricing': {
+      id: '/_admin/clients/pricing'
+      path: '/clients/pricing'
+      fullPath: '/clients/pricing'
+      preLoaderRoute: typeof AdminClientsPricingRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/vehicle-config': {
@@ -1035,6 +1093,9 @@ const AdminSettingsRouteRouteWithChildren =
 
 interface AdminRouteRouteChildren {
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
+  AdminClientsPricingRoute: typeof AdminClientsPricingRoute
+  AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
+  AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
@@ -1072,6 +1133,9 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
+  AdminClientsPricingRoute: AdminClientsPricingRoute,
+  AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
+  AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,

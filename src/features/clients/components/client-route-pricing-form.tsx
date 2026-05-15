@@ -3,6 +3,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -11,8 +12,13 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { CreditCard } from "lucide-react"
 import React from "react"
 import { useRoutePricingForm } from "../hooks/use-route-pricing-form"
-import { DatePickerField, TextField } from "@/components/ui/form-fields"
+import {
+  DatePickerField,
+  NumberField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { Card, CardContent } from "@/components/ui/card"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 export function ClientRoutePricingForm() {
   const isMobile = useIsMobile()
@@ -23,6 +29,7 @@ export function ClientRoutePricingForm() {
     // tonnageList,
     handleTonnageRow,
     handleAddRoutePricingRow,
+    handleSubmit,
   } = useRoutePricingForm()
 
   return (
@@ -37,14 +44,23 @@ export function ClientRoutePricingForm() {
           Route Pricing
         </Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent style={!isMobile ? { width: "80vw" } : undefined}>
         <DrawerHeader className="gap-1">
           <DrawerTitle>Edit Route Pricing</DrawerTitle>
           <DrawerDescription>
             Manage route pricing for this client
           </DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <form
+          className="flex flex-col gap-4 overflow-y-auto px-4 text-sm"
+          id="form-submit-id"
+          onSubmit={form.handleSubmit(
+            (data) => {},
+            (errors) => {
+              console.log(errors)
+            }
+          )}
+        >
           <DatePickerField
             label="Effective Date"
             name={"effective_date"}
@@ -54,33 +70,38 @@ export function ClientRoutePricingForm() {
             Add
           </Button>
           {routePricings.map((routePricing, index) => (
-            <Card key={`routes_pricings_${index}`}>
-              <CardContent>
+            <div key={`routes_pricings_${index}`} className="overflow-y-hidden">
+              <div>
                 {index}
                 <TextField
                   label="Route"
                   name={`routes_pricings.${index}.route`}
                   control={form.control}
                 />
-                <TextField
+                <NumberField
                   label="Distance (km)"
                   name={`routes_pricings.${index}.distance_km`}
                   control={form.control}
                 />
-                <TextField
+                <NumberField
                   label="Delivery Min (hrs)"
                   name={`routes_pricings.${index}.delivery_min_hrs`}
                   control={form.control}
                 />
-                <TextField
+                <NumberField
                   label="Delivery Max (hrs)"
                   name={`routes_pricings.${index}.delivery_max_hrs`}
                   control={form.control}
                 />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
-        </div>
+        </form>
+        <DrawerFooter className="pt-2">
+          <SubmitButton asChild form="form-submit-id">
+            <Button variant="outline">Cancel</Button>
+          </SubmitButton>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

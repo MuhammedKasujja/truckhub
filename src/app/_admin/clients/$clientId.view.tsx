@@ -1,4 +1,6 @@
 import { NotFound } from "@/components/not-found"
+import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import { Button } from "@/components/ui/button"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
   clientBookingsQueryOptions,
@@ -8,7 +10,7 @@ import {
 } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { hasPermission } from "@/lib/auth"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
@@ -24,8 +26,26 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 })
 
 function RouteComponent() {
-  const { error } = Route.useLoaderData()
+  const { error, data } = Route.useLoaderData()
   const params = Route.useParams()
   useFetchEror(error)
-  return <CustomerDetailsWrapper clientId={params.clientId} />
+  return (
+    <div>
+      <PageHeader>
+        <PageTitle>{data?.fullname}</PageTitle>
+        <PageAction>
+          <Button asChild variant={"secondary"}>
+            <Link to="/clients/rates">Rates</Link>
+          </Button>
+          <Button asChild variant={"secondary"}>
+            <Link to="/clients/pricing-rates">Client Rates</Link>
+          </Button>
+          <Button asChild variant={"secondary"}>
+            <Link to="/clients/pricing">Pricing</Link>
+          </Button>
+        </PageAction>
+      </PageHeader>
+      <CustomerDetailsWrapper clientId={params.clientId} />
+    </div>
+  )
 }

@@ -63,6 +63,8 @@ export function useRoutePricingForm() {
     // })
   }
 
+  const handleSubmit = form.handleSubmit
+
   return {
     form,
     routePricings,
@@ -72,5 +74,6 @@ export function useRoutePricingForm() {
     handleTonnageRow,
     // removeTonnageRow,
     routePricingIndex,
+    handleSubmit,
   }
 }

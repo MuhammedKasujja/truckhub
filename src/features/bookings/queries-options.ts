@@ -5,7 +5,10 @@ import {
   getBookingDetailsFn,
   getBookingStatisticsFn,
 } from "./services"
-import { generatePageSearchParams } from "@/lib/search-params"
+import {
+  generateApiSearchParams,
+  generatePageSearchParams,
+} from "@/lib/search-params"
 
 export const bookingsQueryKeys = {
   all: () => ["bookings"],
@@ -22,8 +25,9 @@ export const createBookingQueryOptions = (
     search,
     BookingSearchParamsCache
   )
+  const params = generateApiSearchParams(searchParams)
   return queryOptions({
-    queryKey: [...bookingsQueryKeys.list(), searchParams],
+    queryKey: [...bookingsQueryKeys.list(), params],
     queryFn: () => getBookingsFn({ data: searchParams }),
   })
 }

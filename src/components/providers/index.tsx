@@ -19,14 +19,8 @@ export function Providers({
   children: React.ReactNode
 }>) {
   return (
-    <HotkeysProvider initiallyActiveScopes={['main']}>
-      <ThemeProvider
-        theme={theme}
-        // attribute="class"
-        // defaultTheme="system"
-        // enableSystem
-        // disableTransitionOnChange
-      >
+    <HotkeysProvider initiallyActiveScopes={["main"]}>
+      <ThemeProvider theme={theme}>
         <NuqsAdapter>
           <IntlProvider locale={locale} messages={messages}>
             <TooltipProvider>{children}</TooltipProvider>

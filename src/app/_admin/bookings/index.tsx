@@ -14,9 +14,11 @@ import {
   createBookingQueryOptions,
   createBookingStatisticsQueryOptions,
 } from "@/features/bookings/queries-options"
+import { createBookingSearchParams } from "@/features/bookings/schemas"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
+  validateSearch: createBookingSearchParams(),
   beforeLoad: async () => hasPermission("bookings:view"),
   loader: async ({ context, location }) => {
     context.queryClient.prefetchQuery(
@@ -30,8 +32,10 @@ export const Route = createFileRoute("/_admin/bookings/")({
 
 function RouteComponent() {
   const { data: statistics } = Route.useLoaderData()
+  const search = Route.useSearch()
+  console.log("Search params:", search)
   return (
-    <Suspense fallback={<BookingTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>Bookings</PageTitle>
         <PageAction>
@@ -49,6 +53,6 @@ function RouteComponent() {
       <Suspense fallback={<BookingTableSkeleton />}>
         <BookingTable />
       </Suspense>
-    </Suspense>
+    </>
   )
 }
