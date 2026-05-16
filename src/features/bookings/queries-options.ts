@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
-import { BookingSearchParamsCache } from "./schemas"
+import { BookingSearchParamsSchema } from "./schemas"
 import {
   getBookingsFn,
   getBookingDetailsFn,
@@ -23,7 +23,7 @@ export const createBookingQueryOptions = (
 ) => {
   const searchParams = generatePageSearchParams(
     search,
-    BookingSearchParamsCache
+    BookingSearchParamsSchema
   )
   const params = generateApiSearchParams(searchParams)
   return queryOptions({

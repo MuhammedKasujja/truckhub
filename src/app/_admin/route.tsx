@@ -4,7 +4,6 @@ import {
   createFileRoute,
   Outlet,
   redirect,
-  useRouter,
 } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
@@ -15,7 +14,6 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { NavigationActions } from "@/components/navigation-actions"
 import { SearchForm } from "@/components/search-form"
-import { useHotkeys } from "react-hotkeys-hook"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 
 export const Route = createFileRoute("/_admin")({

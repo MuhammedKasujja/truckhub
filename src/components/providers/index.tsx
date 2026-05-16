@@ -4,7 +4,6 @@ import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme/provider"
 import { Theme } from "@/lib/theme"
 import { DeepPartial } from "@/types"
-import { NuqsAdapter } from "nuqs/adapters/tanstack-router"
 import { HotkeysProvider } from "react-hotkeys-hook"
 
 export function Providers({
@@ -21,12 +20,14 @@ export function Providers({
   return (
     <HotkeysProvider initiallyActiveScopes={["main"]}>
       <ThemeProvider theme={theme}>
-        <NuqsAdapter>
-          <IntlProvider locale={locale} messages={messages}>
-            <TooltipProvider>{children}</TooltipProvider>
-          </IntlProvider>
-          <Toaster position={"top-right"} />
-        </NuqsAdapter>
+        <IntlProvider
+          timeZone="Africa/Kampala"
+          locale={locale}
+          messages={messages}
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </IntlProvider>
+        <Toaster position={"top-right"} />
       </ThemeProvider>
     </HotkeysProvider>
   )
