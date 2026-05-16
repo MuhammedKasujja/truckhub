@@ -2,7 +2,7 @@ import { LocationPoint } from "@/features/bookings/types"
 import {
   BookingUpdateSchema,
   BookingCreateSchema,
-  BookingSearchParamsCache,
+  BookingSearchParamsSchema,
 } from "@/features/bookings/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityId, EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -19,7 +19,7 @@ import {
 } from "./server"
 
 export const getBookingsFn = createServerFn({ method: "POST" })
-  .inputValidator((data) => BookingSearchParamsCache.parse(data))
+  .inputValidator(BookingSearchParamsSchema)
   .handler(async ({ data }) => {
     return getBookings(data)
   })

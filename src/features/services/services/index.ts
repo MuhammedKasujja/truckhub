@@ -15,7 +15,7 @@ import {
 } from "./server"
 
 export const getServicesFn = createServerFn()
-  .inputValidator((data) => ServiceSearchParamsCache.parse(data))
+  .inputValidator(ServiceSearchParamsCache)
   .handler(async ({ data }) => {
     return getServices(data)
   })

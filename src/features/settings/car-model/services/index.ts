@@ -14,7 +14,7 @@ import {
 } from "./server"
 
 export const getCarModelsFn = createServerFn()
-  .inputValidator((data) => CarModelSearchParamsCache.parse(data))
+  .inputValidator(CarModelSearchParamsCache)
   .handler(async ({ data }) => {
     return await getCarModels(data)
   })

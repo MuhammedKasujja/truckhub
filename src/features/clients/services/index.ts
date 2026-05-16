@@ -19,7 +19,7 @@ import {
 } from "./server"
 
 export const getCustomersFn = createServerFn()
-  .inputValidator((data) => CustomerSearchParamsCache.parse(data))
+  .inputValidator(CustomerSearchParamsCache)
   .handler(async ({ data }) => {
     return await getCustomers(data)
   })

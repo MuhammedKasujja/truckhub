@@ -19,7 +19,7 @@ import {
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getRidesFn = createServerFn()
-  .inputValidator((data) => RideRequestSearchParamsCache.parse(data))
+  .inputValidator(RideRequestSearchParamsCache)
   .handler(async ({ data }) => {
     return getRideRequests(data)
   })

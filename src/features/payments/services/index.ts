@@ -15,7 +15,7 @@ import {
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getPaymentsFn = createServerFn()
-  .inputValidator((data) => PaymentSearchParamsCache.parse(data))
+  .inputValidator(PaymentSearchParamsCache)
   .handler(async ({ data }) => {
     return await getPayments(data)
   })

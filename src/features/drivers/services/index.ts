@@ -16,7 +16,7 @@ import {
 } from "./server"
 
 export const getDriversFn = createServerFn()
-  .inputValidator((data) => DriverSearchParamsCache.parse(data))
+  .inputValidator(DriverSearchParamsCache)
   .handler(({ data }) => {
     return getDrivers(data)
   })

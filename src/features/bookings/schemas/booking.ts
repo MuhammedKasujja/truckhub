@@ -32,7 +32,7 @@ export type BookingCreateSchemaType = z.infer<typeof BookingCreateSchema>
 
 export type BookingUpdateSchemaType = z.infer<typeof BookingUpdateSchema>
 
-export const bookingSearchParamsSchema = z.object({
+export const BookingSearchParamsSchema = z.object({
   sort: getSortingStateSchema<Booking>().default([
     { id: "created_at", desc: true },
   ]),
@@ -41,4 +41,4 @@ export const bookingSearchParamsSchema = z.object({
   ...DefaultSearchParamsSchema.shape,
 })
 
-export type BookingListSearchParams = z.infer<typeof bookingSearchParamsSchema>
+export type BookingListSearchParams = z.infer<typeof BookingSearchParamsSchema>
