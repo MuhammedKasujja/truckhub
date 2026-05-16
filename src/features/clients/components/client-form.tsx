@@ -10,6 +10,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
+  NumberField,
   PasswordField,
   TextField,
 } from "@/components/ui/form-fields"
@@ -67,7 +68,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
       >
         <CardContent className="pb-6">
           <FieldGroup>
-            <Field orientation={'horizontal'} className="gap-4">
+            <Field orientation={"horizontal"} className="gap-4">
               <TextField
                 label={tr("common.form.first_name")}
                 name={"first_name"}
@@ -79,12 +80,20 @@ export function ClientForm({ initialData }: ClientFormProps) {
                 control={form.control}
               />
             </Field>
-            <TextField
-              label={tr("common.form.phone")}
-              name={"phone"}
-              control={form.control}
-              required={false}
-            />
+            <Field orientation={"horizontal"} className="gap-4">
+              <TextField
+                label={tr("common.form.short_name")}
+                name={"user_name"}
+                control={form.control}
+                required={false}
+              />
+              <TextField
+                label={tr("common.form.phone")}
+                name={"phone"}
+                control={form.control}
+                required={false}
+              />
+            </Field>
             <TextField
               label={"Tin Number"}
               name={"tin_number"}
@@ -97,7 +106,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               placeholder="user@mail.com"
             />
-            <TextField
+            <NumberField
               label={tr("common.form.assigned")}
               name={"asssigned_user_id"}
               control={form.control}

@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
 import React from "react"
 import { PaymentModeList } from "@/config/constants"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -86,7 +87,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
           <DrawerTitle>Enter Payment</DrawerTitle>
           <DrawerDescription>Create a new payment</DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
               console.log(errors)
@@ -127,14 +128,11 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
           </form>
         </div>
         <DrawerFooter>
-          <Button type="submit" form="form-payment">
-            {form.formState.isSubmitting && (
-              <Loader2 className="size-4 animate-spin" />
-            )}
-            {form.formState.isSubmitting
-              ? "Submitting..."
-              : `${tr("common.form.submit")}`}
-          </Button>
+          <SubmitButton
+            type="submit"
+            form="form-payment"
+            isSubmitting={form.formState.isSubmitting}
+          />
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>

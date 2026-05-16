@@ -100,6 +100,7 @@ const en = {
       date: "Date",
       assigned: "Assigned",
       description: "Description",
+      short_name: "Short Name",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",

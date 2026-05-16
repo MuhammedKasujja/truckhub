@@ -34,7 +34,7 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
           </DrawerTitle>
           <DrawerDescription>{formatDate(payment.date)}</DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2  text-sm">
           <Card>
             <CardHeader>
               <CardTitle>{tr("payments.customer")}</CardTitle>
