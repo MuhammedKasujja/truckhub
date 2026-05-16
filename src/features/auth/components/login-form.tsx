@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
-import { useRouter } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import z from "zod"
 import { toast } from "sonner"
 import { loginFn } from "@/features/auth/services"
@@ -9,26 +9,22 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailField, PasswordField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
-
-const formSchema = z.object({
-  email: z.email({ message: "Please enter a valid email." }).trim(),
-  password: z.string().trim(),
-})
+import { LoginSchema } from "@/features/auth/schemas"
 
 export function LoginForm() {
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const tr = useTranslation()
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof LoginSchema>) {
     const { isSuccess, error } = await loginFn({ data: values })
     if (isSuccess) {
       toast.success(`${tr("login_successfully")}`)
-      router.navigate({ to: "/dashboard", replace: true })
+      navigate({ to: "/dashboard", replace: true })
     } else {
       toast.error(error!.message)
     }
