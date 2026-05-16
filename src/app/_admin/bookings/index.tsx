@@ -14,11 +14,11 @@ import {
   createBookingQueryOptions,
   createBookingStatisticsQueryOptions,
 } from "@/features/bookings/queries-options"
-import { createBookingSearchParams } from "@/features/bookings/schemas"
+import { bookingSearchParamsSchema } from "@/features/bookings/schemas"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
-  validateSearch: createBookingSearchParams(),
+  validateSearch: bookingSearchParamsSchema,
   beforeLoad: async () => hasPermission("bookings:view"),
   loader: async ({ context, location }) => {
     context.queryClient.prefetchQuery(

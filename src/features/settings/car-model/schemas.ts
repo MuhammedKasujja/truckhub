@@ -1,42 +1,28 @@
-import z from "zod";
-import { CarModel } from "@/features/settings/car-model/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
+import z from "zod"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { CarModel } from "@/features/settings/car-model/types"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const CarModelCreateSchema = z.object({
   name: z.string(),
   car_brand_id: z.number(),
   vehicle_type_id: z.number(),
-});
+})
 
 export const CarModelUpdateSchema = z.object({
   id: z.number(),
   ...CarModelCreateSchema.partial().shape,
-});
+})
 
-export type CarModelCreateSchemaType = z.infer<typeof CarModelCreateSchema>;
+export type CarModelCreateSchemaType = z.infer<typeof CarModelCreateSchema>
 
-export type CarModelUpdateSchemaType = z.infer<typeof CarModelUpdateSchema>;
+export type CarModelUpdateSchemaType = z.infer<typeof CarModelUpdateSchema>
 
-export const CarModelSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<CarModel>().withDefault([
-    { id: "id", desc: true },
-  ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
+export const CarModelSearchParamsCache = z.object({
+  sort: getSortingStateSchema<CarModel>().default([{ id: "id", desc: true }]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema().default([]),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type CarModelListSearchParams = Awaited<
-  ReturnType<typeof CarModelSearchParamsCache.parse>
->;
+export type CarModelListSearchParams = z.infer<typeof CarModelSearchParamsCache>

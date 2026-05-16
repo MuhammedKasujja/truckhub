@@ -1,13 +1,7 @@
 import z from "zod"
 import { Customer } from "@/features/clients/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const CustomerCreateSchema = z.object({
   first_name: z.string(),
@@ -29,22 +23,16 @@ export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>
 
 export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>
 
-export const CustomerSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Customer>().withDefault([
+export const CustomerSearchParamsCache = z.object({
+  sort: getSortingStateSchema<Customer>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema<Customer>().default([]),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type CustomerListSearchParams = Awaited<
-  ReturnType<typeof CustomerSearchParamsCache.parse>
->
+export type CustomerListSearchParams = z.infer<typeof CustomerSearchParamsCache>
 
 export const TonnagePricingSchema = z.object({
   tonnage_min: z.number(),

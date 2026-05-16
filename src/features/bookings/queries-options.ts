@@ -36,6 +36,9 @@ export const createBookingStatisticsQueryOptions = () =>
   queryOptions({
     queryKey: bookingsQueryKeys.statistics(),
     queryFn: () => getBookingStatisticsFn(),
+    // staleTime: Infinity, // Never refetch unless invalidated
+    // gcTime: Infinity, // Keep in cache forever
+    // retry: false,
   })
 
 export const bookingDetailsQueryOptions = (bookingId: string) =>

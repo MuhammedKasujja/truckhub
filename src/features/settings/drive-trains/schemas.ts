@@ -1,13 +1,7 @@
 import z from "zod"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { DriveTrain } from "@/features/settings/drive-trains/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const DriveTrainCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -24,19 +18,13 @@ export type DriveTrainCreateSchemaType = z.infer<typeof DriveTrainCreateSchema>
 
 export type DriveTrainUpdateSchemaType = z.infer<typeof DriveTrainUpdateSchema>
 
-export const DriveTrainSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<DriveTrain>().withDefault([
-    { id: "id", desc: true },
-  ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
+export const DriveTrainSearchParamsCache = z.object({
+  sort: getSortingStateSchema<DriveTrain>().default([{ id: "id", desc: true }]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema().default([]),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type DriveTrainListSearchParams = Awaited<
-  ReturnType<typeof DriveTrainSearchParamsCache.parse>
+export type DriveTrainListSearchParams = z.infer<
+  typeof DriveTrainSearchParamsCache
 >

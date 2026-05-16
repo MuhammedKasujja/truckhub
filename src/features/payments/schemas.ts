@@ -1,16 +1,9 @@
 import z from "zod"
-import { Payment } from "@/features/payments/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  parseAsStringLiteral,
-  createSearchParamsCache,
-} from "nuqs/server"
 import { formatPrice } from "@/lib/format"
+import { Payment } from "@/features/payments/types"
 import { PaymentStatuses } from "@/config/constants"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const EditPaymentBaseSchema = z.object({
   id: z.number().optional().nullable(),
@@ -21,10 +14,9 @@ export const EditPaymentBaseSchema = z.object({
 })
 
 export const EditPaymentSchema = z.object({
-  amount:z.number().min(1),
+  amount: z.number().min(1),
   ...EditPaymentBaseSchema.shape,
 })
-
 
 /**
  *
@@ -45,7 +37,7 @@ export const createEditPaymentSchema = (maxAmount: number = 0) => {
       .max(maxAmount, {
         error: `Payment amount cannot exceed ${formatPrice(maxAmount, { showZeroAsNumber: true })}`,
       }),
-    ...EditPaymentBaseSchema.shape
+    ...EditPaymentBaseSchema.shape,
   })
 }
 
@@ -53,20 +45,13 @@ export type PaymentEditSchemaType = z.infer<
   ReturnType<typeof createEditPaymentSchema>
 >
 
-export const PaymentSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  status: parseAsArrayOf(parseAsStringLiteral(PaymentStatuses)).withDefault([]),
-  sort: getSortingStateParser<Payment>().withDefault([
-    { id: "date", desc: true },
-  ]),
-  search: parseAsString.withDefault(""),
-  date: parseAsInteger.withDefault(0),
+export const PaymentSearchParamsCache = z.object({
+  status: z.array(z.enum(PaymentStatuses)).default([]),
+  sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
+  date: z.number().optional().nullable(),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema().default([]),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type PaymentListSearchParams = Awaited<
-  ReturnType<typeof PaymentSearchParamsCache.parse>
->
+export type PaymentListSearchParams = z.infer<typeof PaymentSearchParamsCache>

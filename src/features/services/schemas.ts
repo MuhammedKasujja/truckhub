@@ -1,13 +1,7 @@
-import z from "zod";
-import { Service } from "@/features/services/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
+import z from "zod"
+import { Service } from "@/features/services/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ServiceCreateSchema = z.object({
   name: z.string(),
@@ -23,30 +17,24 @@ export const ServiceCreateSchema = z.object({
   start_year: z.string().optional(),
   end_year: z.string().optional(),
   description: z.string().optional().nullable(),
-});
+})
 
 export const ServiceUpdateSchema = z.object({
   id: z.number(),
   ...ServiceCreateSchema.partial().shape,
-});
+})
 
-export type ServiceCreateSchemaType = z.infer<typeof ServiceCreateSchema>;
+export type ServiceCreateSchemaType = z.infer<typeof ServiceCreateSchema>
 
-export type ServiceUpdateSchemaType = z.infer<typeof ServiceUpdateSchema>;
+export type ServiceUpdateSchemaType = z.infer<typeof ServiceUpdateSchema>
 
-export const ServiceSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Service>().withDefault([
+export const ServiceSearchParamsCache = z.object({
+  sort: getSortingStateSchema<Service>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<Service>().default([]),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type ServiceListSearchParams = Awaited<
-  ReturnType<typeof ServiceSearchParamsCache.parse>
->;
+export type ServiceListSearchParams = z.infer<typeof ServiceSearchParamsCache>

@@ -24,7 +24,7 @@ export const PaymentStatuses = [
   "failed",
   "completed",
   "partially_refunded",
-] as const;
+] as const;  // ["pending", "processing", "paid", "failed"]
 
 export const VehicleCylinderList = [2, 4, 5, 6, 8];
 

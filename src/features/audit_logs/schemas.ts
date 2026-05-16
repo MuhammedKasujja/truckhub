@@ -1,26 +1,16 @@
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
-import { AuditLog } from "./types";
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
-export const AuditLogSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(25),
-  sort: getSortingStateParser<AuditLog>().withDefault([
+import z from "zod"
+import { AuditLog } from "./types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+
+export const AuditLogSearchParamsCache = z.object({
+  sort: getSortingStateSchema<AuditLog>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<AuditLog>().default([]),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type AuditLogSearchParams = Awaited<
-  ReturnType<typeof AuditLogSearchParamsCache.parse>
->;
+export type AuditLogSearchParams = z.infer<typeof AuditLogSearchParamsCache>

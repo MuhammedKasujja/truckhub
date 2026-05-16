@@ -15,7 +15,7 @@ import {
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getUsersFn = createServerFn()
-  .inputValidator((data) => UserSearchParamsCache.parse(data))
+  .inputValidator(UserSearchParamsCache)
   .handler(async ({ data: query }) => {
     const { data, pagination, error } = await getUsers(query)
     if (error) {

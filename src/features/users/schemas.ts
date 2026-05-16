@@ -1,13 +1,7 @@
-import z from "zod";
-import { SystemUser } from "@/features/users/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
+import z from "zod"
+import { SystemUser } from "@/features/users/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const UserCreateSchema = z.object({
   first_name: z.string(),
@@ -15,30 +9,23 @@ export const UserCreateSchema = z.object({
   phone: z.string().optional().nullable(),
   email: z.string(),
   password: z.string(),
-});
+})
 
 export const UserUpdateSchema = z.object({
   id: z.number(),
   ...UserCreateSchema.partial().shape,
-});
+})
 
-export type UserCreateSchemaType = z.infer<typeof UserCreateSchema>;
+export type UserCreateSchemaType = z.infer<typeof UserCreateSchema>
 
-export type UserUpdateSchemaType = z.infer<typeof UserUpdateSchema>;
+export type UserUpdateSchemaType = z.infer<typeof UserUpdateSchema>
 
-export const UserSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<SystemUser>().withDefault([
+export const UserSearchParamsCache = z.object({
+  sort: getSortingStateSchema<SystemUser>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
-  // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<SystemUser>().default([]),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type UserListSearchParams = Awaited<
-  ReturnType<typeof UserSearchParamsCache.parse>
->;
+export type UserListSearchParams = z.infer<typeof UserSearchParamsCache>
