@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageAction,
+  PageBackButton,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -40,7 +45,10 @@ function RouteComponent() {
   return (
     <Suspense fallback={<PaymentTableSkeleton />}>
       <PageHeader>
-        <PageTitle>{tr("modules.payments")}</PageTitle>
+        <PageTitle>
+          <PageBackButton />
+          {tr("modules.payments")}
+        </PageTitle>
         <PageAction>
           <Can permission={"payments:create"}>
             <EditPaymentModal

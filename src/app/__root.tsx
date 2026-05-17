@@ -9,7 +9,6 @@ import type { QueryClient } from "@tanstack/react-query"
 
 import appCss from "../styles.css?url"
 import { Providers } from "@/components/providers"
-import { getThemeServerFn } from "@/lib/theme"
 import { NotFound } from "@/components/not-found"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { getTranslationsData } from "@/i18n/request"
@@ -41,7 +40,6 @@ export const Route = createRootRouteWithContext<{
   loader: async () => {
     return {
       i18n: await getTranslationsData(),
-      theme: await getThemeServerFn(),
     }
   },
   errorComponent: (props) => {

@@ -1,5 +1,10 @@
 import { NotFound } from "@/components/not-found"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageAction,
+  PageBackButton,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
@@ -34,6 +39,7 @@ function RouteComponent() {
       <PageHeader>
         <PageTitle>{data?.fullname}</PageTitle>
         <PageAction>
+          <PageBackButton />
           <Button asChild variant={"secondary"}>
             <Link
               to="/clients/$clientId/pdf"
