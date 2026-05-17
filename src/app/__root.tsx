@@ -56,14 +56,14 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { theme, i18n } = Route.useLoaderData()
+  const { i18n } = Route.useLoaderData()
   return (
-    <html lang={i18n.locale} className={theme} suppressHydrationWarning>
+    <html lang={i18n.locale} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <Providers theme={theme} locale={i18n.locale} messages={i18n.messages}>
+        <Providers locale={i18n.locale} messages={i18n.messages}>
           {children}
         </Providers>
         <TanStackDevtools

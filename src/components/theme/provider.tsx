@@ -1,24 +1,119 @@
-import { useRouter } from "@tanstack/react-router"
-import { createContext, type PropsWithChildren, use } from "react"
-import { setThemeServerFn, type Theme } from "@/lib/theme"
+import { createContext, useContext, useEffect, useState } from "react"
+import { ScriptOnce } from "@tanstack/react-router"
 
-type ThemeContextVal = { theme: Theme; setTheme: (val: Theme) => void }
-type Props = PropsWithChildren<{ theme: Theme }>
+type Theme = "dark" | "light" | "system"
 
-const ThemeContext = createContext<ThemeContextVal | null>(null)
+const THEME_STORAGE_KEY = "app-theme"
 
-export function ThemeProvider({ children, theme }: Props) {
-  const router = useRouter()
+type ThemeProviderProps = {
+  children: React.ReactNode
+  defaultTheme?: Theme
+}
 
-  function setTheme(val: Theme) {
-    setThemeServerFn({ data: val }).then(() => router.invalidate())
+type ThemeProviderState = {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+}
+
+function getThemeScript(defaultTheme: Theme) {
+  const key = JSON.stringify(THEME_STORAGE_KEY)
+  const fallback = JSON.stringify(defaultTheme)
+
+  return `(function(){try{var t=localStorage.getItem(${key});if(t!=='light'&&t!=='dark'&&t!=='system'){t=${fallback}}var d=matchMedia('(prefers-color-scheme: dark)').matches;var r=t==='system'?(d?'dark':'light'):t;var e=document.documentElement;e.classList.add(r);e.style.colorScheme=r}catch(e){}})();`
+}
+
+const ThemeProviderContext = createContext<ThemeProviderState>({
+  theme: "system",
+  setTheme: () => {},
+})
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement
+  root.classList.remove("light", "dark")
+
+  const resolved =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : theme
+
+  root.classList.add(resolved)
+  root.style.colorScheme = resolved
+}
+
+export function ThemeProvider({
+  children,
+  defaultTheme = "system",
+}: ThemeProviderProps) {
+  const [theme, setThemeState] = useState<Theme>(defaultTheme)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY)
+    setThemeState(
+      stored === "light" || stored === "dark" || stored === "system"
+        ? stored
+        : defaultTheme
+    )
+    setMounted(true)
+  }, [defaultTheme, THEME_STORAGE_KEY])
+
+  useEffect(() => {
+    if (!mounted) return
+    applyTheme(theme)
+  }, [theme, mounted])
+
+  useEffect(() => {
+    if (!mounted || theme !== "system") return
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)")
+    const onChange = () => applyTheme("system")
+    media.addEventListener("change", onChange)
+    return () => media.removeEventListener("change", onChange)
+  }, [theme, mounted])
+
+  const setTheme = (next: Theme) => {
+    localStorage.setItem(THEME_STORAGE_KEY, next)
+    setThemeState(next)
   }
 
-  return <ThemeContext value={{ theme, setTheme }}>{children}</ThemeContext>
+  return (
+    <ThemeProviderContext value={{ theme, setTheme }}>
+      <ScriptOnce>{getThemeScript(defaultTheme)}</ScriptOnce>
+      {children}
+    </ThemeProviderContext>
+  )
 }
 
 export function useTheme() {
-  const val = use(ThemeContext)
-  if (!val) throw new Error("useTheme called outside of ThemeProvider!")
-  return val
+  const context = useContext(ThemeProviderContext)
+  if (context === undefined)
+    throw new Error("useTheme must be used within a ThemeProvider")
+  return context
 }
+
+// import { useRouter } from "@tanstack/react-router"
+// import { createContext, type PropsWithChildren, use } from "react"
+// import { setThemeServerFn, type Theme } from "@/lib/theme"
+
+// type ThemeContextVal = { theme: Theme; setTheme: (val: Theme) => void }
+// type Props = PropsWithChildren<{ theme: Theme }>
+
+// const ThemeContext = createContext<ThemeContextVal | null>(null)
+
+// export function ThemeProvider({ children, theme }: Props) {
+//   const router = useRouter()
+
+//   function setTheme(val: Theme) {
+//     setThemeServerFn({ data: val }).then(() => router.invalidate())
+//   }
+
+//   return <ThemeContext value={{ theme, setTheme }}>{children}</ThemeContext>
+// }
+
+// export function useTheme() {
+//   const val = use(ThemeContext)
+//   if (!val) throw new Error("useTheme called outside of ThemeProvider!")
+//   return val
+// }
