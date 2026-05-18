@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Control, FieldErrors, UseFormRegister, useWatch } from "react-hook-form";
-import { Trash2, MapPin, User, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { Trash2, MapPin, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -248,9 +248,8 @@ export function RoutePricingCard({
               />
             </div>
 
-            <Separator />
+            {/* <Separator />
 
-            {/* Optional client override */}
             <div className="flex items-end gap-3">
               <div className="space-y-1.5 w-48">
                 <Label
@@ -274,7 +273,7 @@ export function RoutePricingCard({
               <p className="text-xs text-muted-foreground pb-2 leading-relaxed">
                 Set a client ID for negotiated pricing. Leave blank for the default rate.
               </p>
-            </div>
+            </div> */}
           </CardContent>
         </CollapsibleContent>
       </Card>

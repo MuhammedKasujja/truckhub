@@ -31,7 +31,7 @@ export const routePricingSchema = z.object({
 
 export const batchPricingSchema = z.object({
   valid_from: z.date("Pricing date is required"),
-  client_id: IDSchema,
+  client_id: IDSchema.optional().nullable(),
   routes: z.array(routePricingSchema).min(1, "Add at least one route"),
 })
 

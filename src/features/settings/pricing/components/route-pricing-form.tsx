@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Upload, Loader2 } from "lucide-react"
@@ -10,22 +10,39 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 import { batchPricingSchema, type BatchPricingInput } from "../schemas"
 import { RoutePricingCard } from "./route-pricing-card"
+import {
+  TonnageBandBuilder,
+  bandsAreValid,
+  bandsToRanges,
+  type TonnageBand,
+} from "./tonnage-band-builder"
 import { DatePickerField } from "@/components/ui/form-fields"
 
-const EMPTY_RANGE = {
-  min_tons: undefined as any,
-  max_tons: undefined as any,
-  price: undefined as any,
-  client_id: null,
+function makeEmptyRoute(bands: TonnageBand[]) {
+  return {
+    name: "",
+    origin: "",
+    destination: "",
+    client_id: null,
+    ranges: bandsAreValid(bands)
+      ? bandsToRanges(bands)
+      : [
+          {
+            min_tons: undefined as any,
+            max_tons: undefined as any,
+            price: undefined as any,
+            client_id: null,
+          },
+        ],
+  }
 }
 
-const EMPTY_ROUTE = {
-  name: "",
-  origin: "",
-  destination: "",
-  client_id: null,
-  ranges: [EMPTY_RANGE],
-}
+const INITIAL_BANDS: TonnageBand[] = [
+  // { id: "init-a", min_tons: 1, max_tons: 4 },
+  // { id: "init-b", min_tons: 5, max_tons: 9 },
+  // { id: "init-c", min_tons: 10, max_tons: 14 },
+  // { id: "init-d", min_tons: 15, max_tons: 30 },
+]
 
 interface BatchPricingFormProps {
   onSubmit?: (data: BatchPricingInput) => Promise<void>
@@ -43,8 +60,11 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
   // When true, the next fields update (after append) should open the new card.
   const [pendingOpen, setPendingOpen] = useState(false)
 
+  // Global tonnage bands — initialized outside so defaultValues can use them.
+  const [bands, setBands] = useState<TonnageBand[]>(INITIAL_BANDS)
+
   // The field.id of the card whose name input should receive focus.
-  const [focusId, setFocusId] = useState<string | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null)
 
   const {
     control,
@@ -52,12 +72,14 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
     handleSubmit,
     watch,
     trigger,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm<BatchPricingInput>({
     resolver: zodResolver(batchPricingSchema),
     defaultValues: {
       valid_from: new Date(),
-      routes: [EMPTY_ROUTE],
+      routes: [makeEmptyRoute(INITIAL_BANDS)],
     },
     mode: "onBlur",
   })
@@ -104,7 +126,7 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
     // once useFieldArray has committed the append and fields has updated.
     setOpenIds(new Set())
     setPendingOpen(true)
-    append(EMPTY_ROUTE)
+    append(makeEmptyRoute(bands))
   }
 
   // After append, fields updates asynchronously. This effect fires once
@@ -113,21 +135,92 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
     if (pendingOpen && fields.length > 0) {
       const newField = fields[fields.length - 1]
       setOpenIds(new Set([newField.id]))
-      setFocusId(newField.id);
+      setFocusId(newField.id)
       setPendingOpen(false)
     }
   }, [fields.length, pendingOpen])
 
+  // useEffect(() => {
+  //   setOpenIds(new Set(fields.map((f) => f.id)))
+  //   if (fields.length > 0) setFocusId(fields[0].id) // focus first one
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [])
+
+  // When bands change and are valid, resync every existing route's ranges.
+  // We preserve each route's name/origin/destination/client_id and only
+  // replace ranges — so the user doesn't lose data they've already typed.
   useEffect(() => {
-    setOpenIds(new Set(fields.map((f) => f.id)))
-    if (fields.length > 0) setFocusId(fields[0].id) // focus first one
+    if (!bandsAreValid(bands)) return
+    const current = getValues()
+    reset(
+      {
+        ...current,
+        routes: current.routes.map((route) => ({
+          ...route,
+          ranges: bandsToRanges(bands),
+        })),
+      },
+      { keepErrors: true, keepTouched: true, keepDirty: true }
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [bands])
 
   // For summary counts
   const watchedRoutes = watch("routes")
   const totalRanges =
     watchedRoutes?.reduce((sum, r) => sum + (r.ranges?.length ?? 0), 0) ?? 0
+
+  // Tracks whether this is the first run of the bands effect.
+  // On first run we open all default routes and focus the first one.
+  // On subsequent runs (user edited bands) we only resync ranges.
+  const isFirstBandsRun = useRef(true)
+
+  // Runs on mount (initial bands) and whenever bands change.
+  // reset() regenerates field IDs, so we always read fields AFTER reset
+  // via a nested requestAnimationFrame — by that point useFieldArray has
+  // committed the new IDs and fields is up to date.
+  useEffect(() => {
+    if (!bandsAreValid(bands)) return
+
+    const current = getValues()
+    reset(
+      {
+        ...current,
+        routes: current.routes.map((route) => ({
+          ...route,
+          ranges: bandsToRanges(bands),
+        })),
+      },
+      { keepErrors: true, keepTouched: true, keepDirty: true }
+    )
+
+    const isFirst = isFirstBandsRun.current
+    isFirstBandsRun.current = false
+
+    // Wait one frame for useFieldArray to reflect the reset field IDs.
+    requestAnimationFrame(() => {
+      setOpenIds((prev) => {
+        // On first run: open all routes.
+        // On subsequent runs: keep whatever was open (user may have collapsed some).
+        if (isFirst) return new Set(fields.map((f) => f.id))
+        // Remap prev open IDs — reset keeps the same number of routes in the
+        // same order, so we can re-open by position rather than stale ID.
+        const nextFields = fields // fields has updated by rAF time
+        const openPositions = [...prev]
+          .map((id) => fields.findIndex((f) => f.id === id))
+          .filter((i) => i !== -1)
+        return new Set(
+          openPositions
+            .map((i) => nextFields[i]?.id)
+            .filter(Boolean) as string[]
+        )
+      })
+      if (isFirst && fields.length > 0) {
+        setFocusId(fields[0].id)
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bands])
 
   async function onFormSubmit(data: BatchPricingInput) {
     setSubmitStatus("loading")
@@ -149,7 +242,9 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
 
   return (
     <form
-      onSubmit={handleSubmit(onFormSubmit)}
+      onSubmit={handleSubmit(onFormSubmit, (errors) => {
+        console.log(errors)
+      })}
       className="space-y-6"
       noValidate
     >
@@ -179,6 +274,8 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
           name="valid_from"
         />
       </div>
+      {/* ── Tonnage bands ── */}
+      <TonnageBandBuilder bands={bands} onChange={setBands} />
 
       {/* ── Route cards ── */}
       <div className="space-y-4">
