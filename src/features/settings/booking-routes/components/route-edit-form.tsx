@@ -71,7 +71,7 @@ export function RouteEditForm() {
                 name={"destination"}
               />
               <NumberField
-                label="Distance"
+                label="Distance (km)"
                 control={form.control}
                 name={"distance_km"}
               />

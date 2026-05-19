@@ -1,6 +1,10 @@
-import { createRoute } from "./server"
 import { RouteEditSchema } from "../schemas"
 import { createServerFn } from "@tanstack/react-start"
+import { createRoute, getBookingRoutes } from "./server"
+
+export const getBookingRoutesFn = createServerFn().handler(async () => {
+  return getBookingRoutes()
+})
 
 export const createRouteFn = createServerFn({ method: "POST" })
   .inputValidator(RouteEditSchema)

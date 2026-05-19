@@ -1,4 +1,5 @@
 import z from "zod"
+import { EntityId } from "@/schemas"
 
 export const RouteEditSchema = z
   .object({
@@ -14,3 +15,5 @@ export const RouteEditSchema = z
   })
 
 export type RouteEditType = z.infer<typeof RouteEditSchema>
+
+export type BookingRoute =  { id: EntityId } & RouteEditType
