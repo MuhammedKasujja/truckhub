@@ -325,7 +325,7 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
       )}
 
       {/* ── Submit ── */}
-      <div className="flex justify-end border-t pt-2">
+      <div className="flex justify-end pt-2">
         <Button
           type="submit"
           disabled={submitStatus === "loading"}

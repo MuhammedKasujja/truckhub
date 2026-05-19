@@ -23,7 +23,6 @@ export const routePricingSchema = z.object({
   name: z.string().min(1, "Route name is required"),
   origin: z.string().min(1, "Origin is required"),
   destination: z.string().min(1, "Destination is required"),
-  client_id: z.number().nullable().optional(),
   ranges: z
     .array(tonnageRangeSchema)
     .min(1, "At least 1 tonnage range is required"),

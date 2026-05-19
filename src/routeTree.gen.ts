@@ -37,6 +37,7 @@ import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/i
 import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPermissionsIndexRouteImport } from './app/_admin/settings/permissions/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
+import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
@@ -205,6 +206,12 @@ const AdminSettingsCompanyDetailsIndexRoute =
   AdminSettingsCompanyDetailsIndexRouteImport.update({
     id: '/company-details/',
     path: '/company-details/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsBookingRoutesIndexRoute =
+  AdminSettingsBookingRoutesIndexRouteImport.update({
+    id: '/booking-routes/',
+    path: '/booking-routes/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsAdvancedIndexRoute =
@@ -392,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
@@ -446,6 +454,7 @@ export interface FileRoutesByTo {
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
@@ -502,6 +511,7 @@ export interface FileRoutesById {
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
@@ -558,6 +568,7 @@ export interface FileRouteTypes {
     | '/reports/audits/'
     | '/services/new/'
     | '/settings/advanced/'
+    | '/settings/booking-routes/'
     | '/settings/company-details/'
     | '/settings/permissions/'
     | '/settings/pricing-config/'
@@ -612,6 +623,7 @@ export interface FileRouteTypes {
     | '/reports/audits'
     | '/services/new'
     | '/settings/advanced'
+    | '/settings/booking-routes'
     | '/settings/company-details'
     | '/settings/permissions'
     | '/settings/pricing-config'
@@ -667,6 +679,7 @@ export interface FileRouteTypes {
     | '/_admin/reports/audits/'
     | '/_admin/services/new/'
     | '/_admin/settings/advanced/'
+    | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
     | '/_admin/settings/permissions/'
     | '/_admin/settings/pricing-config/'
@@ -885,6 +898,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsCompanyDetailsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/booking-routes/': {
+      id: '/_admin/settings/booking-routes/'
+      path: '/booking-routes'
+      fullPath: '/settings/booking-routes/'
+      preLoaderRoute: typeof AdminSettingsBookingRoutesIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/settings/advanced/': {
       id: '/_admin/settings/advanced/'
       path: '/advanced'
@@ -1093,6 +1113,7 @@ const AdminSettingsVehicleConfigRouteRouteWithChildren =
 interface AdminSettingsRouteRouteChildren {
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
+  AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsPermissionsIndexRoute: typeof AdminSettingsPermissionsIndexRoute
   AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
@@ -1102,6 +1123,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsVehicleConfigRouteRoute:
     AdminSettingsVehicleConfigRouteRouteWithChildren,
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
+  AdminSettingsBookingRoutesIndexRoute: AdminSettingsBookingRoutesIndexRoute,
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsPermissionsIndexRoute: AdminSettingsPermissionsIndexRoute,
   AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,

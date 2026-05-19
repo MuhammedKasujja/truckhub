@@ -15,6 +15,7 @@ import { Route as CompanyDetailsRoute } from "@/app/_admin/settings/company-deta
 import { Route as PermissionsRoute } from "@/app/_admin/settings/permissions"
 import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
 import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
+import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 
 const data = {
   nav: [
@@ -28,6 +29,11 @@ const data = {
       name: "Vehicle Config",
       icon: Globe,
       route: VehicleConfigDefaultRoute.to,
+    },
+    {
+      name: "Routes",
+      icon: Globe,
+      route: BookingRoutes.to,
     },
     { name: "Privacy & visibility", icon: Lock },
     {
