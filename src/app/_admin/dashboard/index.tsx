@@ -15,6 +15,7 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-picker"
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
 import { dashboardQueryOptions } from "@/features/dashboard/query-options"
+import { CalendarDatePicker } from "@/components/calendar-date-picker"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
@@ -33,6 +34,16 @@ function RouteComponent() {
       <PageHeader className="pb-0">
         <PageTitle>Dashboard</PageTitle>
         <PageAction>
+          <CalendarDatePicker
+              date={{
+                from: new Date(),
+                // to: dates.to,
+              }}
+              onDateSelect={({})=>{}}
+              // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
+              className={`w-fit cursor-pointer`}
+              variant="outline"
+            />
           <DateRangePicker2
             initialDateFrom={new Date()}
             initialDateTo={

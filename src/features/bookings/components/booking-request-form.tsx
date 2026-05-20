@@ -76,7 +76,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
     const { isSuccess, error } = await createBookingFn({ data: values })
     if (isSuccess) {
-      toast.success(`${tr("trips.trip_created_successfully")}`)
+      toast.success(`${tr("bookings.booking_created_successfully")}`)
     } else {
       toast.error(error!.message)
     }

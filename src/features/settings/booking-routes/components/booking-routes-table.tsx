@@ -34,7 +34,7 @@ export function BookingRoutesTable() {
   })
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <RouteEditForm />
         <DataTableSortList table={table} align="end" />
