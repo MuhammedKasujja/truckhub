@@ -1,7 +1,7 @@
 import {
-  BatchPricingForm,
   type BatchPricingInput,
 } from "@/features/settings/pricing"
+import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/pricing-config/")({
@@ -9,10 +9,9 @@ export const Route = createFileRoute("/_admin/settings/pricing-config/")({
 })
 
 function RouteComponent() {
-  function handleSubmit(data: BatchPricingInput): Promise<void> {
+  async function handleSubmit(data: BatchPricingInput) {
     console.log("Form data", data)
-    return
   }
 
-  return <BatchPricingForm onSubmit={handleSubmit} />
+  return <RoutePricingDataGridForm onSubmit={handleSubmit} />
 }
