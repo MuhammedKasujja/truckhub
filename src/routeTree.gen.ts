@@ -38,6 +38,8 @@ import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/set
 import { Route as AdminSettingsRolesIndexRouteImport } from './app/_admin/settings/roles/index'
 import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPermissionsIndexRouteImport } from './app/_admin/settings/permissions/index'
+import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
+import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
@@ -213,6 +215,18 @@ const AdminSettingsPermissionsIndexRoute =
   AdminSettingsPermissionsIndexRouteImport.update({
     id: '/permissions/',
     path: '/permissions/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsPdfTemplatesIndexRoute =
+  AdminSettingsPdfTemplatesIndexRouteImport.update({
+    id: '/pdf-templates/',
+    path: '/pdf-templates/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsGenerateNumbersIndexRoute =
+  AdminSettingsGenerateNumbersIndexRouteImport.update({
+    id: '/generate-numbers/',
+    path: '/generate-numbers/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsCompanyDetailsIndexRoute =
@@ -414,6 +428,8 @@ export interface FileRoutesByFullPath {
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
   '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/roles/': typeof AdminSettingsRolesIndexRoute
@@ -471,6 +487,8 @@ export interface FileRoutesByTo {
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
   '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/permissions': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/roles': typeof AdminSettingsRolesIndexRoute
@@ -530,6 +548,8 @@ export interface FileRoutesById {
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
   '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/_admin/settings/roles/': typeof AdminSettingsRolesIndexRoute
@@ -589,6 +609,8 @@ export interface FileRouteTypes {
     | '/settings/advanced/'
     | '/settings/booking-routes/'
     | '/settings/company-details/'
+    | '/settings/generate-numbers/'
+    | '/settings/pdf-templates/'
     | '/settings/permissions/'
     | '/settings/pricing-config/'
     | '/settings/roles/'
@@ -646,6 +668,8 @@ export interface FileRouteTypes {
     | '/settings/advanced'
     | '/settings/booking-routes'
     | '/settings/company-details'
+    | '/settings/generate-numbers'
+    | '/settings/pdf-templates'
     | '/settings/permissions'
     | '/settings/pricing-config'
     | '/settings/roles'
@@ -704,6 +728,8 @@ export interface FileRouteTypes {
     | '/_admin/settings/advanced/'
     | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
+    | '/_admin/settings/generate-numbers/'
+    | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/permissions/'
     | '/_admin/settings/pricing-config/'
     | '/_admin/settings/roles/'
@@ -930,6 +956,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsPermissionsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/pdf-templates/': {
+      id: '/_admin/settings/pdf-templates/'
+      path: '/pdf-templates'
+      fullPath: '/settings/pdf-templates/'
+      preLoaderRoute: typeof AdminSettingsPdfTemplatesIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/generate-numbers/': {
+      id: '/_admin/settings/generate-numbers/'
+      path: '/generate-numbers'
+      fullPath: '/settings/generate-numbers/'
+      preLoaderRoute: typeof AdminSettingsGenerateNumbersIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/settings/company-details/': {
       id: '/_admin/settings/company-details/'
       path: '/company-details'
@@ -1154,6 +1194,8 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
+  AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
+  AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
   AdminSettingsPermissionsIndexRoute: typeof AdminSettingsPermissionsIndexRoute
   AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
   AdminSettingsRolesIndexRoute: typeof AdminSettingsRolesIndexRoute
@@ -1166,6 +1208,9 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
   AdminSettingsBookingRoutesIndexRoute: AdminSettingsBookingRoutesIndexRoute,
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
+  AdminSettingsGenerateNumbersIndexRoute:
+    AdminSettingsGenerateNumbersIndexRoute,
+  AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
   AdminSettingsPermissionsIndexRoute: AdminSettingsPermissionsIndexRoute,
   AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
   AdminSettingsRolesIndexRoute: AdminSettingsRolesIndexRoute,

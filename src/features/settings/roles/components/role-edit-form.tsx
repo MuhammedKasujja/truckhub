@@ -75,9 +75,9 @@ export function RoleEditForm({ trigger, initialData }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle>
-              {isEdit ? "Edit Role" : "Add Role"}
+              {isEdit ? "Edit Role" : "New Role"}
             </DialogTitle>
-            <DialogDescription>Create new Role</DialogDescription>
+            <DialogDescription>Create a new User Role</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <div className="grid flex-1 gap-4">

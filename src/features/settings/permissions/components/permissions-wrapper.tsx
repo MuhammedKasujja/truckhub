@@ -14,8 +14,6 @@ import { SystemPermissions } from "@/features/auth/permissions"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { EditRoleDialog } from "./edit-role-modal"
-import { Can } from "@/components/has-permission"
 import { useQuery } from "@tanstack/react-query"
 import { createRolesListQueryOptions } from "../query-options"
 
@@ -122,9 +120,6 @@ export function PermissionsWrapper() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Can permission={"config:create:role"}>
-          <EditRoleDialog />
-        </Can>
         <Button type="button" onClick={() => saveRolePermissions()}>
           Sync Permissions
         </Button>

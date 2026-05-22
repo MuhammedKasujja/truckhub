@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Loader2, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -109,8 +109,6 @@ function validate(
 const INITIAL_BANDS: TonnageBand[] = [
   { id: "a", min_tons: 1, max_tons: 4 },
   { id: "b", min_tons: 5, max_tons: 9 },
-  { id: "c", min_tons: 10, max_tons: 14 },
-  { id: "d", min_tons: 15, max_tons: 30 },
 ]
 
 // ---------------------------------------------------------------------------

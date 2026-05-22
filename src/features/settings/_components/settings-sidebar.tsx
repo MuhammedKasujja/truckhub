@@ -1,5 +1,17 @@
 "use client"
-import { Bell, Globe, Home, Keyboard, Lock, Settings } from "lucide-react"
+import {
+  Bell,
+  Globe,
+  Home,
+  Keyboard,
+  Lock,
+  Settings,
+  FileText,
+  ListOrdered,
+  LocateFixed,
+  Wallet,
+  SquareSigma
+} from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -18,13 +30,15 @@ import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-confi
 import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 import { Route as RolesRoute } from "@/app/_admin/settings/roles"
+import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
+import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
 
 const data = {
   nav: [
     { name: "Company Details", icon: Home, route: CompanyDetailsRoute.to },
     {
       name: "Pricing Plans",
-      icon: Globe,
+      icon: Wallet,
       route: PricingConfigRoute.to,
     },
     {
@@ -34,14 +48,14 @@ const data = {
     },
     {
       name: "Routes",
-      icon: Globe,
+      icon: LocateFixed,
       route: BookingRoutes.to,
     },
-    { name: "Tax Rates", icon: Lock, route: TaxRatesRoutes.to },
+    { name: "Tax Rates", icon: SquareSigma, route: TaxRatesRoutes.to },
     // { name: "Privacy & visibility", icon: Lock },
     {
       name: "Permissions",
-      icon: Keyboard,
+      icon: Lock,
       route: PermissionsRoute.to,
     },
     {
@@ -51,6 +65,12 @@ const data = {
     },
     { name: "Notifications", icon: Bell },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
+    { name: "PDF Templates", icon: FileText, route: PdfTemplatesRoute.to },
+    {
+      name: "Generate Numbers",
+      icon: ListOrdered,
+      route: GenerateNumbersRoute.to,
+    },
   ],
 }
 

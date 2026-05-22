@@ -8,7 +8,6 @@ import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyb
 import { DataGridSortMenu } from "@/components/data-grid/data-grid-sort-menu"
 import { DataGridFilterMenu } from "@/components/data-grid/data-grid-filter-menu"
 import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu"
-import { DataGridRowHeightMenu } from "@/components/data-grid/data-grid-row-height-menu"
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import {
@@ -291,7 +290,6 @@ export function RoutePricingDataGrid({
       >
         <DataGridFilterMenu table={table} />
         <DataGridSortMenu table={table} />
-        <DataGridRowHeightMenu table={table} />
         <DataGridViewMenu table={table} />
       </div>
 

@@ -12,4 +12,5 @@ export function useGlobalShortcuts() {
   useHotkeys(`${mainKey}+shift+d`, () => router.navigate({ to: "/drivers/new" }))
   useHotkeys(`${mainKey}+shift+v`, () => router.navigate({ to: "/vehicles/new" }))
   useHotkeys(`${mainKey}+shift+s`, () => router.navigate({ to: "/settings" }))
+  useHotkeys(`shift+s+n`, () => router.navigate({ to: "/services/new" }))
 }
