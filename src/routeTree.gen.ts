@@ -35,6 +35,7 @@ import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admi
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
+import { Route as AdminSettingsRolesIndexRouteImport } from './app/_admin/settings/roles/index'
 import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPermissionsIndexRouteImport } from './app/_admin/settings/permissions/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
@@ -197,6 +198,11 @@ const AdminSettingsTaxRatesIndexRoute =
     path: '/tax-rates/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
+const AdminSettingsRolesIndexRoute = AdminSettingsRolesIndexRouteImport.update({
+  id: '/roles/',
+  path: '/roles/',
+  getParentRoute: () => AdminSettingsRouteRoute,
+} as any)
 const AdminSettingsPricingConfigIndexRoute =
   AdminSettingsPricingConfigIndexRouteImport.update({
     id: '/pricing-config/',
@@ -410,6 +416,7 @@ export interface FileRoutesByFullPath {
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
+  '/settings/roles/': typeof AdminSettingsRolesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/users/new/': typeof AdminUsersNewIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
@@ -466,6 +473,7 @@ export interface FileRoutesByTo {
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/permissions': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
+  '/settings/roles': typeof AdminSettingsRolesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
   '/users/new': typeof AdminUsersNewIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
@@ -524,6 +532,7 @@ export interface FileRoutesById {
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
+  '/_admin/settings/roles/': typeof AdminSettingsRolesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/_admin/users/new/': typeof AdminUsersNewIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
@@ -582,6 +591,7 @@ export interface FileRouteTypes {
     | '/settings/company-details/'
     | '/settings/permissions/'
     | '/settings/pricing-config/'
+    | '/settings/roles/'
     | '/settings/tax-rates/'
     | '/users/new/'
     | '/vehicles/new/'
@@ -638,6 +648,7 @@ export interface FileRouteTypes {
     | '/settings/company-details'
     | '/settings/permissions'
     | '/settings/pricing-config'
+    | '/settings/roles'
     | '/settings/tax-rates'
     | '/users/new'
     | '/vehicles/new'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/company-details/'
     | '/_admin/settings/permissions/'
     | '/_admin/settings/pricing-config/'
+    | '/_admin/settings/roles/'
     | '/_admin/settings/tax-rates/'
     | '/_admin/users/new/'
     | '/_admin/vehicles/new/'
@@ -895,6 +907,13 @@ declare module '@tanstack/react-router' {
       path: '/tax-rates'
       fullPath: '/settings/tax-rates/'
       preLoaderRoute: typeof AdminSettingsTaxRatesIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/roles/': {
+      id: '/_admin/settings/roles/'
+      path: '/roles'
+      fullPath: '/settings/roles/'
+      preLoaderRoute: typeof AdminSettingsRolesIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/pricing-config/': {
@@ -1137,6 +1156,7 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsPermissionsIndexRoute: typeof AdminSettingsPermissionsIndexRoute
   AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
+  AdminSettingsRolesIndexRoute: typeof AdminSettingsRolesIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
 }
 
@@ -1148,6 +1168,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsPermissionsIndexRoute: AdminSettingsPermissionsIndexRoute,
   AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
+  AdminSettingsRolesIndexRoute: AdminSettingsRolesIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
 }
 

@@ -1,4 +1,6 @@
-import { useCallback, useMemo } from "react"
+"use client"
+
+import { useCallback, useMemo, useRef } from "react"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
@@ -29,7 +31,6 @@ export interface RoutePricingRow {
   origin: string
   destination: string
   client_id: number | null
-  distance_km: number | null | undefined
   /**
    * Dynamic price columns keyed by band label e.g. "1–4t".
    * Dice UI's DataGrid accesses nested keys via dot-notation accessorKey,
@@ -50,7 +51,7 @@ interface RoutePricingDataGridProps {
 // ---------------------------------------------------------------------------
 
 export function bandLabel(band: TonnageBand): string {
-  return `${band.min_tons} – ${band.max_tons}T`
+  return `${band.min_tons}–${band.max_tons}t`
 }
 
 export function priceKey(band: TonnageBand): `price__${string}` {
@@ -63,7 +64,6 @@ export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
     route_name: "",
     origin: "",
     destination: "",
-    distance_km: null,
     client_id: null,
   }
   bands.forEach((b) => {
@@ -87,7 +87,6 @@ export function rebuildRows(
       route_name: row.route_name,
       origin: row.origin,
       destination: row.destination,
-      distance_km: row.distance_km,
       client_id: row.client_id,
     }
     bands.forEach((b) => {
@@ -139,6 +138,16 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
         cell: { variant: "short-text" },
       },
     },
+    {
+      id: "client_id",
+      accessorKey: "client_id",
+      header: "Client ID",
+      minSize: 90,
+      meta: {
+        label: "Client ID",
+        cell: { variant: "number", min: 1, step: 1 },
+      },
+    },
   ]
 
   // Dynamically generated price columns — one per tonnage band
@@ -153,21 +162,7 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
     },
   }))
 
-  const distanceCols: ColumnDef<RoutePricingRow>[] = [
-    {
-      id: "distance_km",
-      accessorKey: "distance_km",
-      header: "Distance (km)",
-      minSize: 120,
-      filterFn,
-      meta: {
-        label: "Distance (km)",
-        cell: { variant: "number", min: 5 },
-      },
-    },
-  ]
-
-  return [...metaCols, ...priceCols, ...distanceCols]
+  return [...metaCols, ...priceCols]
 }
 
 // ---------------------------------------------------------------------------
@@ -181,13 +176,25 @@ export function RoutePricingDataGrid({
 }: RoutePricingDataGridProps) {
   const validBands = bandsAreValid(bands)
 
-  // Columns are rebuilt whenever bands change — TanStack Table memoises
-  // internally so only the diff is applied.
-  const columns = useMemo(
-    () => buildColumns(bands),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(bands.map((b) => `${b.min_tons}-${b.max_tons}`))]
+  // Once the grid has been shown, keep it mounted even while bands are
+  // temporarily invalid (e.g. a new empty band was just added).
+  // This prevents the grid from unmounting and losing sort/filter/selection state.
+  const hasEverBeenValid = useRef(false)
+  if (validBands) hasEverBeenValid.current = true
+  const shouldShowGrid = hasEverBeenValid.current
+
+  // Columns must be a stable reference that only changes when band shapes
+  // actually change. We derive a primitive signature string from the bands
+  // and use it as the sole memo dependency — so TanStack Table only rebuilds
+  // the column model when a band is genuinely added, removed, or edited.
+  // This avoids both stale columns (empty deps []) and excessive rebuilds
+  // (object reference deps that change every render).
+  const bandSignature = useMemo(
+    () => bands.map((b) => `${b.min_tons}-${b.max_tons}`).join("|"),
+    [bands]
   )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const columns = useMemo(() => buildColumns(bands), [bandSignature])
 
   // ── Undo / redo ────────────────────────────────────────────────────────────
   const { trackCellsUpdate, trackRowsAdd, trackRowsDelete } =
@@ -252,17 +259,20 @@ export function RoutePricingDataGrid({
     getRowId: (row) => row.id,
     enableSearch: true,
     enablePaste: true,
-    autoFocus: { rowIndex: 0, columnId: "route_name" },
+    // autoFocus: { rowIndex: 0, columnId: "route_name" },
     initialState: {
       // Pin the 4 meta columns so price columns scroll independently
       columnPinning: {
-        left: ["select", "route_name", "origin", "destination"],
+        left: ["select", "route_name", "origin", "destination", "client_id"],
       },
     },
   })
 
-  // ── Empty / invalid state ──────────────────────────────────────────────────
-  if (!validBands) {
+  // ── Render ────────────────────────────────────────────────────────────────
+  // Never unmount the grid once it has been shown — doing so loses all
+  // TanStack Table state (sort, filter, selection, column sizes).
+  // Instead show a placeholder overlay when bands are temporarily invalid.
+  if (!shouldShowGrid) {
     return (
       <div className="flex items-center justify-center rounded-lg border border-dashed p-12 text-sm text-muted-foreground">
         Define at least 2 valid tonnage bands above to activate the pricing
@@ -294,13 +304,28 @@ export function RoutePricingDataGrid({
         enableRowsDelete
       />
 
-      {/* Grid */}
-      <DataGrid
-        table={table}
-        {...dataGridProps}
-        height={520}
-        stretchColumns={false}
-      />
+      {/* Banner shown while bands are temporarily invalid */}
+      {!validBands && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-400">
+          Finish defining your tonnage bands — the grid is paused until all
+          bands are valid.
+        </div>
+      )}
+
+      {/* Grid — always mounted once first shown to preserve table state */}
+      <div
+        style={{
+          opacity: validBands ? 1 : 0.4,
+          pointerEvents: validBands ? "auto" : "none",
+        }}
+      >
+        <DataGrid
+          table={table}
+          {...dataGridProps}
+          height={520}
+          stretchColumns={false}
+        />
+      </div>
     </div>
   )
 }

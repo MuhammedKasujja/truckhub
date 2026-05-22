@@ -15,7 +15,6 @@ import {
 } from "./tonnage-band-builder"
 import {
   RoutePricingDataGrid,
-  bandLabel,
   priceKey,
   emptyRow,
   rebuildRows,
@@ -138,15 +137,6 @@ export function RoutePricingDataGridForm({
   >("idle")
   const [message, setMessage] = useState("")
 
-  // A stable string that changes only when band shapes change.
-  // Used as the `key` on RoutePricingDataGrid to force a full remount
-  // whenever bands are added/removed/edited — because useDataGrid
-  // (TanStack Table) initialises columns once on mount and ignores
-  // column definition changes after that.
-  const bandSignature = bandsAreValid(bands)
-    ? bands.map((b) => `${b.min_tons}-${b.max_tons}`).join("|")
-    : null
-
   // When bands change and are valid, resync every row's price keys.
   // Existing prices for bands that still exist are preserved.
   useEffect(() => {
@@ -217,10 +207,9 @@ export function RoutePricingDataGridForm({
       {/* Tonnage band builder */}
       <TonnageBandBuilder bands={bands} onChange={setBands} />
 
-      {/* Data grid — keyed on bandSignature so TanStack Table remounts
-           and picks up the new column definitions whenever bands change */}
+      {/* Data grid — columns update reactively via bandSignature memo
+           inside RoutePricingDataGrid; no remount needed */}
       <RoutePricingDataGrid
-        key={bandSignature ?? "invalid"}
         bands={bands}
         rows={rows}
         onChange={handleRowsChange}

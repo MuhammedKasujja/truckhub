@@ -17,6 +17,7 @@ import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
 import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
 import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
+import { Route as RolesRoute } from "@/app/_admin/settings/roles"
 
 const data = {
   nav: [
@@ -42,6 +43,11 @@ const data = {
       name: "Permissions",
       icon: Keyboard,
       route: PermissionsRoute.to,
+    },
+    {
+      name: "Roles",
+      icon: Keyboard,
+      route: RolesRoute.to,
     },
     { name: "Notifications", icon: Bell },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
