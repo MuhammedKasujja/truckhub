@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Loader2, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ import {
 } from "./tonnage-band-builder"
 import {
   RoutePricingDataGrid,
+  bandLabel,
   priceKey,
   emptyRow,
   rebuildRows,
@@ -29,18 +30,19 @@ interface PriceRange {
   min_tons: number
   max_tons: number
   price: number
+  client_id: number | null
 }
 
 interface RoutePayload {
   name: string
   origin: string
   destination: string
+  client_id: number | null
   ranges: PriceRange[]
 }
 
 interface BatchPayload {
   valid_from: string
-  client_id: number | null
   routes: RoutePayload[]
 }
 
@@ -55,18 +57,19 @@ function buildPayload(
 ): BatchPayload {
   return {
     valid_from: validFrom,
-    client_id: null,
     routes: rows
       .filter((r) => r.route_name.trim())
       .map((row) => ({
         name: row.route_name,
         origin: row.origin,
         destination: row.destination,
+        client_id: row.client_id ?? null,
         ranges: bands
           .map((band) => ({
             min_tons: band.min_tons as number,
             max_tons: band.max_tons as number,
             price: row[priceKey(band)] as number,
+            client_id: row.client_id ?? null,
           }))
           .filter((r) => r.price !== null && r.price !== undefined),
       }))
@@ -107,17 +110,21 @@ function validate(
 const INITIAL_BANDS: TonnageBand[] = [
   { id: "a", min_tons: 1, max_tons: 4 },
   { id: "b", min_tons: 5, max_tons: 9 },
+  { id: "c", min_tons: 10, max_tons: 14 },
+  { id: "d", min_tons: 15, max_tons: 30 },
 ]
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
-interface Props {
+interface RoutePricingDataGridPageProps {
   onSubmit?: (payload: BatchPayload) => Promise<void>
 }
 
-export function RoutePricingDataGridForm({ onSubmit }: Props) {
+export function RoutePricingDataGridForm({
+  onSubmit,
+}: RoutePricingDataGridPageProps) {
   const [validFrom, setValidFrom] = useState(
     new Date().toISOString().split("T")[0]
   )
@@ -125,13 +132,20 @@ export function RoutePricingDataGridForm({ onSubmit }: Props) {
   const [rows, setRows] = useState<RoutePricingRow[]>(() => [
     emptyRow(INITIAL_BANDS),
     emptyRow(INITIAL_BANDS),
-    emptyRow(INITIAL_BANDS),
-    emptyRow(INITIAL_BANDS),
   ])
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle")
   const [message, setMessage] = useState("")
+
+  // A stable string that changes only when band shapes change.
+  // Used as the `key` on RoutePricingDataGrid to force a full remount
+  // whenever bands are added/removed/edited — because useDataGrid
+  // (TanStack Table) initialises columns once on mount and ignores
+  // column definition changes after that.
+  const bandSignature = bandsAreValid(bands)
+    ? bands.map((b) => `${b.min_tons}-${b.max_tons}`).join("|")
+    : null
 
   // When bands change and are valid, resync every row's price keys.
   // Existing prices for bands that still exist are preserved.
@@ -203,8 +217,10 @@ export function RoutePricingDataGridForm({ onSubmit }: Props) {
       {/* Tonnage band builder */}
       <TonnageBandBuilder bands={bands} onChange={setBands} />
 
-      {/* Data grid */}
+      {/* Data grid — keyed on bandSignature so TanStack Table remounts
+           and picks up the new column definitions whenever bands change */}
       <RoutePricingDataGrid
+        key={bandSignature ?? "invalid"}
         bands={bands}
         rows={rows}
         onChange={handleRowsChange}

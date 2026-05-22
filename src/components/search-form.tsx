@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { MapLocation } from "@/types/map";
 import {
@@ -26,10 +25,18 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export function SearchForm({ ...props }: React.ComponentProps<"div">) {
   const tr = useTranslation();
   const [locations, setLocations] = useState<MapLocation[]>([]);
+  const [isOpen, setIsOpen] = useState(false)
+
+  // react-hotkeys-hook automatically maps mod to Command on Mac and Control on Windows/Linux
+  useHotkeys("mod+k", (event) => {
+    event.preventDefault() // Stop default browser search behaviors
+    setIsOpen((prev) => !prev)
+  })
 
   async function handleSearchLocation(query: string) {
     const data = await searchPlaces(query);
@@ -37,7 +44,7 @@ export function SearchForm({ ...props }: React.ComponentProps<"div">) {
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <form>
         <DialogTrigger asChild>
           <div {...props} className="flex w-full max-w-xs flex-col gap-6">
