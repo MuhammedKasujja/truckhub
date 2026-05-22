@@ -16,6 +16,7 @@ import { Route as PermissionsRoute } from "@/app/_admin/settings/permissions"
 import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
 import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
 import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
+import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 
 const data = {
   nav: [
@@ -35,7 +36,8 @@ const data = {
       icon: Globe,
       route: BookingRoutes.to,
     },
-    { name: "Privacy & visibility", icon: Lock },
+    { name: "Tax Rates", icon: Lock, route: TaxRatesRoutes.to },
+    // { name: "Privacy & visibility", icon: Lock },
     {
       name: "Permissions",
       icon: Keyboard,

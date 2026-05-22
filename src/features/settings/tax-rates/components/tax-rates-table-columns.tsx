@@ -1,0 +1,52 @@
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { EditIcon, EyeIcon } from "lucide-react";
+import { TaxRateForm } from "./tax-rate-form";
+import { TaxRate } from "../types";
+
+export function getTaxRateColumns(): ColumnDef<TaxRate>[] {
+  return [
+    // {
+    //   accessorKey: "id",
+    //   header: "Id",
+    //   cell: ({ row }) => {
+    //     return <p>{row.original.id}</p>;
+    //   },
+    // },
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => {
+        return <p>{row.original.name}</p>;
+      },
+    },
+    {
+      accessorKey: "rate",
+      header: "Rate",
+      cell: ({ row }) => {
+        return <p>{row.original.rate}%</p>;
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const taxRate = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button variant={"outline"} size={"icon"}>
+              <EyeIcon />
+            </Button>
+            <TaxRateForm
+              initialData={{ ...taxRate }}
+              trigger={
+                <Button variant={"outline"} size={"icon"}>
+                  <EditIcon />
+                </Button>
+              }
+            />
+          </div>
+        );
+      },
+    },
+  ];
+}
