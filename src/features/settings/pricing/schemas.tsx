@@ -37,3 +37,20 @@ export const batchPricingSchema = z.object({
 export type TonnageRangeInput = z.infer<typeof tonnageRangeSchema>
 export type RoutePricingInput = z.infer<typeof routePricingSchema>
 export type BatchPricingInput = z.infer<typeof batchPricingSchema>
+
+export interface PriceRange {
+  min_tons: number
+  max_tons: number
+  price: number
+}
+
+export interface RoutePayload {
+  route_id: string
+  ranges: PriceRange[]
+}
+
+export interface BatchPayload {
+  valid_from: string
+  client_id: number | null
+  routes: RoutePayload[]
+}

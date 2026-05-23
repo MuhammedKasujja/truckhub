@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 
 function RouteComponent() {
   const { error, data } = Route.useLoaderData()
-  const params = Route.useParams()
+  const { clientId } = Route.useParams()
   useFetchEror(error)
   return (
     <div>
@@ -42,17 +42,14 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <PageBackButton />
           <Button asChild variant={"secondary"}>
-            <Link
-              to="/clients/$clientId/pdf"
-              params={{ clientId: params.clientId }}
-            >
+            <Link to="/clients/$clientId/pdf" params={{ clientId }}>
               Pdf
             </Link>
           </Button>
-          <ClientRouteTonnagePricingModal/>
+          <ClientRouteTonnagePricingModal clientId={clientId} />
         </PageAction>
       </PageHeader>
-      <CustomerDetailsWrapper clientId={params.clientId} />
+      <CustomerDetailsWrapper clientId={clientId} />
     </div>
   )
 }

@@ -15,6 +15,8 @@ import { getFilterFn } from "@/lib/data-grid-filters"
 
 import type { TonnageBand } from "./tonnage-band-builder"
 import { bandsAreValid } from "./tonnage-band-builder"
+import { useBookingRoutes } from "../../booking-routes/query-options"
+import { BookingRoute } from "../../booking-routes/schemas"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -93,8 +95,12 @@ export function rebuildRows(
 // Column factory
 // ---------------------------------------------------------------------------
 
-function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
+function buildColumns(
+  bands: TonnageBand[],
+  routes: BookingRoute[]
+): ColumnDef<RoutePricingRow>[] {
   const filterFn = getFilterFn<RoutePricingRow>()
+  console.log("Booking Routes", routes)
 
   const metaCols: ColumnDef<RoutePricingRow>[] = [
     getDataGridSelectColumn<RoutePricingRow>(),
@@ -104,9 +110,19 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       header: "Route name",
       minSize: 160,
       filterFn,
-      enableSorting: true,
-      enablePinning: false,
-      enableHiding: false,
+      // enableSorting: true,
+      // enablePinning: false,
+      // enableHiding: false,
+      meta: {
+        label: "Name",
+        cell: {
+          variant: "select",
+          options: routes.map((route) => ({
+            label: route.origin,
+            value: route.id.toString(),
+          })),
+        },
+      },
     },
     {
       id: "origin",
@@ -117,10 +133,6 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
-      // meta: {
-      //   label: "Origin",
-      //   cell: { variant: "short-text" },
-      // },
     },
     {
       id: "destination",
@@ -131,10 +143,6 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
-      // meta: {
-      //   label: "Destination",
-      //   cell: { variant: "short-text" },
-      // },
     },
   ]
 
@@ -170,6 +178,7 @@ export function RoutePricingDataGrid({
   onChange,
 }: RoutePricingDataGridProps) {
   const validBands = bandsAreValid(bands)
+  const { routes } = useBookingRoutes()
 
   // Once the grid has been shown, keep it mounted even while bands are
   // temporarily invalid (e.g. a new empty band was just added).
@@ -201,7 +210,10 @@ export function RoutePricingDataGrid({
   )
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const columns = useMemo(() => buildColumns(validBandsOnly), [bandSignature])
+  const columns = useMemo(
+    () => buildColumns(validBandsOnly, routes),
+    [bandSignature, routes]
+  )
 
   // ── Undo / redo ────────────────────────────────────────────────────────────
   const { trackCellsUpdate, trackRowsAdd, trackRowsDelete } =

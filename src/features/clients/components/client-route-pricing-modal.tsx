@@ -9,9 +9,19 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
+import { BatchPayload } from "@/features/settings/pricing/schemas"
 import { CreditCard } from "lucide-react"
 
-export function ClientRouteTonnagePricingModal() {
+type ClientPricingProps = {
+  clientId: string
+}
+
+export function ClientRouteTonnagePricingModal({
+  clientId,
+}: ClientPricingProps) {
+  async function handleSubmit(data: BatchPayload) {
+    console.log("Client Details", data, clientId)
+  }
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -29,7 +39,7 @@ export function ClientRouteTonnagePricingModal() {
           </SheetDescription>
         </SheetHeader>
         <div className="no-scrollbar overflow-y-auto px-4">
-          <RoutePricingDataGridForm />
+          <RoutePricingDataGridForm onSubmit={handleSubmit} />
         </div>
         <SheetFooter>
           <Button type="submit">Save changes</Button>

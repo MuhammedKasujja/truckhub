@@ -20,29 +20,7 @@ import {
   type RoutePricingRow,
 } from "./route-pricing-datagrid"
 import { DatePicker } from "@/components/ui/form-fields"
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface PriceRange {
-  min_tons: number
-  max_tons: number
-  price: number
-}
-
-interface RoutePayload {
-  name: string
-  origin: string
-  destination: string
-  ranges: PriceRange[]
-}
-
-interface BatchPayload {
-  valid_from: string
-  client_id: number | null
-  routes: RoutePayload[]
-}
+import { BatchPayload } from "../schemas"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -59,9 +37,7 @@ function buildPayload(
     routes: rows
       .filter((r) => r.route_name.trim())
       .map((row) => ({
-        name: row.route_name,
-        origin: row.origin,
-        destination: row.destination,
+        route_id: row.route_name,
         ranges: bands
           .map((band) => ({
             min_tons: band.min_tons as number,
