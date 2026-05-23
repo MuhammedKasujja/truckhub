@@ -26,7 +26,6 @@ export interface RoutePricingRow {
   route_name: string
   origin: string
   destination: string
-  client_id: number | null
   /**
    * Dynamic price columns keyed by band label e.g. "1–4t".
    * Dice UI's DataGrid accesses nested keys via dot-notation accessorKey,
@@ -47,7 +46,7 @@ interface RoutePricingDataGridProps {
 // ---------------------------------------------------------------------------
 
 export function bandLabel(band: TonnageBand): string {
-  return `${band.min_tons}–${band.max_tons}t`
+  return `${band.min_tons}–${band.max_tons}T`
 }
 
 export function priceKey(band: TonnageBand): `price__${string}` {
@@ -60,7 +59,6 @@ export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
     route_name: "",
     origin: "",
     destination: "",
-    client_id: null,
   }
   bands.forEach((b) => {
     base[priceKey(b)] = null
@@ -83,7 +81,6 @@ export function rebuildRows(
       route_name: row.route_name,
       origin: row.origin,
       destination: row.destination,
-      client_id: row.client_id,
     }
     bands.forEach((b) => {
       rebuilt[priceKey(b)] = row[priceKey(b)] ?? null
@@ -107,10 +104,9 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       header: "Route name",
       minSize: 160,
       filterFn,
-      meta: {
-        label: "Route name",
-        cell: { variant: "short-text" },
-      },
+      enableSorting: true,
+      enablePinning: false,
+      enableHiding: false,
     },
     {
       id: "origin",
@@ -118,10 +114,13 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       header: "Origin",
       minSize: 120,
       filterFn,
-      meta: {
-        label: "Origin",
-        cell: { variant: "short-text" },
-      },
+      enableSorting: false,
+      enablePinning: false,
+      enableHiding: false,
+      // meta: {
+      //   label: "Origin",
+      //   cell: { variant: "short-text" },
+      // },
     },
     {
       id: "destination",
@@ -129,20 +128,13 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
       header: "Destination",
       minSize: 120,
       filterFn,
-      meta: {
-        label: "Destination",
-        cell: { variant: "short-text" },
-      },
-    },
-    {
-      id: "client_id",
-      accessorKey: "client_id",
-      header: "Client ID",
-      minSize: 90,
-      meta: {
-        label: "Client ID",
-        cell: { variant: "number", min: 1, step: 1 },
-      },
+      enableSorting: false,
+      enablePinning: false,
+      enableHiding: false,
+      // meta: {
+      //   label: "Destination",
+      //   cell: { variant: "short-text" },
+      // },
     },
   ]
 
@@ -156,10 +148,13 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
     id: priceKey(band),
     accessorKey: priceKey(band),
     header: bandLabel(band),
-    meta: {
-      label: `Price (${bandLabel(band)})`,
-      cell: { variant: "number", min: 0, step: 1 },
-    },
+    enableSorting: false,
+    enablePinning: false,
+    enableHiding: false,
+    // meta: {
+    //   label: `Price (${bandLabel(band)})`,
+    //   cell: { variant: "number", min: 0, step: 1 },
+    // },
   }))
 
   return [...metaCols, ...priceCols]
@@ -278,7 +273,10 @@ export function RoutePricingDataGrid({
     },
     initialState: {
       columnPinning: {
-        left: ["select", "route_name", "origin", "destination", "client_id"],
+        left: ["route_name", "origin", "destination", "client_id"],
+      },
+      columnVisibility: {
+        select: false,
       },
     },
   })

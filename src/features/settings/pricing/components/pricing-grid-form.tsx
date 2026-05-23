@@ -29,19 +29,18 @@ interface PriceRange {
   min_tons: number
   max_tons: number
   price: number
-  client_id: number | null
 }
 
 interface RoutePayload {
   name: string
   origin: string
   destination: string
-  client_id: number | null
   ranges: PriceRange[]
 }
 
 interface BatchPayload {
   valid_from: string
+  client_id: number | null
   routes: RoutePayload[]
 }
 
@@ -56,19 +55,18 @@ function buildPayload(
 ): BatchPayload {
   return {
     valid_from: validFrom,
+    client_id: null,
     routes: rows
       .filter((r) => r.route_name.trim())
       .map((row) => ({
         name: row.route_name,
         origin: row.origin,
         destination: row.destination,
-        client_id: row.client_id ?? null,
         ranges: bands
           .map((band) => ({
             min_tons: band.min_tons as number,
             max_tons: band.max_tons as number,
             price: row[priceKey(band)] as number,
-            client_id: row.client_id ?? null,
           }))
           .filter((r) => r.price !== null && r.price !== undefined),
       }))
