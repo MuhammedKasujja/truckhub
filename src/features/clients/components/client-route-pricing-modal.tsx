@@ -9,8 +9,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
-import { BatchPayload } from "@/features/settings/pricing/schemas"
-import { CreditCard } from "lucide-react"
+import {
+  BatchPricingPayload,
+  BatchPricingPayloadCreate,
+} from "@/features/settings/pricing/schemas"
+import { createBatchRouteTonnagePricingFn } from "@/features/settings/pricing/services"
+import { jsonFormatter, logger } from "@/lib/logger"
+import { toast } from "sonner"
 
 type ClientPricingProps = {
   clientId: string
@@ -19,8 +24,14 @@ type ClientPricingProps = {
 export function ClientRouteTonnagePricingModal({
   clientId,
 }: ClientPricingProps) {
-  async function handleSubmit(data: BatchPayload) {
-    console.log("Client Details", data, clientId)
+  async function handleSubmit(values: BatchPricingPayload) {
+    logger.debug(jsonFormatter(values))
+    const { data, error } = await createBatchRouteTonnagePricingFn({
+      data: { ...values, client_id: clientId },
+    })
+    if (error) {
+      toast.error(error.message)
+    }
   }
   return (
     <Sheet>

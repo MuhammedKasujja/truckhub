@@ -12,7 +12,6 @@ export const tonnageRangeSchema = z
       .min(0, "Must be above 0")
       .max(30, "Must be below 30"),
     price: z.number("Required").min(0, "Price is required"),
-    client_id: z.number().nullable().optional(),
   })
   .refine((d) => d.max_tons > d.min_tons, {
     message: "Max must be greater than min",
@@ -38,19 +37,34 @@ export type TonnageRangeInput = z.infer<typeof tonnageRangeSchema>
 export type RoutePricingInput = z.infer<typeof routePricingSchema>
 export type BatchPricingInput = z.infer<typeof batchPricingSchema>
 
-export interface PriceRange {
-  min_tons: number
-  max_tons: number
-  price: number
-}
+export const PriceRangeSchema = z.object({
+  min_tons: z.number(),
+  max_tons: z.number(),
+  price: z.union([z.number(), z.string()]),
+})
 
-export interface RoutePayload {
-  route_id: string
-  ranges: PriceRange[]
-}
+export type PriceRange = z.infer<typeof PriceRangeSchema>
 
-export interface BatchPayload {
-  valid_from: string
-  client_id: number | null
-  routes: RoutePayload[]
-}
+export const RoutePayloadSchema = z.object({
+  route_id: IDSchema,
+  ranges: z.array(PriceRangeSchema),
+})
+
+export type RoutePayload = z.infer<typeof RoutePayloadSchema>
+
+export const BatchPricingPayloadUpdateSchema = z.object({
+  valid_from: z.string(),
+  client_id: IDSchema.optional().nullable(),
+  routes: z.array(RoutePayloadSchema),
+})
+
+export const BatchPricingPayloadCreateSchema = z.object({
+  valid_from: z.string(),
+  routes: z.array(RoutePayloadSchema),
+})
+
+export type BatchPayload = z.infer<typeof BatchPricingPayloadUpdateSchema>
+
+export type BatchPricingPayload = z.infer<typeof BatchPricingPayloadUpdateSchema>
+
+export type BatchPricingPayloadCreate = z.infer<typeof BatchPricingPayloadCreateSchema>
