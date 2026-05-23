@@ -149,12 +149,16 @@ function buildColumns(bands: TonnageBand[]): ColumnDef<RoutePricingRow>[] {
     },
   ]
 
-  // Dynamically generated price columns — one per tonnage band
+  // Dynamically generated price columns — one per tonnage band.
+  // size/minSize/maxSize are intentionally omitted here — they are set
+  // via defaultColumn in useDataGrid, which is the correct place in Dice UI
+  // because it seeds columnSizeVars (the CSS variable map used for rendering).
+  // Per-column overrides would be ignored for dynamically added columns whose
+  // IDs weren't known when columnSizeVars was first computed.
   const priceCols: ColumnDef<RoutePricingRow>[] = bands.map((band) => ({
     id: priceKey(band),
     accessorKey: priceKey(band),
     header: bandLabel(band),
-    minSize: 110,
     meta: {
       label: `Price (${bandLabel(band)})`,
       cell: { variant: "number", min: 0, step: 1 },
@@ -182,18 +186,30 @@ export function RoutePricingDataGrid({
   if (validBands) hasEverBeenValid.current = true
   const shouldShowGrid = hasEverBeenValid.current
 
-  // Columns must be a stable reference that only changes when band shapes
-  // actually change. We derive a primitive signature string from the bands
-  // and use it as the sole memo dependency — so TanStack Table only rebuilds
-  // the column model when a band is genuinely added, removed, or edited.
-  // This avoids both stale columns (empty deps []) and excessive rebuilds
-  // (object reference deps that change every render).
-  const bandSignature = useMemo(
-    () => bands.map((b) => `${b.min_tons}-${b.max_tons}`).join("|"),
+  // Only rebuild columns from bands that are fully valid (both min and max
+  // defined, max > min). This freezes the signature while the user is
+  // mid-edit on a band field, preventing column rebuilds — and focus theft —
+  // on every keystroke.
+  const validBandsOnly = useMemo(
+    () =>
+      bands.filter(
+        (b) =>
+          b.min_tons !== undefined &&
+          b.max_tons !== undefined &&
+          !isNaN(b.min_tons) &&
+          !isNaN(b.max_tons) &&
+          b.max_tons > b.min_tons
+      ),
     [bands]
   )
+
+  const bandSignature = useMemo(
+    () => validBandsOnly.map((b) => `${b.min_tons}-${b.max_tons}`).join("|"),
+    [validBandsOnly]
+  )
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const columns = useMemo(() => buildColumns(bands), [bandSignature])
+  const columns = useMemo(() => buildColumns(validBandsOnly), [bandSignature])
 
   // ── Undo / redo ────────────────────────────────────────────────────────────
   const { trackCellsUpdate, trackRowsAdd, trackRowsDelete } =
@@ -258,14 +274,39 @@ export function RoutePricingDataGrid({
     getRowId: (row) => row.id,
     enableSearch: true,
     enablePaste: true,
-    // autoFocus: { rowIndex: 0, columnId: "route_name" },
+    defaultColumn: {
+      size: 130,
+      minSize: 110,
+      maxSize: 400,
+    },
     initialState: {
-      // Pin the 4 meta columns so price columns scroll independently
       columnPinning: {
         left: ["select", "route_name", "origin", "destination", "client_id"],
       },
     },
   })
+
+  // ── Patch columnSizeVars for dynamically added columns ────────────────────
+  // useDataGrid computes columnSizeVars from table.getState().columnSizing,
+  // which only contains columns that have been explicitly resized or were
+  // present at init. New dynamic price columns have no entry in columnSizing
+  // so their CSS vars are absent and the column renders at ~0px.
+  //
+  // Fix: iterate all flat headers and inject any missing CSS vars using
+  // header.getSize() — which correctly falls back to defaultColumn.size (130).
+  const patchedColumnSizeVars = useMemo(() => {
+    const vars: Record<string, number> = {
+      ...(dataGridProps.columnSizeVars as Record<string, number>),
+    }
+    for (const header of table.getFlatHeaders()) {
+      const headerVar = `--header-${header.id}-size`
+      const colVar = `--col-${header.column.id}-size`
+      if (!(headerVar in vars)) vars[headerVar] = header.getSize()
+      if (!(colVar in vars)) vars[colVar] = header.column.getSize()
+    }
+    return vars
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataGridProps.columnSizeVars, bandSignature])
 
   // ── Render ────────────────────────────────────────────────────────────────
   // Never unmount the grid once it has been shown — doing so loses all
@@ -310,7 +351,9 @@ export function RoutePricingDataGrid({
         </div>
       )}
 
-      {/* Grid — always mounted once first shown to preserve table state */}
+      {/* Grid — always mounted once first shown to preserve table state.
+           patchedColumnSizeVars overrides the one in dataGridProps to
+           include CSS vars for newly added dynamic price columns. */}
       <div
         style={{
           opacity: validBands ? 1 : 0.4,
@@ -320,6 +363,7 @@ export function RoutePricingDataGrid({
         <DataGrid
           table={table}
           {...dataGridProps}
+          columnSizeVars={patchedColumnSizeVars}
           height={520}
           stretchColumns={false}
         />

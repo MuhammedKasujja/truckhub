@@ -16,6 +16,7 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 import { createRolesListQueryOptions } from "../query-options"
+import { Can } from "@/components/has-permission"
 
 const modules = Object.keys(SystemPermissions)
 
@@ -120,9 +121,11 @@ export function PermissionsWrapper() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Button type="button" onClick={() => saveRolePermissions()}>
-          Sync Permissions
-        </Button>
+        <Can permission="config:roles:assign_permissions">
+          <Button type="button" onClick={() => saveRolePermissions()}>
+            Sync Permissions
+          </Button>
+        </Can>
       </div>
       <Tabs defaultValue={modules[0]} className="w-full">
         <TabsList>

@@ -35,7 +35,7 @@ export function RolesTable() {
     <div className="space-y-2">
       <div className="flex justify-between gap-4">
         <DataTableSearchInput placeholder={"Search..."} table={table} />
-        <Can permission={"config:create:role"}>
+        <Can permission={"config:roles:create"}>
           <RoleEditForm />
         </Can>
       </div>
