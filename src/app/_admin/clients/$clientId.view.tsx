@@ -6,6 +6,7 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
+import { ClientRouteTonnagePricingModal } from "@/features/clients/components"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
   clientBookingsQueryOptions,
@@ -38,7 +39,7 @@ function RouteComponent() {
     <div>
       <PageHeader>
         <PageTitle>{data?.fullname}</PageTitle>
-        <PageAction>
+        <PageAction className="flex gap-2">
           <PageBackButton />
           <Button asChild variant={"secondary"}>
             <Link
@@ -48,15 +49,7 @@ function RouteComponent() {
               Pdf
             </Link>
           </Button>
-          <Button asChild variant={"secondary"}>
-            <Link to="/clients/rates">Rates</Link>
-          </Button>
-          <Button asChild variant={"secondary"}>
-            <Link to="/clients/pricing-rates">Client Rates</Link>
-          </Button>
-          <Button asChild variant={"secondary"}>
-            <Link to="/clients/pricing">Pricing</Link>
-          </Button>
+          <ClientRouteTonnagePricingModal/>
         </PageAction>
       </PageHeader>
       <CustomerDetailsWrapper clientId={params.clientId} />

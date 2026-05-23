@@ -5,9 +5,6 @@ import type { ColumnDef } from "@tanstack/react-table"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
-import { DataGridSortMenu } from "@/components/data-grid/data-grid-sort-menu"
-import { DataGridFilterMenu } from "@/components/data-grid/data-grid-filter-menu"
-import { DataGridViewMenu } from "@/components/data-grid/data-grid-view-menu"
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import {
@@ -323,17 +320,6 @@ export function RoutePricingDataGrid({
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Toolbar */}
-      <div
-        role="toolbar"
-        aria-orientation="horizontal"
-        className="flex items-center gap-2 self-end"
-      >
-        <DataGridFilterMenu table={table} />
-        <DataGridSortMenu table={table} />
-        <DataGridViewMenu table={table} />
-      </div>
-
       {/* Keyboard shortcuts reference */}
       <DataGridKeyboardShortcuts
         enableSearch

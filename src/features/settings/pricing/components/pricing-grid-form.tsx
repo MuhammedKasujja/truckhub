@@ -178,18 +178,6 @@ export function RoutePricingDataGridForm({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page header */}
-      <div>
-        <h2 className="text-lg font-medium tracking-tight">
-          Route tonnage pricing
-        </h2>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          Define tonnage bands then fill prices per route in the grid. Columns
-          are generated automatically from your band definitions.
-        </p>
-      </div>
-
-      {/* Valid from */}
       <div className="w-60 space-y-1.5">
         <Label htmlFor="grid-valid-from" className="text-sm">
           Pricing valid from
@@ -226,7 +214,7 @@ export function RoutePricingDataGridForm({
       )}
 
       {/* Submit */}
-      <div className="flex justify-end border-t pt-4">
+      <div className="flex justify-end pt-4">
         <Button
           onClick={handleSubmit}
           disabled={status === "loading"}
