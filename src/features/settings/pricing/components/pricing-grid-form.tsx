@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react"
 import { Loader2, Upload } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
@@ -20,6 +19,7 @@ import {
   rebuildRows,
   type RoutePricingRow,
 } from "./route-pricing-datagrid"
+import { DatePicker } from "@/components/ui/form-fields"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -182,11 +182,13 @@ export function RoutePricingDataGridForm({
         <Label htmlFor="grid-valid-from" className="text-sm">
           Pricing valid from
         </Label>
-        <Input
+        <DatePicker
           id="grid-valid-from"
-          type="date"
-          value={validFrom}
-          onChange={(e) => setValidFrom(e.target.value)}
+          format="P"
+          initialDate={new Date()}
+          onDateChanged={(date) => {
+            if (date) setValidFrom(date?.toISOString().split("T")[0])
+          }}
         />
       </div>
 

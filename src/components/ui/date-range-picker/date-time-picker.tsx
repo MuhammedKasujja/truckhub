@@ -21,10 +21,11 @@ export interface DateTimePickerProps {
   startDate?: Date;
   selected?: Date;
   endDate?: Date | undefined;
-  placeholder?: string
+  placeholder?: string,
+  id?: string
 }
 
-export function DateTimePickerModified({ onSelect, selected, placeholder }: DateTimePickerProps) {
+export function DateTimePickerModified({ onSelect, selected, placeholder, id }: DateTimePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [time, setTime] = useState<string>(now().toFormat("HH:mm"));
   const [date, setDate] = useState<Date | undefined>(selected);
@@ -33,6 +34,7 @@ export function DateTimePickerModified({ onSelect, selected, placeholder }: Date
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           className={cn("w-full font-normal", !date && "text-muted-foreground")}
         >

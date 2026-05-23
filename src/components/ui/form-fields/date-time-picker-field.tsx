@@ -42,6 +42,7 @@ export function DateTimePickerField<T extends FieldValues>({
           </FieldLabel>
           <DateTimePickerModified
             {...field}
+            id={field.name}
             selected={selected}
             startDate={startDate}
             endDate={endDate}

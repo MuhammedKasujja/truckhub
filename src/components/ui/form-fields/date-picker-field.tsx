@@ -1,33 +1,33 @@
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "@/components/ui/field";
-import React from "react";
-import { RequiredLabelIcon } from "@/components/required-label-icon";
+} from "@/components/ui/field"
+import React from "react"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+} from "@/components/ui/popover"
+import { format as formatFn } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { CalendarIcon } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
 
 type DatePickerFieldProps<F extends FieldValues> = {
-  label?: string;
-  control: Control<F>;
-  name: FieldPath<F>;
-  placeholder?: string;
-  description?: string;
-  required?: boolean;
-  startDate?: Date;
-  endDate?: Date;
-};
+  label?: string
+  control: Control<F>
+  name: FieldPath<F>
+  placeholder?: string
+  description?: string
+  required?: boolean
+  startDate?: Date
+  endDate?: Date
+}
 
 export function DatePickerField<T extends FieldValues>({
   control,
@@ -39,14 +39,14 @@ export function DatePickerField<T extends FieldValues>({
   startDate,
   endDate,
 }: Readonly<DatePickerFieldProps<T>>) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false)
 
   const newStartDate = React.useMemo(() => {
-    if (startDate) return startDate;
+    if (startDate) return startDate
 
-    const date = new Date();
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  }, [startDate]);
+    const date = new Date()
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  }, [startDate])
 
   return (
     <Controller
@@ -61,14 +61,15 @@ export function DatePickerField<T extends FieldValues>({
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
               <Button
+                id={field.name}
                 variant={"outline"}
                 className={cn(
                   "w-full font-normal",
-                  !field.value && "text-muted-foreground",
+                  !field.value && "text-muted-foreground"
                 )}
               >
                 {field.value ? (
-                  `${format(field.value, "PPP")}`
+                  `${formatFn(field.value, "PPP")}`
                 ) : (
                   <span>{placeholder}</span>
                 )}
@@ -81,7 +82,7 @@ export function DatePickerField<T extends FieldValues>({
                 captionLayout="dropdown"
                 selected={field.value}
                 onSelect={(selectedDate) => {
-                  field.onChange(selectedDate);
+                  field.onChange(selectedDate)
                 }}
                 onDayClick={() => setIsOpen(false)}
                 startMonth={newStartDate}
@@ -99,5 +100,80 @@ export function DatePickerField<T extends FieldValues>({
         </Field>
       )}
     />
-  );
+  )
+}
+
+interface DatePickerProps {
+  id?: string
+  placeholder?: string
+  description?: string
+  required?: boolean
+  startDate?: Date
+  endDate?: Date
+  initialDate?: Date
+  format?: 'PPP' | 'P'
+  onDateChanged: (date: Date | undefined) => void
+}
+
+export function DatePicker({
+  id,
+  startDate,
+  endDate,
+  placeholder,
+  onDateChanged,
+  initialDate,
+  format= 'PPP'
+}: DatePickerProps) {
+  const [isOpen, setIsOpen] = React.useState(false)
+  const [activeDate, setActiveDate] = React.useState<Date | undefined>(
+    initialDate
+  )
+
+  const newStartDate = React.useMemo(() => {
+    if (startDate) return startDate
+
+    const date = new Date()
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  }, [startDate])
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant={"outline"}
+          className={cn(
+            "w-full font-normal",
+            !activeDate && "text-muted-foreground"
+          )}
+        >
+          {activeDate ? (
+            `${formatFn(activeDate, format)}`
+          ) : (
+            <span>{placeholder}</span>
+          )}
+          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          captionLayout="dropdown"
+          selected={activeDate}
+          onSelect={(selectedDate) => {
+            setActiveDate(selectedDate)
+            onDateChanged(selectedDate)
+          }}
+          onDayClick={() => setIsOpen(false)}
+          startMonth={newStartDate}
+          endMonth={endDate}
+          // disabled={(date) =>
+          //   Number(date) < Date.now() - 1000 * 60 * 60 * 24 ||
+          //   Number(date) > Date.now() + 1000 * 60 * 60 * 24 * 30
+          // }
+          defaultMonth={activeDate}
+        />
+      </PopoverContent>
+    </Popover>
+  )
 }
