@@ -54,7 +54,7 @@ export type RoutePayload = z.infer<typeof RoutePayloadSchema>
 
 export const BatchPricingPayloadUpdateSchema = z.object({
   valid_from: z.string(),
-  client_id: IDSchema.optional().nullable(),
+  clientId: IDSchema.optional().nullable(),
   routes: z.array(RoutePayloadSchema),
 })
 

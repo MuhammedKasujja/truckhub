@@ -9,13 +9,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
-import {
-  BatchPricingPayload,
-  BatchPricingPayloadCreate,
-} from "@/features/settings/pricing/schemas"
-import { createBatchRouteTonnagePricingFn } from "@/features/settings/pricing/services"
-import { jsonFormatter, logger } from "@/lib/logger"
+import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
+import { createClientBatchRoutePricingFn } from "../services"
 
 type ClientPricingProps = {
   clientId: string
@@ -25,10 +21,14 @@ export function ClientRouteTonnagePricingModal({
   clientId,
 }: ClientPricingProps) {
   async function handleSubmit(values: BatchPricingPayload) {
-    logger.debug(jsonFormatter(values))
-    const { data, error } = await createBatchRouteTonnagePricingFn({
-      data: { ...values, client_id: clientId },
-    })
+    const { error, isSuccess, message } = await createClientBatchRoutePricingFn(
+      {
+        data: { ...values, clientId },
+      }
+    )
+    if (isSuccess && message) {
+      toast.success(message)
+    }
     if (error) {
       toast.error(error.message)
     }

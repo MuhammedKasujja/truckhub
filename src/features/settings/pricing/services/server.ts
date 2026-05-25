@@ -5,13 +5,13 @@ import {
   BatchPricingPayloadCreate,
 } from "../schemas"
 
-const endpoint = "/v1/pricing/routes"
+const endpoint = "/v1/routes/pricing"
 
 export async function updateBatchRouteTonnagePricing(
   data: BatchPricingPayload
 ) {
-  const { client_id, ...rest } = data
-  return await apiClient.putFn<BatchPayload>(`${endpoint}/${client_id}`, rest)
+  const { clientId, ...rest } = data
+  return await apiClient.putFn<BatchPayload>(`${endpoint}/${clientId}`, rest)
 }
 
 export async function createBatchRouteTonnagePricing(

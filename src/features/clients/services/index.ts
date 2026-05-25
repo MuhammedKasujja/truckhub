@@ -16,7 +16,9 @@ import {
   deleteCustomerById,
   getCustomersByQuery,
   getCustomerDetailsById,
+  createClientBatchRoutePricing,
 } from "./server"
+import { BatchPricingPayloadUpdateSchema } from "@/features/settings/pricing/schemas"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(CustomerSearchParamsCache)
@@ -76,4 +78,10 @@ export const getClientRidesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientRides(data.id)
+  })
+
+export const createClientBatchRoutePricingFn = createServerFn()
+  .inputValidator(BatchPricingPayloadUpdateSchema)
+  .handler(async ({ data }) => {
+    return createClientBatchRoutePricing(data)
   })

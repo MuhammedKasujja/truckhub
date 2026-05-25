@@ -13,6 +13,10 @@ import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
+import {
+  BatchPayload,
+  BatchPricingPayload,
+} from "@/features/settings/pricing/schemas"
 
 const endpoint = "/v1/clients"
 
@@ -75,4 +79,14 @@ export async function getClientBookings(customerId: EntityId) {
 
 export async function getClientRides(customerId: EntityId) {
   return await apiClient.getFn<RideRequest[]>(`${endpoint}/${customerId}/rides`)
+}
+
+export async function createClientBatchRoutePricing(
+  data: BatchPricingPayload
+) {
+  const { clientId, ...rest } = data
+  return await apiClient.postFn<BatchPayload>(
+    `${endpoint}/${clientId}/routes/pricing`,
+    rest
+  )
 }
