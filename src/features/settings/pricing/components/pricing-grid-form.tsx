@@ -48,7 +48,7 @@ function buildPayload(
           }))
           .filter((r) => r.price !== null && r.price !== undefined),
       }))
-      .filter((r) => r.ranges.length >= 2), // enforce min 2 ranges
+      .filter((r) => r.ranges.length >= 1), // enforce min 1 ranges
   }
 }
 
@@ -59,7 +59,7 @@ function validate(
 ): string | null {
   if (!validFrom) return "Pricing date is required."
   if (!bandsAreValid(bands))
-    return "Define at least 2 valid tonnage bands first."
+    return "Define at least 1 valid tonnage band first."
 
   const filled = rows.filter((r) => r.route_name.trim())
   if (filled.length === 0) return "Add at least one route."
@@ -72,8 +72,8 @@ function validate(
     const filledPrices = bands.filter(
       (b) => row[priceKey(b)] !== null && row[priceKey(b)] !== undefined
     )
-    if (filledPrices.length < 2)
-      return `"${row.route_name}" needs prices for at least 2 tonnage bands.`
+    if (filledPrices.length < 1)
+      return `"${row.route_name}" needs prices for at least 1 tonnage band.`
   }
   return null
 }
@@ -83,8 +83,8 @@ function validate(
 // ---------------------------------------------------------------------------
 
 const INITIAL_BANDS: TonnageBand[] = [
-  { id: "a", min_tons: 1, max_tons: 4 },
-  { id: "b", min_tons: 5, max_tons: 9 },
+  { id: "a", min_tons: undefined, max_tons: undefined },
+  // { id: "b", min_tons: 5, max_tons: 9 },
 ]
 
 // ---------------------------------------------------------------------------

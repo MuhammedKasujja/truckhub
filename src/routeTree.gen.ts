@@ -27,6 +27,7 @@ import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
+import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
 import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rates'
 import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clients/pricing-rates'
@@ -155,6 +156,11 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
 const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
   id: '/rides/new',
   path: '/rides/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminRidesLiveRoute = AdminRidesLiveRouteImport.update({
+  id: '/rides/live',
+  path: '/rides/live',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
@@ -394,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
@@ -453,6 +460,7 @@ export interface FileRoutesByTo {
   '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/clients': typeof AdminClientsIndexRoute
@@ -514,6 +522,7 @@ export interface FileRoutesById {
   '/_admin/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/_admin/clients/rates': typeof AdminClientsRatesRoute
   '/_admin/drivers/new': typeof AdminDriversNewRoute
+  '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
@@ -575,6 +584,7 @@ export interface FileRouteTypes {
     | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
+    | '/rides/live'
     | '/rides/new'
     | '/bookings/'
     | '/clients/'
@@ -634,6 +644,7 @@ export interface FileRouteTypes {
     | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
+    | '/rides/live'
     | '/rides/new'
     | '/bookings'
     | '/clients'
@@ -694,6 +705,7 @@ export interface FileRouteTypes {
     | '/_admin/clients/pricing-rates'
     | '/_admin/clients/rates'
     | '/_admin/drivers/new'
+    | '/_admin/rides/live'
     | '/_admin/rides/new'
     | '/_admin/bookings/'
     | '/_admin/clients/'
@@ -877,6 +889,13 @@ declare module '@tanstack/react-router' {
       path: '/rides/new'
       fullPath: '/rides/new'
       preLoaderRoute: typeof AdminRidesNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/rides/live': {
+      id: '/_admin/rides/live'
+      path: '/rides/live'
+      fullPath: '/rides/live'
+      preLoaderRoute: typeof AdminRidesLiveRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/drivers/new': {
@@ -1226,6 +1245,7 @@ interface AdminRouteRouteChildren {
   AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
+  AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
@@ -1267,6 +1287,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
+  AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,

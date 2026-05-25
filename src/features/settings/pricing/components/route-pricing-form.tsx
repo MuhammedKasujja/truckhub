@@ -66,6 +66,8 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
   // The field.id of the card whose name input should receive focus.
   const [focusId, setFocusId] = useState<string | null>(null)
 
+  const [isOpen, setOpen] = useState(true)
+
   const {
     control,
     register,
@@ -275,7 +277,12 @@ export function BatchPricingForm({ onSubmit }: BatchPricingFormProps) {
         />
       </div>
       {/* ── Tonnage bands ── */}
-      <TonnageBandBuilder bands={bands} onChange={setBands} />
+      <TonnageBandBuilder
+        bands={bands}
+        onChange={setBands}
+        isOpen={isOpen}
+        onToggle={() => setOpen(!isOpen)}
+      />
 
       {/* ── Route cards ── */}
       <div className="space-y-4">

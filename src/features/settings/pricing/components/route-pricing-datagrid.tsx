@@ -408,8 +408,7 @@ export function RoutePricingDataGrid({
   if (!shouldShowGrid) {
     return (
       <div className="flex items-center justify-center rounded-lg border border-dashed p-12 text-sm text-muted-foreground">
-        Define at least 2 valid tonnage bands above to activate the pricing
-        grid.
+        Define at least 1 valid tonnage range above to activate the pricing table
       </div>
     )
   }

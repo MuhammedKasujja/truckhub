@@ -138,7 +138,6 @@ export function TonnageRangeFields({
             min_tons: undefined as any,
             max_tons: undefined as any,
             price: undefined as any,
-            client_id: null,
           })
         }
       >

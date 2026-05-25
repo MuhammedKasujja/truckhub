@@ -122,7 +122,7 @@ export function TonnageBandBuilder({
           <CardHeader className="px-5 pt-4 pb-3 hover:cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium">Tonnage bands</p>
+                <p className="text-sm font-medium">Tonnage Ranges</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   Define the min/max bands once — all routes will be prefilled
                   with these.
@@ -133,7 +133,7 @@ export function TonnageBandBuilder({
                   <AlertCircle className="h-4 w-4 text-destructive" />
                 )}
                 <Badge variant="secondary" className="font-mono text-xs">
-                  {validCount} band{validCount !== 1 ? "s" : ""}
+                  {validCount} range{validCount !== 1 ? "s" : ""}
                 </Badge>
                 {!isOpen && <ChevronDown/>}
               </div>
@@ -157,7 +157,7 @@ export function TonnageBandBuilder({
 
             {bands.length === 0 && (
               <p className="py-4 text-center text-sm text-muted-foreground">
-                No bands yet. Add at least 2 before creating routes.
+                No ranges yet. Add at least 1 before creating routes.
               </p>
             )}
 
@@ -246,7 +246,7 @@ export function TonnageBandBuilder({
               onClick={addBand}
             >
               <Plus className="mr-1.5 h-3.5 w-3.5" />
-              Add band
+              Add Range
             </Button>
           </CardContent>
         </CollapsibleContent>
@@ -255,9 +255,9 @@ export function TonnageBandBuilder({
   )
 }
 
-/** Returns true if all bands are valid and there are at least 2 */
+/** Returns true if all bands are valid and there are at least 1 */
 export function bandsAreValid(bands: TonnageBand[]): boolean {
-  if (bands.length < 2) return false
+  if (bands.length < 1) return false
   return bands.every((b, _, all) => {
     const e = validateBand(b, all)
     return !e.min_tons && !e.max_tons

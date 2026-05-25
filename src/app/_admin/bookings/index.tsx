@@ -32,8 +32,6 @@ export const Route = createFileRoute("/_admin/bookings/")({
 
 function RouteComponent() {
   const { data: statistics } = Route.useLoaderData()
-  const search = Route.useSearch()
-  console.log("Search params:", search)
   return (
     <>
       <PageHeader>
