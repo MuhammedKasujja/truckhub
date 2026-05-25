@@ -21,6 +21,7 @@ import {
 } from "./route-pricing-datagrid"
 import { DatePicker } from "@/components/ui/form-fields"
 import { BatchPayload } from "../schemas"
+import { DEFAULT_ROUTE_TABLE_PRICING_ROWS } from "@/config/constants"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -100,10 +101,11 @@ export function RoutePricingDataGridForm({
     new Date().toISOString().split("T")[0]
   )
   const [bands, setBands] = useState<TonnageBand[]>(INITIAL_BANDS)
-  const [rows, setRows] = useState<RoutePricingRow[]>(() => [
-    emptyRow(INITIAL_BANDS),
-    emptyRow(INITIAL_BANDS),
-  ])
+  const [rows, setRows] = useState<RoutePricingRow[]>(() =>
+    Array.from({ length: DEFAULT_ROUTE_TABLE_PRICING_ROWS }, (_) =>
+      emptyRow(INITIAL_BANDS)
+    )
+  )
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle")

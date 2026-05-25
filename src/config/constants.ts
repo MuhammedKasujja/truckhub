@@ -1,5 +1,7 @@
 export const DEFAULT_FITER_QUERY_PER_PAGE = 10;
 
+export const DEFAULT_ROUTE_TABLE_PRICING_ROWS = 10;
+
 export const CURRENCY_CODE = "UGX";
 
 export const RideTypeList = [

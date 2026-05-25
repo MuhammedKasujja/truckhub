@@ -84,9 +84,9 @@ export async function getClientRides(customerId: EntityId) {
 export async function createClientBatchRoutePricing(
   data: BatchPricingPayload
 ) {
-  const { clientId, ...rest } = data
+  const { client_id, ...rest } = data
   return await apiClient.postFn<BatchPayload>(
-    `${endpoint}/${clientId}/routes/pricing`,
+    `${endpoint}/${client_id}/routes/pricing`,
     rest
   )
 }

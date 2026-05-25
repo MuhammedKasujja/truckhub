@@ -23,7 +23,7 @@ export function ClientRouteTonnagePricingModal({
   async function handleSubmit(values: BatchPricingPayload) {
     const { error, isSuccess, message } = await createClientBatchRoutePricingFn(
       {
-        data: { ...values, clientId },
+        data: { ...values, client_id: clientId },
       }
     )
     if (isSuccess && message) {
