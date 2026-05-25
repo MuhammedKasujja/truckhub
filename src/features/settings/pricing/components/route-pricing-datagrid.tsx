@@ -28,6 +28,7 @@ export interface RoutePricingRow {
   origin: string
   destination: string
   distance_km: string | number | null
+  period: string
   /**
    * Dynamic price columns keyed by band label e.g. "1–4t".
    * Dice UI's DataGrid accesses nested keys via dot-notation accessorKey,
@@ -63,6 +64,7 @@ export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
     origin: "",
     destination: "",
     distance_km: null,
+    period: "",
   }
   bands.forEach((b) => {
     base[priceKey(b)] = null
@@ -86,6 +88,7 @@ export function rebuildRows(
       origin: row.origin,
       destination: row.destination,
       distance_km: row.distance_km,
+      period: "",
     }
     bands.forEach((b) => {
       rebuilt[priceKey(b)] = row[priceKey(b)] ?? null
@@ -116,8 +119,8 @@ function buildColumns(
       minSize: 160,
       filterFn,
       // enableSorting: true,
-      // enablePinning: false,
-      // enableHiding: false,
+      enablePinning: false,
+      enableHiding: false,
       meta: {
         label: "Name",
         cell: {
@@ -135,6 +138,9 @@ function buildColumns(
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
+      meta: {
+        readOnly: true,
+      },
     },
     {
       id: "destination",
@@ -145,9 +151,12 @@ function buildColumns(
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
+      meta: {
+        readOnly: true,
+      },
     },
     {
-      id: "distance",
+      id: "distance_km",
       accessorKey: "distance_km",
       header: "Distance (km)",
       minSize: 120,
@@ -155,6 +164,9 @@ function buildColumns(
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
+      meta: {
+        readOnly: true,
+      },
     },
   ]
 
@@ -177,7 +189,18 @@ function buildColumns(
     // },
   }))
 
-  return [...metaCols, ...priceCols]
+  const periodCols: ColumnDef<RoutePricingRow>[] = [
+    {
+      id: "period",
+      accessorKey: "period",
+      header: "Period",
+      enableSorting: false,
+      enablePinning: false,
+      enableHiding: false,
+    },
+  ]
+
+  return [...metaCols, ...priceCols, ...periodCols]
 }
 
 // ---------------------------------------------------------------------------
@@ -244,25 +267,30 @@ export function RoutePricingDataGrid({
 
   const handleDataChange = useCallback(
     (newRows: RoutePricingRow[]) => {
+      // track row index being edited in order to use 0(1) instead of 0(n) where n = num(rows)
+      let editingIndex: number | undefined = undefined
       // Auto-fill origin, destination, distance_km when route_name changes.
       // We compare old vs new route_name for each row — if it changed and
       // the new value matches a known route, overwrite the derived fields.
       const enriched = newRows.map((newRow, i) => {
         const oldRow = rows[i]
+        editingIndex = i
         if (!oldRow) return newRow
         if (newRow.route_name !== oldRow.route_name && newRow.route_name) {
           const match = routeByName.get(newRow.route_name)
-          // console.log({
-          //   "newRow.route_name": newRow.route_name,
-          //   "oldRow.route_name": oldRow.route_name,
-          //   match: match,
-          // })
+          console.log({
+            "newRow.route_name": newRow.route_name,
+            "oldRow.route_name": oldRow.route_name,
+            match: match,
+            editingIndex,
+          })
           if (match) {
             return {
               ...newRow,
               origin: match.origin,
               destination: match.destination,
-              distance_km: match.distance_km ?? null,
+              distance_km: match.distance_km,
+              period: `${match.min_hrs}-${match.max_hrs}`,
             }
           }
         }
@@ -271,6 +299,10 @@ export function RoutePricingDataGrid({
 
       // Diff old vs new to build the undo/redo cell update list
       const cellUpdates: UndoRedoCellUpdate[] = []
+      //  uncomment to use 0(1)
+      // if (editingIndex) {
+      //   const oldRow = rows[editingIndex]
+      //   const newRow = enriched[editingIndex]
       for (let i = 0; i < rows.length; i++) {
         const oldRow = rows[i]
         const newRow = enriched[i]
@@ -281,10 +313,11 @@ export function RoutePricingDataGrid({
           const newVal = newRow[key]
 
           console.log({
-            "index": i,
+            // "index": i,
             key,
             oldVal,
             newVal,
+            editingIndex,
           })
           if (!Object.is(oldVal, newVal)) {
             cellUpdates.push({
@@ -341,6 +374,7 @@ export function RoutePricingDataGrid({
       },
       columnVisibility: {
         select: false,
+        origin: false,
       },
     },
   })

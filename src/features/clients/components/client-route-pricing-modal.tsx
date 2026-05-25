@@ -49,12 +49,12 @@ export function ClientRouteTonnagePricingModal({
             are generated automatically from your band definitions.
           </SheetDescription>
         </SheetHeader>
-        <div className="no-scrollbar overflow-y-auto px-4">
+        <div className="no-scrollbar overflow-y-auto px-4 pb-5">
           <RoutePricingDataGridForm onSubmit={handleSubmit} />
         </div>
-        <SheetFooter>
+        {/* <SheetFooter>
           <Button type="submit">Save changes</Button>
-        </SheetFooter>
+        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   )

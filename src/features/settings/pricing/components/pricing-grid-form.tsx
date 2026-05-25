@@ -99,6 +99,8 @@ export function RoutePricingDataGridForm({
   onSubmit,
 }: RoutePricingDataGridPageProps) {
   const { routes } = useBookingRoutes()
+  const [isOpen, setOpen] = useState(true)
+
   const [validFrom, setValidFrom] = useState(
     new Date().toISOString().split("T")[0]
   )
@@ -156,46 +158,20 @@ export function RoutePricingDataGridForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="w-60 space-y-1.5">
-        <Label htmlFor="grid-valid-from" className="text-sm">
-          Pricing valid from
-        </Label>
-        <DatePicker
-          id="grid-valid-from"
-          format="P"
-          initialDate={new Date()}
-          onDateChanged={(date) => {
-            if (date) setValidFrom(date?.toISOString().split("T")[0])
-          }}
-        />
-      </div>
-
-      {/* Tonnage band builder */}
-      <TonnageBandBuilder bands={bands} onChange={setBands} />
-
-      {/* Data grid — columns update reactively via bandSignature memo
-           inside RoutePricingDataGrid; no remount needed */}
-      <RoutePricingDataGrid
-        routes={routes}
-        bands={bands}
-        rows={rows}
-        onChange={handleRowsChange}
-      />
-
-      {/* Feedback */}
-      {status === "success" && (
-        <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
-      )}
-      {status === "error" && (
-        <Alert variant="destructive">
-          <AlertDescription>{message}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Submit */}
-      <div className="flex justify-end pt-4">
+      <div className="flex justify-between gap-4">
+        <div className="w-60 space-y-1.5">
+          <Label htmlFor="grid-valid-from" className="text-sm">
+            Pricing valid from
+          </Label>
+          <DatePicker
+            id="grid-valid-from"
+            format="P"
+            initialDate={new Date()}
+            onDateChanged={(date) => {
+              if (date) setValidFrom(date?.toISOString().split("T")[0])
+            }}
+          />
+        </div>
         <Button
           onClick={handleSubmit}
           disabled={status === "loading"}
@@ -214,6 +190,34 @@ export function RoutePricingDataGridForm({
           )}
         </Button>
       </div>
+
+      {/* Tonnage band builder */}
+      <TonnageBandBuilder
+        bands={bands}
+        onChange={setBands}
+        isOpen={isOpen}
+        onToggle={() => setOpen(!isOpen)}
+      />
+
+      {/* Feedback */}
+      {status === "success" && (
+        <Alert className="border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-300">
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      )}
+      {status === "error" && (
+        <Alert variant="destructive">
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
+      )}
+      {/* Data grid — columns update reactively via bandSignature memo
+           inside RoutePricingDataGrid; no remount needed */}
+      <RoutePricingDataGrid
+        routes={routes}
+        bands={bands}
+        rows={rows}
+        onChange={handleRowsChange}
+      />
     </div>
   )
 }

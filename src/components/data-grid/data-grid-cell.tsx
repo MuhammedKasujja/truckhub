@@ -61,6 +61,8 @@ function DataGridCellImpl<TData>({
   const cellOpts = cell.column.columnDef.meta?.cell
   const variant = cellOpts?.variant ?? "text"
 
+  const isReadOnly = cell.column.columnDef.meta?.readOnly ?? readOnly
+
   let Comp: React.ComponentType<DataGridCellProps<TData>>
 
   switch (variant) {
@@ -109,7 +111,7 @@ function DataGridCellImpl<TData>({
       isSelected={isSelected}
       isSearchMatch={isSearchMatch}
       isActiveSearchMatch={isActiveSearchMatch}
-      readOnly={readOnly}
+      readOnly={isReadOnly}
     />
   )
 }
