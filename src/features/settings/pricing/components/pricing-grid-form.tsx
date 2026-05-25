@@ -22,6 +22,7 @@ import {
 import { DatePicker } from "@/components/ui/form-fields"
 import { BatchPayload } from "../schemas"
 import { DEFAULT_ROUTE_TABLE_PRICING_ROWS } from "@/config/constants"
+import { useBookingRoutes } from "../../booking-routes/query-options"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -97,6 +98,7 @@ interface RoutePricingDataGridPageProps {
 export function RoutePricingDataGridForm({
   onSubmit,
 }: RoutePricingDataGridPageProps) {
+  const { routes } = useBookingRoutes()
   const [validFrom, setValidFrom] = useState(
     new Date().toISOString().split("T")[0]
   )
@@ -174,6 +176,7 @@ export function RoutePricingDataGridForm({
       {/* Data grid — columns update reactively via bandSignature memo
            inside RoutePricingDataGrid; no remount needed */}
       <RoutePricingDataGrid
+        routes={routes}
         bands={bands}
         rows={rows}
         onChange={handleRowsChange}

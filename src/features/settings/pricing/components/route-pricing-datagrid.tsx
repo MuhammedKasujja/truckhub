@@ -15,7 +15,6 @@ import { getFilterFn } from "@/lib/data-grid-filters"
 
 import type { TonnageBand } from "./tonnage-band-builder"
 import { bandsAreValid } from "./tonnage-band-builder"
-import { useBookingRoutes } from "../../booking-routes/query-options"
 import { BookingRoute } from "../../booking-routes/schemas"
 
 // ---------------------------------------------------------------------------
@@ -28,6 +27,7 @@ export interface RoutePricingRow {
   route_name: string
   origin: string
   destination: string
+  distance_km: string | number | null
   /**
    * Dynamic price columns keyed by band label e.g. "1–4t".
    * Dice UI's DataGrid accesses nested keys via dot-notation accessorKey,
@@ -40,6 +40,7 @@ export interface RoutePricingRow {
 interface RoutePricingDataGridProps {
   bands: TonnageBand[]
   rows: RoutePricingRow[]
+  routes: BookingRoute[]
   onChange: (rows: RoutePricingRow[]) => void
 }
 
@@ -61,6 +62,7 @@ export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
     route_name: "",
     origin: "",
     destination: "",
+    distance_km: null,
   }
   bands.forEach((b) => {
     base[priceKey(b)] = null
@@ -83,6 +85,7 @@ export function rebuildRows(
       route_name: row.route_name,
       origin: row.origin,
       destination: row.destination,
+      distance_km: row.distance_km,
     }
     bands.forEach((b) => {
       rebuilt[priceKey(b)] = row[priceKey(b)] ?? null
@@ -100,8 +103,10 @@ function buildColumns(
   routes: BookingRoute[]
 ): ColumnDef<RoutePricingRow>[] {
   const filterFn = getFilterFn<RoutePricingRow>()
-  console.log("Booking Routes", routes)
-
+  const routeOptions = routes.map((route) => ({
+    label: route.origin,
+    value: route.id.toString(),
+  }))
   const metaCols: ColumnDef<RoutePricingRow>[] = [
     getDataGridSelectColumn<RoutePricingRow>(),
     {
@@ -117,10 +122,7 @@ function buildColumns(
         label: "Name",
         cell: {
           variant: "select",
-          options: routes.map((route) => ({
-            label: route.origin,
-            value: route.id.toString(),
-          })),
+          options: routeOptions,
         },
       },
     },
@@ -138,6 +140,16 @@ function buildColumns(
       id: "destination",
       accessorKey: "destination",
       header: "Destination",
+      minSize: 120,
+      filterFn,
+      enableSorting: false,
+      enablePinning: false,
+      enableHiding: false,
+    },
+    {
+      id: "distance",
+      accessorKey: "distance_km",
+      header: "Distance (km)",
       minSize: 120,
       filterFn,
       enableSorting: false,
@@ -175,10 +187,17 @@ function buildColumns(
 export function RoutePricingDataGrid({
   bands,
   rows,
+  routes,
   onChange,
 }: RoutePricingDataGridProps) {
+  // Build a lookup map from route name → route data for O(1) auto-fill
+  // NOTE: Mapping Route name to id since the Route name column options return the route id instead of the name
+  const routeByName = useMemo(
+    () => new Map(routes.map((r) => [r.id, r])),
+    [routes]
+  )
+
   const validBands = bandsAreValid(bands)
-  const { routes } = useBookingRoutes()
 
   // Once the grid has been shown, keep it mounted even while bands are
   // temporarily invalid (e.g. a new empty band was just added).
@@ -225,16 +244,48 @@ export function RoutePricingDataGrid({
 
   const handleDataChange = useCallback(
     (newRows: RoutePricingRow[]) => {
+      // Auto-fill origin, destination, distance_km when route_name changes.
+      // We compare old vs new route_name for each row — if it changed and
+      // the new value matches a known route, overwrite the derived fields.
+      const enriched = newRows.map((newRow, i) => {
+        const oldRow = rows[i]
+        if (!oldRow) return newRow
+        if (newRow.route_name !== oldRow.route_name && newRow.route_name) {
+          const match = routeByName.get(newRow.route_name)
+          // console.log({
+          //   "newRow.route_name": newRow.route_name,
+          //   "oldRow.route_name": oldRow.route_name,
+          //   match: match,
+          // })
+          if (match) {
+            return {
+              ...newRow,
+              origin: match.origin,
+              destination: match.destination,
+              distance_km: match.distance_km ?? null,
+            }
+          }
+        }
+        return newRow
+      })
+
       // Diff old vs new to build the undo/redo cell update list
       const cellUpdates: UndoRedoCellUpdate[] = []
       for (let i = 0; i < rows.length; i++) {
         const oldRow = rows[i]
-        const newRow = newRows[i]
+        const newRow = enriched[i]
         if (!oldRow || !newRow) continue
         for (const key of Object.keys(oldRow) as (keyof RoutePricingRow)[]) {
           if (key === "id") continue
           const oldVal = oldRow[key]
           const newVal = newRow[key]
+
+          console.log({
+            "index": i,
+            key,
+            oldVal,
+            newVal,
+          })
           if (!Object.is(oldVal, newVal)) {
             cellUpdates.push({
               rowId: oldRow.id,
@@ -246,9 +297,9 @@ export function RoutePricingDataGrid({
         }
       }
       if (cellUpdates.length > 0) trackCellsUpdate(cellUpdates)
-      onChange(newRows)
+      onChange(enriched)
     },
-    [rows, trackCellsUpdate, onChange]
+    [rows, routeByName, trackCellsUpdate, onChange]
   )
 
   // ── Row add / delete ───────────────────────────────────────────────────────
@@ -285,7 +336,8 @@ export function RoutePricingDataGrid({
     },
     initialState: {
       columnPinning: {
-        left: ["route_name", "origin", "destination", "client_id"],
+        // left: ["route_name", "origin", "destination"],
+        left: ["route_name"],
       },
       columnVisibility: {
         select: false,
