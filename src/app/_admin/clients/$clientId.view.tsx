@@ -42,6 +42,11 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <PageBackButton />
           <Button asChild variant={"secondary"}>
+            <Link to="/clients/data/$clientId" params={{ clientId }}>
+              Pricing
+            </Link>
+          </Button>
+          <Button asChild variant={"secondary"}>
             <Link to="/clients/$clientId/pdf" params={{ clientId }}>
               Pdf
             </Link>

@@ -58,6 +58,7 @@ import { Route as AdminRidesRideIdViewRouteImport } from './app/_admin/rides/$ri
 import { Route as AdminRidesRideIdEditRouteImport } from './app/_admin/rides/$rideId.edit'
 import { Route as AdminDriversDriverIdViewRouteImport } from './app/_admin/drivers/$driverId.view'
 import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drivers/$driverId.edit'
+import { Route as AdminClientsDataClientIdRouteImport } from './app/_admin/clients/data/$clientId'
 import { Route as AdminClientsClientIdViewRouteImport } from './app/_admin/clients/$clientId.view'
 import { Route as AdminClientsClientIdPdfRouteImport } from './app/_admin/clients/$clientId.pdf'
 import { Route as AdminClientsClientIdEditRouteImport } from './app/_admin/clients/$clientId.edit'
@@ -329,6 +330,12 @@ const AdminDriversDriverIdEditRoute =
     path: '/drivers/$driverId/edit',
     getParentRoute: () => AdminRouteRoute,
   } as any)
+const AdminClientsDataClientIdRoute =
+  AdminClientsDataClientIdRouteImport.update({
+    id: '/clients/data/$clientId',
+    path: '/clients/data/$clientId',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminClientsClientIdViewRoute =
   AdminClientsClientIdViewRouteImport.update({
     id: '/clients/$clientId/view',
@@ -418,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/clients/$clientId/pdf': typeof AdminClientsClientIdPdfRoute
   '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
@@ -478,6 +486,7 @@ export interface FileRoutesByTo {
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/clients/$clientId/pdf': typeof AdminClientsClientIdPdfRoute
   '/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
@@ -540,6 +549,7 @@ export interface FileRoutesById {
   '/_admin/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
   '/_admin/clients/$clientId/pdf': typeof AdminClientsClientIdPdfRoute
   '/_admin/clients/$clientId/view': typeof AdminClientsClientIdViewRoute
+  '/_admin/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/_admin/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/_admin/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/_admin/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
@@ -602,6 +612,7 @@ export interface FileRouteTypes {
     | '/clients/$clientId/edit'
     | '/clients/$clientId/pdf'
     | '/clients/$clientId/view'
+    | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
     | '/rides/$rideId/edit'
@@ -662,6 +673,7 @@ export interface FileRouteTypes {
     | '/clients/$clientId/edit'
     | '/clients/$clientId/pdf'
     | '/clients/$clientId/view'
+    | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
     | '/rides/$rideId/edit'
@@ -723,6 +735,7 @@ export interface FileRouteTypes {
     | '/_admin/clients/$clientId/edit'
     | '/_admin/clients/$clientId/pdf'
     | '/_admin/clients/$clientId/view'
+    | '/_admin/clients/data/$clientId'
     | '/_admin/drivers/$driverId/edit'
     | '/_admin/drivers/$driverId/view'
     | '/_admin/rides/$rideId/edit'
@@ -1108,6 +1121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDriversDriverIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/clients/data/$clientId': {
+      id: '/_admin/clients/data/$clientId'
+      path: '/clients/data/$clientId'
+      fullPath: '/clients/data/$clientId'
+      preLoaderRoute: typeof AdminClientsDataClientIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/clients/$clientId/view': {
       id: '/_admin/clients/$clientId/view'
       path: '/clients/$clientId/view'
@@ -1263,6 +1283,7 @@ interface AdminRouteRouteChildren {
   AdminClientsClientIdEditRoute: typeof AdminClientsClientIdEditRoute
   AdminClientsClientIdPdfRoute: typeof AdminClientsClientIdPdfRoute
   AdminClientsClientIdViewRoute: typeof AdminClientsClientIdViewRoute
+  AdminClientsDataClientIdRoute: typeof AdminClientsDataClientIdRoute
   AdminDriversDriverIdEditRoute: typeof AdminDriversDriverIdEditRoute
   AdminDriversDriverIdViewRoute: typeof AdminDriversDriverIdViewRoute
   AdminRidesRideIdEditRoute: typeof AdminRidesRideIdEditRoute
@@ -1305,6 +1326,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminClientsClientIdEditRoute: AdminClientsClientIdEditRoute,
   AdminClientsClientIdPdfRoute: AdminClientsClientIdPdfRoute,
   AdminClientsClientIdViewRoute: AdminClientsClientIdViewRoute,
+  AdminClientsDataClientIdRoute: AdminClientsDataClientIdRoute,
   AdminDriversDriverIdEditRoute: AdminDriversDriverIdEditRoute,
   AdminDriversDriverIdViewRoute: AdminDriversDriverIdViewRoute,
   AdminRidesRideIdEditRoute: AdminRidesRideIdEditRoute,

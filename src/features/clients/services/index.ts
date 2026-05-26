@@ -15,6 +15,7 @@ import {
   getClientPayments,
   deleteCustomerById,
   getCustomersByQuery,
+  getClientRoutePricing,
   getCustomerDetailsById,
   createClientBatchRoutePricing,
 } from "./server"
@@ -84,4 +85,10 @@ export const createClientBatchRoutePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
     return createClientBatchRoutePricing(data)
+  })
+
+export const getClientRoutePricingFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientRoutePricing(data.id)
   })

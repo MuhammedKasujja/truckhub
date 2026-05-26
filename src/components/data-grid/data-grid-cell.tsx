@@ -61,7 +61,8 @@ function DataGridCellImpl<TData>({
   const cellOpts = cell.column.columnDef.meta?.cell
   const variant = cellOpts?.variant ?? "text"
 
-  const isReadOnly = cell.column.columnDef.meta?.readOnly ?? readOnly
+  // const isReadOnly = cell.column.columnDef.meta?.readOnly ?? readOnly
+  const isReadOnly = readOnly
 
   let Comp: React.ComponentType<DataGridCellProps<TData>>
 
