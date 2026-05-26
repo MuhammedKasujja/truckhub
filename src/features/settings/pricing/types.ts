@@ -23,6 +23,7 @@ export type RoutePricing = {
 }
 
 export type RoutePricingResponse = {
+  effective_date: string
   tonnages: TonnageRange[]
   routes: RoutePricing[]
 }

@@ -1,9 +1,11 @@
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column"
+import { Card, CardContent } from "@/components/ui/card"
 import { clientRoutePricingQueryOptions } from "@/features/clients/query-options"
 import {
   RoutePricing,
   RoutePricingResponse,
+  TonnageRange,
 } from "@/features/settings/pricing/types"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { useQuery } from "@tanstack/react-query"
@@ -11,27 +13,39 @@ import { createFileRoute } from "@tanstack/react-router"
 import { ColumnDef } from "@tanstack/react-table"
 import { useMemo } from "react"
 
+function bandLabel(band: TonnageRange): string {
+  return `${band.min_tons}–${band.max_tons}T`
+}
+
+function priceKey(band: TonnageRange): `price__${string}` {
+  return `price__${bandLabel(band)}`
+}
+
 export const Route = createFileRoute("/_admin/clients/data/$clientId")({
   component: RouteComponent,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
       clientRoutePricingQueryOptions(params.clientId)
     ),
+  pendingComponent: () => <div>Loading...</div>,
 })
 
 function RouteComponent() {
-  const { data } = useQuery(
+  const { data, isLoading } = useQuery(
     clientRoutePricingQueryOptions(Route.useParams().clientId)
   )
+
+  if (isLoading) return <div>Loading data</div>
+
   const pricings = data?.data ?? ({} as RoutePricingResponse)
 
   const columns = useMemo<ColumnDef<RoutePricing>[]>(() => {
     const mainCols: ColumnDef<RoutePricing>[] = [
       getDataGridSelectColumn<RoutePricing>(),
       {
-        id: "origin",
-        accessorKey: "origin",
-        header: "Route name",
+        id: "destination",
+        accessorKey: "destination",
+        header: "Destination",
         minSize: 160,
         enablePinning: false,
         enableHiding: false,
@@ -56,9 +70,24 @@ function RouteComponent() {
     const tonnageRangesCols: ColumnDef<RoutePricing>[] = (
       pricings.tonnages ?? []
     ).map((ton) => ({
-      id: `tonnages.${ton.min_tons}_${ton.max_tons}`,
-      accessorKey: `tonnages.${ton.min_tons}_${ton.max_tons}`,
-      header: `${ton.min_tons}-${ton.max_tons}T`,
+      id: priceKey(ton),
+      header: () => (
+        <p className="size-full px-2 py-1.5 text-start text-sm outline-none">
+          {bandLabel(ton)}
+        </p>
+      ),
+      cell: ({ row }) => {
+        const data = row.original
+        const pricing = data.pricings.find(
+          (ele) =>
+            ele.min_tons === ton.min_tons && ele.max_tons === ton.max_tons
+        )
+        return (
+          <div className="size-full px-2 py-1.5 text-start text-sm outline-none">
+            {pricing?.price}
+          </div>
+        )
+      },
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
@@ -66,9 +95,17 @@ function RouteComponent() {
 
     const periodCols: ColumnDef<RoutePricing>[] = [
       {
-        id: "max_hrs",
-        accessorKey: "max_hrs",
-        header: "Period",
+        id: "period",
+        header: () => (
+          <p className="size-full px-2 py-1.5 text-start text-sm outline-none">
+            Period
+          </p>
+        ),
+        cell: ({ row }) => (
+          <div className="size-full px-2 py-1.5 text-start text-sm outline-none">
+            {row.original.min_hrs}-{row.original.max_hrs}HRS
+          </div>
+        ),
         enableSorting: false,
         enablePinning: false,
         enableHiding: false,
@@ -83,6 +120,11 @@ function RouteComponent() {
     data: pricings.routes,
     getRowId: (row) => row.route_id.toString(),
     readOnly: true,
+    defaultColumn: {
+      size: 130,
+      minSize: 110,
+      maxSize: 400,
+    },
     initialState: {
       columnPinning: {
         left: ["select"],
@@ -106,18 +148,22 @@ function RouteComponent() {
     }
     return vars
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataGridProps.columnSizeVars])
+  }, [dataGridProps.columnSizeVars, pricings])
 
   return (
     <div className="space-y-4">
       <div>Route Pricings</div>
-      <DataGrid
-        table={table}
-        {...dataGridProps}
-        columnSizeVars={patchedColumnSizeVars}
-        height={520}
-        stretchColumns={false}
-      />
+      <Card>
+        <CardContent>
+          <DataGrid
+            table={table}
+            {...dataGridProps}
+            columnSizeVars={patchedColumnSizeVars}
+            height={800}
+            stretchColumns={true}
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 }
