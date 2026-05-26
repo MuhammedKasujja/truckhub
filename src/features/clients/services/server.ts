@@ -91,7 +91,7 @@ export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
 }
 
 export async function getClientRoutePricing(clientId: EntityId) {
-  return await apiClient.getFn<RoutePricingResponse>(
-    `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
-  )
+  // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
+  const url = `${endpoint}/${clientId}/routes/pricing`
+  return await apiClient.getFn<RoutePricingResponse>(url)
 }

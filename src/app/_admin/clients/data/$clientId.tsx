@@ -1,5 +1,6 @@
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { clientRoutePricingQueryOptions } from "@/features/clients/query-options"
 import {
@@ -152,7 +153,10 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
-      <div>Route Pricings</div>
+      <div className="flex gap-4">
+        <div>Route Pricings</div>
+      </div>
+      <Button variant={'secondary'}>{pricings.effective_date}</Button>
       <Card>
         <CardContent>
           <DataGrid

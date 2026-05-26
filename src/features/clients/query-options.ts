@@ -78,6 +78,6 @@ export const clientRidesQueryOptions = (clientId: EntityId) =>
 
 export const clientRoutePricingQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.rides(clientId),
+    queryKey: clientQueryKeys.routePricing(clientId),
     queryFn: () => getClientRoutePricingFn({ data: { id: clientId } }),
   })
