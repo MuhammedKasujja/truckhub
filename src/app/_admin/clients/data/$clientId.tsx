@@ -36,7 +36,7 @@ function RouteComponent() {
     clientRoutePricingQueryOptions(Route.useParams().clientId)
   )
 
-  if (isLoading) return <div>Loading data</div>
+  if (isLoading || !data) return <div>Loading data</div>
 
   const pricings = data?.data ?? ({} as RoutePricingResponse)
 
@@ -94,7 +94,7 @@ function RouteComponent() {
       enableHiding: false,
     }))
 
-    const periodCols: ColumnDef<RoutePricing>[] = [
+    const timeRangeCol: ColumnDef<RoutePricing>[] = [
       {
         id: "period",
         header: () => (
@@ -113,7 +113,7 @@ function RouteComponent() {
       },
     ]
 
-    return [...mainCols, ...tonnageRangesCols, ...periodCols]
+    return [...mainCols, ...tonnageRangesCols, ...timeRangeCol]
   }, [])
 
   const { table, ...dataGridProps } = useDataGrid({

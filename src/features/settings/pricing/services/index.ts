@@ -14,7 +14,7 @@ export const updateBatchRouteTonnagePricingFn = createServerFn()
     return updateBatchRouteTonnagePricing(data)
   })
 
-export const createBatchRouteTonnagePricingFn = createServerFn()
+export const createBatchRoutePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
     return createBatchRouteTonnagePricing(data)

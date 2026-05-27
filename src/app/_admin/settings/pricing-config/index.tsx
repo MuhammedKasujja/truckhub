@@ -1,14 +1,26 @@
-import { type BatchPricingInput } from "@/features/settings/pricing"
 import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
+import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
+import { createBatchRoutePricingFn } from "@/features/settings/pricing/services"
 import { createFileRoute } from "@tanstack/react-router"
+import { toast } from "sonner"
 
 export const Route = createFileRoute("/_admin/settings/pricing-config/")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  async function handleSubmit(data: BatchPricingInput) {
-    console.log("Form data", data)
+  async function handleSubmit(data: BatchPricingPayload) {
+    const { message, error, isSuccess } = await createBatchRoutePricingFn({
+      data,
+    })
+
+    if (error) {
+      toast.error(error.message)
+    }
+
+    if (isSuccess) {
+      toast.success(message)
+    }
   }
 
   return (
