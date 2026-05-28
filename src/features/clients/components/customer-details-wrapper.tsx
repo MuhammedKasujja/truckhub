@@ -75,7 +75,7 @@ export function CustomerDetailsWrapper({
     <div className="grid gap-5">
       <Card>
         <CardHeader>
-          <CardTitle>{customer?.fullname}</CardTitle>
+          <CardTitle>{customer?.name}</CardTitle>
           <CardAction className="flex gap-4">
             <Can permission={"payments:create"}>
               <EditPaymentModal

@@ -7,7 +7,7 @@ export const UserCreateSchema = z.object({
   first_name: z.string().trim().min(3, "Required"),
   last_name: z.string().trim().min(3, "Required"),
   phone: z.string().optional().nullable(),
-  email: z.string().trim().min(3, "Required"),
+  email: z.email().trim(),
   password: z.string().trim().min(3, "Required"),
 })
 

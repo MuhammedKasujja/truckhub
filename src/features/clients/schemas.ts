@@ -6,10 +6,10 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const CustomerCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
   short_name: z.string().optional().nullable(),
-  phone: z.string(),
-  email: z.string(),
+  phone: z.string().trim().min(3, "Required"),
+  email: z.email().trim().min(3, "Required"),
   password: z.string(),
-  tin_number: z.string(),
+  tin_number: z.string().trim().min(3, "Required"),
   asssigned_user_id: z.number().optional().nullable(),
 })
 

@@ -8,7 +8,7 @@ export const DriverCreateSchema = z.object({
   last_name: z.string().trim().min(3, "Required"),
   user_name: z.string().optional().nullable(),
   phone: z.string().trim().min(3, "Required"),
-  email: z.string().trim().min(3, "Required"),
+  email: z.email().trim(),
   password: z.string().trim().min(3, "Required"),
 })
 

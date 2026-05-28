@@ -241,19 +241,27 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 }
               />
               {vehicleType?.is_truck && (
-                <AutoCompleteField
-                  label={tr("common.tonnage")}
-                  control={form.control}
-                  name={"tonnage_id"}
-                  placeholder="Select Truck tonnage"
-                  emptyPlaceholder="No Truck tonnage found"
-                  options={
-                    vehicleCofig?.truck_tonnages.map((opt) => ({
-                      label: `${opt.tonnage_min} - ${opt.tonnage_max}`,
-                      value: opt.id,
-                    })) ?? []
-                  }
-                />
+                <div className="space-y-4">
+                  <NumberField
+                    label={"Tonnage Capacity"}
+                    name={"tonnage_capacity"}
+                    control={form.control}
+                    required={false}
+                  />
+                  {/* <AutoCompleteField
+                    label={tr("common.tonnage")}
+                    control={form.control}
+                    name={"tonnage_id"}
+                    placeholder="Select Truck tonnage"
+                    emptyPlaceholder="No Truck tonnage found"
+                    options={
+                      vehicleCofig?.truck_tonnages.map((opt) => ({
+                        label: `${opt.tonnage_min} - ${opt.tonnage_max}`,
+                        value: opt.id,
+                      })) ?? []
+                    }
+                  /> */}
+                </div>
               )}
             </FieldGroup>
           </div>

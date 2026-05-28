@@ -1,7 +1,7 @@
 export type Customer = {
   id: number;
   number: string
-  fullname: string;
+  name: string;
   short_name: string | undefined;
   phone: string;
   balance: string | number;

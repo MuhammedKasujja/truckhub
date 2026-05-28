@@ -21,7 +21,7 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
               to={"/clients/$clientId/view"}
               params={{ clientId: row.original.id }}
             >
-              {row.original.fullname}
+              {row.original.name}
             </Link>
           </Button>
         )

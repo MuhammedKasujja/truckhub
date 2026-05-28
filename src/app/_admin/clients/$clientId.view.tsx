@@ -38,7 +38,7 @@ function RouteComponent() {
   return (
     <div>
       <PageHeader>
-        <PageTitle>{data?.fullname}</PageTitle>
+        <PageTitle>{data?.name}</PageTitle>
         <PageAction className="flex gap-2">
           <PageBackButton />
           <Button asChild variant={"secondary"}>
