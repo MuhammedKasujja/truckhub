@@ -1,13 +1,24 @@
-import { platform } from "@tauri-apps/plugin-os"
+import { useEffect, useState } from "react"
+import { isTauri } from "@tauri-apps/api/core"
+import { platform, type Platform } from "@tauri-apps/plugin-os"
 
 export function usePlatform() {
-  const platformName = platform()
-  if (platformName === "windows") return "windows"
-  else if (platformName === "macos") return "macos"
-  else if (platformName === "linux") return "linux"
+  const [currentPlatform, setCurrentPlatform] = useState<Platform | null>(null)
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !isTauri()) return
+
+    if (typeof window !== "undefined" && isTauri()) {
+      setCurrentPlatform(platform())
+    }
+  }, [])
+
+  if (currentPlatform === "windows") return "windows"
+  else if (currentPlatform === "macos") return "macos"
+  else if (currentPlatform === "linux") return "linux"
   else return null
 }
 
 export function useIsDesktop() {
-  return usePlatform() != null
+  return typeof window !== "undefined" && isTauri()
 }

@@ -1,6 +1,5 @@
 "use client"
 import { useRouter } from "@tanstack/react-router"
-import { LocaleSwitcher } from "./locale-switcher"
 import { ThemeToggle } from "./theme/toggler"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -14,12 +13,14 @@ import {
 import { Button } from "@/components/ui/button"
 import { logoutFn } from "@/features/auth/services"
 import { RefreshButton } from "./refresh-button"
+import { useIsDesktop } from "@/hooks/use-platform"
 
 export function NavigationActions() {
+  const isDesktop = useIsDesktop()
   return (
     <div className="flex items-center gap-4">
-      {/* <LocaleSwitcher /> */}
-      <RefreshButton/>
+      <div>{isDesktop ? "Yes" : "False"}</div>
+      <RefreshButton />
       <ThemeToggle />
       <ProfileDropdown />
     </div>
