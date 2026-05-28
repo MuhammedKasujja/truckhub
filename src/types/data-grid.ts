@@ -1,4 +1,4 @@
-import type { Cell, RowData, TableMeta } from "@tanstack/react-table"
+import type { Cell, Row, RowData, TableMeta } from "@tanstack/react-table"
 
 export type Direction = "ltr" | "rtl"
 
@@ -11,7 +11,7 @@ export interface CellSelectOption {
   count?: number
 }
 
-export type CellOpts =
+export type CellOpts<TData extends RowData, TValue> =
   | {
       variant: "short-text"
     }
@@ -48,6 +48,13 @@ export type CellOpts =
       accept?: string
       multiple?: boolean
     }
+  |{
+          variant: "custom"
+          render: (props: {
+            row: Row<TData>
+            value: TValue
+          }) => React.ReactNode
+        }
 
 export interface CellUpdate {
   rowIndex: number
@@ -58,9 +65,9 @@ export interface CellUpdate {
 declare module "@tanstack/react-table" {
   // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
   interface ColumnMeta<TData extends RowData, TValue> {
-    readOnly?: boolean,
+    readOnly?: boolean
     label?: string
-    cell?: CellOpts
+    cell?: CellOpts<TData, TValue>
   }
 
   // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface

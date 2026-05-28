@@ -14,6 +14,7 @@ import {
   UrlCell,
 } from "@/components/data-grid/data-grid-cell-variants"
 import type { DataGridCellProps } from "@/types/data-grid"
+import { DataGridCellWrapper } from "./data-grid-cell-wrapper"
 
 export const DataGridCell = React.memo(DataGridCellImpl, (prev, next) => {
   // Fast path: check stable primitive props first
@@ -65,6 +66,27 @@ function DataGridCellImpl<TData>({
   const isReadOnly = readOnly
 
   let Comp: React.ComponentType<DataGridCellProps<TData>>
+
+  // ── Inline render function takes priority ─────────────────────────────────
+  if (cellOpts?.variant === "custom") {
+    return (
+      <DataGridCellWrapper
+        cell={cell}
+        tableMeta={tableMeta}
+        rowHeight={rowHeight}
+        rowIndex={rowIndex}
+        columnId={columnId}
+        isFocused={isFocused}
+        isEditing={isEditing}
+        isSelected={isSelected}
+        isSearchMatch={isSearchMatch}
+        isActiveSearchMatch={isActiveSearchMatch}
+        readOnly={readOnly ?? true}
+      >
+        {cellOpts.render({ row: cell.row, value: cell.getValue() })}
+      </DataGridCellWrapper>
+    )
+  }
 
   switch (variant) {
     case "short-text":

@@ -72,22 +72,23 @@ function RouteComponent() {
       pricings.tonnages ?? []
     ).map((ton) => ({
       id: priceKey(ton),
-      header: () => (
-        <p className="size-full px-2 py-1.5 text-start text-sm outline-none">
-          {bandLabel(ton)}
-        </p>
-      ),
-      cell: ({ row }) => {
-        const data = row.original
-        const pricing = data.pricings.find(
-          (ele) =>
-            ele.min_tons === ton.min_tons && ele.max_tons === ton.max_tons
-        )
-        return (
-          <div className="size-full px-2 py-1.5 text-start text-sm outline-none">
-            {pricing?.price}
-          </div>
-        )
+      header: bandLabel(ton),
+      meta: {
+        cell: {
+          variant: "custom",
+          render: ({ row }) => {
+            const data = row.original
+            const pricing = data.pricings.find(
+              (ele) =>
+                ele.min_tons === ton.min_tons && ele.max_tons === ton.max_tons
+            )
+            return (
+              <div className="size-full px-2 text-start text-sm outline-none">
+                {pricing?.price}
+              </div>
+            )
+          },
+        },
       },
       enableSorting: false,
       enablePinning: false,
@@ -97,19 +98,20 @@ function RouteComponent() {
     const timeRangeCol: ColumnDef<RoutePricing>[] = [
       {
         id: "period",
-        header: () => (
-          <p className="size-full px-2 py-1.5 text-start text-sm outline-none">
-            Period
-          </p>
-        ),
-        cell: ({ row }) => (
-          <div className="size-full px-2 py-1.5 text-start text-sm outline-none">
-            {row.original.min_hrs}-{row.original.max_hrs}HRS
-          </div>
-        ),
+        header: "Period",
         enableSorting: false,
         enablePinning: false,
         enableHiding: false,
+        meta: {
+          cell: {
+            variant: "custom",
+            render: ({ row }) => (
+              <div className="size-full text-start text-sm outline-none">
+                {row.original.min_hrs}-{row.original.max_hrs}HRS
+              </div>
+            ),
+          },
+        },
       },
     ]
 
@@ -156,7 +158,7 @@ function RouteComponent() {
       <div className="flex gap-4">
         <div>Route Pricings</div>
       </div>
-      <Button variant={'secondary'}>{pricings.effective_date}</Button>
+      <Button variant={"secondary"}>{pricings.effective_date}</Button>
       <Card>
         <CardContent>
           <DataGrid
