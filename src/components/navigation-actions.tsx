@@ -13,13 +13,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { logoutFn } from "@/features/auth/services"
 import { RefreshButton } from "./refresh-button"
-import { useIsDesktop } from "@/hooks/use-platform"
+import { useNavigationHistory } from "@/hooks/use-navigation-history"
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 
 export function NavigationActions() {
-  const isDesktop = useIsDesktop()
   return (
     <div className="flex items-center gap-4">
-      <div>{isDesktop ? "Yes" : "False"}</div>
+      <NavigationButtons />
       <RefreshButton />
       <ThemeToggle />
       <ProfileDropdown />
@@ -58,5 +58,35 @@ function ProfileDropdown() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+function NavigationButtons() {
+  const { canGoBack, canGoForward, goBack, goForward, historyStack } =
+    useNavigationHistory()
+
+  return (
+    <div className="flex flex-row gap-2">
+      <Button size={"icon"} variant={"secondary"} onClick={goBack}>
+        {historyStack.length}
+      </Button>
+      <Button
+        size={"icon"}
+        variant={"secondary"}
+        className="h-7 w-7"
+        asChild
+        onClick={goBack}
+      >
+        <ArrowLeftIcon className="h-3.5 w-3.5" />
+      </Button>
+      <Button
+        size={"icon-sm"}
+        variant={"secondary"}
+        asChild
+        onClick={goForward}
+      >
+        <ArrowRightIcon />
+      </Button>
+    </div>
   )
 }
