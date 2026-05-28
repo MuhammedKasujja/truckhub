@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { logoutFn } from "@/features/auth/services"
+import { RefreshButton } from "./refresh-button"
 
 export function NavigationActions() {
   return (
     <div className="flex items-center gap-4">
-      <LocaleSwitcher />
+      {/* <LocaleSwitcher /> */}
+      <RefreshButton/>
       <ThemeToggle />
       <ProfileDropdown />
     </div>
@@ -28,7 +30,7 @@ function ProfileDropdown() {
   const router = useRouter()
 
   async function logoutUser() {
-    // await logoutFn()
+    await logoutFn()
     router.navigate({ to: "/login", replace: true })
   }
   return (
