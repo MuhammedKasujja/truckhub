@@ -10,13 +10,15 @@ import {
   ListOrdered,
   LocateFixed,
   Wallet,
-  SquareSigma
+  SquareSigma,
+  SettingsIcon,
 } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -32,6 +34,11 @@ import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 import { Route as RolesRoute } from "@/app/_admin/settings/roles"
 import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
 import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
+import {
+  PageHeader,
+  PageTitle,
+  PageTitleIcon,
+} from "@/components/page-header"
 
 const data = {
   nav: [
@@ -78,6 +85,16 @@ export function SettingsSidebar() {
   const location = useLocation()
   return (
     <Sidebar collapsible="none" className="hidden rounded-xl md:flex">
+      <SidebarHeader>
+        <PageHeader className="pb-0">
+          <PageTitle className="text-xl">
+            <PageTitleIcon>
+              <SettingsIcon className="h-4 w-4" />
+            </PageTitleIcon>
+            Settings
+          </PageTitle>
+        </PageHeader>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

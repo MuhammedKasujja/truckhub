@@ -36,7 +36,7 @@ function PageTitle({
     <div
       data-slot="page-title"
       className={cn(
-        "flex items-center gap-3 text-2xl font-semibold leading-tight",
+        "flex items-center gap-3 text-xl font-semibold leading-tight",
         "group-data-[size=sm]/card:text-sm",
         className,
       )}

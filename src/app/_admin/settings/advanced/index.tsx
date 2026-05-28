@@ -11,8 +11,8 @@ export const Route = createFileRoute("/_admin/settings/advanced/")({
 function RouteComponent() {
   const { data: settings } = Route.useLoaderData()
   return (
-    <div className="flex h-full flex-col gap-6">
-      <h1 className="text-2xl font-bold">Advanced Settings</h1>
+    <div className="flex h-full flex-col gap-5">
+      <h1 className="text-xl font-bold">Advanced Settings</h1>
       <EditSettingsForm settings={settings} />
     </div>
   )
