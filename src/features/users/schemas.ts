@@ -4,11 +4,11 @@ import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const UserCreateSchema = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
+  first_name: z.string().trim().min(3, "Required"),
+  last_name: z.string().trim().min(3, "Required"),
   phone: z.string().optional().nullable(),
-  email: z.string(),
-  password: z.string(),
+  email: z.string().trim().min(3, "Required"),
+  password: z.string().trim().min(3, "Required"),
 })
 
 export const UserUpdateSchema = z.object({

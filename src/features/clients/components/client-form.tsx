@@ -70,23 +70,18 @@ export function ClientForm({ initialData }: ClientFormProps) {
           <FieldGroup>
             <Field orientation={"horizontal"} className="gap-4">
               <TextField
-                label={tr("common.form.first_name")}
-                name={"first_name"}
+                label={tr("common.form.name")}
+                name={"name"}
                 control={form.control}
               />
               <TextField
-                label={tr("common.form.last_name")}
-                name={"last_name"}
+              required={false}
+                label={tr("common.form.short_name")}
+                name={"short_name"}
                 control={form.control}
               />
             </Field>
             <Field orientation={"horizontal"} className="gap-4">
-              <TextField
-                label={tr("common.form.short_name")}
-                name={"user_name"}
-                control={form.control}
-                required={false}
-              />
               <TextField
                 label={tr("common.form.phone")}
                 name={"phone"}

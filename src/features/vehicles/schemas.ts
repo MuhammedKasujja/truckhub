@@ -21,6 +21,7 @@ export const VehicleCreateSchema = z.object({
   car_model_id: z.number(),
   drive_train_id: z.number(),
   tonnage_id: z.number().optional().nullable(),
+  tonnage_capacity: z.union([z.number(), z.string()]).optional().nullable(),
 })
 
 export const VehicleUpdateSchema = z.object({

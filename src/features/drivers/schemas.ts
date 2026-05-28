@@ -4,12 +4,12 @@ import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const DriverCreateSchema = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
+  first_name: z.string().trim().min(3, "Required"),
+  last_name: z.string().trim().min(3, "Required"),
   user_name: z.string().optional().nullable(),
-  phone: z.string(),
-  email: z.string(),
-  password: z.string(),
+  phone: z.string().trim().min(3, "Required"),
+  email: z.string().trim().min(3, "Required"),
+  password: z.string().trim().min(3, "Required"),
 })
 
 export const DriverUpdateSchema = z.object({
