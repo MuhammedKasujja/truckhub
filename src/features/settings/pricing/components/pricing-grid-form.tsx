@@ -143,13 +143,10 @@ export function RoutePricingDataGridForm({
       if (onSubmit) {
         await onSubmit(payload)
       } else {
-        // Default: log to console — replace with your API call
-        console.log("Batch payload:", JSON.stringify(payload, null, 2))
         await new Promise((r) => setTimeout(r, 600))
       }
       setStatus("success")
-      setMessage("Batch submitted successfully.")
-      setTimeout(() => setStatus("idle"), 3000)
+      setTimeout(() => setStatus("idle"), 1000)
     } catch (e: any) {
       setStatus("error")
       setMessage(e?.message ?? "Submission failed.")

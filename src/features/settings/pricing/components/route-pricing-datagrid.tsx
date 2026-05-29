@@ -107,7 +107,7 @@ function buildColumns(
 ): ColumnDef<RoutePricingRow>[] {
   const filterFn = getFilterFn<RoutePricingRow>()
   const routeOptions = routes.map((route) => ({
-    label: route.origin,
+    label: route.destination,
     value: route.id.toString(),
   }))
   const metaCols: ColumnDef<RoutePricingRow>[] = [
