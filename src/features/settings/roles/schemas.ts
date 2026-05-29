@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 
 export const RoleCreateSchema = z.object({
   name: z.string(),
@@ -6,7 +7,7 @@ export const RoleCreateSchema = z.object({
 })
 
 export const RoleUpdateSchema = z.object({
-  id: z.string(),
+  id: IDSchema,
   ...RoleCreateSchema.partial().shape,
 })
 

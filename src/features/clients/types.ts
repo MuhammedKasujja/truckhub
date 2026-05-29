@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type Customer = {
-  id: number;
+  id: EntityId;
   number: string
   name: string;
   short_name: string | undefined;

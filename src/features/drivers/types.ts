@@ -1,7 +1,8 @@
+import { EntityId } from "@/schemas";
 import { VehicleBase } from "@/features/vehicles/types";
 
 export type Driver = {
-  id: number;
+  id: EntityId;
   number: string;
   fullname: string;
   first_name: string;

@@ -1,16 +1,17 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { CarModel } from "@/features/settings/car-model/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const CarModelCreateSchema = z.object({
   name: z.string(),
-  car_brand_id: z.number(),
-  vehicle_type_id: z.number(),
+  car_brand_id: IDSchema,
+  vehicle_type_id: IDSchema,
 })
 
 export const CarModelUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...CarModelCreateSchema.partial().shape,
 })
 

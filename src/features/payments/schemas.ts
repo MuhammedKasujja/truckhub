@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { formatPrice } from "@/lib/format"
 import { Payment } from "@/features/payments/types"
 import { PaymentStatuses } from "@/config/constants"
@@ -6,8 +7,8 @@ import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const EditPaymentBaseSchema = z.object({
-  id: z.number().optional().nullable(),
-  entity_id: z.number(),
+  id: IDSchema.optional().nullable(),
+  entity_id: IDSchema,
   payment_mode: z.string(),
   transaction_ref: z.string().optional().nullable(),
   type: z.enum(["booking", "ride"]),

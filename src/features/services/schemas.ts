@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { Service } from "@/features/services/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -20,7 +21,7 @@ export const ServiceCreateSchema = z.object({
 })
 
 export const ServiceUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...ServiceCreateSchema.partial().shape,
 })
 

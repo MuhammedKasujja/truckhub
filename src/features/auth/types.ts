@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export interface AuthUser {
-  id: number;
+  id: EntityId;
   name: string;
   email: string;
   is_admin: boolean;

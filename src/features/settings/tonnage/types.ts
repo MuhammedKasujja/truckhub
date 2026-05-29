@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type Tonnage = {
-  id: number;
+  id: EntityId;
   tonnage: string;
   tonnage_min: number;
   tonnage_max: number;

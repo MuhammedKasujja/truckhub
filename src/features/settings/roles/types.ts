@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type Role = {
-  id: string;
+  id: EntityId;
   name: string;
   description?: string | null | undefined;
 };

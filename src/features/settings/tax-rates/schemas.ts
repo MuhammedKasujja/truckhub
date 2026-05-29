@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 
 export const TaxRateCreateSchema = z.object({
   name: z.string(),
@@ -7,7 +8,7 @@ export const TaxRateCreateSchema = z.object({
 })
 
 export const TaxRateUpdateSchema = z.object({
-  id: z.string(),
+  id: IDSchema,
   ...TaxRateCreateSchema.partial().shape,
 })
 

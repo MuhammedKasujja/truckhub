@@ -1,17 +1,18 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { Review } from "@/features/reviews/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ReviewCreateSchema = z.object({
-  passenger_id: z.string(),
+  passenger_id: IDSchema,
   request_id: z.string(),
   rating: z.number(),
   comment: z.string().optional(),
 })
 
 export const ReviewUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...ReviewCreateSchema.partial().shape,
 })
 

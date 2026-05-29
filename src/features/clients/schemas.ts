@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { Customer } from "@/features/clients/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -10,11 +11,11 @@ export const CustomerCreateSchema = z.object({
   email: z.email().trim().min(3, "Required"),
   password: z.string(),
   tin_number: z.string().trim().min(3, "Required"),
-  asssigned_user_id: z.number().optional().nullable(),
+  asssigned_user_id: IDSchema.optional().nullable(),
 })
 
 export const CustomerUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...CustomerCreateSchema.partial().shape,
 })
 

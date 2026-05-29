@@ -1,3 +1,5 @@
+import { EntityId } from "@/schemas";
+
 export const DistanceUnitList = ["km", "miles"] as const;
 
 export type DistanceUnit = (typeof DistanceUnitList)[number];
@@ -16,7 +18,7 @@ export type Service = {
   distance_unit: DistanceUnit;
   vehicle_type_id: number;
   description: string | undefined;
-  id: number;
+  id: EntityId;
   is_truck: boolean;
   created_at: Date;
   updated_at: Date;

@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { SystemUser } from "@/features/users/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -12,7 +13,7 @@ export const UserCreateSchema = z.object({
 })
 
 export const UserUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...UserCreateSchema.partial().shape,
 })
 

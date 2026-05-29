@@ -1,14 +1,15 @@
+import { EntityId } from "@/schemas";
 import { Payment } from "@/features/payments/types";
 
 export type BookingCustomer = {
-  id: number;
+  id: EntityId;
   fullname: string;
   phone: string;
   email: string;
 };
 
 export type BookingServiceItem = {
-  service_id: number;
+  service_id: EntityId;
   service_name: string;
   cost_per_item: number;
   total_items: number;
@@ -16,7 +17,7 @@ export type BookingServiceItem = {
 };
 
 export type Booking = {
-  id: number;
+  id: EntityId;
   number: string;
   created_at: Date;
   request_start_time: Date;
@@ -34,7 +35,7 @@ export type Booking = {
 };
 
 export type BookingDetails = {
-  id: number;
+  id: EntityId;
   number: string;
   created_at: Date;
   pickup_time: Date;

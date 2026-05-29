@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { Driver } from "@/features/drivers/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -13,7 +14,7 @@ export const DriverCreateSchema = z.object({
 })
 
 export const DriverUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...DriverCreateSchema.partial().shape,
 })
 

@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { VehicleType } from "@/features/settings/vehicle-types/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -9,7 +10,7 @@ export const VehicleTypeCreateSchema = z.object({
 })
 
 export const VehicleTypeUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...VehicleTypeCreateSchema.partial().shape,
 })
 

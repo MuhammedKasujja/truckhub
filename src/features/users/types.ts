@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type SystemUser = {
-  id: number;
+  id: EntityId;
   number: string | undefined;
   name: string;
   first_name: string;

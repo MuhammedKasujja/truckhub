@@ -1,4 +1,5 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { DriveTrain } from "@/features/settings/drive-trains/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -10,7 +11,7 @@ export const DriveTrainCreateSchema = z.object({
 })
 
 export const DriveTrainUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...DriveTrainCreateSchema.partial().shape,
 })
 

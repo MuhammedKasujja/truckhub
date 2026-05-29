@@ -26,7 +26,7 @@ export const VehicleCreateSchema = z.object({
 })
 
 export const VehicleUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...VehicleCreateSchema.partial().shape,
 })
 

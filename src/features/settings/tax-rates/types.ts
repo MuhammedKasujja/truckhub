@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type TaxRate = {
-  id: string;
+  id: EntityId;
   name: string;
   rate: string | number;
   description?: string | null | undefined;
