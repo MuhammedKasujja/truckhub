@@ -71,22 +71,20 @@ function NavigationButtons() {
 
   return (
     <div className="flex flex-row gap-2">
-      <Button size={"icon"} variant={"secondary"} onClick={goBack}>
+      <Button size={"icon-xs"} variant={"secondary"} onClick={goBack}>
         {historyStack.length}
       </Button>
       <Button
-        size={"icon"}
+        size={"icon-xs"}
         variant={"secondary"}
-        className="h-7 w-7"
-        asChild
+        
         onClick={goBack}
       >
         <ArrowLeftIcon className="h-3.5 w-3.5" />
       </Button>
       <Button
-        size={"icon-sm"}
+        size={"icon-xs"}
         variant={"secondary"}
-        asChild
         onClick={goForward}
       >
         <ArrowRightIcon />

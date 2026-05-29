@@ -17,33 +17,33 @@ import {
 } from "lucide-react"
 
 type Module =
-  | "dashboard"
-  | "clients"
-  | "drivers"
-  | "vehicles"
-  | "users"
-  | "bookings"
-  | "rides"
-  | "services"
-  | "payments"
-  | "settings"
-  | "reports"
+  | "Dashboard"
+  | "Clients"
+  | "Drivers"
+  | "Vehicles"
+  | "Users"
+  | "Bookings"
+  | "Rides"
+  | "Services"
+  | "Payments"
+  | "Settings"
+  | "Reports"
 
 type Actions = "Create" | "Edit" | "Delete" | "Restore" | "Pay"
 
 export function getModuleIcon(module: Module) {
   const moduleIcons: Record<Module, LucideIcon> = {
-    dashboard: LayoutDashboard,
-    rides: DatabaseSearch,
-    bookings: CalendarCheck,
-    payments: CreditCard,
-    services: MonitorCog,
-    clients: Users,
-    drivers: ShieldUser,
-    vehicles: BusFront,
-    users: Users,
-    reports: ChartLine,
-    settings: SettingsIcon,
+    Dashboard: LayoutDashboard,
+    Rides: DatabaseSearch,
+    Bookings: CalendarCheck,
+    Payments: CreditCard,
+    Services: MonitorCog,
+    Clients: Users,
+    Drivers: ShieldUser,
+    Vehicles: BusFront,
+    Users: Users,
+    Reports: ChartLine,
+    Settings: SettingsIcon,
   }
   return moduleIcons[module]
 }

@@ -13,7 +13,7 @@ export function RefreshButton() {
     <Button
       variant={"secondary"}
       type="button"
-      size={"icon"}
+      size={"icon-xs"}
       onClick={handleRefresh}
     >
       <RefreshCwIcon />

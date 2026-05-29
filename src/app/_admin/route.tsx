@@ -1,10 +1,6 @@
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/session"
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-} from "@tanstack/react-router"
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarProvider,
@@ -46,8 +42,10 @@ function RouteComponent() {
               className="mr-2 data-vertical:h-4 data-vertical:self-auto"
             />
             <div className="flex w-full items-center justify-between gap-4">
-              <SearchForm />
-              <CreateEntityDialog/>
+              <div className="flex gap-2 items-center">
+                <SearchForm />
+                <CreateEntityDialog />
+              </div>
               <NavigationActions />
             </div>
           </header>
