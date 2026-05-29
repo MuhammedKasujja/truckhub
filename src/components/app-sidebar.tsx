@@ -19,18 +19,6 @@ import { Link } from "@tanstack/react-router"
 import { GlobalKeys, useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 import type { LucideIcon } from "lucide-react"
-import {
-  DatabaseSearch,
-  Users,
-  MonitorCog,
-  LayoutDashboard,
-  BusFront,
-  ShieldUser,
-  ChartLine,
-  CreditCard,
-  CalendarCheck,
-  SettingsIcon,
-} from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
 import { Route as DashboardRoute } from "@/app/_admin/dashboard"
@@ -44,6 +32,7 @@ import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
 import { Route as UsersRoute } from "@/app/_admin/users"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
+import { getModuleIcon } from "@/components/icons"
 
 type SidebarItem = {
   title: GlobalKeys
@@ -63,67 +52,67 @@ const data: SidebarMenuStruct = {
     {
       title: "routes.dashboard",
       url: DashboardRoute.to,
-      icon: LayoutDashboard,
+      icon: getModuleIcon("dashboard"),
       permission: "bookings:view",
     },
     {
       title: "routes.rides",
       url: RidesRoute.to,
-      icon: DatabaseSearch,
+      icon: getModuleIcon("rides"),
       permission: "rides:view",
     },
     {
       title: "routes.bookings",
       url: BookingsRoute.to,
-      icon: CalendarCheck,
+      icon: getModuleIcon("bookings"),
       permission: "bookings:view",
     },
     {
       title: "routes.payments",
       url: PaymentsRoute.to,
-      icon: CreditCard,
+      icon: getModuleIcon("payments"),
       permission: "payments:view",
     },
     {
       title: "routes.services",
       url: ServicesRoute.to,
-      icon: MonitorCog,
+      icon: getModuleIcon("services"),
       permission: "services:view",
     },
     {
       title: "routes.clients",
       url: ClientsRoute.to,
-      icon: Users,
+      icon: getModuleIcon("clients"),
       permission: "clients:view",
     },
     {
       title: "routes.drivers",
       url: DriversRoute.to,
-      icon: ShieldUser,
+      icon: getModuleIcon("drivers"),
       permission: "drivers:view",
     },
     {
       title: "routes.vehicles",
       url: VehiclesRoute.to,
-      icon: BusFront,
+      icon: getModuleIcon("vehicles"),
       permission: "vehicles:view",
     },
     {
       title: "routes.users",
       url: UsersRoute.to,
-      icon: Users,
+      icon: getModuleIcon("users"),
       permission: "users:view",
     },
     {
       title: "routes.reports",
       url: ReportsRoute.to,
-      icon: ChartLine,
+      icon: getModuleIcon("reports"),
       permission: "config:view",
     },
     {
       title: "routes.settings",
       url: SettingsDefaultRoute.to,
-      icon: SettingsIcon,
+      icon: getModuleIcon("settings"),
       permission: "config:view",
     },
   ],

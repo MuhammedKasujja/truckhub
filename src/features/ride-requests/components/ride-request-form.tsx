@@ -86,7 +86,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
                 name={"customer_id"}
                 control={form.control}
                 options={(clientsResponse?.data ?? []).map((ele) => ({
-                  label: ele.fullname,
+                  label: ele.name,
                   value: ele.id,
                 }))}
               />

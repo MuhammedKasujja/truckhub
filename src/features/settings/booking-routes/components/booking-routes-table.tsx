@@ -29,6 +29,7 @@ export function BookingRoutesTable() {
       //   columnPinning: { right: ["actions"] },
       columnVisibility: {
         id: false,
+        origin: false,
       },
     },
     getRowId: (originalRow) => originalRow.id.toString(),

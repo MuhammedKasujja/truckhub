@@ -28,7 +28,9 @@ export function VehicleTypeTable() {
     pageCount: 1,
     initialState: {
       sorting: [{ id: "id", desc: true }],
-      //   columnPinning: { right: ["actions"] },
+      columnVisibility: {
+        id: false,
+      },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,

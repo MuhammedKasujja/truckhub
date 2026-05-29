@@ -140,7 +140,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                   name={"customer_id"}
                   control={control}
                   options={(clientsResponse?.data ?? [])?.map((ele) => ({
-                    label: ele.fullname,
+                    label: ele.name,
                     value: ele.id,
                   }))}
                 />

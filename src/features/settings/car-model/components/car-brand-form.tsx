@@ -86,7 +86,6 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            <TextField label="Name" control={form.control} name={"name"} />
             <AutoCompleteField
               label={tr("common.car_brand")}
               control={form.control}
@@ -100,6 +99,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
                 })) ?? []
               }
             />
+            <TextField label="Model" control={form.control} name={"name"} />
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}

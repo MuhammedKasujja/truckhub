@@ -39,6 +39,7 @@ import {
   PageTitle,
   PageTitleIcon,
 } from "@/components/page-header"
+import { cn } from "@/lib/utils"
 
 const data = {
   nav: [
@@ -104,6 +105,7 @@ export function SettingsSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={item.route == location.pathname}
+                    className={cn(item.route == location.pathname && 'border-l-4')}
                   >
                     {item.route ? (
                       <Link to={item.route}>
