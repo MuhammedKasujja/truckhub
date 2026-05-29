@@ -58,9 +58,11 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               </Link>
             </Button>
           </CardAction>
-          <CardDescription></CardDescription>
+          <CardDescription>Consumption Rate {vehicle?.consumption_rate}/km</CardDescription>
         </CardHeader>
-        <CardContent></CardContent>
+        <CardContent>
+          {vehicle?.vehicle_type.name}, {vehicle?.drive_train.name}
+        </CardContent>
       </Card>
       {driver ? (
         <Card className="col-span-2">

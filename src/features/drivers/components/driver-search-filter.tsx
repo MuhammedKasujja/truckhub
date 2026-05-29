@@ -16,12 +16,18 @@ export function DriverSearchFilter({
   className,
 }: DriverSearchFilterProps) {
   const [driverId, setDriverId] = useState<string>("")
+  const [search, setSearch] = useState<string>()
+  
+  const { data } = useQuery({
+    ...createDriverSearchQueryOptions(search),
+    enabled: (search ?? "").trim().length > 0,
+  })
+
   return (
     <AutoComplete<Driver>
       triggerClassName={className}
       fetcher={async (search) => {
-        if (!search || search.length < 3) return []
-        const { data } = useQuery(createDriverSearchQueryOptions(search))
+        setSearch(search)
         return data?.data ?? []
       }}
       renderOption={(driver) => (

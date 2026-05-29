@@ -1,24 +1,35 @@
-"use client";
+"use client"
 
-import { AutoComplete } from "@/components/ui/autocomplete";
-import { Vehicle } from "@/features/vehicles/types";
-import { getVehiclesByQueryFn } from "@/features/vehicles/services";
-import { useState } from "react";
+import { AutoComplete } from "@/components/ui/autocomplete"
+import { Vehicle } from "@/features/vehicles/types"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { vehicleSearchQueryOptions } from "../query-options"
 
 interface VehicleSearchFilterProps {
-  onSelected: (Vehicle?: Vehicle | null) => void;
-  className?: string 
-};
+  onSelected: (Vehicle?: Vehicle | null) => void
+  className?: string
+}
 
-export function VehicleSearchFilter({ onSelected, className }: VehicleSearchFilterProps) {
-  const [vehicleId, setVehicleId] = useState<string>("");
+export function VehicleSearchFilter({
+  onSelected,
+  className,
+}: VehicleSearchFilterProps) {
+  const [vehicleId, setVehicleId] = useState<string>("")
+  const [search, setSearch] = useState<string>()
+
+  const { data } = useQuery({
+    ...vehicleSearchQueryOptions(search ?? ""),
+    enabled: search !== null,
+  })
+
   return (
     <AutoComplete<Vehicle>
       triggerClassName={className}
       fetcher={async (search) => {
         // if (!search || search.length < 3) return [];
-        const { data } = await getVehiclesByQueryFn({ search });
-        return data ?? [];
+        setSearch(search)
+        return data?.data ?? []
       }}
       renderOption={(vehicle) => (
         <div className="flex items-center gap-2">
@@ -42,9 +53,9 @@ export function VehicleSearchFilter({ onSelected, className }: VehicleSearchFilt
       placeholder="Search vehicles..."
       value={vehicleId}
       onChange={async (vehicle) => {
-        setVehicleId(vehicle?.id.toString() ?? "");
-        onSelected(vehicle);
+        setVehicleId(vehicle?.id.toString() ?? "")
+        onSelected(vehicle)
       }}
     />
-  );
+  )
 }
