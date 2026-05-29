@@ -87,3 +87,9 @@ export function formatDuration(seconds: number): string {
   const remainingMins = mins % 60;
   return `${hours}h ${remainingMins}m`;
 }
+
+export const generateAvatorFallback = (fullname:string | undefined) => {
+    if (!fullname) return "";
+    const [firstName, lastName] = fullname.split(" ");
+    return `${firstName[0]}${lastName[0]}`.toUpperCase();
+}

@@ -248,6 +248,12 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     control={form.control}
                     required={false}
                   />
+                  <TextField
+                    label={tr("interior_color")}
+                    name={"second_plate_number"}
+                    control={form.control}
+                    required={false}
+                  />
                   {/* <AutoCompleteField
                     label={tr("common.tonnage")}
                     control={form.control}

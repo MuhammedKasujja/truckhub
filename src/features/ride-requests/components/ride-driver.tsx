@@ -12,17 +12,13 @@ import { Can } from "@/components/has-permission";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { MailIcon, PhoneIcon } from "lucide-react";
+import { generateAvatorFallback } from "@/lib/format";
 
 interface RideDriverProps {
   driver: Driver | undefined;
 }
 
 export function RideDriver({ driver }: RideDriverProps) {
-  const generateAvatorFallback = () => {
-    if (!driver) return "";
-    const [firstName, lastName] = driver.fullname.split(" ");
-    return `${firstName[0]}${lastName[0]}`.toUpperCase();
-  };
 
   return (
     <Card>
@@ -40,7 +36,7 @@ export function RideDriver({ driver }: RideDriverProps) {
         <div className="flex gap-4 items-center">
           <Avatar size="lg">
             <AvatarImage src={driver?.profile_url} alt="driver" />
-            <AvatarFallback>{generateAvatorFallback()}</AvatarFallback>
+            <AvatarFallback>{generateAvatorFallback(driver?.fullname)}</AvatarFallback>
           </Avatar>
           <p>{driver?.fullname}</p>
         </div>

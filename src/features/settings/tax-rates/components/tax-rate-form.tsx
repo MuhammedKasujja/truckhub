@@ -87,6 +87,7 @@ export function TaxRateForm({ trigger, initialData }: Props) {
                 label="Description"
                 control={form.control}
                 name={"description"}
+                required={false}
               />
             </div>
           </div>

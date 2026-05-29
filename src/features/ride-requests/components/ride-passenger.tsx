@@ -12,18 +12,14 @@ import { Can } from "@/components/has-permission";
 import { MailIcon, PhoneIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { generateAvatorFallback } from "@/lib/format";
 
 interface RidePassengerProps {
   passenger: Passenger;
 }
 
 export function RidePassenger({ passenger }: RidePassengerProps) {
-  const generateAvatorFallback = () => {
-    if (!passenger) return "";
-    const [firstName, lastName] = passenger.fullname.split(" ");
-    return `${firstName[0]}${lastName[0]}`.toUpperCase();
-  };
-
+  
   return (
     <Card>
       <CardHeader>
@@ -40,7 +36,7 @@ export function RidePassenger({ passenger }: RidePassengerProps) {
         <div className="flex gap-4 items-center">
           <Avatar size="lg">
             <AvatarImage src={passenger?.profile_url} alt="driver" />
-            <AvatarFallback>{generateAvatorFallback()}</AvatarFallback>
+            <AvatarFallback>{generateAvatorFallback(passenger.fullname)}</AvatarFallback>
           </Avatar>
           <p>{passenger?.fullname}</p>
         </div>

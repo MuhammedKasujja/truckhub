@@ -15,6 +15,8 @@ import { logoutFn } from "@/features/auth/services"
 import { RefreshButton } from "./refresh-button"
 import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import { useAuth } from "@/components/providers/auth-provider"
+import { generateAvatorFallback } from "@/lib/format"
 
 export function NavigationActions() {
   return (
@@ -30,6 +32,8 @@ export function NavigationActions() {
 function ProfileDropdown() {
   const router = useRouter()
 
+  const { user } = useAuth()
+
   async function logoutUser() {
     await logoutFn()
     router.navigate({ to: "/login", replace: true })
@@ -39,8 +43,8 @@ function ProfileDropdown() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full grayscale">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={user.photo_url} alt={user.name} />
+            <AvatarFallback>{generateAvatorFallback(user.name)}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

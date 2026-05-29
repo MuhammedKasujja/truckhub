@@ -3,6 +3,7 @@ export interface AuthUser {
   name: string;
   email: string;
   is_admin: boolean;
+  photo_url?: string
 }
 
 export interface User extends AuthUser {
