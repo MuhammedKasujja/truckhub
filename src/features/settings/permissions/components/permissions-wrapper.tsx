@@ -15,14 +15,14 @@ import { assignPermissionsToRoleFn } from "@/features/settings/permissions/servi
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
-import { createRolesListQueryOptions } from "../query-options"
 import { Can } from "@/components/has-permission"
 import { Badge } from "@/components/ui/badge"
+import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
 
 const modules = Object.keys(SystemPermissions)
 
 export function PermissionsWrapper() {
-  const { data } = useQuery(createRolesListQueryOptions())
+  const { data } = useQuery(createRolesQueryOptions())
 
   const [_, setPermissionCount] = useState<Map<string, number>>(new Map())
 

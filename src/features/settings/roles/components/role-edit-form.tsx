@@ -20,14 +20,13 @@ import {
   RoleUpdateSchema,
   RoleUpdateSchemaType,
 } from "@/features/settings/roles/schemas"
-import {
-  createRoleFn,
-  updateRoleFn,
-} from "@/features/settings/roles/services"
+import { createRoleFn, updateRoleFn } from "@/features/settings/roles/services"
 import { TextareaField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryClient } from "@tanstack/react-query"
+import { rolesQueryKeys } from "../query-options"
 
 type Props = {
   trigger?: React.ReactNode
@@ -36,6 +35,7 @@ type Props = {
 
 export function RoleEditForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
+  const queryClient = useQueryClient()
 
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -56,6 +56,7 @@ export function RoleEditForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryClient.invalidateQueries({ queryKey: rolesQueryKeys.list() })
     } else {
       toast.error(error?.message)
     }
@@ -74,9 +75,7 @@ export function RoleEditForm({ trigger, initialData }: Props) {
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>
-              {isEdit ? "Edit Role" : "New Role"}
-            </DialogTitle>
+            <DialogTitle>{isEdit ? "Edit Role" : "New Role"}</DialogTitle>
             <DialogDescription>Create a new User Role</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">

@@ -24,10 +24,16 @@ import {
   createTaxRateFn,
   updateTaxRateFn,
 } from "@/features/settings/tax-rates/services"
-import { NumberField, TextareaField, TextField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  TextareaField,
+  TextField,
+} from "@/components/ui/form-fields"
 import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryClient } from "@tanstack/react-query"
+import { taxRateQueryKeys } from "../query-options"
 
 type Props = {
   trigger?: React.ReactNode
@@ -36,6 +42,7 @@ type Props = {
 
 export function TaxRateForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
+  const queryClient = useQueryClient()
 
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -56,6 +63,7 @@ export function TaxRateForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryClient.invalidateQueries({ queryKey: taxRateQueryKeys.list() })
     } else {
       toast.error(error?.message)
     }
