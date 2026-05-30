@@ -1,14 +1,15 @@
 "use server"
 
+import { Prettify } from "@/types"
 import * as apiClient from "@/lib/api-client"
 import { createServerFn } from "@tanstack/react-start"
 import { VehicleConfigurations } from "@/types/setting"
-import { EditSettingsSchema, Settings } from "@/features/settings/schemas"
+import { EditSettingsSchema, Settings, CompanySettings } from "@/features/settings/schemas"
 
 const endpoint = "/v1/settings"
 
 export const getSettingsFn = createServerFn().handler(async () => {
-  return await apiClient.getFn<Settings>(endpoint)
+  return await apiClient.getFn<Prettify<CompanySettings>>(endpoint)
 })
 
 export const updateSettingsFn = createServerFn()

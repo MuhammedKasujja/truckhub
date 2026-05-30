@@ -17,6 +17,7 @@ import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 import { createRolesListQueryOptions } from "../query-options"
 import { Can } from "@/components/has-permission"
+import { Badge } from "@/components/ui/badge"
 
 const modules = Object.keys(SystemPermissions)
 
@@ -150,7 +151,11 @@ export function PermissionsWrapper() {
           </TabsContent>
         ))}
       </Tabs>
-      {selectedPermissions}
+      {[...selectedPermissions].map((perm) => (
+        <Badge key={perm} variant={"outline"} className="mr-1">
+          {perm}
+        </Badge>
+      ))}
     </div>
   )
 }

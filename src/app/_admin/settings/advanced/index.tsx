@@ -1,11 +1,11 @@
 import { EditSettingsForm } from "@/features/settings"
-import { createSettingsQueryOptions } from "@/features/settings/query-options"
+import { settingsQueryOptions } from "@/features/settings/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/advanced/")({
   component: RouteComponent,
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(createSettingsQueryOptions()),
+    context.queryClient.ensureQueryData(settingsQueryOptions()),
 })
 
 function RouteComponent() {

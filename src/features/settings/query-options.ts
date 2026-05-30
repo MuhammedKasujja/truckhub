@@ -7,7 +7,7 @@ export const settingsQueryKeys = {
   vehicles: () => [...settingsQueryKeys.all(), "vehicles-config"] as const,
 } as const
 
-export const createSettingsQueryOptions = () =>
+export const settingsQueryOptions = () =>
   queryOptions({
     queryKey: settingsQueryKeys.list(),
     queryFn: getSettingsFn,
