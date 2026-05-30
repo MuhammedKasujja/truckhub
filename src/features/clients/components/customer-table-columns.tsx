@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 
 export function getCustomerTableColumns(): ColumnDef<Customer>[] {
   return [
@@ -53,7 +53,7 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <HasPermission permission={"clients:view"}>
+            <Can permission={"clients:view"}>
               <Button variant={"outline"} size={"icon"}>
                 <Link
                   to={"/clients/$clientId/view"}
@@ -62,8 +62,8 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
                   <EyeIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"clients:edit"}>
+            </Can>
+            <Can permission={"clients:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
                 <Link
                   to={"/clients/$clientId/edit"}
@@ -72,8 +72,8 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
                   <EditIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"clients:delete"}>
+            </Can>
+            <Can permission={"clients:delete"}>
               <ActionButton
                 variant={"destructive"}
                 size={"icon"}
@@ -92,7 +92,7 @@ export function getCustomerTableColumns(): ColumnDef<Customer>[] {
               >
                 <Trash2Icon />
               </ActionButton>
-            </HasPermission>
+            </Can>
           </div>
         )
       },

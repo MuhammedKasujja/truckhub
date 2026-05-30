@@ -1,12 +1,12 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { formatDateTime, formatPrice } from "@/lib/format";
-import { RideRequest, RideStatusList } from "@/features/ride-requests/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { Status } from "@/components/ui/status";
+"use client"
+import { Button } from "@/components/ui/button"
+import { formatDateTime, formatPrice } from "@/lib/format"
+import { RideRequest, RideStatusList } from "@/features/ride-requests/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { Status } from "@/components/ui/status"
 import { Link } from "@tanstack/react-router"
-import { HasPermission } from "@/components/has-permission";
-import { EditIcon, EyeIcon } from "lucide-react";
+import { Can } from "@/components/has-permission"
+import { EditIcon, EyeIcon } from "lucide-react"
 
 export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
   return [
@@ -16,11 +16,14 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/rides/${row.original.id}/view`}>
+            <Link
+              to={`/rides/$rideId/view`}
+              params={{ rideId: row.original.id }}
+            >
               {row.original.number}
             </Link>
           </Button>
-        );
+        )
       },
       size: 100,
     },
@@ -28,14 +31,14 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       accessorKey: "origin",
       header: "Origin",
       cell: ({ row }) => {
-        return <p className="max-w-92 truncate">{row.original.origin}</p>;
+        return <p className="max-w-92 truncate">{row.original.origin}</p>
       },
     },
     {
       accessorKey: "destination",
       header: "Destination",
       cell: ({ row }) => {
-        return <p className="max-w-92 truncate">{row.original.destination}</p>;
+        return <p className="max-w-92 truncate">{row.original.destination}</p>
       },
       size: 120,
     },
@@ -45,18 +48,21 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/clients/${row.original.customer.id}/view`}>
+            <Link
+              to={`/clients/$clientId/view`}
+              params={{ clientId: row.original.customer.id }}
+            >
               {row.original.customer.fullname}
             </Link>
           </Button>
-        );
+        )
       },
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        return <Status>{row.original.status}</Status>;
+        return <Status>{row.original.status}</Status>
       },
       meta: {
         label: "Status",
@@ -72,42 +78,42 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       accessorKey: "amount",
       header: "Amount",
       cell: ({ row }) => {
-        return <div>{formatPrice(row.original.amount)}</div>;
+        return <div>{formatPrice(row.original.amount)}</div>
       },
     },
     {
       accessorKey: "created_at",
       header: "Date",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.request_start_time)}</p>;
+        return <p>{formatDateTime(row.original.request_start_time)}</p>
       },
     },
     {
       id: "actions",
       cell: ({ row }) => {
-        const ride = row.original;
+        const ride = row.original
         return (
           <div className="flex gap-2">
             {ride.status !== "completed" && (
-              <HasPermission permission={"rides:view"}>
+              <Can permission={"rides:view"}>
                 <Button variant={"outline"} size={"icon"} asChild>
-                  <Link to={`/rides/${ride.id}/view`}>
+                  <Link to={`/rides/$rideId/view`} params={{ rideId: ride.id }}>
                     <EyeIcon />
                   </Link>
                 </Button>
-              </HasPermission>
+              </Can>
             )}
-            <HasPermission permission={"rides:edit"}>
+            <Can permission={"rides:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/rides/${ride.id}/edit`}>
+                <Link to={"/rides/$rideId/edit"} params={{ rideId: ride.id }}>
                   <EditIcon />
                 </Link>
               </Button>
-            </HasPermission>
+            </Can>
           </div>
-        );
+        )
       },
       size: 120,
     },
-  ];
+  ]
 }

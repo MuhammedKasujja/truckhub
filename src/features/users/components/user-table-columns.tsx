@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 
 export function getUserTableColumns(): ColumnDef<SystemUser>[] {
   return [
@@ -17,7 +17,10 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/users/${row.original.id}/view`}>
+            <Link
+              to={`/users/$userId/view`}
+              params={{ userId: row.original.id }}
+            >
               {row.original.name}
             </Link>
           </Button>
@@ -50,21 +53,27 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <HasPermission permission={"users:view"}>
+            <Can permission={"users:view"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/users/${row.original.id}/view`}>
+                <Link
+                  to={`/users/$userId/view`}
+                  params={{ userId: row.original.id }}
+                >
                   <EyeIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"users:edit"}>
+            </Can>
+            <Can permission={"users:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/users/${row.original.id}/edit`}>
+                <Link
+                  to={`/users/$userId/edit`}
+                  params={{ userId: row.original.id }}
+                >
                   <EditIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"users:delete"}>
+            </Can>
+            <Can permission={"users:delete"}>
               <ActionButton
                 variant={"destructive"}
                 size={"icon"}
@@ -83,7 +92,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
               >
                 <Trash2Icon />
               </ActionButton>
-            </HasPermission>
+            </Can>
           </div>
         )
       },

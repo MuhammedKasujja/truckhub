@@ -11,7 +11,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { CreditCard, Loader2 } from "lucide-react"
+import { CreditCard } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"

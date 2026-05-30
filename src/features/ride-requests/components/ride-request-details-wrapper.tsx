@@ -90,7 +90,7 @@ export function RideRequestDetailsWrapper({
               )}
               <Status>{ride?.status}</Status>
               <Button asChild>
-                <Link to={`/rides/${ride?.id}/edit`}>
+                <Link to={`/rides/$rideId/edit`} params={{ rideId: ride?.id }}>
                   <Edit2Icon />
                 </Link>
               </Button>

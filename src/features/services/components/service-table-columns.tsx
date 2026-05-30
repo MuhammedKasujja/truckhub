@@ -1,14 +1,14 @@
-import { ActionButton } from "@/components/ui/action-button";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@/components/ui/action-button"
+import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Service, ServiceGroup } from "@/features/services/types";
-import { formatPrice } from "@/lib/format";
-import { ColumnDef } from "@tanstack/react-table";
-import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react";
+} from "@/components/ui/tooltip"
+import { Service, ServiceGroup } from "@/features/services/types"
+import { formatPrice } from "@/lib/format"
+import { ColumnDef } from "@tanstack/react-table"
+import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
@@ -17,7 +17,7 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
       accessorKey: "category",
       header: "Category",
       cell: ({ row }) => {
-        return <Button variant={"link"}>{row.original.category}</Button>;
+        return <Button variant={"link"}>{row.original.category}</Button>
       },
       size: 120,
     },
@@ -31,20 +31,20 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
               <ServiceListItem key={service.id} service={service} />
             ))}
           </div>
-        );
+        )
       },
     },
     {
       accessorKey: "is_truck",
       header: "Vehicle",
       cell: ({ row }) => {
-        return <p>{row.original.is_truck ? "Truck" : "Normal"}</p>;
+        return <p>{row.original.is_truck ? "Truck" : "Normal"}</p>
       },
       size: 80,
     },
     {
       id: "actions",
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
@@ -67,18 +67,18 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
                 //   toast.success(message);
                 //   return { error: false };
                 // } else {
-                return { error: true, message: "Not implemented yet...." };
+                return { error: true, message: "Not implemented yet...." }
                 // }
               }}
             >
               <Trash2Icon />
             </ActionButton>
           </div>
-        );
+        )
       },
       size: 120,
     },
-  ];
+  ]
 }
 
 function ServiceListItem({ service }: { service: Service }) {
@@ -86,7 +86,12 @@ function ServiceListItem({ service }: { service: Service }) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button asChild variant={"outline"}>
-          <Link to={`/services/${service.id}/edit`}>{service.name}</Link>
+          <Link
+            to={`/services/$serviceId/edit`}
+            params={{ serviceId: service.id }}
+          >
+            {service.name}
+          </Link>
         </Button>
       </TooltipTrigger>
       <TooltipContent side="right" align="center">
@@ -101,5 +106,5 @@ function ServiceListItem({ service }: { service: Service }) {
         </div>
       </TooltipContent>
     </Tooltip>
-  );
+  )
 }

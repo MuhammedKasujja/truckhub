@@ -24,7 +24,7 @@ type DriverDetailsProps = {
 }
 
 export function DriverDetails({ driver }: DriverDetailsProps) {
-  const [vehicleId, setVehicleId] = React.useState<number | null>()
+  const [vehicleId, setVehicleId] = React.useState<string | null>()
 
   async function assignDriver() {
     const { isSuccess, error, message } = await vehicleAssignDriverFn({

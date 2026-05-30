@@ -1,25 +1,34 @@
-import { HasPermission } from "@/components/has-permission";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ServiceGroup } from "@/features/services/types";
-import { formatPrice } from "@/lib/format";
+import { HasPermission } from "@/components/has-permission"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { ServiceGroup } from "@/features/services/types"
+import { formatPrice } from "@/lib/format"
 import { Link } from "@tanstack/react-router"
-import React from "react";
+import React from "react"
 
 type ServiceListProps = {
-  services: ServiceGroup[];
-};
+  services: ServiceGroup[]
+}
 
 export function ServiceList({ services }: ServiceListProps) {
   const serviceList = React.useMemo(() => {
-    return services.flatMap((ele) => ele.services);
-  }, [services]);
+    return services.flatMap((ele) => ele.services)
+  }, [services])
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
       {serviceList.map((service) => (
-        <Card key={service.id} className="rounded-2xl shadow-sm hover:shadow-md transition">
+        <Card
+          key={service.id}
+          className="rounded-2xl shadow-sm transition hover:shadow-md"
+        >
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">{service.name}</CardTitle>
@@ -64,11 +73,16 @@ export function ServiceList({ services }: ServiceListProps) {
               <span>{formatPrice(service.tax_fee)}</span>
             </div>
 
-            <div className="pt-2 border-t flex justify-between text-xs text-muted-foreground">
+            <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
               <span>{service.is_truck ? "Truck" : "Car"}</span>
               <HasPermission permission={"services:edit"}>
                 <Button size="sm" variant="outline" asChild>
-                  <Link to={`/services/${service.id}/edit`}>Edit</Link>
+                  <Link
+                    to={`/services/$serviceId/edit`}
+                    params={{ serviceId: service.id }}
+                  >
+                    Edit
+                  </Link>
                 </Button>
               </HasPermission>
             </div>
@@ -76,5 +90,5 @@ export function ServiceList({ services }: ServiceListProps) {
         </Card>
       ))}
     </div>
-  );
+  )
 }

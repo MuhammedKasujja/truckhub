@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 
 export function getDriverTableColumns(): ColumnDef<Driver>[] {
   return [
@@ -17,7 +17,10 @@ export function getDriverTableColumns(): ColumnDef<Driver>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/drivers/${row.original.id}/view`}>
+            <Link
+              to={`/drivers/$driverId/view`}
+              params={{ driverId: row.original.id }}
+            >
               {row.original.fullname}
             </Link>
           </Button>
@@ -50,21 +53,27 @@ export function getDriverTableColumns(): ColumnDef<Driver>[] {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <HasPermission permission={"drivers:view"}>
+            <Can permission={"drivers:view"}>
               <Button variant={"outline"} size={"icon"}>
-                <Link to={`/drivers/${row.original.id}/view`}>
+                <Link
+                  to={`/drivers/$driverId/view`}
+                  params={{ driverId: row.original.id }}
+                >
                   <EyeIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"drivers:edit"}>
+            </Can>
+            <Can permission={"drivers:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/drivers/${row.original.id}/edit`}>
+                <Link
+                  to={`/drivers/$driverId/edit`}
+                  params={{ driverId: row.original.id }}
+                >
                   <EditIcon />
                 </Link>
               </Button>
-            </HasPermission>
-            <HasPermission permission={"drivers:delete"}>
+            </Can>
+            <Can permission={"drivers:delete"}>
               <ActionButton
                 variant={"destructive"}
                 size={"icon"}
@@ -83,7 +92,7 @@ export function getDriverTableColumns(): ColumnDef<Driver>[] {
               >
                 <Trash2Icon />
               </ActionButton>
-            </HasPermission>
+            </Can>
           </div>
         )
       },
