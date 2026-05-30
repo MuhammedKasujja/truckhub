@@ -1,15 +1,16 @@
 import { getTaxRatesFn } from "./services"
 import { queryOptions } from "@tanstack/react-query"
 
-export const TaxRateQueryKeys = {
+export const taxRateQueryKeys = {
   all: () => ["tax-rates"] as const,
-  list: () => [...TaxRateQueryKeys.all(), "list"] as const,
-  details: () => [...TaxRateQueryKeys.all(), "detail"] as const,
-  detail: (id: string) => [...TaxRateQueryKeys.details(), id] as const,
+  list: () => [...taxRateQueryKeys.all(), "list"] as const,
+  details: () => [...taxRateQueryKeys.all(), "detail"] as const,
+  detail: (id: string) => [...taxRateQueryKeys.details(), id] as const,
 } as const
 
 export const createTaxRatesQueryOptions = () =>
   queryOptions({
-    queryKey: [...TaxRateQueryKeys.list()],
+    queryKey: taxRateQueryKeys.list(),
     queryFn: () => getTaxRatesFn(),
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   })

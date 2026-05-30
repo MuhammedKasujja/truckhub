@@ -11,6 +11,7 @@ export const settingsQueryOptions = () =>
   queryOptions({
     queryKey: settingsQueryKeys.list(),
     queryFn: getSettingsFn,
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
   })
 
 export const createVehicleConfigurationsQueryOptions = () =>

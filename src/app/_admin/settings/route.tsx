@@ -13,7 +13,7 @@ function RouteComponent() {
         <SettingsSidebar />
         <main className="flex flex-1 flex-col overflow-hidden">
           {/* <SettingsNavBar /> */}
-          <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 pt-0">
+          <div className="flex flex-1 flex-col gap-4 overflow-y-auto pl-4">
             <Outlet />
           </div>
         </main>
