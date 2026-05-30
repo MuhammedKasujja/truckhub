@@ -1,5 +1,6 @@
-import { getCurrentUser } from "@/lib/session"
+import { useAppSession } from "./session"
 import { redirect } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
 import type { UserPermission } from "@/features/auth/permissions"
 import { hasPermission as permissionHandler } from "@/lib/permissions"
 
@@ -16,3 +17,11 @@ export async function requirePermission(permission: UserPermission) {
 export async function hasPermission(permission: UserPermission) {
   return await requirePermission(permission)
 }
+
+export const getCurrentUser = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const session = await useAppSession()
+
+    return session?.data.user
+  }
+)

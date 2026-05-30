@@ -31,7 +31,7 @@ import { Can } from "@/components/has-permission"
 import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import {
   clientBookingsQueryOptions,
   clientPaymentsQueryOptions,
@@ -150,7 +150,10 @@ export function CustomerDetailsWrapper({
                   {formatPrice(latestBooking.amount)}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`/bookings/${latestBooking.id}/view`}>
+                  <Link
+                    to={`/bookings/$bookingId/view`}
+                    params={{ bookingId: latestBooking.id }}
+                  >
                     View booking
                   </Link>
                 </Button>
@@ -182,7 +185,12 @@ export function CustomerDetailsWrapper({
                   {latestRide.origin} → {latestRide.destination}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`/rides/${latestRide.id}/view`}>View ride</Link>
+                  <Link
+                    to={`/rides/$rideId/view`}
+                    params={{ rideId: latestRide.id }}
+                  >
+                    View ride
+                  </Link>
                 </Button>
               </div>
             ) : (

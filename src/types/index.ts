@@ -58,13 +58,11 @@ export type ApiPaginatedResponse<T = unknown> = ApiResponse<T> & {
   pagination?: Pagination
 }
 
-export type EntityId = string | number
-
 export type SearchQuery = { search?: string }
 
 export type ActionResult<T> = {
   data: T | null
-  error: string | undefined | null 
+  error: string | undefined | null
 }
 
 export class ApiError extends Error {

@@ -2,7 +2,6 @@ import { cache } from "react"
 import { SignJWT, jwtVerify } from "jose"
 import { systemDateTime } from "@/lib/utils"
 import { redirect } from "@tanstack/react-router"
-import { createServerFn } from "@tanstack/react-start"
 import { useSession } from "@tanstack/react-start/server"
 import { UserSession, AuthResponse } from "@/features/auth/types"
 
@@ -92,7 +91,7 @@ export const verifySession = cache(async () => {
 })
 
 export async function getAuthSession() {
-  const session = await useAppSession() 
+  const session = await useAppSession()
   return !session
     ? undefined
     : {
@@ -105,11 +104,3 @@ export async function getAccessToken(): Promise<string | undefined> {
   const session = await useAppSession()
   return session.data.access_token
 }
-
-export const getCurrentUser = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const session = await useAppSession()
-
-    return session?.data.user
-  }
-)

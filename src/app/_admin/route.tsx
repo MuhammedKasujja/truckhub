@@ -1,5 +1,5 @@
 import { AuthProvider } from "@/components/providers/auth-provider"
-import { getCurrentUser } from "@/lib/session"
+import { getCurrentUser } from "@/lib/auth"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
 import {

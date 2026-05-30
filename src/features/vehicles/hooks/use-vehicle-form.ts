@@ -1,5 +1,5 @@
 import React from "react"
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import {
   VehicleCreateSchema,
   VehicleUpdateSchema,
@@ -49,7 +49,7 @@ export function useVehicleForm(
     const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
       carModels.find((model) => model.vehicle_type_id === ele.id)
     )
-    form.setValue("vehicle_type_id", Number(vehicleType?.id))
+    form.setValue("vehicle_type_id", vehicleType?.id)
     setVehicleType(vehicleType)
     setDriveTrains(
       vehicleCofig?.drive_trains.filter(

@@ -26,7 +26,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import { VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { CarModel, DriveTrain } from "@/types/setting"
@@ -76,7 +76,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
       carModels.find((model) => model.vehicle_type_id === ele.id)
     )
-    form.setValue("vehicle_type_id", Number(vehicleType?.id))
+    form.setValue("vehicle_type_id", vehicleType?.id)
     setVehicleType(vehicleType)
     setDriveTrains(
       vehicleCofig?.drive_trains.filter(

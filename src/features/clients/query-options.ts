@@ -1,4 +1,4 @@
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import { CustomerListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import {
