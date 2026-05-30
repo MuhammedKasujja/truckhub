@@ -8,13 +8,13 @@ import { Trash2Icon } from "lucide-react";
 export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
   return [
     {
-      accessorKey: "resource_type",
-      header: "Model",
+      accessorKey: "actor_name",
+      header: "User",
       cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.resource_type}</div>;
+        return <div className="flex gap-2">{row.original.actor_name}</div>;
       },
       meta: {
-        label: "Model",
+        label: "User",
       },
     },
     {
