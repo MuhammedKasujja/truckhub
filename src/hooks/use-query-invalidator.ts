@@ -1,5 +1,6 @@
 import { useMemo } from "react"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
+import { settingsQueryKeys } from "@/features/settings/query-options"
 import { dashboardQueryKeys } from "@/features/dashboard/query-options"
 import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
 import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
@@ -78,17 +79,27 @@ class QueryInvalidator {
     },
     carBrands: {
       list: () =>
-        this.queryClient.invalidateQueries({
-          queryKey: carBrandQueryKeys.list(),
-        }),
+        Promise.all([
+          this.queryClient.invalidateQueries({
+            queryKey: carBrandQueryKeys.list(),
+          }),
+          this.queryClient.invalidateQueries({
+            queryKey: settingsQueryKeys.vehicles(),
+          }),
+        ]),
       details: (id: string) =>
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
     },
     carModels: {
       list: () =>
-        this.queryClient.invalidateQueries({
-          queryKey: carModelsQueryKeys.list(),
-        }),
+        Promise.all([
+          this.queryClient.invalidateQueries({
+            queryKey: carModelsQueryKeys.list(),
+          }),
+          this.queryClient.invalidateQueries({
+            queryKey: settingsQueryKeys.vehicles(),
+          }),
+        ]),
       details: (id: string) =>
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
     },
@@ -109,10 +120,14 @@ class QueryInvalidator {
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
     },
     vehiclesTypes: {
-      list: () =>
+      list: () => {
         this.queryClient.invalidateQueries({
           queryKey: vehicleTypesQueryKeys.list(),
-        }),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: settingsQueryKeys.vehicles(),
+        })
+      },
       details: (id: string) =>
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
     },
@@ -128,6 +143,8 @@ class QueryInvalidator {
   clients = {
     all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
     list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    refresh: () =>
+      this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
