@@ -6,7 +6,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ReviewCreateSchema = z.object({
   passenger_id: IDSchema,
-  request_id: z.string(),
+  request_id: IDSchema,
   rating: z.number(),
   comment: z.string().optional(),
 })

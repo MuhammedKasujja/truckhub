@@ -6,7 +6,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const DriveTrainCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  tonnage_id: z.number().optional(),
+  tonnage_id: IDSchema.optional(),
   type: z.enum(["truck", "small"]).default("small").optional(),
 })
 

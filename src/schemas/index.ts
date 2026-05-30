@@ -1,6 +1,6 @@
 import z from "zod"
 
-export const IDSchema = z.union([z.string(), z.number()])
+export const IDSchema = z.string()
 
 export type EntityId = z.infer<typeof IDSchema>
 

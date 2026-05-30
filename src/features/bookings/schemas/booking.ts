@@ -1,10 +1,11 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
 import { Booking } from "@/features/bookings/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ServiceItem = z.object({
-  service_id: z.number().min(1),
+  service_id: IDSchema,
   service_name: z.string().min(1),
   cost_per_item: z.string().min(1),
   total_items: z.number().min(1),
@@ -12,7 +13,7 @@ export const ServiceItem = z.object({
 })
 
 export const BookingCreateSchema = z.object({
-  customer_id: z.number(),
+  customer_id: IDSchema,
   partial: z.number().optional().nullable(),
   discount: z.number().optional().nullable(),
   pickup_time: z.date(),
@@ -24,7 +25,7 @@ export const BookingCreateSchema = z.object({
 })
 
 export const BookingUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...BookingCreateSchema.partial().shape,
 })
 
