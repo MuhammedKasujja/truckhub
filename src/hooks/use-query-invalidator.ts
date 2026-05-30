@@ -1,20 +1,21 @@
 import { useMemo } from "react"
+import { queryKeys } from "@/lib/query-keys"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 import { settingsQueryKeys } from "@/features/settings/query-options"
-import { dashboardQueryKeys } from "@/features/dashboard/query-options"
-import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
-import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
-import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
-import { driveTrainsQueryKeys } from "@/features/settings/drive-trains/query-options"
-import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-types/query-options"
 
 class QueryInvalidator {
   constructor(private queryClient: QueryClient) {}
 
+  /** Refreshes all App-wide visted queries */
+  app = {
+    /** Refreshes all App-wide visted queries */
+    refresh: () => this.queryClient.refetchQueries(),
+  }
+
   dashboard = {
     app: () =>
       this.queryClient.invalidateQueries({
-        queryKey: dashboardQueryKeys.app(),
+        queryKey: queryKeys.dashboard.app(),
       }),
   }
 
@@ -40,7 +41,10 @@ class QueryInvalidator {
   }
 
   settings = {
-    app: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
+    refresh: () =>
+      this.queryClient.invalidateQueries({
+        queryKey: settingsQueryKeys.list(),
+      }),
 
     routes: {
       all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
@@ -57,14 +61,19 @@ class QueryInvalidator {
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
     },
     roles: {
-      all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
+      all: () =>
+        this.queryClient.invalidateQueries({ queryKey: queryKeys.roles.all() }),
       list: () =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.roles.list(),
+        }),
       details: (id: string) =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.roles.detail(id),
+        }),
     },
     permissions: {
-      all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
+      refresh: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
       list: () =>
         this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
       details: (id: string) =>
@@ -81,7 +90,7 @@ class QueryInvalidator {
       list: () =>
         Promise.all([
           this.queryClient.invalidateQueries({
-            queryKey: carBrandQueryKeys.list(),
+            queryKey: queryKeys.carBrands.list(),
           }),
           this.queryClient.invalidateQueries({
             queryKey: settingsQueryKeys.vehicles(),
@@ -94,7 +103,7 @@ class QueryInvalidator {
       list: () =>
         Promise.all([
           this.queryClient.invalidateQueries({
-            queryKey: carModelsQueryKeys.list(),
+            queryKey: queryKeys.carModels.list(),
           }),
           this.queryClient.invalidateQueries({
             queryKey: settingsQueryKeys.vehicles(),
@@ -106,7 +115,7 @@ class QueryInvalidator {
     driveTrains: {
       list: () =>
         this.queryClient.invalidateQueries({
-          queryKey: driveTrainsQueryKeys.list(),
+          queryKey: queryKeys.driveTrains.list(),
         }),
       details: (id: string) =>
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
@@ -114,7 +123,7 @@ class QueryInvalidator {
     tonnages: {
       list: () =>
         this.queryClient.invalidateQueries({
-          queryKey: tonnageQueryKeys.list(),
+          queryKey: queryKeys.tonnages.list(),
         }),
       details: (id: string) =>
         this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
@@ -122,7 +131,7 @@ class QueryInvalidator {
     vehiclesTypes: {
       list: () => {
         this.queryClient.invalidateQueries({
-          queryKey: vehicleTypesQueryKeys.list(),
+          queryKey: queryKeys.vehiclesTypes.list(),
         })
         this.queryClient.invalidateQueries({
           queryKey: settingsQueryKeys.vehicles(),

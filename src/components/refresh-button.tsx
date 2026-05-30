@@ -1,12 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { RefreshCwIcon } from "lucide-react"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 export function RefreshButton() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryInvalidator()
 
   const handleRefresh = async () => {
-    await queryClient.refetchQueries() // Refetches ALL active queries
+    // Refetches ALL active queries
+    await queryClient.app.refresh() 
   }
 
   return (

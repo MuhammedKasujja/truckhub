@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -27,6 +28,7 @@ type EditSettingsFormProps = {
 
 export function EditSettingsForm({ settings }: EditSettingsFormProps) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
 
   const formSchema = EditSettingsSchema
 
@@ -41,6 +43,7 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
     })
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.settings.refresh()
     } else {
       toast.error(error?.message)
     }
