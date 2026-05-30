@@ -31,6 +31,7 @@ import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQuery } from "@tanstack/react-query"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type CarModelFormProps = {
   trigger?: React.ReactNode
@@ -39,6 +40,8 @@ type CarModelFormProps = {
 
 export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
   const { data } = useQuery(createVehicleConfigurationsQueryOptions())
+
+  const queryInvalidator = useQueryInvalidator()
   const tr = useTranslation()
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -59,6 +62,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.settings.carModels.list()
     } else {
       toast.error(error?.message)
     }

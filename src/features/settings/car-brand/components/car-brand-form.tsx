@@ -28,6 +28,7 @@ import { TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type Props = {
   trigger?: React.ReactNode
@@ -36,6 +37,7 @@ type Props = {
 
 export function CarBrandForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
 
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -56,6 +58,7 @@ export function CarBrandForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.settings.carBrands.list()
     } else {
       toast.error(error?.message)
     }
