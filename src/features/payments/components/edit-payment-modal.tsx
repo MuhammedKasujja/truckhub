@@ -31,6 +31,8 @@ import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
 import React from "react"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryClient } from "@tanstack/react-query"
+import { paymentsQueryKeys } from "../query-options"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -42,8 +44,9 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const tr = useTranslation()
+  const queryClient = useQueryClient()
 
-  const isEdit = !!initialData && "id" in initialData
+  // const isEdit = !!initialData && "id" in initialData
 
   const formSchema = createEditPaymentSchema(initialData?.amount)
 
@@ -64,6 +67,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
       toast.success(message)
       form.reset()
       setIsOpen(false)
+      queryClient.invalidateQueries({ queryKey: paymentsQueryKeys.list() })
     } else {
       toast.error(error?.message)
     }

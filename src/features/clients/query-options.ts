@@ -32,6 +32,8 @@ export const clientQueryKeys = {
     "search",
     query,
   ],
+  refreshQueries: () => [...clientQueryKeys.list()],
+  refreshSingle: (id: EntityId) => [...clientQueryKeys.profile(id)],
 } as const
 
 export const clientsQueryOptions = (input: CustomerListSearchParams) =>

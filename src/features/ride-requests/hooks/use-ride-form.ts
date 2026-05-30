@@ -16,6 +16,8 @@ import {
   createRideFn,
   computeRideEsimatedFareFn,
 } from "@/features/ride-requests/services"
+import { rideQueryKeys } from "../query-options"
+import { useQueryClient } from "@tanstack/react-query"
 
 export function useRideForm(
   services: Service[],
@@ -30,6 +32,7 @@ export function useRideForm(
   const formSchema = isEdit ? RideRequestUpdateSchema : RideRequestCreateSchema
 
   const tr = useTranslation()
+  const queryClient = useQueryClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,6 +48,7 @@ export function useRideForm(
     const { isSuccess, error } = await promise
     if (isSuccess) {
       toast.success(`${tr("trips.trip_created_successfully")}`)
+      queryClient.invalidateQueries({ queryKey: rideQueryKeys.list() })
     } else {
       toast.error(error!.message)
     }

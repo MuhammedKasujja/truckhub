@@ -5,18 +5,19 @@ import {
   getServiceByIdFn,
   getServicesByQueryFn,
 } from "./services"
+import { EntityId } from "@/schemas"
 
 export const serviceQueryKeys = {
   all: () => ["services"],
   list: () => [...serviceQueryKeys.all(), "list"],
   details: () => [...serviceQueryKeys.all(), "detail"],
   search: () => [...serviceQueryKeys.all(), "search"],
-  detail: (id: string) => [...serviceQueryKeys.details(), id],
+  detail: (id: EntityId) => [...serviceQueryKeys.details(), id],
 } as const
 
 export const serviceQueryOptions = (search: ServiceListSearchParams) =>
   queryOptions({
-    queryKey: [...serviceQueryKeys.list(), search],
+    queryKey: [...serviceQueryKeys.list()],
     queryFn: () => getServicesFn({ data: search }),
   })
 

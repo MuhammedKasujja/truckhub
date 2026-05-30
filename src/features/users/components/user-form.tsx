@@ -25,12 +25,15 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryClient } from "@tanstack/react-query"
+import { usersQueryKeys } from "../query-options"
 
 type UserFormProps = {
   initialData?: Partial<UserUpdateSchemaType>
 }
 
 export function UserForm({ initialData }: UserFormProps) {
+  const queryClient = useQueryClient()
   const isEdit = !!initialData
 
   const formSchema = isEdit ? UserUpdateSchema : UserCreateSchema
@@ -50,6 +53,7 @@ export function UserForm({ initialData }: UserFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryClient.invalidateQueries({ queryKey: usersQueryKeys.list() })
     } else {
       toast.error(error!.message)
     }

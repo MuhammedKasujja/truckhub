@@ -25,6 +25,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryClient } from "@tanstack/react-query"
+import { clientQueryKeys } from "../query-options"
 
 type ClientFormProps = {
   initialData?: z.infer<typeof CustomerUpdateSchema>
@@ -32,6 +34,8 @@ type ClientFormProps = {
 
 export function ClientForm({ initialData }: ClientFormProps) {
   const tr = useTranslation()
+  const queryClient = useQueryClient()
+
   const isEdit = !!initialData
 
   const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema
@@ -50,6 +54,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryClient.invalidateQueries({ queryKey: clientQueryKeys.list() })
     } else {
       toast.error(error?.message)
     }
@@ -75,7 +80,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
                 control={form.control}
               />
               <TextField
-              required={false}
+                required={false}
                 label={tr("common.form.short_name")}
                 name={"short_name"}
                 control={form.control}
