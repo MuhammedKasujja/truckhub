@@ -41,10 +41,10 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
   }
 
   return (
-    <div className="grid grid-flow-col grid-cols-5 gap-5">
-      <Card className="col-span-3">
+    <div className="grid grid-flow-col md:grid-cols-5 gap-5">
+      <Card className="md:col-span-3">
         <CardHeader>
-          <CardTitle>{driver?.fullname}</CardTitle>
+          <CardTitle className="capitalize">{driver?.fullname}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
               <Link
@@ -57,12 +57,12 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           </CardAction>
           <CardDescription></CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div>{driver?.email}</div>
           <div>{driver?.phone}</div>
         </CardContent>
       </Card>
-      <Card className="col-span-2">
+      <Card className="md:col-span-2">
         <CardHeader>
           <CardTitle>Assign Vehicle to driver</CardTitle>
           <CardDescription>Attach vehicle to the driver</CardDescription>

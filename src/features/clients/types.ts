@@ -11,4 +11,5 @@ export type Customer = {
   email: string;
   created_at: Date;
   updated_at: Date;
+  has_pricing: boolean
 };
