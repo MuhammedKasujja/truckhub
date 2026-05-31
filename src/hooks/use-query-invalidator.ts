@@ -12,6 +12,11 @@ class QueryInvalidator {
     refresh: () => this.queryClient.refetchQueries(),
   }
 
+  auth = {
+    /** `Clear all app Cached data after User login` */
+    invalidate: () => this.queryClient.clear(),
+  }
+
   dashboard = {
     app: () =>
       this.queryClient.invalidateQueries({

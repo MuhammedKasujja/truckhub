@@ -10,9 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { EmailField, PasswordField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { LoginSchema } from "@/features/auth/schemas"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 export function LoginForm() {
   const navigate = useNavigate()
+  const queryInvalidator = useQueryInvalidator()
 
   const tr = useTranslation()
 
@@ -24,6 +26,7 @@ export function LoginForm() {
     const { isSuccess, error } = await loginFn({ data: values })
     if (isSuccess) {
       toast.success(`${tr("login_successfully")}`)
+      queryInvalidator.auth.invalidate()
       navigate({ to: "/dashboard", replace: true })
     } else {
       toast.error(error!.message)
