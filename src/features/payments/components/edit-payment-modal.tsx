@@ -25,14 +25,14 @@ import {
   AutoCompleteField,
   TextareaField,
   NumberField,
+  TextField,
 } from "@/components/ui/form-fields"
 import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
 import React from "react"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryClient } from "@tanstack/react-query"
-import { paymentsQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -44,7 +44,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const tr = useTranslation()
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
 
   // const isEdit = !!initialData && "id" in initialData
 
@@ -65,9 +65,12 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.payments.invalidate({
+        entityId: initialData?.entity_id ?? "",
+        type: initialData?.type ?? "booking",
+      })
       form.reset()
       setIsOpen(false)
-      queryClient.invalidateQueries({ queryKey: paymentsQueryKeys.list() })
     } else {
       toast.error(error?.message)
     }
@@ -99,9 +102,10 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
             id="form-payment"
           >
             <FieldGroup className="grid grid-flow-row grid-cols-1">
-              <NumberField
+              <TextField
                 label={initialData?.type === "ride" ? "Ride" : "Booking"}
                 name={"entity_id"}
+                readOnly
                 control={form.control}
               />
               <NumberField

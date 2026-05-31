@@ -1,7 +1,7 @@
 import {
+  PaymentType,
   PaymentModeList,
   PaymentStatuses,
-  PaymentEntityList,
 } from "@/config/constants";
 import { EntityId } from "@/schemas";
 
@@ -9,7 +9,6 @@ export type PaymentMode = (typeof PaymentModeList)[number];
 
 export type PaymentStatus = (typeof PaymentStatuses)[number];
 
-export type PaymentType = (typeof PaymentEntityList)[number];
 
 export type PaymentableEntity = {
   id: EntityId;

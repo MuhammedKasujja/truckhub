@@ -18,6 +18,7 @@ export type TextFieldProps<F extends FieldValues> = {
   description?: string
   type?: InputType
   required?: boolean
+  readOnly?: boolean
 }
 
 export function TextField<T extends FieldValues>({
@@ -27,6 +28,7 @@ export function TextField<T extends FieldValues>({
   placeholder,
   type = 'text',
   required = true,
+  readOnly= false,
   description,
 }: Readonly<TextFieldProps<T>>) {
   return (
@@ -41,6 +43,7 @@ export function TextField<T extends FieldValues>({
           </FieldLabel>
           <Input
             {...field}
+            readOnly={readOnly}
             type={type}
             id={field.name}
             aria-invalid={fieldState.invalid}

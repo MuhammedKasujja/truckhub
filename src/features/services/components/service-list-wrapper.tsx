@@ -27,7 +27,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         <PageTitle>
           Services <Badge variant={"outline"}>{serviceList.length}</Badge>
         </PageTitle>
-        <PageAction className="gap-5">
+        <PageAction className="flex gap-2">
           <Can permission={"services:create"}>
             <Button asChild>
               <Link to={"/services/new"}>

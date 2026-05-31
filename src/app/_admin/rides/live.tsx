@@ -1,3 +1,4 @@
+import { LiveRideMap } from '@/features/ride-requests/components'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_admin/rides/live')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/_admin/rides/live')({
 })
 
 function RouteComponent() {
-  return <div>Display live Dispatch</div>
+  return <LiveRideMap/>
 }

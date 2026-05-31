@@ -32,6 +32,8 @@ export const VehicleCylinderList = [2, 4, 5, 6, 8];
 
 export const PaymentEntityList = ["ride", "booking"] as const;
 
+export type PaymentType = (typeof PaymentEntityList)[number];
+
 export const MAP_TILE_URL =
   "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
 

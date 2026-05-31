@@ -61,7 +61,10 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
               <Status>{booking?.status}</Status>
               <Can permission={"bookings:edit"}>
                 <Button asChild>
-                  <Link to={`/bookings/${booking?.id}/edit`}>
+                  <Link
+                    to={`/bookings/$bookingId/edit`}
+                    params={{ bookingId: booking?.id }}
+                  >
                     <Edit2Icon />
                   </Link>
                 </Button>

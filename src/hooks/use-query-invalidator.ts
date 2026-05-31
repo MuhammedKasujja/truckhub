@@ -1,5 +1,7 @@
 import { useMemo } from "react"
+import { EntityId } from "@/schemas"
 import { queryKeys } from "@/lib/query-keys"
+import { PaymentType } from "@/config/constants"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 import { settingsQueryKeys } from "@/features/settings/query-options"
 
@@ -40,7 +42,48 @@ class QueryInvalidator {
 
   payments = {
     all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: () =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.list(),
+      }),
+    invalidate: ({
+      entityId,
+      type,
+    }: {
+      entityId: EntityId
+      type: PaymentType
+    }) => {
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.list(),
+      })
+      if (type === "booking") {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.detail(entityId),
+        })
+      }
+      if (type === "ride") {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.rides.detail(entityId),
+        })
+      }
+    },
+    invalidateBooking: (entityId: EntityId) => {
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.list(),
+      })
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.bookings.detail(entityId),
+      })
+    },
+    invalidateRide: (entityId: EntityId) => {
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.payments.list(),
+      })
+
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.rides.detail(entityId),
+      })
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }

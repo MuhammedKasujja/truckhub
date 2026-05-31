@@ -5,6 +5,7 @@ import { vehicleQueryKeys } from "@/features/vehicles/query-options"
 import { paymentsQueryKeys } from "@/features/payments/query-options"
 import { rideQueryKeys } from "@/features/ride-requests/query-options"
 import { dashboardQueryKeys } from "@/features/dashboard/query-options"
+import { bookingsQueryKeys } from "@/features/bookings/queries-options"
 import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
@@ -17,7 +18,7 @@ import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query
 export const queryKeys = {
   dashboard: dashboardQueryKeys,
   rides: rideQueryKeys,
-  bookings: bookingRoutesQueryKeys,
+  bookings: bookingsQueryKeys,
   payments: paymentsQueryKeys,
   routes: bookingRoutesQueryKeys,
   taxRates: taxRateQueryKeys,
