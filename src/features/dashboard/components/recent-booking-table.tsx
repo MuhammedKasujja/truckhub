@@ -4,7 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -12,23 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 import {
   Empty,
   EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { formatDate, formatPrice } from "@/lib/format";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/empty"
+import { formatDate, formatPrice } from "@/lib/format"
+import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { ArrowUpRight, PlusIcon } from "lucide-react";
-import { Booking } from "@/features/bookings/types";
+import { ArrowUpRight, PlusIcon } from "lucide-react"
+import { Booking } from "@/features/bookings/types"
+import { Badge } from "@/components/ui/badge"
 
 type RecentBookingTableProps = {
-  bookings: Booking[];
-};
+  bookings: Booking[]
+}
 
 export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
   return (
@@ -65,7 +66,9 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                       {booking.number}
                     </TableCell>
                     <TableCell>{booking.customer.fullname}</TableCell>
-                    <TableCell>{booking.status}</TableCell>
+                    <TableCell>
+                      <Badge variant={"outline"}>{booking.status}</Badge>
+                    </TableCell>
                     <TableCell>{formatPrice(booking.amount)}</TableCell>
                     <TableCell>{formatPrice(booking.balance)}</TableCell>
                     <TableCell>{formatDate(booking.created_at)}</TableCell>
@@ -95,5 +98,5 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -132,10 +132,8 @@ export function RideRequestDetailsWrapper({
             </Button>
           </CardFooter>
         </Card>
-        {ride?.customer && <RidePassenger passenger={ride.customer} />}
-        {ride?.customer && <RideDriver driver={ride!.customer} />}
-        
-        
+        <RidePassenger passenger={ride!.customer} />
+        <RideDriver driver={ride!.customer} />
       </div>
       <div className="grid grid-cols-3 gap-4">
         <Card>

@@ -4,7 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -12,23 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/table"
 import {
   Empty,
   EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
-import { formatDate, formatPrice } from "@/lib/format";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/empty"
+import { formatDate, formatPrice } from "@/lib/format"
+import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { PlusIcon, ChevronRightIcon } from "lucide-react";
-import { RideRequest } from "@/features/ride-requests/types";
+import { PlusIcon, ChevronRightIcon } from "lucide-react"
+import { RideRequest } from "@/features/ride-requests/types"
+import { Badge } from "@/components/ui/badge"
 
 type RecentRideTableProps = {
-  rides: RideRequest[];
-};
+  rides: RideRequest[]
+}
 
 export function RecentRideTable({ rides }: RecentRideTableProps) {
   return (
@@ -61,11 +62,13 @@ export function RecentRideTable({ rides }: RecentRideTableProps) {
               {rides.length ? (
                 rides.map((ride) => (
                   <TableRow key={`ride-${ride.id.toString()}`}>
-                    <TableCell className="font-medium">{ride.id}</TableCell>
+                    <TableCell className="font-medium">{ride.number}</TableCell>
                     <TableCell className="font-medium">
                       {ride.customer.fullname}
                     </TableCell>
-                    <TableCell>{ride.status}</TableCell>
+                    <TableCell>
+                      <Badge variant={"outline"}>{ride.status}</Badge>
+                    </TableCell>
                     <TableCell>{formatPrice(ride.amount)}</TableCell>
                     <TableCell>{formatPrice(ride.balance)}</TableCell>
                     <TableCell>{formatDate(ride.created_at)}</TableCell>
@@ -95,5 +98,5 @@ export function RecentRideTable({ rides }: RecentRideTableProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
