@@ -33,6 +33,8 @@ export interface VehicleBase {
   tonnage_id: EntityId
   created_at: Date
   updated_at: Date
+  second_plate_number?: string
+  tonnage_capacity?: number
 }
 
 export interface Vehicle extends VehicleBase {

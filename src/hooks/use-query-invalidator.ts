@@ -212,8 +212,12 @@ class QueryInvalidator {
           queryKey: queryKeys.settings.vehicles(),
         })
       },
-      details: (id: string) =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+      details: (id: string) => ({
+        invalidate: () =>
+          this.queryClient.invalidateQueries({
+            queryKey: queryKeys.vehiclesTypes.detail(id),
+          }),
+      }),
     },
   }
 
@@ -224,8 +228,12 @@ class QueryInvalidator {
           queryKey: queryKeys.drivers.list(),
         }),
     },
-    details: (id: string) =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.drivers.profile(id),
+        }),
+    }),
   }
 
   clients = {
@@ -256,8 +264,12 @@ class QueryInvalidator {
           queryKey: queryKeys.users.list(),
         }),
     },
-    details: (id: string) =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.drivers.profile(id),
+        }),
+    }),
   }
 
   vehicles = {
@@ -267,8 +279,12 @@ class QueryInvalidator {
           queryKey: queryKeys.vehicles.list(),
         }),
     },
-    details: (id: string) =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.vehicles.detail(id),
+        }),
+    }),
   }
 
   auditLogs = {

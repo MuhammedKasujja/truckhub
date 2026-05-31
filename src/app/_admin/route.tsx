@@ -32,7 +32,7 @@ function RouteComponent() {
   useGlobalShortcuts()
   return (
     <AuthProvider value={user}>
-      <SidebarProvider className="overflow-x-hidden">
+      <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
         <AppSidebar />
         <SidebarInset className="overflow-x-hidden">
           <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
