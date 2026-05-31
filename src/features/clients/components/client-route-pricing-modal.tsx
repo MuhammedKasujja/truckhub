@@ -11,8 +11,7 @@ import { RoutePricingDataGridForm } from "@/features/settings/pricing/components
 import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
 import { createClientBatchRoutePricingFn } from "../services"
-import { useQueryClient } from "@tanstack/react-query"
-import { clientQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type ClientPricingProps = {
   clientId: string
@@ -21,7 +20,7 @@ type ClientPricingProps = {
 export function ClientRouteTonnagePricingModal({
   clientId,
 }: ClientPricingProps) {
-  const queryClient = useQueryClient()
+  const queryInvaidator = useQueryInvalidator()
 
   async function handleSubmit(values: BatchPricingPayload) {
     const { error, isSuccess, message } = await createClientBatchRoutePricingFn(
@@ -31,9 +30,7 @@ export function ClientRouteTonnagePricingModal({
     )
     if (isSuccess && message) {
       toast.success(message)
-      queryClient.invalidateQueries({
-        queryKey: clientQueryKeys.routePricing(clientId),
-      })
+      queryInvaidator.clients.details(clientId).routePricing.invalidate()
     }
     if (error) {
       toast.error(error.message)

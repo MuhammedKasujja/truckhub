@@ -3,7 +3,6 @@ import { EntityId } from "@/schemas"
 import { queryKeys } from "@/lib/query-keys"
 import { PaymentType } from "@/config/constants"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
-import { settingsQueryKeys } from "@/features/settings/query-options"
 
 class QueryInvalidator {
   constructor(private queryClient: QueryClient) {}
@@ -27,17 +26,45 @@ class QueryInvalidator {
   }
 
   rides = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.rides.list(),
+        }),
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
   bookings = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.list(),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.statistics(),
+        })
+      },
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+  }
+
+  services = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: [
+            ...queryKeys.services.list(),
+            ...queryKeys.services.search(),
+          ],
+        }),
+    },
+    details: (id: string) =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.services.detail(id),
+      }),
   }
 
   payments = {
@@ -91,7 +118,7 @@ class QueryInvalidator {
   settings = {
     refresh: () =>
       this.queryClient.invalidateQueries({
-        queryKey: settingsQueryKeys.list(),
+        queryKey: queryKeys.settings.app(),
       }),
 
     routes: {
@@ -141,7 +168,7 @@ class QueryInvalidator {
             queryKey: queryKeys.carBrands.list(),
           }),
           this.queryClient.invalidateQueries({
-            queryKey: settingsQueryKeys.vehicles(),
+            queryKey: queryKeys.settings.vehicles(),
           }),
         ]),
       details: (id: string) =>
@@ -154,7 +181,7 @@ class QueryInvalidator {
             queryKey: queryKeys.carModels.list(),
           }),
           this.queryClient.invalidateQueries({
-            queryKey: settingsQueryKeys.vehicles(),
+            queryKey: queryKeys.settings.vehicles(),
           }),
         ]),
       details: (id: string) =>
@@ -182,7 +209,7 @@ class QueryInvalidator {
           queryKey: queryKeys.vehiclesTypes.list(),
         })
         this.queryClient.invalidateQueries({
-          queryKey: settingsQueryKeys.vehicles(),
+          queryKey: queryKeys.settings.vehicles(),
         })
       },
       details: (id: string) =>
@@ -191,40 +218,70 @@ class QueryInvalidator {
   }
 
   drivers = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.drivers.list(),
+        }),
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
   clients = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
-    refresh: () =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
-    details: (id: string) =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.clients.list(),
+        }),
+    },
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.clients.detail(id),
+        }),
+      routePricing: {
+        invalidate: () =>
+          this.queryClient.invalidateQueries({
+            queryKey: queryKeys.clients.routePricing(id),
+          }),
+      },
+    }),
   }
 
   users = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.users.list(),
+        }),
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
   vehicles = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.vehicles.list(),
+        }),
+    },
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
   auditLogs = {
-    all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
-    list: () => this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.auditLogs.list(),
+        }),
+    },
     details: (id: string) =>
-      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.auditLogs.details(id),
+      }),
   }
 }
 

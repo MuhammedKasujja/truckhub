@@ -4,13 +4,13 @@ import { AuditLogSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 
 export const auditLogsQueryKeys = {
-  all: () => ["audit-logs"],
-  details: (id: EntityId) => [...auditLogsQueryKeys.all(), "detail", id],
+  list: () => ["audit-logs"],
+  details: (id: EntityId) => [...auditLogsQueryKeys.list(), "detail", id],
 }
 
 export const createAuditLogsQueryOptions = (search: AuditLogSearchParams) => {
   return queryOptions({
-    queryKey: [...auditLogsQueryKeys.all(), search],
+    queryKey: [...auditLogsQueryKeys.list(), search],
     queryFn: () => getAuditLogsFn({ data: search }),
   })
 }

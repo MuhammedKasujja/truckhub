@@ -2,7 +2,9 @@ import { driverQueryKeys } from "@/features/drivers/queries"
 import { usersQueryKeys } from "@/features/users/query-options"
 import { clientQueryKeys } from "@/features/clients/query-options"
 import { vehicleQueryKeys } from "@/features/vehicles/query-options"
+import { serviceQueryKeys } from "@/features/services/query-options"
 import { paymentsQueryKeys } from "@/features/payments/query-options"
+import { settingsQueryKeys } from "@/features/settings/query-options"
 import { rideQueryKeys } from "@/features/ride-requests/query-options"
 import { dashboardQueryKeys } from "@/features/dashboard/query-options"
 import { bookingsQueryKeys } from "@/features/bookings/queries-options"
@@ -28,9 +30,11 @@ export const queryKeys = {
   driveTrains: driverQueryKeys,
   tonnages: tonnageQueryKeys,
   vehiclesTypes: vehicleTypesQueryKeys,
+  services: serviceQueryKeys,
 
-  setiings: {
-    app: () => ({ queryKey: [""] }),
+  settings: {
+    app: () => settingsQueryKeys.list(),
+    vehicles: () => settingsQueryKeys.vehicles(),
     pricingPlans: {
       all: () => ({ queryKey: [""] }),
       list: () => ({ queryKey: ["", "list"] }),

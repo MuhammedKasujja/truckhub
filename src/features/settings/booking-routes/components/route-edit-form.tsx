@@ -21,12 +21,11 @@ import z from "zod"
 import { NumberField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createRouteFn, updateRouteFn } from "../services"
-import { useQueryClient } from "@tanstack/react-query"
-import { bookingRoutesQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 export function RouteEditForm() {
   const tr = useTranslation()
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
   const [open, setOpen] = useState(false)
 
   const form = useForm<z.infer<typeof RouteEditSchema>>({
@@ -42,9 +41,7 @@ export function RouteEditForm() {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
-      queryClient.invalidateQueries({
-        queryKey: bookingRoutesQueryKeys.list(),
-      })
+      queryInvalidator.settings.routes.list()
     } else {
       toast.error(error?.message)
     }

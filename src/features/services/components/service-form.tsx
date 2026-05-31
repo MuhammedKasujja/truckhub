@@ -25,9 +25,9 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
-import { serviceQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type ServiceFormProps = {
   initialData?: z.infer<typeof ServiceUpdateSchema>
@@ -36,7 +36,7 @@ type ServiceFormProps = {
 export function ServiceForm({ initialData }: ServiceFormProps) {
   const tr = useTranslation()
   const { data } = useQuery(createVehicleConfigurationsQueryOptions())
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
 
   const isEdit = !!initialData
 
@@ -56,9 +56,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
-      queryClient.invalidateQueries({
-        queryKey: [...serviceQueryKeys.list(), ...serviceQueryKeys.search()],
-      })
+      queryInvalidator.services.list.invalidate()
     } else {
       toast.error(error?.message)
     }

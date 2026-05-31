@@ -37,14 +37,10 @@ import { Service } from "@/features/services/types"
 import { formatPrice } from "@/lib/format"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SubmitButton } from "@/components/ui/submit-button"
-import {
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query"
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
-import { bookingsQueryKeys } from "../queries-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -52,7 +48,7 @@ type BookingRequestFormProps = {
 
 export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   const tr = useTranslation()
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
 
   const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
   const [serviceView, setServiceView] = useState<"list" | "single">("list")
@@ -84,7 +80,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     const { isSuccess, error } = await createBookingFn({ data: values })
     if (isSuccess) {
       toast.success(`${tr("bookings.booking_created_successfully")}`)
-      queryClient.invalidateQueries({ queryKey: bookingsQueryKeys.list() })
+      queryInvalidator.bookings.list.invalidate()
     } else {
       toast.error(error!.message)
     }

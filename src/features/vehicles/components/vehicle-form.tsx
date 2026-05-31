@@ -30,9 +30,9 @@ import { EntityId } from "@/schemas"
 import { VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { CarModel, DriveTrain } from "@/types/setting"
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
-import { vehicleQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type VehicleFormProps = {
   initialData?: z.infer<typeof VehicleUpdateSchema>
@@ -40,7 +40,7 @@ type VehicleFormProps = {
 
 export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
   const {
     data: { data: vehicleCofig },
   } = useSuspenseQuery(createVehicleConfigurationsQueryOptions())
@@ -109,7 +109,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
-      queryClient.invalidateQueries({ queryKey: vehicleQueryKeys.list() })
+      queryInvalidator.vehicles.list.invalidate()
     } else {
       toast.error(error?.message)
     }

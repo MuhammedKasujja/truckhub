@@ -25,8 +25,7 @@ import { TextareaField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryClient } from "@tanstack/react-query"
-import { rolesQueryKeys } from "../query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type Props = {
   trigger?: React.ReactNode
@@ -35,7 +34,7 @@ type Props = {
 
 export function RoleEditForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
-  const queryClient = useQueryClient()
+  const queryInvalidator = useQueryInvalidator()
 
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -56,7 +55,7 @@ export function RoleEditForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
-      queryClient.invalidateQueries({ queryKey: rolesQueryKeys.list() })
+      queryInvalidator.settings.roles.list()
     } else {
       toast.error(error?.message)
     }
