@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DriverSearchFilter } from "@/features/drivers/components/driver-search-filter"
-// import { Edit2Icon } from "lucide-react"
-// import { Link } from "@tanstack/react-router"
+import { Edit2Icon } from "lucide-react"
+import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
 import { Vehicle, VehicleDriver } from "../types"
@@ -20,6 +20,7 @@ import { EntityId } from "@/schemas"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { Can } from "@/components/has-permission"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -63,10 +64,21 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             {vehicle.number} • {vehicle.plate_number}
           </p>
         </div>
-
-        <Badge variant="secondary" className="w-fit">
-          {vehicle.vehicle_type.name}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="w-fit">
+            {vehicle.vehicle_type.name}
+          </Badge>
+          <Can permission="vehicles:edit">
+            <Button size={"icon-sm"} asChild>
+              <Link
+                to="/vehicles/$vehicleId/edit"
+                params={{ vehicleId: vehicle.id }}
+              >
+                <Edit2Icon />
+              </Link>
+            </Button>
+          </Can>
+        </div>
       </div>
 
       {/* Summary */}
