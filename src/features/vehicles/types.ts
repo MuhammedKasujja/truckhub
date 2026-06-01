@@ -46,6 +46,10 @@ export interface Vehicle extends VehicleBase {
   car_model: {
     id: EntityId
     name: string
+    car_brand: {
+      id: EntityId
+      name: string
+    }
   }
   drive_train: {
     id: EntityId

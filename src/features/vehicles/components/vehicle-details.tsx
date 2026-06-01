@@ -58,8 +58,9 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
       {/* Header */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{vehicle.car_model.name}</h1>
-
+          <h1 className="text-3xl font-bold">
+            {vehicle.car_model.car_brand.name} - {vehicle.car_model.name}
+          </h1>
           <p className="text-muted-foreground">
             {vehicle.number} • {vehicle.plate_number}
           </p>
