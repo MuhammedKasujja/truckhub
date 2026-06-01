@@ -35,7 +35,7 @@ function RouteComponent() {
       <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
         <AppSidebar />
         <SidebarInset className="overflow-x-hidden">
-          <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+          <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-5">
             <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
@@ -49,7 +49,7 @@ function RouteComponent() {
               <NavigationActions />
             </div>
           </header>
-          <div className="p-4">
+          <div className="p-4 md:p-6">
             <Outlet />
           </div>
         </SidebarInset>
