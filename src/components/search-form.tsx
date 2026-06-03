@@ -25,16 +25,15 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
-import { useHotkeys } from "react-hotkeys-hook";
+import { useHotkey } from '@tanstack/react-hotkeys'
 
 export function SearchForm({ ...props }: React.ComponentProps<"div">) {
   const tr = useTranslation();
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isOpen, setIsOpen] = useState(false)
 
-  // react-hotkeys-hook automatically maps mod to Command on Mac and Control on Windows/Linux
-  useHotkeys("mod+k", (event) => {
-    event.preventDefault() // Stop default browser search behaviors
+  // mod automatically maps Command on Mac and Control on Windows/Linux
+  useHotkey({ mod: true, key: "k" }, () => {
     setIsOpen((prev) => !prev)
   })
 

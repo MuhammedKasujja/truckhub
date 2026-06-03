@@ -39,14 +39,13 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command"
-import { useHotkeys } from "react-hotkeys-hook"
+import { useHotkey } from "@tanstack/react-hotkeys"
 
 export function CreateEntityDialog() {
   const [open, setOpen] = React.useState(false)
 
   // 1. Listen for ⌘N or Ctrl+N to toggle the menu
-  useHotkeys("mod+n", (event) => {
-    event.preventDefault()
+  useHotkey({ mod: true, key: "n" }, () => {
     setOpen((prev) => !prev)
   })
 

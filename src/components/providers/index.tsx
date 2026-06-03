@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme/provider"
 import { DeepPartial } from "@/types"
-import { HotkeysProvider } from "react-hotkeys-hook"
+import { HotkeysProvider } from "@tanstack/react-hotkeys"
 
 export function Providers({
   locale,
@@ -15,7 +15,7 @@ export function Providers({
   children: React.ReactNode
 }>) {
   return (
-    <HotkeysProvider initiallyActiveScopes={["main"]}>
+    <HotkeysProvider>
       <ThemeProvider defaultTheme={"system"}>
         <IntlProvider
           timeZone="Africa/Kampala"
