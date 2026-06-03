@@ -16,7 +16,7 @@ export function PageBackButton() {
   }
 
   return (
-    <Button variant="ghost" size={"icon"} onClick={() => handleBack()}>
+    <Button variant="ghost" size={"sm"} onClick={() => handleBack()}>
       <ChevronLeftIcon />
     </Button>
   )

@@ -1,3 +1,4 @@
+import { Can } from "@/components/has-permission"
 import { NotFound } from "@/components/not-found"
 import {
   PageAction,
@@ -17,6 +18,7 @@ import {
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { hasPermission } from "@/lib/auth"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
@@ -41,14 +43,30 @@ function RouteComponent() {
         <PageTitle>{data?.name}</PageTitle>
         <PageAction className="flex gap-2">
           <PageBackButton />
+          <Can permission={"bookings:create"}>
+            <Button asChild size={"sm"} variant={"secondary"}>
+              <Link to={"/bookings/new"} params={{ clientId }}>
+               <PlusIcon/>
+                New Booking
+              </Link>
+            </Button>
+          </Can>
+          <Can permission={"rides:create"}>
+            <Button asChild size={"sm"} variant={"secondary"}>
+              <Link to={"/rides/new"} params={{ clientId }}>
+                <PlusIcon/>
+                New Ride
+              </Link>
+            </Button>
+          </Can>
           {data?.has_pricing && (
-            <Button asChild variant={"secondary"}>
+            <Button asChild variant={"secondary"} size="sm">
               <Link to="/clients/data/$clientId" params={{ clientId }}>
                 Pricing
               </Link>
             </Button>
           )}
-          <Button asChild variant={"secondary"}>
+          <Button asChild variant={"secondary"} size="sm">
             <Link to="/clients/$clientId/pdf" params={{ clientId }}>
               Pdf
             </Link>
