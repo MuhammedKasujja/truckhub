@@ -1,8 +1,8 @@
 export const ServiceModulePermissions = {
-  "services:create": ["services:create", "tax_rates:view_list"],
-  "services:view": ["services:view_list", "services:view_single"],
+  "services:create": ["services:create", "tax_rates:read"],
+  "services:view": ["services:read", "services:view"],
   "services:delete": ["services:delete"],
-  "services:edit": ["services:update", "tax_rates:view_list"],
+  "services:edit": ["services:update", "tax_rates:read"],
 } as const
 
 export type ServicePermissions = keyof typeof ServiceModulePermissions

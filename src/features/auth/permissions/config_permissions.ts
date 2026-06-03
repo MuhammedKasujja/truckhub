@@ -2,12 +2,12 @@
 // settings permissions
 export const ConfigModulePermissions = {
   "config:create": ["settings:create"],
-  "config:view": ["settings:view_single", "settings:view_list"],
+  "config:view": ["settings:view", "settings:read"],
   "config:delete": ["settings:delete"],
-  "config:edit": ["settings:update", "settings:view_single"],
-  "config:view:audit_logs": ["settings:update", "settings:view_single"],
+  "config:edit": ["settings:update", "settings:view"],
+  "config:view:audit_logs": ["settings:update", "settings:view"],
   "config:roles:create": ["roles:update", "roles:create"],
-  "config:roles:assign_permissions": ["roles:view_list", "roles:assign_permissions"],
+  "config:roles:assign_permissions": ["roles:read", "roles:permissions:assign"],
 } as const;
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions;

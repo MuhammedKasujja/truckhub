@@ -2,11 +2,12 @@ import { RideModulePermissions } from "./ride_permissions";
 import { UserModulePermissions } from "./users_permissions";
 import { DriverModulePermissions } from "./driver_permissions";
 import { ConfigModulePermissions } from "./config_permissions";
+import { ReportsModulePermissions } from "./reports_permissions";
 import { BookingModulePermissions } from "./booking_permissions";
 import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
+import { ClientModulePermissions } from "./customer_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
-import { CustomerModulePermissions } from "./customer_permissions";
 
 /**
  * Derived system permissions based on the `StoreDatabasePermissions`
@@ -17,10 +18,11 @@ export const KeyNamedPermissions = {
   ...ServiceModulePermissions,
   ...RideModulePermissions,
   ...PaymentModulePermissions,
-  ...CustomerModulePermissions,
+  ...ClientModulePermissions,
   ...DriverModulePermissions,
   ...VehicleModulePermissions,
   ...ConfigModulePermissions,
+  ...ReportsModulePermissions
 } as const;
 
 export type UserPermission = keyof typeof KeyNamedPermissions;
@@ -31,10 +33,11 @@ export const SystemPermissions = {
   services: ServiceModulePermissions,
   rides: RideModulePermissions,
   payments: PaymentModulePermissions,
-  customers: CustomerModulePermissions,
+  customers: ClientModulePermissions,
   drivers: DriverModulePermissions,
   vehicles: VehicleModulePermissions,
   config: ConfigModulePermissions,
+  reports: ReportsModulePermissions,
 };
 
 export type PermissionModule = keyof typeof SystemPermissions;

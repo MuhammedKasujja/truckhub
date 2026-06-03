@@ -1,12 +1,12 @@
 // +++++++++++++++++++++++++++
 // customer permissions
-export const CustomerModulePermissions = {
+export const ClientModulePermissions = {
   "clients:create": ["clients:create"],
-  "clients:view": ["clients:view_single", "clients:view_list"],
+  "clients:view": ["clients:view", "clients:read"],
   "clients:delete": ["clients:delete"],
-  "clients:edit": ["clients:update", "clients:view_single"],
+  "clients:edit": ["clients:update", "clients:view"],
 } as const;
 
-export type BookingPermissions = keyof typeof CustomerModulePermissions;
+export type ClientPermissions = keyof typeof ClientModulePermissions;
 
 // export type CustomerPermissions = `customers@${CustomerPermissionsType}`;

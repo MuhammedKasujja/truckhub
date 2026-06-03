@@ -1,8 +1,8 @@
 export const RideModulePermissions = {
-  "rides:create": ["rides:create", "tax_rates:view_list"],
-  "rides:view": ["rides:list", "rides:single"],
+  "rides:create": ["rides:create", "tax_rates:read"],
+  "rides:view": ["rides:read", "rides:view"],
   "rides:delete": ["rides:delete"],
-  "rides:edit": ["rides:update", "tax_rates:view_list"],
+  "rides:edit": ["rides:update", "tax_rates:read"],
 } as const
 
 export type RidePermissions = keyof typeof RideModulePermissions
