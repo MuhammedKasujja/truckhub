@@ -152,12 +152,12 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
               required={false}
             />
-            <NumberField
+            {/* <NumberField
               label={tr("services.tax_fee")}
               name={"tax_fee"}
               control={form.control}
               required={false}
-            />
+            /> */}
             <TextareaField
               label={tr("common.form.description")}
               name={"description"}

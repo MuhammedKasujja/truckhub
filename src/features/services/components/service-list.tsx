@@ -1,4 +1,4 @@
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -68,14 +68,14 @@ export function ServiceList({ services }: ServiceListProps) {
               <span>{formatPrice(service.booking_fee)}</span>
             </div>
 
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
               <span>Tax</span>
               <span>{formatPrice(service.tax_fee)}</span>
-            </div>
+            </div> */}
 
             <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
               <span>{service.is_truck ? "Truck" : "Car"}</span>
-              <HasPermission permission={"services:edit"}>
+              <Can permission={"services:edit"}>
                 <Button size="sm" variant="outline" asChild>
                   <Link
                     to={`/services/$serviceId/edit`}
@@ -84,7 +84,7 @@ export function ServiceList({ services }: ServiceListProps) {
                     Edit
                   </Link>
                 </Button>
-              </HasPermission>
+              </Can>
             </div>
           </CardContent>
         </Card>

@@ -94,14 +94,14 @@ function ServiceListItem({ service }: { service: Service }) {
           </Link>
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="right" align="center">
-        <div className="grid grid-cols-1 gap-2">
+      <TooltipContent side="right" align="center" className="p-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             {service.category} - {service.name}
           </div>
           <div>Base fee: {formatPrice(service.base_fare)}</div>
           <div>Booking fee: {formatPrice(service.booking_fee)}</div>
-          <div>Tax fee: {formatPrice(service.tax_fee)}</div>
+          {/* <div>Tax fee: {formatPrice(service.tax_fee)}</div> */}
           {!service.is_truck && <div>Seats: {service.seats}</div>}
         </div>
       </TooltipContent>
