@@ -36,7 +36,7 @@ import { BookingServiceList } from "./booking-serive-list"
 import { BookingDetails } from "../types"
 
 type BookingDetailsWrapperProps = {
-  booking: BookingDetails | undefined
+  booking: BookingDetails
 }
 
 export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
@@ -45,9 +45,9 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>{booking?.number}</CardTitle>
+            <CardTitle>{booking.number}</CardTitle>
             <CardAction className="flex gap-4">
-              {!booking?.is_paid && (
+              {!booking.is_paid && (
                 <Can permission={"payments:create"}>
                   <EditPaymentModal
                     initialData={{
@@ -58,12 +58,12 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                   />
                 </Can>
               )}
-              <Status>{booking?.status}</Status>
+              <Status>{booking.status}</Status>
               <Can permission={"bookings:edit"}>
                 <Button asChild>
                   <Link
                     to={`/bookings/$bookingId/edit`}
-                    params={{ bookingId: booking?.id }}
+                    params={{ bookingId: booking.id }}
                   >
                     <Edit2Icon />
                   </Link>
@@ -74,23 +74,23 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-xl font-semibold">
-              {formatPrice(booking?.amount)}
+              {formatPrice(booking.amount)}
             </div>
-            <div>{formatPrice(booking?.balance)}</div>
-            <div>{formatDate(booking?.created_at)}</div>
+            <div>{formatPrice(booking.balance)}</div>
+            <div>{formatDate(booking.created_at)}</div>
           </CardContent>
           <CardFooter className="flex items-center gap-2 space-y-4">
             <Button variant={"outline"}>
-              Partial: {formatPrice(booking?.partial)}
+              Partial: {formatPrice(booking.partial)}
             </Button>
-            {formatDate(booking?.pickup_time)} -{" "}
-            {formatDate(booking?.return_time)}
+            {formatDate(booking.pickup_time)} -{" "}
+            {formatDate(booking.return_time)}
           </CardFooter>
         </Card>
-        <BookingClientWidget client={booking!.customer} />
+        <BookingClientWidget client={booking.customer} />
       </div>
       <div className="grid gap-4 md:grid-flow-col">
-        <BookingServiceList services={booking?.services ?? []} />
+        <BookingServiceList services={booking.services ?? []} />
         <Card>
           <CardHeader>
             <CardTitle>Payments</CardTitle>
@@ -108,7 +108,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {booking?.payments.length ? (
+                  {booking.payments.length ? (
                     booking?.payments.map((payment) => (
                       <TableRow key={payment.id.toString()}>
                         <TableCell className="font-medium">
@@ -131,7 +131,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                             <EmptyTitle>No Payments Found</EmptyTitle>
                           </EmptyHeader>
                           <EmptyContent>
-                            {!booking?.is_paid && (
+                            {!booking.is_paid && (
                               <Can permission={"payments:create"}>
                                 <EditPaymentModal
                                   initialData={{

@@ -78,6 +78,13 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
       },
     },
     {
+      accessorKey: "balance",
+      header: "Balance",
+      cell: ({ row }) => {
+        return <p>{formatPrice(row.original.balance)}</p>
+      },
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const booking = row.original

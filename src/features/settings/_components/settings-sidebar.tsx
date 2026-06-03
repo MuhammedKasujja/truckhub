@@ -105,7 +105,7 @@ export function SettingsSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={item.route == location.pathname}
-                    className={cn(item.route == location.pathname && 'border-l-4')}
+                    className={cn(item.route == location.pathname && 'border-l-4 border-primary')}
                   >
                     {item.route ? (
                       <Link to={item.route}>

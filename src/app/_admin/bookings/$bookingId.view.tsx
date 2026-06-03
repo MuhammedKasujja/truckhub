@@ -14,5 +14,7 @@ export const Route = createFileRoute("/_admin/bookings/$bookingId/view")({
 
 function RouteComponent() {
   const { data: booking } = Route.useLoaderData()
+  if(!booking) return <div>Booking not found</div>
+  
   return <BookingDetailsWrapper booking={booking} />
 }
