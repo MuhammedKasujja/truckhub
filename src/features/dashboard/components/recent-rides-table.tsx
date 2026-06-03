@@ -26,12 +26,15 @@ import { Link } from "@tanstack/react-router"
 import { PlusIcon, ChevronRightIcon } from "lucide-react"
 import { RideRequest } from "@/features/ride-requests/types"
 import { Badge } from "@/components/ui/badge"
+import { useTranslation } from "@/i18n"
 
 type RecentRideTableProps = {
   rides: RideRequest[]
 }
 
-export function RecentRideTable({ rides }: RecentRideTableProps) {
+export function RecentRidesTable({ rides }: RecentRideTableProps) {
+  const tr = useTranslation()
+  
   return (
     <Card>
       <CardHeader>
@@ -67,7 +70,7 @@ export function RecentRideTable({ rides }: RecentRideTableProps) {
                       {ride.customer.fullname}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={"outline"}>{ride.status}</Badge>
+                      <Badge variant={"outline"}>{tr(`rides.statues.${ride.status}`)}</Badge>
                     </TableCell>
                     <TableCell>{formatPrice(ride.amount)}</TableCell>
                     <TableCell>{formatPrice(ride.balance)}</TableCell>

@@ -8,15 +8,17 @@ import {
   TimelineItem,
   TimelineTime,
   TimelineTitle,
-} from "@/components/ui/timeline";
-import { RideStatus, RideStatusList } from "@/features/ride-requests/types";
-import { CircleDotIcon } from "lucide-react";
+} from "@/components/ui/timeline"
+import { RideStatus, RideStatusList } from "@/features/ride-requests/types"
+import { useTranslation } from "@/i18n"
+import { CircleDotIcon } from "lucide-react"
 
 type RideTimelineProps = {
-  status: RideStatus | undefined;
-};
+  status: RideStatus | undefined
+}
 
 export function RideTimeline({ status }: RideTimelineProps) {
+  const tr = useTranslation()
   return (
     <Timeline
       activeIndex={status ? RideStatusList.indexOf(status) : 0}
@@ -31,12 +33,12 @@ export function RideTimeline({ status }: RideTimelineProps) {
           <TimelineContent>
             <TimelineHeader>
               {/* <TimelineTime dateTime={item.dateTime}>{item.date}</TimelineTime> */}
-              <TimelineTitle>{item}</TimelineTitle>
+              <TimelineTitle>{tr(`rides.statues.${item}`)}</TimelineTitle>
             </TimelineHeader>
             {/* <TimelineDescription>{item.description}</TimelineDescription> */}
           </TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>
-  );
+  )
 }

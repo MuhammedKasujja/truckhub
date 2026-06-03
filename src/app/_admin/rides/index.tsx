@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import {
   RideRequestTable,
   RideRequestTableSkeleton,
-} from "@/features/ride-requests/components/ride-requests-table";
+} from "@/features/ride-requests/components/rides-table";
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header";
 import { Can } from "@/components/has-permission";
 import { Button } from "@/components/ui/button";

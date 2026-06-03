@@ -7,8 +7,9 @@ import { Status } from "@/components/ui/status"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import { EditIcon, EyeIcon } from "lucide-react"
+import { TFunction } from "@/i18n"
 
-export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
+export function getRideRequestTableColumns(tr: TFunction): ColumnDef<RideRequest>[] {
   return [
     {
       accessorKey: "id",
@@ -62,7 +63,7 @@ export function getRideRequestTableColumns(): ColumnDef<RideRequest>[] {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        return <Status>{row.original.status}</Status>
+        return <Status>{tr(`rides.statues.${row.original.status}`)}</Status>
       },
       meta: {
         label: "Status",

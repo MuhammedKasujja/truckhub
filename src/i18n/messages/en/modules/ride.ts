@@ -12,4 +12,13 @@ export const en = {
   payment_method: "Payment Method",
   booking: "Booking",
   select_payment_method: "Select payment method",
-} as const;
+  statues: {
+    pending: "Pending",
+    accepted: "Accepted",
+    matched: "Matched",
+    in_progress: "In Progress",
+    completed: "Completed",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+  },
+} as const

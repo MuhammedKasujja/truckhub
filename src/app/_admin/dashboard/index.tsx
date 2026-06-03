@@ -6,9 +6,11 @@ import {
   StatTrend,
   StatValue,
 } from "@/components/ui/stat"
-import { RecentPaymentsTable } from "@/features/dashboard/components/recent-payments-table"
-import { RecentBookingTable } from "@/features/dashboard/components/recent-booking-table"
-import { RecentRideTable } from "@/features/dashboard/components/recent-ride-table"
+import {
+  RecentPaymentsTable,
+  RecentBookingTable,
+  RecentRidesTable,
+} from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
 import { formatPrice } from "@/lib/format"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
@@ -35,15 +37,15 @@ function RouteComponent() {
         <PageTitle>Dashboard</PageTitle>
         <PageAction>
           <CalendarDatePicker
-              date={{
-                from: new Date(),
-                // to: dates.to,
-              }}
-              onDateSelect={({})=>{}}
-              // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
-              className={`w-fit cursor-pointer`}
-              variant="outline"
-            />
+            date={{
+              from: new Date(),
+              // to: dates.to,
+            }}
+            onDateSelect={({}) => {}}
+            // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
+            className={`w-fit cursor-pointer`}
+            variant="outline"
+          />
           <DateRangePicker2
             initialDateFrom={new Date()}
             initialDateTo={
@@ -97,7 +99,7 @@ function RouteComponent() {
       </div>
       <RecentPaymentsTable payments={data.recent_payments} />
       <RecentBookingTable bookings={data.recent_bookings} />
-      <RecentRideTable rides={data.recent_rides} />
+      <RecentRidesTable rides={data.recent_rides} />
     </div>
   )
 }
