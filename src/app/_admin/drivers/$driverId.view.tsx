@@ -16,5 +16,6 @@ export const Route = createFileRoute("/_admin/drivers/$driverId/view")({
 function RouteComponent() {
   const { data, error } = Route.useLoaderData()
   useFetchEror(error)
+  if (!data) return <div>Failed to load Driver details</div>
   return <DriverDetails driver={data} />
 }

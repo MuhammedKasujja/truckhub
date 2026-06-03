@@ -67,3 +67,7 @@ export async function vehicleAssignDriver(data: AssignDriverVehicleType) {
     driver_id: data.driverId,
   })
 }
+
+export async function vehicleUnAssignDriver(vehicleId: EntityId) {
+  return await apiClient.postFn<null>(`${endpoint}/${vehicleId}/assignments/unassign`, {})
+}

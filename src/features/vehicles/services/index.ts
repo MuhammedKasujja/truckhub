@@ -15,6 +15,7 @@ import {
   getVehiclesByQuery,
   vehicleAssignDriver,
   getVehicleDetailsById,
+  vehicleUnAssignDriver,
 } from "./server"
 
 export const getVehiclesFn = createServerFn()
@@ -63,4 +64,10 @@ export const vehicleAssignDriverFn = createServerFn()
   .inputValidator(AssignDriverVehicleSchema)
   .handler(async ({ data }) => {
     return vehicleAssignDriver(data)
+  })
+
+export const vehicleUnAssignDriverFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return vehicleUnAssignDriver(data.id)
   })

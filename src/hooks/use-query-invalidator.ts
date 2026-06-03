@@ -81,7 +81,10 @@ class QueryInvalidator {
       type: PaymentType
     }) => {
       this.queryClient.invalidateQueries({
-        queryKey: queryKeys.payments.list(),
+        queryKey: [
+          ...queryKeys.payments.list(),
+          ...queryKeys.payments.statistics(),
+        ],
       })
       if (type === "booking") {
         this.queryClient.invalidateQueries({

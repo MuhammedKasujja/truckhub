@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -10,8 +11,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter"
-import { vehicleAssignDriverFn } from "@/features/vehicles/services"
-import { Edit2Icon } from "lucide-react"
+import {
+  vehicleAssignDriverFn,
+  vehicleUnAssignDriverFn,
+} from "@/features/vehicles/services"
+import { Edit2Icon, TrashIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
@@ -26,7 +30,7 @@ import {
 import { Can } from "@/components/has-permission"
 
 type DriverDetailsProps = {
-  driver: Driver | undefined
+  driver: Driver
 }
 
 export function DriverDetails({ driver }: DriverDetailsProps) {
@@ -38,6 +42,21 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
       data: {
         driverId: driver!.id,
         vehicleId: vehicleId!,
+      },
+    })
+    if (isSuccess) {
+      toast.success(message)
+    } else {
+      toast.error(error?.message)
+    }
+  }
+
+  async function unAssignDriverFromVehicle() {
+    if (!vehicle) return
+
+    const { isSuccess, error, message } = await vehicleUnAssignDriverFn({
+      data: {
+        id: vehicle.id,
       },
     })
     if (isSuccess) {
@@ -100,8 +119,20 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
         <Card>
           <CardHeader>
             <CardTitle>Assigned Vehicle</CardTitle>
+            <CardAction>
+              <Can permission="vehicles:unassign">
+                <Button
+                  variant={"outline"}
+                  size={"sm"}
+                  type="button"
+                  onClick={() => unAssignDriverFromVehicle()}
+                >
+                  <TrashIcon className="mr-1" />
+                  Remove Vehicle
+                </Button>
+              </Can>
+            </CardAction>
           </CardHeader>
-
           <CardContent className="space-y-4">
             <DetailItem label="Vehicle Number" value={vehicle.number} />
 
