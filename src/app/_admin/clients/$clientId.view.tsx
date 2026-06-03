@@ -40,7 +40,7 @@ function RouteComponent() {
   return (
     <div>
       <PageHeader>
-        <PageTitle>{data?.name}</PageTitle>
+        <PageTitle className="capitalize">{data?.name}</PageTitle>
         <PageAction className="flex gap-2">
           <PageBackButton />
           <Can permission={"bookings:create"}>

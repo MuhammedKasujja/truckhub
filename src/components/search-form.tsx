@@ -25,7 +25,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
-import { useHotkey } from '@tanstack/react-hotkeys'
+import { formatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 
 export function SearchForm({ ...props }: React.ComponentProps<"div">) {
   const tr = useTranslation();
@@ -54,7 +54,7 @@ export function SearchForm({ ...props }: React.ComponentProps<"div">) {
             >
               <SearchIcon />
               {tr("search")}...
-              <Kbd>⌘K</Kbd>
+              <Kbd>{formatForDisplay('Mod+K')}</Kbd>
             </Button>
           </div>
         </DialogTrigger>

@@ -38,6 +38,7 @@ import {
   clientProfileQueryOptions,
   clientRidesQueryOptions,
 } from "../query-options"
+import { useTranslation } from "@/i18n"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -62,6 +63,8 @@ export function CustomerDetailsWrapper({
       clientRidesQueryOptions(clientId),
     ],
   })
+
+  const tr = useTranslation()
 
   const payments = paymentsResponse?.data
   const bookings = bookingsResponse?.data
@@ -237,8 +240,8 @@ export function CustomerDetailsWrapper({
                             {payment.number}
                           </TableCell>
                           <TableCell>{formatPrice(payment.amount)}</TableCell>
-                          <TableCell>{payment.status}</TableCell>
-                          <TableCell>{payment.payment_mode}</TableCell>
+                          <TableCell>{tr(`payments.statuses.${payment.status}`)}</TableCell>
+                          <TableCell>{tr(`payments.methods.${payment.payment_mode}`)}</TableCell>
                           <TableCell>{formatDate(payment.date)}</TableCell>
                         </TableRow>
                       ))
