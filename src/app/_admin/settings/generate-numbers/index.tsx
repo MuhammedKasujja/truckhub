@@ -1,3 +1,4 @@
+import { EntityNumbersWrapper } from '@/features/settings/entity-numbers/components'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_admin/settings/generate-numbers/')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/_admin/settings/generate-numbers/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/settings/generate-numbers/"!</div>
+  return <EntityNumbersWrapper/>
 }

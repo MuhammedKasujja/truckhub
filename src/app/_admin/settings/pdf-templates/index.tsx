@@ -1,3 +1,4 @@
+import { PdfTemplatesWrapper } from '@/features/settings/pdf-templates/components'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_admin/settings/pdf-templates/')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/_admin/settings/pdf-templates/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/settings/pdf-templates/"!</div>
+  return <PdfTemplatesWrapper/>
 }
