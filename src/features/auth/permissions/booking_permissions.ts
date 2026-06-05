@@ -14,15 +14,7 @@ export const BookingModulePermissions = {
     "bookings:view",
     "tax_rates:read",
   ],
-  // TODO: separate this into its own module permissions
-  "rides:create": [
-    "bookings:create",
-    "passengers:read",
-    "services:read",
-  ],
-  "rides:view": ["bookings:view", "bookings:read"],
-  "rides:delete": ["bookings:delete"],
-  "rides:edit": ["bookings:update", "bookings:view"],
+  "bookings:cancel": ["bookings:cancel"],
 } as const
 
 export type BookingPermissions = keyof typeof BookingModulePermissions

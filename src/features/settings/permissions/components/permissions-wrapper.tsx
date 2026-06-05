@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SystemPermissions } from "@/features/auth/permissions"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
 import { useMemo, useState } from "react"
@@ -18,8 +17,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Can } from "@/components/has-permission"
 import { Badge } from "@/components/ui/badge"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
-
-const modules = Object.keys(SystemPermissions)
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function PermissionsWrapper() {
   const { data } = useQuery(createRolesQueryOptions())
@@ -100,22 +98,25 @@ export function PermissionsWrapper() {
     }
   }
 
+  function handleRoleChanged(roleId: string) {
+    setRoleId(roleId)
+    const selectedRole = (data?.data ?? []).find((role) => role.id === roleId)
+    if (selectedRole) {
+      setSelectedPermissions(new Set<string>(selectedRole.permissions))
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap justify-between gap-5">
-        <Select
-          value={roleId}
-          onValueChange={(role) => {
-            setRoleId(role)
-          }}
-        >
-          <SelectTrigger>
+        <Select value={roleId} onValueChange={handleRoleChanged}>
+          <SelectTrigger className="w-52">
             <SelectValue placeholder="Select Role" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {(data?.data ?? []).map((opt) => (
-                <SelectItem key={opt.id} value={opt.id.toString()}>
+                <SelectItem key={opt.id} value={opt.id}>
                   {opt.name}
                 </SelectItem>
               ))}
@@ -128,29 +129,25 @@ export function PermissionsWrapper() {
           </Button>
         </Can>
       </div>
-      <Tabs defaultValue={modules[0]} className="w-full">
-        <TabsList>
-          {modules.map((module) => (
-            <TabsTrigger key={module} value={module}>
-              {module}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {groupedPermissions.map(([module, permissions]) => (
-          <TabsContent value={module} key={module}>
+      {groupedPermissions.map(([module, permissions]) => (
+        <Card key={module}>
+          <CardHeader>
+            <CardTitle>{module}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex gap-2 flex-wrap">
             {Object.entries(permissions).map(([group, permissionList]) => (
               <Button
                 type="button"
-                variant={isAllSelected(permissionList) ? "default" : "ghost"}
+                variant={isAllSelected(permissionList) ? "outline" : "ghost"}
                 key={group}
                 onClick={() => togglePermissions(permissionList)}
               >
                 {group}
               </Button>
             ))}
-          </TabsContent>
-        ))}
-      </Tabs>
+          </CardContent>
+        </Card>
+      ))}
       {[...selectedPermissions].map((perm) => (
         <Badge key={perm} variant={"outline"} className="mr-1">
           {perm}

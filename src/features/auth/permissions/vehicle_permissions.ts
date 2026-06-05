@@ -7,6 +7,7 @@ export const VehicleModulePermissions = {
   "vehicles:edit": ["vehicles:update", "vehicles:view"],
   "vehicles:unassign": ["vehicles:driver:unassign"],
   "vehicles:assign": ["vehicles:driver:assign"],
+  "vehicles:change_status": ["vehicles:change_status"],
 } as const
 
 export type VehiclePermissions = keyof typeof VehicleModulePermissions

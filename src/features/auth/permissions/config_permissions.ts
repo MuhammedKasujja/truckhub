@@ -3,7 +3,6 @@
 export const ConfigModulePermissions = {
   "config:create": ["settings:create"],
   "config:view": ["settings:view", "settings:read"],
-  "config:delete": ["settings:delete"],
   "config:edit": ["settings:update", "settings:view"],
   "config:view:audit_logs": ["settings:update", "settings:view"],
   "config:roles:create": ["roles:update", "roles:create"],
