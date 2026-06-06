@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 const tabs = ['bookings','rides','payments', 'clients', 'drivers', 'vehicles', 'users' ] as const
 
 export function EntityNumbersWrapper() {
+  
   return (
     <Tabs defaultValue={tabs[0]}>
       <TabsList>
