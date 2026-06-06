@@ -13,4 +13,6 @@ export const NumberingPatternSchema = z.object({
 
 export type NumberingPatternType = z.infer<typeof NumberingPatternSchema>
 
+export type NumberingPattern = z.infer<typeof NumberingPatternSchema>
+
 export type NumberingEntityKey = keyof NumberingPatternType["entities"];

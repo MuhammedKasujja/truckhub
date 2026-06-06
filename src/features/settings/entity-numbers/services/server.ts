@@ -1,6 +1,11 @@
 import * as apiClient from "@/lib/api-client"
 import { EntityNumberPattern } from "../types"
-import { NumberingPatternType } from "../schemas"
+
+type EntityNumberUpdateRequest = {
+  entity_name: string
+  pattern: string
+  counter_padding: number
+}
 
 const endpoint = "/v1/settings/entity-numbers"
 
@@ -8,6 +13,8 @@ export async function getEntityNumberPatterns() {
   return apiClient.getFn<EntityNumberPattern[]>(endpoint)
 }
 
-export async function updateEntityNumberPatterns(data: NumberingPatternType) {
+export async function updateEntityNumberPatterns(
+  data: EntityNumberUpdateRequest[]
+) {
   return apiClient.postFn<EntityNumberPattern[]>(endpoint, data)
 }
