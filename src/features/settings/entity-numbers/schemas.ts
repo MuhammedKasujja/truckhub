@@ -2,7 +2,7 @@ import z from "zod"
 import { NUMBERING_ENTITIES } from "@/common/constants"
 
 const entityNumberSchema = z.object({
-  pattern: z.string(),
+  pattern: z.string().min(3, "Required"),
   counter_padding: z.int().positive(),
   last_number: z.int().optional(),
 })
