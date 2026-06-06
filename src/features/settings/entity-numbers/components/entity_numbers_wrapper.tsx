@@ -42,6 +42,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
     const { message, error } = await updateEntityNumberPatternsFn({ data })
     if (message) {
       toast.success(message)
+      form.reset()
     }
     if (error) {
       toast.error(error.message)
@@ -75,7 +76,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
 function DirtyDot() {
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <span className="absolute -top-1 -right-1 flex h-2 w-2">
           <span className="absolute inline-flex h-full w-full animate-pulse rounded-full bg-red-500 opacity-75" />
           <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />

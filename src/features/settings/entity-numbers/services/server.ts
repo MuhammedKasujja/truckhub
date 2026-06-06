@@ -16,5 +16,5 @@ export async function getEntityNumberPatterns() {
 export async function updateEntityNumberPatterns(
   data: EntityNumberUpdateRequest[]
 ) {
-  return apiClient.postFn<EntityNumberPattern[]>(endpoint, data)
+  return apiClient.putFn<EntityNumberPattern[]>(endpoint, data)
 }
