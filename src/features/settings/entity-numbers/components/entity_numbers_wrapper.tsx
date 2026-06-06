@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { updateEntityNumberPatternsFn } from "../services"
 import { toast } from "sonner"
 import { EntityPatternSettings } from "./entity_pattern_settings"
-import { ENTITY_NUMBER_PATTERNS } from "@/common/constants"
+import { NUMBERING_ENTITIES } from "@/common/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -33,7 +33,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
     return !!dirtyFields?.entities?.[key]
   }
 
-  const tabKeys = ENTITY_NUMBER_PATTERNS.filter(
+  const tabKeys = NUMBERING_ENTITIES.filter(
     // make sure only allowed entities are displayed
     (key): key is NumberingEntityKey => key in entities
   )
