@@ -1,31 +1,31 @@
 import type { Column, Table } from "@tanstack/react-table";
 import {
-  BaselineIcon,
-  CalendarIcon,
-  CheckSquareIcon,
   File,
-  FileArchive,
-  FileAudio,
   FileIcon,
-  FileImage,
-  FileSpreadsheet,
   FileText,
-  FileVideo,
   HashIcon,
   LinkIcon,
-  ListChecksIcon,
   ListIcon,
+  FileAudio,
+  FileImage,
+  FileVideo,
+  FileArchive,
+  BaselineIcon,
+  CalendarIcon,
   Presentation,
+  ListChecksIcon,
+  CheckSquareIcon,
+  FileSpreadsheet,
   TextInitialIcon,
 } from "lucide-react";
 import type * as React from "react";
 import type {
   CellOpts,
-  CellPosition,
   Direction,
+  CellPosition,
   FileCellData,
   RowHeightValue,
-} from "@/components/data-grid/data-grid";
+} from "@/types/data-grid";
 
 export function flexRender<TProps extends object>(
   Comp: ((props: TProps) => React.ReactNode) | string | undefined,

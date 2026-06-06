@@ -222,6 +222,12 @@ class QueryInvalidator {
           }),
       }),
     },
+    numberPatterns: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.numberPatterns.list(),
+        }),
+    },
   }
 
   drivers = {

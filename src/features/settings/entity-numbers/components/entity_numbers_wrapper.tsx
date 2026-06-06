@@ -11,13 +11,19 @@ import { toast } from "sonner"
 import { EntityPatternSettings } from "./entity_pattern_settings"
 import { NUMBERING_ENTITIES } from "@/common/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type EntityNumbersWrapperProps = {
   patterns: NumberingPatternType
 }
 
 export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
+  const queryInvalidator = useQueryInvalidator()
   const form = useForm<NumberingPatternType>({
     resolver: zodResolver(NumberingPatternSchema),
     defaultValues: { entities: patterns.entities },
@@ -38,11 +44,14 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
     (key): key is NumberingEntityKey => key in entities
   )
 
-  async function onSubmit(data: NumberingPatternType) {
-    const { message, error } = await updateEntityNumberPatternsFn({ data })
+  async function onSubmit(updates: NumberingPatternType) {
+    const { data, message, error } = await updateEntityNumberPatternsFn({
+      data: updates,
+    })
     if (message) {
       toast.success(message)
-      form.reset()
+      form.reset(data)
+      queryInvalidator.settings.numberPatterns.invalidate()
     }
     if (error) {
       toast.error(error.message)
@@ -82,9 +91,7 @@ function DirtyDot() {
           <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
         </span>
       </TooltipTrigger>
-      <TooltipContent>
-        Changed
-      </TooltipContent>
+      <TooltipContent>Changed</TooltipContent>
     </Tooltip>
   )
 }

@@ -16,6 +16,7 @@ import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
 import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
 import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-types/query-options"
 import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query-options"
+import { entityNumberPattensQueryKeys } from "@/features/settings/entity-numbers/query-options"
 
 export const queryKeys = {
   dashboard: dashboardQueryKeys,
@@ -31,6 +32,7 @@ export const queryKeys = {
   tonnages: tonnageQueryKeys,
   vehiclesTypes: vehicleTypesQueryKeys,
   services: serviceQueryKeys,
+  numberPatterns: entityNumberPattensQueryKeys,
 
   settings: {
     app: () => settingsQueryKeys.list(),
