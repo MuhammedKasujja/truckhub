@@ -1,13 +1,28 @@
 import { createServerFn } from "@tanstack/react-start"
-import { updateEntityNumberPatternSchema } from "../schemas"
+import { NumberingPatternSchema, NumberingPatternType } from "../schemas"
 import { getEntityNumberPatterns, updateEntityNumberPatterns } from "./server"
 
-export const getEntityNumberPatternsFn = createServerFn().handler(() => {
-  return getEntityNumberPatterns()
+export const getEntityNumberPatternsFn = createServerFn().handler(async () => {
+  const { data, error } = await getEntityNumberPatterns()
+  const defaultValues: NumberingPatternType = {
+    entities: (data ?? []).reduce(
+      (acc, item) => {
+        acc[item.entity_name] = {
+          id: item.id,
+          pattern: item.pattern,
+          counter_padding: item.counter_padding,
+          last_number: item.last_number,
+        }
+        return acc
+      },
+      {} as Record<string, any>
+    ),
+  }
+  return { data: defaultValues, error }
 })
 
 export const updateEntityNumberPatternsFn = createServerFn({ method: "POST" })
-  .inputValidator(updateEntityNumberPatternSchema)
+  .inputValidator(NumberingPatternSchema)
   .handler(({ data }) => {
     return updateEntityNumberPatterns(data)
   })
