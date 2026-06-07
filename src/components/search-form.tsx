@@ -86,9 +86,9 @@ export function SearchForm({ ...props }: React.ComponentProps<"div">) {
                 </ItemContent>
               </Item>
             ))}
-          <DialogFooter>
+          <DialogFooter className="py-1.5 flex justify-start">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button variant="outline" size={'xs'}>Esc</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

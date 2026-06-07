@@ -7,7 +7,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
 import { useTheme } from "./theme/provider"
 
-export function PdfViewer({ pdfUrl }: { pdfUrl: string }) {
+export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
   const [fileUrl] = useState(pdfUrl)
   const defaultLayoutPluginInstance = defaultLayoutPlugin()
   const theme = useTheme()
@@ -16,7 +16,7 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string }) {
       <Worker workerUrl="/pdf.worker.min.mjs">
         <Viewer
           fileUrl={fileUrl}
-          plugins={[defaultLayoutPluginInstance]}
+          // plugins={[defaultLayoutPluginInstance]}
           theme={theme}
           defaultScale={1} // 1 = 100%
         />
