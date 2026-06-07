@@ -67,7 +67,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
                     <TableCell className="font-medium">
                       {payment.number}
                     </TableCell>
-                    <TableCell>{payment.customer.fullname}</TableCell>
+                    <TableCell>{payment.client.fullname}</TableCell>
                     <TableCell>{formatPrice(payment.amount)}</TableCell>
                     <TableCell>
                       <Badge variant={"outline"}>

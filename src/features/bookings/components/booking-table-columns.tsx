@@ -32,16 +32,16 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
     {
       accessorKey: "customer",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} label="Customer" />
+        <DataTableColumnHeader column={column} label="Client" />
       ),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
             <Link
               to={`/clients/$clientId/view`}
-              params={{ clientId: row.original.customer.id }}
+              params={{ clientId: row.original.client.id }}
             >
-              {row.original.customer.fullname}
+              {row.original.client.fullname}
             </Link>
           </Button>
         )

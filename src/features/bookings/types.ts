@@ -31,7 +31,7 @@ export type Booking = {
   discount: number;
   amount: number;
   services: BookingServiceItem[];
-  customer: BookingCustomer;
+  client: BookingCustomer;
 };
 
 export type BookingDetails = {
@@ -47,7 +47,7 @@ export type BookingDetails = {
   discount: number;
   amount: number;
   services: BookingServiceItem[];
-  customer: BookingCustomer;
+  client: BookingCustomer;
   payments: Payment[];
 };
 

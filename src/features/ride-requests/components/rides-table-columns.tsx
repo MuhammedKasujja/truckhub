@@ -51,9 +51,9 @@ export function getRideRequestTableColumns(tr: TFunction): ColumnDef<RideRequest
           <Button variant={"link"} asChild>
             <Link
               to={`/clients/$clientId/view`}
-              params={{ clientId: row.original.customer.id }}
+              params={{ clientId: row.original.client.id }}
             >
-              {row.original.customer.fullname}
+              {row.original.client.fullname}
             </Link>
           </Button>
         )

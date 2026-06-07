@@ -67,7 +67,7 @@ export function RecentRidesTable({ rides }: RecentRideTableProps) {
                   <TableRow key={`ride-${ride.id.toString()}`}>
                     <TableCell className="font-medium">{ride.number}</TableCell>
                     <TableCell className="font-medium">
-                      {ride.customer.fullname}
+                      {ride.client.fullname}
                     </TableCell>
                     <TableCell>
                       <Badge variant={"outline"}>{tr(`rides.statues.${ride.status}`)}</Badge>

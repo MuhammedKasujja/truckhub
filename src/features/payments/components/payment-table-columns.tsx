@@ -79,7 +79,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       id: "customer",
       header: tr("client"),
       cell: ({ row }) => {
-        return <p>{row.original.customer.fullname}</p>
+        return <p>{row.original.client.fullname}</p>
       },
     },
     {

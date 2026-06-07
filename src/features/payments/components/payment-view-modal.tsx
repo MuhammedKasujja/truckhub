@@ -40,9 +40,9 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
               <CardTitle>{tr("payments.customer")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div>{payment.customer.fullname}</div>
-              <div>{payment.customer.email}</div>
-              <div>{payment.customer.phone}</div>
+              <div>{payment.client.fullname}</div>
+              <div>{payment.client.email}</div>
+              <div>{payment.client.phone}</div>
             </CardContent>
           </Card>
           <Card>

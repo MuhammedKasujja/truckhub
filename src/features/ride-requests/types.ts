@@ -29,7 +29,7 @@ export type RideRequest = {
   balance: number;
   discount: number;
   amount: number;
-  customer: Passenger;
+  client: Passenger;
   driver: Driver | undefined;
   type: RideType;
 };
@@ -50,7 +50,7 @@ export type RideRequestDetails = {
   duration: number;
   amount: number;
   is_paid: number;
-  customer: Passenger;
+  client: Passenger;
   driver: Driver | undefined;
   type: RideType;
   checkpoints: LocationData[];

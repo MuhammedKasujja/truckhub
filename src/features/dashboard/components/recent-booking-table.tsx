@@ -65,7 +65,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                     <TableCell className="font-medium">
                       {booking.number}
                     </TableCell>
-                    <TableCell>{booking.customer.fullname}</TableCell>
+                    <TableCell>{booking.client.fullname}</TableCell>
                     <TableCell>
                       <Badge variant={"outline"}>{booking.status}</Badge>
                     </TableCell>

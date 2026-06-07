@@ -87,7 +87,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
             {formatDate(booking.return_time)}
           </CardFooter>
         </Card>
-        <BookingClientWidget client={booking.customer} />
+        <BookingClientWidget client={booking.client} />
       </div>
       <div className="grid gap-4 md:grid-flow-col">
         <BookingServiceList services={booking.services ?? []} />

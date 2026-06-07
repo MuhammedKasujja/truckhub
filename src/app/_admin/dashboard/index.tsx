@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router"
 import {
   Stat,
   StatIndicator,
@@ -21,9 +21,12 @@ import { CalendarDatePicker } from "@/components/calendar-date-picker"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
+  // errorComponent: ErrorComponent,
   loader: async ({ context }) =>
     context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })
+
+
 
 function RouteComponent() {
   const { data } = Route.useLoaderData()
@@ -82,7 +85,7 @@ function RouteComponent() {
 
         <Stat>
           <StatLabel>Customers</StatLabel>
-          <StatValue>{data.statistics.customers.total}</StatValue>
+          <StatValue>{data.statistics.clients.total}</StatValue>
           <StatIndicator variant="badge" color="info">
             +24
           </StatIndicator>
