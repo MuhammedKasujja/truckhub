@@ -1,3 +1,4 @@
+import { REPORT_TEMPLATES, ReportTemplate } from "@/common/constants"
 import { PdfViewer } from "@/components/pdf-viewer"
 import {
   Select,
@@ -8,32 +9,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useEffect, useState } from "react"
+import { generateReportTemplatePdfFn } from "../services"
 
-const templates = [
-  "invoice",
-  "quotation",
-  "log_sheet",
-  "booking",
-  "ride",
-  "payment",
-  "client_statement",
-  "driver",
-  "vehicle",
-] as const
-
-export function PdfTemplatesWrapper() {
-  const [template, setTemplate] = useState<string>("invoice")
+export function ReportPdfTemplatesWrapper() {
+  const [template, setTemplate] = useState<ReportTemplate>("invoice")
   const [pageData, setPageData] = useState<Uint8Array>()
 
   useEffect(() => {
     setPageData(undefined)
     const loadPdf = async () => {
-      const response = await fetch(
-        `http://127.0.0.1:8000/v1/reports/templates/${template}/download`
-      )
-
+      const response = await generateReportTemplatePdfFn({ data: { template } })
       const buffer = await response.arrayBuffer()
-
       setPageData(new Uint8Array(buffer))
     }
 
@@ -46,13 +32,16 @@ export function PdfTemplatesWrapper() {
 
   return (
     <div className="space-y-5">
-      <Select value={template} onValueChange={setTemplate}>
+      <Select
+        value={template}
+        onValueChange={(val) => setTemplate(val as ReportTemplate)}
+      >
         <SelectTrigger className="w-52">
           <SelectValue placeholder="Select Role" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {templates.map((temp) => (
+            {REPORT_TEMPLATES.map((temp) => (
               <SelectItem key={temp} value={temp}>
                 {temp}
               </SelectItem>

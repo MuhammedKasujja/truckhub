@@ -19,3 +19,17 @@ export const ENTITY_NUMBER_PATTERNS: Record<EntityWithPatterns, string[]> = {
   Vehicle: ["{counter}", "{year}", "{date}", "{month}"],
   User: ["{counter}", "{year}", "{date}", "{month}"],
 }
+
+export const REPORT_TEMPLATES = [
+  "invoice",
+  "quotation",
+  "log_sheet",
+  "client_statement",
+  "booking",
+  "ride",
+  "payment",
+  "driver",
+  "vehicle",
+] as const
+
+export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]
