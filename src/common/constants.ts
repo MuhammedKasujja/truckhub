@@ -11,7 +11,7 @@ export const NUMBERING_ENTITIES = [
 export type EntityWithPatterns = (typeof NUMBERING_ENTITIES)[number]
 
 export const ENTITY_NUMBER_PATTERNS: Record<EntityWithPatterns, string[]> = {
-  Booking: ["{counter}", "{year}", "{date}", "{month}"],
+  Booking: ["{counter}", "{year}", "{date}", "{month}", "{client_short_name}"],
   RideRequest: ["{counter}", "{year}", "{date}", "{month}"],
   Payment: ["{counter}", "{year}", "{date}", "{month}"],
   Client: ["{counter}", "{year}", "{date}", "{month}"],

@@ -50,7 +50,7 @@ export function CreateEntityDialog() {
   })
 
   return (
-    <div className="flex flex-col gap-4">
+    <div>
       <Button onClick={() => setOpen(true)} variant="outline" size={"icon-xs"}>
         <PlusIcon />
       </Button>
