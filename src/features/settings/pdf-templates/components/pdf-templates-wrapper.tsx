@@ -13,7 +13,7 @@ import { generateReportTemplatePdfFn } from "../services"
 
 export function ReportPdfTemplatesWrapper() {
   const [template, setTemplate] = useState<ReportTemplate>("invoice")
-  const [pageData, setPageData] = useState<Uint8Array>()
+  const [pdfData, setPageData] = useState<Uint8Array>()
 
   // const { data: response } = useQuery(reportTemplatePdfQueryOptions(template))
 
@@ -28,7 +28,7 @@ export function ReportPdfTemplatesWrapper() {
     loadPdf()
   }, [template])
 
-  if (!pageData) {
+  if (!pdfData) {
     return <div>Loading pdf...</div>
   }
 
@@ -51,7 +51,7 @@ export function ReportPdfTemplatesWrapper() {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <PdfViewer pdfUrl={pageData} />
+      <PdfViewer pdfUrl={pdfData} />
     </div>
   )
 }

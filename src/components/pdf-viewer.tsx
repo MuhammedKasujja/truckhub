@@ -12,7 +12,7 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
   const defaultLayoutPluginInstance = defaultLayoutPlugin()
   const theme = useTheme()
   return (
-    <div style={{ height: "800px", width: "100%" }}>
+    <div style={{ height: "800px", width: "100%", border: '1px solid #ddd', marginTop: 16 }}>
       <Worker workerUrl="/pdf.worker.min.mjs">
         <Viewer
           fileUrl={fileUrl}

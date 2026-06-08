@@ -1,4 +1,3 @@
-import { logger } from "@/lib/logger"
 import { ReportTemplateSchema } from "../schemas"
 import { generateReportTemplatePdf } from "./server"
 import { createServerFn } from "@tanstack/react-start"
@@ -17,7 +16,7 @@ export const generateReportTemplatePdfFn = createServerFn({ method: "GET" })
         },
       })
     } catch (error: any) {
-      logger.error("PDF generation error:", error?.response?.data || error)
+      console.error("PDF generation error:", error?.response?.data || error)
       throw new Error(`Failed to generate PDF: ${error.message}`)
     }
   })

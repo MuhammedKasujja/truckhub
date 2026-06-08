@@ -16,10 +16,11 @@ export const reportTemplatePdfQueryOptions = (template: ReportTemplate) =>
       // const response = await generateReportTemplatePdfFn({ data: { template } })
 
       // // return await response.arrayBuffer()
-      // const buffer= await response.arrayBuffer()
+      // const buffer= await response.clone().blob()
       // return new Uint8Array(buffer)
 
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
+    retry: 1,
   })
