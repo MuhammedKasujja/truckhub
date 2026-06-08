@@ -15,6 +15,8 @@ export function ReportPdfTemplatesWrapper() {
   const [template, setTemplate] = useState<ReportTemplate>("invoice")
   const [pageData, setPageData] = useState<Uint8Array>()
 
+  // const { data: response } = useQuery(reportTemplatePdfQueryOptions(template))
+
   useEffect(() => {
     setPageData(undefined)
     const loadPdf = async () => {
