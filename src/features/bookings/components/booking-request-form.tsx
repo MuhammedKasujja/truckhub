@@ -141,7 +141,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
               <FieldGroup className="pb-5">
                 <AutoCompleteField
                   label={tr("client")}
-                  name={"customer_id"}
+                  name={"client_id"}
                   control={control}
                   options={(clientsResponse?.data ?? [])?.map((ele) => ({
                     label: ele.name,

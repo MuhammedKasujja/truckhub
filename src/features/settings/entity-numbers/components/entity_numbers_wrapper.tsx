@@ -59,7 +59,9 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={form.handleSubmit(onSubmit, (errors)=>{
+      console.error(errors)
+    })} className="space-y-5">
       <Tabs defaultValue={tabKeys[0]}>
         <TabsList>
           {tabKeys.map((entity) => (

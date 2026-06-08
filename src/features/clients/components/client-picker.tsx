@@ -7,7 +7,7 @@ export function ClientPicker() {
     <div className="flex gap-4">
       <AutoCompleteField
         label={"Client"}
-        name={"customer_id"}
+        name={"client_id"}
         control={form.control}
         options={(clientsResponse?.data ?? []).map((ele) => ({
           label: ele.name,

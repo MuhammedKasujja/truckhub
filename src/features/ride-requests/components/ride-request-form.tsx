@@ -83,7 +83,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
             <FieldGroup className="pb-6">
               <AutoCompleteField
                 label={tr("common.passenger")}
-                name={"customer_id"}
+                name={"client_id"}
                 control={form.control}
                 options={(clientsResponse?.data ?? []).map((ele) => ({
                   label: ele.name,
@@ -96,7 +96,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
               >
                 control={form.control}
                 label={tr("common.passenger")}
-                name={"customer_id"}
+                name={"client_id"}
                 fetcher={async (_) => {
                   return passengers;
                 }}

@@ -13,7 +13,7 @@ export const ServiceItem = z.object({
 })
 
 export const BookingCreateSchema = z.object({
-  customer_id: IDSchema,
+  client_id: IDSchema,
   partial: z.number().optional().nullable(),
   discount: z.number().optional().nullable(),
   pickup_time: z.date(),

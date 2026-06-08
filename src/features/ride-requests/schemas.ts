@@ -28,7 +28,7 @@ export const CheckpointSchema = z.object({
 
 export const RideRequestCreateSchema = z.object({
   service_id: IDSchema,
-  customer_id: IDSchema,
+  client_id: IDSchema,
   driver_id: IDSchema.optional().nullable(),
   pickup_location: LocationSchema,
   destination_location: LocationSchema,
