@@ -59,9 +59,12 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit, (errors)=>{
-      console.error(errors)
-    })} className="space-y-5">
+    <form
+      onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        console.error(errors)
+      })}
+      className="space-y-5"
+    >
       <Tabs defaultValue={tabKeys[0]}>
         <TabsList>
           {tabKeys.map((entity) => (
@@ -78,7 +81,10 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
         ))}
       </Tabs>
       <div className="flex justify-end">
-        <SubmitButton isSubmitting={form.formState.isSubmitting} />
+        <SubmitButton
+          isSubmitting={form.formState.isSubmitting}
+          disabled={!!dirtyFields?.entities === false}
+        />
       </div>
     </form>
   )

@@ -40,6 +40,12 @@ import {
   CommandShortcut,
 } from "@/components/ui/command"
 import { useHotkey } from "@tanstack/react-hotkeys"
+import { Route as BookingCreate } from "@/app/_admin/bookings/new"
+import { Route as ClientCreate } from "@/app/_admin/clients/new"
+import { Route as DriverCreate } from "@/app/_admin/drivers/new"
+import { Route as ServiceCreate } from "@/app/_admin/services/new"
+import { Route as VehicleCreate } from "@/app/_admin/vehicles/new"
+import { Route as RideCreate } from "@/app/_admin/rides/new"
 
 export function CreateEntityDialog() {
   const [open, setOpen] = React.useState(false)
