@@ -3,6 +3,7 @@
 import * as apiClient from "@/lib/api-client"
 import { SystemUser } from "@/features/users/types"
 import {
+  UserAssignRolesType,
   UserCreateSchemaType,
   UserListSearchParams,
   UserUpdateSchemaType,
@@ -59,6 +60,11 @@ export async function updateUser(data: Partial<UserUpdateSchemaType>) {
 
 export async function createUser(data: UserCreateSchemaType) {
   return await apiClient.postFn<SystemUser>("/v1/users", data)
+}
+
+export async function userAssignRoles(data: UserAssignRolesType) {
+  const { user_id, roles } = data
+  return await apiClient.postFn<SystemUser>(`/v1/users/${user_id}/roles`, roles)
 }
 
 // export async function editUser(

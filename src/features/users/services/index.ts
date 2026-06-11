@@ -2,6 +2,7 @@ import {
   UserCreateSchema,
   UserUpdateSchema,
   UserSearchParamsCache,
+  UserAssignRolesSchema,
 } from "@/features/users/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import {
@@ -10,6 +11,7 @@ import {
   updateUser,
   deleteUserById,
   getUsersByQuery,
+  userAssignRoles,
   getUserProfileById,
 } from "./server"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -52,4 +54,10 @@ export const createUserFn = createServerFn({ method: "POST" })
   .inputValidator(UserCreateSchema)
   .handler(async ({ data }) => {
     return createUser(data)
+  })
+
+export const userAssignRolesFn = createServerFn({ method: "POST" })
+  .inputValidator(UserAssignRolesSchema)
+  .handler(({ data }) => {
+    return userAssignRoles(data)
   })

@@ -14,8 +14,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
-import { DataTableRowAction } from "@/types/data-table"
-import { SystemUser } from "../types"
+import { UserDataTableRowAction } from "../types"
 import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
 
 export function UserTable() {
@@ -26,7 +25,7 @@ export function UserTable() {
   } = useSuspenseQuery(usersQueryOprions(search))
 
   const [rowAction, setRowAction] =
-    React.useState<DataTableRowAction<SystemUser> | null>(null)
+    React.useState<UserDataTableRowAction | null>(null)
 
   const columns = React.useMemo(() => getUserTableColumns({ setRowAction }), [])
 
@@ -60,10 +59,11 @@ export function UserTable() {
           <DataTableSortList table={table} align="end" />
         </DataTableToolbar>
       </DataTable>
-      {/* Assign User roles  Dialog*/}
+      {/* Assign User roles  Dialog */}
       <UserAssignRolesDialog
+        key={rowAction?.row.original.id} // Force rebuild whenever the user changes
         user={rowAction?.row.original}
-        open={rowAction?.variant === "update"}
+        open={rowAction?.variant === "assign-permissions"}
         onOpenChange={() => setRowAction(null)}
       />
     </>

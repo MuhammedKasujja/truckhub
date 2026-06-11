@@ -17,6 +17,8 @@ import z from "zod"
 import { UserAssignRolesSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslation } from "@/i18n"
+import { toast } from "sonner"
+import { userAssignRolesFn } from "../services"
 
 type Props = {
   user?: SystemUser
@@ -31,15 +33,42 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
 
   const form = useForm<z.infer<typeof UserAssignRolesSchema>>({
     resolver: zodResolver(UserAssignRolesSchema),
-    defaultValues: {},
+    defaultValues: {
+      user_id: user?.id,
+      roles: (user?.roles ?? []).map((role) => role.id),
+    },
   })
 
-  async function onSubmit(data: z.infer<typeof UserAssignRolesSchema>) {}
+  // Force rebuild whenever the user changes if no key is used in the parent component
+  //   useEffect(() => {
+  //     if (user) {
+  //       form.reset({
+  //         user_id: user?.id,
+  //         roles: (user?.roles ?? []).map((role) => role.id),
+  //       })
+  //     }
+  //   }, [user, form])
+
+  async function onSubmit(data: z.infer<typeof UserAssignRolesSchema>) {
+    const { message, error } = await userAssignRolesFn({ data })
+
+    if (message) {
+      toast.success(message)
+    }
+    if (error) {
+      toast.error(error.message)
+    }
+  }
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            console.error(errors)
+          })}
+          className="space-y-4"
+        >
           <DialogHeader>
             <DialogTitle>{`Edit roles for * ${user?.name}`}</DialogTitle>
             <DialogDescription>
@@ -48,9 +77,14 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
           </DialogHeader>
           <div className="flex items-center gap-2">
             <HiddenField control={form.control} name={"user_id"} />
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-wrap gap-2">
               {(data ?? [])?.map((role) => (
-                <Button type="button" variant={"outline"}>
+                <Button
+                  key={role.id}
+                  type="button"
+                  variant={"outline"}
+                  onClick={() => form.setValue("roles", [role.id])}
+                >
                   {role.name}
                 </Button>
               ))}

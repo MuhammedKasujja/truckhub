@@ -19,6 +19,7 @@ export type SystemUser = {
   }[]
 }
 
-export interface UserDataTableRowAction extends DataTableRowAction<SystemUser>{
-  
-}
+export interface UserDataTableRowAction extends DataTableRowAction<
+  SystemUser,
+  "update" | "delete" | "assign-permissions"
+> {}

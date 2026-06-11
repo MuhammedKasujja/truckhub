@@ -2,7 +2,7 @@ import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
 import { deleteUserFn } from "@/features/users/services"
-import { SystemUser } from "@/features/users/types"
+import { SystemUser, UserDataTableRowAction } from "@/features/users/types"
 import { ColumnDef } from "@tanstack/react-table"
 import {
   EditIcon,
@@ -22,11 +22,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { DataTableRowAction } from "@/types/data-table"
+import { Badge } from "@/components/ui/badge"
 
 interface GetUserTableColumnsProps {
   setRowAction: React.Dispatch<
-    React.SetStateAction<DataTableRowAction<SystemUser> | null>
+    React.SetStateAction<UserDataTableRowAction | null>
   >
 }
 
@@ -62,6 +62,19 @@ export function getUserTableColumns({
       header: "Phone",
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
+      },
+    },
+    {
+      id: "roles",
+      header: "Roles",
+      cell: ({ row }) => {
+        return (
+          <p className="flex gap-0.5">
+            {row.original.roles.map((role) => (
+              <Badge variant={"outline"}>{role.name}</Badge>
+            ))}
+          </p>
+        )
       },
     },
     {
@@ -107,7 +120,9 @@ export function getUserTableColumns({
                 </Can>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => setRowAction({ row, variant: "update" })}
+                  onSelect={() =>
+                    setRowAction({ row, variant: "assign-permissions" })
+                  }
                 >
                   <SettingsIcon />
                   Assign Roles
