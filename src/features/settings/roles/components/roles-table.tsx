@@ -39,7 +39,7 @@ export function RolesTable() {
           <RoleEditForm />
         </Can>
       </div>
-      <DataTable table={table} />
+      <DataTable table={table} showPagination={false}/>
     </div>
   )
 }

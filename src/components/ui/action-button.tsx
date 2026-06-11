@@ -14,7 +14,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTrigger,
+  AlertDialogMedia,
 } from "@/components/ui/alert-dialog"
+import { Trash2Icon } from "lucide-react"
 
 export function ActionButton({
   action,
@@ -41,17 +43,20 @@ export function ActionButton({
         <AlertDialogTrigger asChild>
           <Button {...props} />
         </AlertDialogTrigger>
-        <AlertDialogContent>
+        <AlertDialogContent size="sm">
           <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+              <Trash2Icon />
+            </AlertDialogMedia>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               {areYouSureDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction disabled={isLoading} onClick={performAction}>
-              <LoadingSwap isLoading={isLoading}>Yes</LoadingSwap>
+            <AlertDialogCancel variant={'outline'}>Cancel</AlertDialogCancel>
+            <AlertDialogAction disabled={isLoading} onClick={performAction} variant="destructive">
+              <LoadingSwap isLoading={isLoading}>Delete</LoadingSwap>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -63,7 +68,7 @@ export function ActionButton({
     <Button
       {...props}
       disabled={props.disabled ?? isLoading}
-      onClick={e => {
+      onClick={(e) => {
         performAction()
         props.onClick?.(e)
       }}
