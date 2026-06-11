@@ -100,7 +100,7 @@ export function PermissionsWrapper() {
 
   function handleRoleChanged(roleId: string) {
     setRoleId(roleId)
-    const selectedRole = (data?.data ?? []).find((role) => role.id === roleId)
+    const selectedRole = (data ?? []).find((role) => role.id === roleId)
     if (selectedRole) {
       setSelectedPermissions(new Set<string>(selectedRole.permissions))
     }
@@ -115,7 +115,7 @@ export function PermissionsWrapper() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {(data?.data ?? []).map((opt) => (
+              {(data ?? []).map((opt) => (
                 <SelectItem key={opt.id} value={opt.id}>
                   {opt.name}
                 </SelectItem>

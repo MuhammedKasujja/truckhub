@@ -12,10 +12,13 @@ import {
   deleteRoleById,
 } from "./server"
 
-export const getRolesFn = createServerFn()
-  .handler(async () => {
-    return await getRoles()
-  })
+export const getRolesFn = createServerFn().handler(async () => {
+  const { data, error } = await getRoles()
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+})
 
 export const getRoleFn = createServerFn()
   .inputValidator(EntityIdSchema)

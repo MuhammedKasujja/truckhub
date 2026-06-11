@@ -14,6 +14,9 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
+import { DataTableRowAction } from "@/types/data-table"
+import { SystemUser } from "../types"
+import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
 
 export function UserTable() {
   const search = useSearch({ from: "/_admin/settings/user-management/users/" })
@@ -22,7 +25,10 @@ export function UserTable() {
     error,
   } = useSuspenseQuery(usersQueryOprions(search))
 
-  const columns = React.useMemo(() => getUserTableColumns(), [])
+  const [rowAction, setRowAction] =
+    React.useState<DataTableRowAction<SystemUser> | null>(null)
+
+  const columns = React.useMemo(() => getUserTableColumns({ setRowAction }), [])
 
   useFetchEror(error)
 
@@ -40,28 +46,30 @@ export function UserTable() {
   })
 
   return (
-    <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <Can permission="users:create">
-          <Button asChild>
-            <Link to={"/settings/user-management/users/new"}>
-              <PlusIcon />
-              Add User
-            </Link>
-          </Button>
-        </Can>
-        <DataTableSortList table={table} align="end" />
-      </DataTableToolbar>
-    </DataTable>
+    <>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <Can permission="users:create">
+            <Button asChild>
+              <Link to={"/settings/user-management/users/new"}>
+                <PlusIcon />
+                Add User
+              </Link>
+            </Button>
+          </Can>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar>
+      </DataTable>
+      {/* Assign User roles  Dialog*/}
+      <UserAssignRolesDialog
+        user={rowAction?.row.original}
+        open={rowAction?.variant === "update"}
+        onOpenChange={() => setRowAction(null)}
+      />
+    </>
   )
 }
 
 export function UserTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getUserTableColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={5} filterCount={1} shrinkZero />
 }

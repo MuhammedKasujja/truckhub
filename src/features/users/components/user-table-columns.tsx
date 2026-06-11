@@ -22,8 +22,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { DataTableRowAction } from "@/types/data-table"
 
-export function getUserTableColumns(): ColumnDef<SystemUser>[] {
+interface GetUserTableColumnsProps {
+  setRowAction: React.Dispatch<
+    React.SetStateAction<DataTableRowAction<SystemUser> | null>
+  >
+}
+
+export function getUserTableColumns({
+  setRowAction,
+}: GetUserTableColumnsProps): ColumnDef<SystemUser>[] {
   return [
     {
       accessorKey: "name",
@@ -97,7 +106,9 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
                   </DropdownMenuItem>
                 </Can>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => setRowAction({ row, variant: "update" })}
+                >
                   <SettingsIcon />
                   Assign Roles
                 </DropdownMenuItem>

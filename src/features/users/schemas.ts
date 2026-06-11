@@ -30,3 +30,10 @@ export const UserSearchParamsCache = z.object({
 })
 
 export type UserListSearchParams = z.infer<typeof UserSearchParamsCache>
+
+export const UserAssignRolesSchema = z.object({
+  user_id: IDSchema,
+  roles: z.array(IDSchema).min(1, "Required"),
+})
+
+export type UserAssignRolesType = z.infer<typeof UserAssignRolesSchema>
