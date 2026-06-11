@@ -1,5 +1,5 @@
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
-import { Field, FieldLabel } from "@/components/ui/field"
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
 import { MultiSelect, MultiSelectOption } from "@/components/multi-select"
 
@@ -21,6 +21,7 @@ export function MultiSelectField<T extends FieldValues>({
   control,
   placeholder,
   options,
+  description,
 }: MultiSelectFieldProps<T>) {
   return (
     <Controller
@@ -41,8 +42,11 @@ export function MultiSelectField<T extends FieldValues>({
             animationConfig={{
               badgeAnimation: "none",
               popoverAnimation: "none",
+              optionHoverAnimation: "none"
             }}
           />
+          {description && <FieldDescription>{description}</FieldDescription>}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}
     />
