@@ -11,6 +11,7 @@ import { EmailField, PasswordField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { LoginSchema } from "@/features/auth/schemas"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { checkUserModuleAccess } from "../utils"
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -23,11 +24,13 @@ export function LoginForm() {
   })
 
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
-    const { isSuccess, error } = await loginFn({ data: values })
-    if (isSuccess) {
+    const { isSuccess, error, data } = await loginFn({ data: values })
+    if (isSuccess && data) {
       toast.success(`${tr("login_successfully")}`)
-      queryInvalidator.auth.invalidate()
-      navigate({ to: "/dashboard", replace: true })
+      queryInvalidator.session.refresh()
+      const { url, replace } = await checkUserModuleAccess()
+
+      navigate({ to: url, replace })
     } else {
       toast.error(error!.message)
     }

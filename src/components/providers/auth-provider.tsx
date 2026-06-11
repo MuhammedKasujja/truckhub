@@ -2,7 +2,7 @@
 
 import { UserPermission } from "@/features/auth/permissions";
 import { User } from "@/features/auth/types";
-import { hasPermission as checkPermission } from "@/lib/permissions";
+import { checkUserPermission } from "@/lib/permissions";
 import { createContext, useContext, useState, type ReactNode } from "react";
 
 const AuthContext = createContext<{
@@ -21,7 +21,7 @@ export function AuthProvider({
 
   const [user] = useState(value); // can later add refresh logic if needed
 
-  const hasPermission = checkPermission(user);
+  const hasPermission = checkUserPermission(user);
 
   return (
     <AuthContext.Provider value={{ user, hasPermission }}>

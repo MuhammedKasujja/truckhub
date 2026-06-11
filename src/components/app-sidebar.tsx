@@ -34,6 +34,77 @@ import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { getModuleIcon } from "@/components/icons"
 
+export const sibebarModules = [
+  {
+    title: "routes.dashboard",
+    url: DashboardRoute.to,
+    icon: getModuleIcon("Dashboard"),
+    permission: "bookings:view",
+  },
+  {
+    title: "routes.rides",
+    url: RidesRoute.to,
+    icon: getModuleIcon("Rides"),
+    permission: "rides:view",
+  },
+  {
+    title: "routes.bookings",
+    url: BookingsRoute.to,
+    icon: getModuleIcon("Bookings"),
+    permission: "bookings:view",
+  },
+  {
+    title: "routes.payments",
+    url: PaymentsRoute.to,
+    icon: getModuleIcon("Payments"),
+    permission: "payments:view",
+  },
+  {
+    title: "routes.services",
+    url: ServicesRoute.to,
+    icon: getModuleIcon("Services"),
+    permission: "services:view",
+  },
+  {
+    title: "routes.clients",
+    url: ClientsRoute.to,
+    icon: getModuleIcon("Clients"),
+    permission: "clients:view",
+  },
+  {
+    title: "routes.drivers",
+    url: DriversRoute.to,
+    icon: getModuleIcon("Drivers"),
+    permission: "drivers:view",
+  },
+  {
+    title: "routes.vehicles",
+    url: VehiclesRoute.to,
+    icon: getModuleIcon("Vehicles"),
+    permission: "vehicles:view",
+  },
+  {
+    title: "routes.users",
+    url: UsersRoute.to,
+    icon: getModuleIcon("Users"),
+    permission: "users:view",
+  },
+  {
+    title: "routes.reports",
+    url: ReportsRoute.to,
+    icon: getModuleIcon("Reports"),
+    permission: "config:view",
+  },
+  {
+    title: "routes.settings",
+    url: SettingsDefaultRoute.to,
+    icon: getModuleIcon("Settings"),
+    permission: "config:view",
+  },
+] as const
+
+// type SidebarItem = (typeof sibebarModules)[number]
+
 type SidebarItem = {
   title: GlobalKeys
   url: string
@@ -48,74 +119,7 @@ type SidebarMenuStruct = {
 
 const data: SidebarMenuStruct = {
   versions: ["1.0.1"],
-  items: [
-    {
-      title: "routes.dashboard",
-      url: DashboardRoute.to,
-      icon: getModuleIcon("Dashboard"),
-      permission: "bookings:view",
-    },
-    {
-      title: "routes.rides",
-      url: RidesRoute.to,
-      icon: getModuleIcon("Rides"),
-      permission: "rides:view",
-    },
-    {
-      title: "routes.bookings",
-      url: BookingsRoute.to,
-      icon: getModuleIcon("Bookings"),
-      permission: "bookings:view",
-    },
-    {
-      title: "routes.payments",
-      url: PaymentsRoute.to,
-      icon: getModuleIcon("Payments"),
-      permission: "payments:view",
-    },
-    {
-      title: "routes.services",
-      url: ServicesRoute.to,
-      icon: getModuleIcon("Services"),
-      permission: "services:view",
-    },
-    {
-      title: "routes.clients",
-      url: ClientsRoute.to,
-      icon: getModuleIcon("Clients"),
-      permission: "clients:view",
-    },
-    {
-      title: "routes.drivers",
-      url: DriversRoute.to,
-      icon: getModuleIcon("Drivers"),
-      permission: "drivers:view",
-    },
-    {
-      title: "routes.vehicles",
-      url: VehiclesRoute.to,
-      icon: getModuleIcon("Vehicles"),
-      permission: "vehicles:view",
-    },
-    {
-      title: "routes.users",
-      url: UsersRoute.to,
-      icon: getModuleIcon("Users"),
-      permission: "users:view",
-    },
-    {
-      title: "routes.reports",
-      url: ReportsRoute.to,
-      icon: getModuleIcon("Reports"),
-      permission: "config:view",
-    },
-    {
-      title: "routes.settings",
-      url: SettingsDefaultRoute.to,
-      icon: getModuleIcon("Settings"),
-      permission: "config:view",
-    },
-  ],
+  items: sibebarModules,
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

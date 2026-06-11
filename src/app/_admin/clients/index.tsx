@@ -3,7 +3,7 @@ import {
   CustomerTable,
   CustomerTableSkeleton,
 } from "@/features/clients/components/customer-table"
-import { requirePermission } from "@/lib/auth"
+import { hasPermission } from "@/lib/auth"
 import {
   PageAction,
   PageBackButton,
@@ -18,7 +18,7 @@ import { clientsQueryOptions } from "@/features/clients/query-options"
 
 export const Route = createFileRoute("/_admin/clients/")({
   component: RouteComponent,
-  beforeLoad: () => requirePermission("clients:view"),
+  beforeLoad: () => hasPermission("clients:view"),
   pendingComponent: CustomerTableSkeleton,
   loader: ({ context, location }) =>
     context.queryClient.ensureQueryData(clientsQueryOptions(location.search)),

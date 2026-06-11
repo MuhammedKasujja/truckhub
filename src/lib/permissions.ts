@@ -4,7 +4,7 @@ import {
   KeyNamedPermissions,
 } from "@/features/auth/permissions";
 
-export function hasPermission(user: User) {
+export function checkUserPermission(user: User) {
   return (permission: UserPermission) => {
     if (user.is_admin) return true;
 

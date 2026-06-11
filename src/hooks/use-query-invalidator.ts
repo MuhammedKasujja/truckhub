@@ -17,6 +17,11 @@ class QueryInvalidator {
     /** `Clear all app Cached data after User login` */
     invalidate: () => this.queryClient.clear(),
   }
+  
+  session = {
+    /** `Clear all app Cached data after User login` */
+    refresh: () => this.queryClient.clear(),
+  }
 
   dashboard = {
     app: () =>
