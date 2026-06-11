@@ -52,7 +52,7 @@ export function UserForm({ initialData }: UserFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
-      queryInvalidator.users.list()
+      queryInvalidator.users.list.invalidate()
     } else {
       toast.error(error!.message)
     }

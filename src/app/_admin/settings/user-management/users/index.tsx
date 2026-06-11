@@ -7,7 +7,7 @@ import { usersQueryOprions } from "@/features/users/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { Suspense } from "react"
 
-export const Route = createFileRoute("/_admin/users/")({
+export const Route = createFileRoute("/_admin/settings/user-management/users/")({
   component: RouteComponent,
   loader: ({ context, location }) => {
     // prefetch data on the server and stream to client

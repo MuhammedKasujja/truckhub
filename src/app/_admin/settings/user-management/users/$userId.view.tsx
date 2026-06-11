@@ -1,12 +1,12 @@
-import { UserForm } from "@/features/users/components/user-form"
+import { UserDetailsWrapper } from "@/features/users/components/user-details-wrapper"
 import { userProfileQueryOptions } from "@/features/users/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { hasPermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_admin/users/$userId/edit")({
+export const Route = createFileRoute("/_admin/settings/user-management/users/$userId/view")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("users:edit"),
+  beforeLoad: () => hasPermission("users:view"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(userProfileQueryOptions(params.userId)),
 })
@@ -14,5 +14,5 @@ export const Route = createFileRoute("/_admin/users/$userId/edit")({
 function RouteComponent() {
   const { data: user, error } = Route.useLoaderData()
   useFetchEror(error)
-  return <UserForm initialData={user} />
+  return <UserDetailsWrapper user={user} />
 }

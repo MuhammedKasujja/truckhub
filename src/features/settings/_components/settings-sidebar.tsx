@@ -3,8 +3,6 @@ import {
   Bell,
   Globe,
   Home,
-  Keyboard,
-  Lock,
   Settings,
   FileText,
   ListOrdered,
@@ -12,6 +10,7 @@ import {
   Wallet,
   SquareSigma,
   SettingsIcon,
+  Users,
 } from "lucide-react"
 import {
   Sidebar,
@@ -26,12 +25,11 @@ import {
 import { Link, useLocation } from "@tanstack/react-router"
 import { Route as VehicleConfigDefaultRoute } from "@/app/_admin/settings/vehicle-config/car-brands"
 import { Route as CompanyDetailsRoute } from "@/app/_admin/settings/company-details"
-import { Route as PermissionsRoute } from "@/app/_admin/settings/permissions"
+import { Route as UsersRoute } from "@/app/_admin/settings/user-management/users"
 import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
 import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
 import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
-import { Route as RolesRoute } from "@/app/_admin/settings/roles"
 import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
 import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
 import {
@@ -62,14 +60,9 @@ const data = {
     { name: "Tax Rates", icon: SquareSigma, route: TaxRatesRoutes.to },
     // { name: "Privacy & visibility", icon: Lock },
     {
-      name: "Permissions",
-      icon: Lock,
-      route: PermissionsRoute.to,
-    },
-    {
-      name: "Roles",
-      icon: Keyboard,
-      route: RolesRoute.to,
+      name: "User Management",
+      icon: Users,
+      route: UsersRoute.to,
     },
     { name: "Notifications", icon: Bell },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },

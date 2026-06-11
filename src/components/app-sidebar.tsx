@@ -29,7 +29,6 @@ import { Route as ServicesRoute } from "@/app/_admin/services"
 import { Route as ClientsRoute } from "@/app/_admin/clients"
 import { Route as DriversRoute } from "@/app/_admin/drivers"
 import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
-import { Route as UsersRoute } from "@/app/_admin/users"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { getModuleIcon } from "@/components/icons"
@@ -82,12 +81,6 @@ export const sibebarModules = [
     url: VehiclesRoute.to,
     icon: getModuleIcon("Vehicles"),
     permission: "vehicles:view",
-  },
-  {
-    title: "routes.users",
-    url: UsersRoute.to,
-    icon: getModuleIcon("Users"),
-    permission: "users:view",
   },
   {
     title: "routes.reports",

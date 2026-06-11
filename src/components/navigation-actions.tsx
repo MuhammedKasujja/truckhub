@@ -88,10 +88,12 @@ function NotificationBell() {
   const unreadCount = 3
 
   return (
-    <button
+    <Button 
       type="button"
       className="relative inline-flex items-center justify-center rounded-md p-2 hover:bg-accent"
       aria-label="Notifications"
+      size={'icon-sm'}
+      variant={'ghost'}
     >
       <BellIcon className="h-5 w-5" />
 
@@ -104,6 +106,6 @@ function NotificationBell() {
         //   {unreadCount > 99 ? "99+" : unreadCount}
         // </span>
       )}
-    </button>
+    </Button>
   )
 }

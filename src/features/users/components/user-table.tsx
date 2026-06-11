@@ -16,7 +16,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
 
 export function UserTable() {
-  const search = useSearch({ from: "/_admin/users/" })
+  const search = useSearch({ from: "/_admin/settings/user-management/users/" })
   const {
     data: { data, pagination },
     error,
@@ -44,7 +44,7 @@ export function UserTable() {
       <DataTableToolbar table={table}>
         <Can permission="users:create">
           <Button asChild>
-            <Link to={"/users/new"}>
+            <Link to={"/settings/user-management/users/new"}>
               <PlusIcon />
               Add User
             </Link>

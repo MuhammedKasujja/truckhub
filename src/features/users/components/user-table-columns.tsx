@@ -18,7 +18,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
         return (
           <Button variant={"link"} asChild>
             <Link
-              to={`/users/$userId/view`}
+              to={`/settings/user-management/users/$userId/view`}
               params={{ userId: row.original.id }}
             >
               {row.original.name}
@@ -56,7 +56,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
             <Can permission={"users:view"}>
               <Button variant={"outline"} size={"icon"} asChild>
                 <Link
-                  to={`/users/$userId/view`}
+                  to={`/settings/user-management/users/$userId/view`}
                   params={{ userId: row.original.id }}
                 >
                   <EyeIcon />
@@ -66,7 +66,7 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
             <Can permission={"users:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
                 <Link
-                  to={`/users/$userId/edit`}
+                  to={`/settings/user-management/users/$userId/edit`}
                   params={{ userId: row.original.id }}
                 >
                   <EditIcon />

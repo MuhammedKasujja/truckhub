@@ -17,7 +17,6 @@ import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
 import { Route as AuthLoginRouteImport } from './app/_auth/login'
 import { Route as AdminSettingsRouteRouteImport } from './app/_admin/settings/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
-import { Route as AdminUsersIndexRouteImport } from './app/_admin/users/index'
 import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/index'
 import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
 import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/index'
@@ -34,12 +33,10 @@ import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rate
 import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clients/pricing-rates'
 import { Route as AdminClientsPricingRouteImport } from './app/_admin/clients/pricing'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
+import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
-import { Route as AdminUsersNewIndexRouteImport } from './app/_admin/users/new/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
-import { Route as AdminSettingsRolesIndexRouteImport } from './app/_admin/settings/roles/index'
 import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
-import { Route as AdminSettingsPermissionsIndexRouteImport } from './app/_admin/settings/permissions/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
@@ -51,8 +48,6 @@ import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/n
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/vehicles/$vehicleId.view'
 import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
-import { Route as AdminUsersUserIdViewRouteImport } from './app/_admin/users/$userId.view'
-import { Route as AdminUsersUserIdEditRouteImport } from './app/_admin/users/$userId.edit'
 import { Route as AdminServicesServiceIdViewRouteImport } from './app/_admin/services/$serviceId.view'
 import { Route as AdminServicesServiceIdEditRouteImport } from './app/_admin/services/$serviceId.edit'
 import { Route as AdminRidesRideIdViewRouteImport } from './app/_admin/rides/$rideId.view'
@@ -70,6 +65,12 @@ import { Route as AdminSettingsVehicleConfigTonnagesIndexRouteImport } from './a
 import { Route as AdminSettingsVehicleConfigDriveTrainsIndexRouteImport } from './app/_admin/settings/vehicle-config/drive-trains/index'
 import { Route as AdminSettingsVehicleConfigCarModelsIndexRouteImport } from './app/_admin/settings/vehicle-config/car-models/index'
 import { Route as AdminSettingsVehicleConfigCarBrandsIndexRouteImport } from './app/_admin/settings/vehicle-config/car-brands/index'
+import { Route as AdminSettingsUserManagementUsersIndexRouteImport } from './app/_admin/settings/user-management/users/index'
+import { Route as AdminSettingsUserManagementRolesIndexRouteImport } from './app/_admin/settings/user-management/roles/index'
+import { Route as AdminSettingsUserManagementPermissionsIndexRouteImport } from './app/_admin/settings/user-management/permissions/index'
+import { Route as AdminSettingsUserManagementUsersNewIndexRouteImport } from './app/_admin/settings/user-management/users/new/index'
+import { Route as AdminSettingsUserManagementUsersUserIdViewRouteImport } from './app/_admin/settings/user-management/users/$userId.view'
+import { Route as AdminSettingsUserManagementUsersUserIdEditRouteImport } from './app/_admin/settings/user-management/users/$userId.edit'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/_admin',
@@ -108,11 +109,6 @@ const AdminSettingsRouteRoute = AdminSettingsRouteRouteImport.update({
 const AdminVehiclesIndexRoute = AdminVehiclesIndexRouteImport.update({
   id: '/vehicles/',
   path: '/vehicles/',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminServicesIndexRoute = AdminServicesIndexRouteImport.update({
@@ -197,14 +193,15 @@ const AdminSettingsVehicleConfigRouteRoute =
     path: '/vehicle-config',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
+const AdminSettingsUserManagementRouteRoute =
+  AdminSettingsUserManagementRouteRouteImport.update({
+    id: '/user-management',
+    path: '/user-management',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminVehiclesNewIndexRoute = AdminVehiclesNewIndexRouteImport.update({
   id: '/vehicles/new/',
   path: '/vehicles/new/',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminUsersNewIndexRoute = AdminUsersNewIndexRouteImport.update({
-  id: '/users/new/',
-  path: '/users/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminSettingsTaxRatesIndexRoute =
@@ -213,21 +210,10 @@ const AdminSettingsTaxRatesIndexRoute =
     path: '/tax-rates/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
-const AdminSettingsRolesIndexRoute = AdminSettingsRolesIndexRouteImport.update({
-  id: '/roles/',
-  path: '/roles/',
-  getParentRoute: () => AdminSettingsRouteRoute,
-} as any)
 const AdminSettingsPricingConfigIndexRoute =
   AdminSettingsPricingConfigIndexRouteImport.update({
     id: '/pricing-config/',
     path: '/pricing-config/',
-    getParentRoute: () => AdminSettingsRouteRoute,
-  } as any)
-const AdminSettingsPermissionsIndexRoute =
-  AdminSettingsPermissionsIndexRouteImport.update({
-    id: '/permissions/',
-    path: '/permissions/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsPdfTemplatesIndexRoute =
@@ -292,16 +278,6 @@ const AdminVehiclesVehicleIdEditRoute =
     path: '/vehicles/$vehicleId/edit',
     getParentRoute: () => AdminRouteRoute,
   } as any)
-const AdminUsersUserIdViewRoute = AdminUsersUserIdViewRouteImport.update({
-  id: '/users/$userId/view',
-  path: '/users/$userId/view',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminUsersUserIdEditRoute = AdminUsersUserIdEditRouteImport.update({
-  id: '/users/$userId/edit',
-  path: '/users/$userId/edit',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminServicesServiceIdViewRoute =
   AdminServicesServiceIdViewRouteImport.update({
     id: '/services/$serviceId/view',
@@ -401,6 +377,42 @@ const AdminSettingsVehicleConfigCarBrandsIndexRoute =
     path: '/car-brands/',
     getParentRoute: () => AdminSettingsVehicleConfigRouteRoute,
   } as any)
+const AdminSettingsUserManagementUsersIndexRoute =
+  AdminSettingsUserManagementUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
+const AdminSettingsUserManagementRolesIndexRoute =
+  AdminSettingsUserManagementRolesIndexRouteImport.update({
+    id: '/roles/',
+    path: '/roles/',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
+const AdminSettingsUserManagementPermissionsIndexRoute =
+  AdminSettingsUserManagementPermissionsIndexRouteImport.update({
+    id: '/permissions/',
+    path: '/permissions/',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
+const AdminSettingsUserManagementUsersNewIndexRoute =
+  AdminSettingsUserManagementUsersNewIndexRouteImport.update({
+    id: '/users/new/',
+    path: '/users/new/',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
+const AdminSettingsUserManagementUsersUserIdViewRoute =
+  AdminSettingsUserManagementUsersUserIdViewRouteImport.update({
+    id: '/users/$userId/view',
+    path: '/users/$userId/view',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
+const AdminSettingsUserManagementUsersUserIdEditRoute =
+  AdminSettingsUserManagementUsersUserIdEditRouteImport.update({
+    id: '/users/$userId/edit',
+    path: '/users/$userId/edit',
+    getParentRoute: () => AdminSettingsUserManagementRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -409,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/pricing': typeof AdminClientsPricingRoute
   '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
@@ -425,7 +438,6 @@ export interface FileRoutesByFullPath {
   '/reviews/': typeof AdminReviewsIndexRoute
   '/rides/': typeof AdminRidesIndexRoute
   '/services/': typeof AdminServicesIndexRoute
-  '/users/': typeof AdminUsersIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -439,8 +451,6 @@ export interface FileRoutesByFullPath {
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
-  '/users/$userId/edit': typeof AdminUsersUserIdEditRoute
-  '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
@@ -452,17 +462,20 @@ export interface FileRoutesByFullPath {
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
-  '/settings/roles/': typeof AdminSettingsRolesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
-  '/users/new/': typeof AdminUsersNewIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
+  '/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
+  '/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
   '/settings/vehicle-config/car-brands/': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
   '/settings/vehicle-config/car-models/': typeof AdminSettingsVehicleConfigCarModelsIndexRoute
   '/settings/vehicle-config/drive-trains/': typeof AdminSettingsVehicleConfigDriveTrainsIndexRoute
   '/settings/vehicle-config/tonnages/': typeof AdminSettingsVehicleConfigTonnagesIndexRoute
   '/settings/vehicle-config/vehicle-types/': typeof AdminSettingsVehicleConfigVehicleTypesIndexRoute
+  '/settings/user-management/users/$userId/edit': typeof AdminSettingsUserManagementUsersUserIdEditRoute
+  '/settings/user-management/users/$userId/view': typeof AdminSettingsUserManagementUsersUserIdViewRoute
+  '/settings/user-management/users/new/': typeof AdminSettingsUserManagementUsersNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -471,6 +484,7 @@ export interface FileRoutesByTo {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/pricing': typeof AdminClientsPricingRoute
   '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
@@ -487,7 +501,6 @@ export interface FileRoutesByTo {
   '/reviews': typeof AdminReviewsIndexRoute
   '/rides': typeof AdminRidesIndexRoute
   '/services': typeof AdminServicesIndexRoute
-  '/users': typeof AdminUsersIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -501,8 +514,6 @@ export interface FileRoutesByTo {
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
-  '/users/$userId/edit': typeof AdminUsersUserIdEditRoute
-  '/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
@@ -514,17 +525,20 @@ export interface FileRoutesByTo {
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/settings/permissions': typeof AdminSettingsPermissionsIndexRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
-  '/settings/roles': typeof AdminSettingsRolesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
-  '/users/new': typeof AdminUsersNewIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
+  '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
+  '/settings/user-management/roles': typeof AdminSettingsUserManagementRolesIndexRoute
+  '/settings/user-management/users': typeof AdminSettingsUserManagementUsersIndexRoute
   '/settings/vehicle-config/car-brands': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
   '/settings/vehicle-config/car-models': typeof AdminSettingsVehicleConfigCarModelsIndexRoute
   '/settings/vehicle-config/drive-trains': typeof AdminSettingsVehicleConfigDriveTrainsIndexRoute
   '/settings/vehicle-config/tonnages': typeof AdminSettingsVehicleConfigTonnagesIndexRoute
   '/settings/vehicle-config/vehicle-types': typeof AdminSettingsVehicleConfigVehicleTypesIndexRoute
+  '/settings/user-management/users/$userId/edit': typeof AdminSettingsUserManagementUsersUserIdEditRoute
+  '/settings/user-management/users/$userId/view': typeof AdminSettingsUserManagementUsersUserIdViewRoute
+  '/settings/user-management/users/new': typeof AdminSettingsUserManagementUsersNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -535,6 +549,7 @@ export interface FileRoutesById {
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
   '/_auth/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/_admin/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/_admin/clients/pricing': typeof AdminClientsPricingRoute
   '/_admin/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
@@ -551,7 +566,6 @@ export interface FileRoutesById {
   '/_admin/reviews/': typeof AdminReviewsIndexRoute
   '/_admin/rides/': typeof AdminRidesIndexRoute
   '/_admin/services/': typeof AdminServicesIndexRoute
-  '/_admin/users/': typeof AdminUsersIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
   '/_admin/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -565,8 +579,6 @@ export interface FileRoutesById {
   '/_admin/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/_admin/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/_admin/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
-  '/_admin/users/$userId/edit': typeof AdminUsersUserIdEditRoute
-  '/_admin/users/$userId/view': typeof AdminUsersUserIdViewRoute
   '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/_admin/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
@@ -578,17 +590,20 @@ export interface FileRoutesById {
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/_admin/settings/permissions/': typeof AdminSettingsPermissionsIndexRoute
   '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
-  '/_admin/settings/roles/': typeof AdminSettingsRolesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
-  '/_admin/users/new/': typeof AdminUsersNewIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
+  '/_admin/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
+  '/_admin/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
   '/_admin/settings/vehicle-config/car-brands/': typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
   '/_admin/settings/vehicle-config/car-models/': typeof AdminSettingsVehicleConfigCarModelsIndexRoute
   '/_admin/settings/vehicle-config/drive-trains/': typeof AdminSettingsVehicleConfigDriveTrainsIndexRoute
   '/_admin/settings/vehicle-config/tonnages/': typeof AdminSettingsVehicleConfigTonnagesIndexRoute
   '/_admin/settings/vehicle-config/vehicle-types/': typeof AdminSettingsVehicleConfigVehicleTypesIndexRoute
+  '/_admin/settings/user-management/users/$userId/edit': typeof AdminSettingsUserManagementUsersUserIdEditRoute
+  '/_admin/settings/user-management/users/$userId/view': typeof AdminSettingsUserManagementUsersUserIdViewRoute
+  '/_admin/settings/user-management/users/new/': typeof AdminSettingsUserManagementUsersNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -599,6 +614,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/settings/user-management'
     | '/settings/vehicle-config'
     | '/clients/pricing'
     | '/clients/pricing-rates'
@@ -615,7 +631,6 @@ export interface FileRouteTypes {
     | '/reviews/'
     | '/rides/'
     | '/services/'
-    | '/users/'
     | '/vehicles/'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -629,8 +644,6 @@ export interface FileRouteTypes {
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
-    | '/users/$userId/edit'
-    | '/users/$userId/view'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
     | '/bookings/new/'
@@ -642,17 +655,20 @@ export interface FileRouteTypes {
     | '/settings/company-details/'
     | '/settings/generate-numbers/'
     | '/settings/pdf-templates/'
-    | '/settings/permissions/'
     | '/settings/pricing-config/'
-    | '/settings/roles/'
     | '/settings/tax-rates/'
-    | '/users/new/'
     | '/vehicles/new/'
+    | '/settings/user-management/permissions/'
+    | '/settings/user-management/roles/'
+    | '/settings/user-management/users/'
     | '/settings/vehicle-config/car-brands/'
     | '/settings/vehicle-config/car-models/'
     | '/settings/vehicle-config/drive-trains/'
     | '/settings/vehicle-config/tonnages/'
     | '/settings/vehicle-config/vehicle-types/'
+    | '/settings/user-management/users/$userId/edit'
+    | '/settings/user-management/users/$userId/view'
+    | '/settings/user-management/users/new/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -661,6 +677,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/settings/user-management'
     | '/settings/vehicle-config'
     | '/clients/pricing'
     | '/clients/pricing-rates'
@@ -677,7 +694,6 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/rides'
     | '/services'
-    | '/users'
     | '/vehicles'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -691,8 +707,6 @@ export interface FileRouteTypes {
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
-    | '/users/$userId/edit'
-    | '/users/$userId/view'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
     | '/bookings/new'
@@ -704,17 +718,20 @@ export interface FileRouteTypes {
     | '/settings/company-details'
     | '/settings/generate-numbers'
     | '/settings/pdf-templates'
-    | '/settings/permissions'
     | '/settings/pricing-config'
-    | '/settings/roles'
     | '/settings/tax-rates'
-    | '/users/new'
     | '/vehicles/new'
+    | '/settings/user-management/permissions'
+    | '/settings/user-management/roles'
+    | '/settings/user-management/users'
     | '/settings/vehicle-config/car-brands'
     | '/settings/vehicle-config/car-models'
     | '/settings/vehicle-config/drive-trains'
     | '/settings/vehicle-config/tonnages'
     | '/settings/vehicle-config/vehicle-types'
+    | '/settings/user-management/users/$userId/edit'
+    | '/settings/user-management/users/$userId/view'
+    | '/settings/user-management/users/new'
   id:
     | '__root__'
     | '/'
@@ -724,6 +741,7 @@ export interface FileRouteTypes {
     | '/_auth/logout'
     | '/_auth/unauthorized'
     | '/_auth/unauthorized-module'
+    | '/_admin/settings/user-management'
     | '/_admin/settings/vehicle-config'
     | '/_admin/clients/pricing'
     | '/_admin/clients/pricing-rates'
@@ -740,7 +758,6 @@ export interface FileRouteTypes {
     | '/_admin/reviews/'
     | '/_admin/rides/'
     | '/_admin/services/'
-    | '/_admin/users/'
     | '/_admin/vehicles/'
     | '/_admin/bookings/$bookingId/edit'
     | '/_admin/bookings/$bookingId/view'
@@ -754,8 +771,6 @@ export interface FileRouteTypes {
     | '/_admin/rides/$rideId/view'
     | '/_admin/services/$serviceId/edit'
     | '/_admin/services/$serviceId/view'
-    | '/_admin/users/$userId/edit'
-    | '/_admin/users/$userId/view'
     | '/_admin/vehicles/$vehicleId/edit'
     | '/_admin/vehicles/$vehicleId/view'
     | '/_admin/bookings/new/'
@@ -767,17 +782,20 @@ export interface FileRouteTypes {
     | '/_admin/settings/company-details/'
     | '/_admin/settings/generate-numbers/'
     | '/_admin/settings/pdf-templates/'
-    | '/_admin/settings/permissions/'
     | '/_admin/settings/pricing-config/'
-    | '/_admin/settings/roles/'
     | '/_admin/settings/tax-rates/'
-    | '/_admin/users/new/'
     | '/_admin/vehicles/new/'
+    | '/_admin/settings/user-management/permissions/'
+    | '/_admin/settings/user-management/roles/'
+    | '/_admin/settings/user-management/users/'
     | '/_admin/settings/vehicle-config/car-brands/'
     | '/_admin/settings/vehicle-config/car-models/'
     | '/_admin/settings/vehicle-config/drive-trains/'
     | '/_admin/settings/vehicle-config/tonnages/'
     | '/_admin/settings/vehicle-config/vehicle-types/'
+    | '/_admin/settings/user-management/users/$userId/edit'
+    | '/_admin/settings/user-management/users/$userId/view'
+    | '/_admin/settings/user-management/users/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -845,13 +863,6 @@ declare module '@tanstack/react-router' {
       path: '/vehicles'
       fullPath: '/vehicles/'
       preLoaderRoute: typeof AdminVehiclesIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/users/': {
-      id: '/_admin/users/'
-      path: '/users'
-      fullPath: '/users/'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/services/': {
@@ -966,18 +977,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsVehicleConfigRouteRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/user-management': {
+      id: '/_admin/settings/user-management'
+      path: '/user-management'
+      fullPath: '/settings/user-management'
+      preLoaderRoute: typeof AdminSettingsUserManagementRouteRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/vehicles/new/': {
       id: '/_admin/vehicles/new/'
       path: '/vehicles/new'
       fullPath: '/vehicles/new/'
       preLoaderRoute: typeof AdminVehiclesNewIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/users/new/': {
-      id: '/_admin/users/new/'
-      path: '/users/new'
-      fullPath: '/users/new/'
-      preLoaderRoute: typeof AdminUsersNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/tax-rates/': {
@@ -987,25 +998,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsTaxRatesIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
-    '/_admin/settings/roles/': {
-      id: '/_admin/settings/roles/'
-      path: '/roles'
-      fullPath: '/settings/roles/'
-      preLoaderRoute: typeof AdminSettingsRolesIndexRouteImport
-      parentRoute: typeof AdminSettingsRouteRoute
-    }
     '/_admin/settings/pricing-config/': {
       id: '/_admin/settings/pricing-config/'
       path: '/pricing-config'
       fullPath: '/settings/pricing-config/'
       preLoaderRoute: typeof AdminSettingsPricingConfigIndexRouteImport
-      parentRoute: typeof AdminSettingsRouteRoute
-    }
-    '/_admin/settings/permissions/': {
-      id: '/_admin/settings/permissions/'
-      path: '/permissions'
-      fullPath: '/settings/permissions/'
-      preLoaderRoute: typeof AdminSettingsPermissionsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/pdf-templates/': {
@@ -1083,20 +1080,6 @@ declare module '@tanstack/react-router' {
       path: '/vehicles/$vehicleId/edit'
       fullPath: '/vehicles/$vehicleId/edit'
       preLoaderRoute: typeof AdminVehiclesVehicleIdEditRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/users/$userId/view': {
-      id: '/_admin/users/$userId/view'
-      path: '/users/$userId/view'
-      fullPath: '/users/$userId/view'
-      preLoaderRoute: typeof AdminUsersUserIdViewRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/users/$userId/edit': {
-      id: '/_admin/users/$userId/edit'
-      path: '/users/$userId/edit'
-      fullPath: '/users/$userId/edit'
-      preLoaderRoute: typeof AdminUsersUserIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/services/$serviceId/view': {
@@ -1218,8 +1201,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsVehicleConfigCarBrandsIndexRouteImport
       parentRoute: typeof AdminSettingsVehicleConfigRouteRoute
     }
+    '/_admin/settings/user-management/users/': {
+      id: '/_admin/settings/user-management/users/'
+      path: '/users'
+      fullPath: '/settings/user-management/users/'
+      preLoaderRoute: typeof AdminSettingsUserManagementUsersIndexRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
+    '/_admin/settings/user-management/roles/': {
+      id: '/_admin/settings/user-management/roles/'
+      path: '/roles'
+      fullPath: '/settings/user-management/roles/'
+      preLoaderRoute: typeof AdminSettingsUserManagementRolesIndexRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
+    '/_admin/settings/user-management/permissions/': {
+      id: '/_admin/settings/user-management/permissions/'
+      path: '/permissions'
+      fullPath: '/settings/user-management/permissions/'
+      preLoaderRoute: typeof AdminSettingsUserManagementPermissionsIndexRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
+    '/_admin/settings/user-management/users/new/': {
+      id: '/_admin/settings/user-management/users/new/'
+      path: '/users/new'
+      fullPath: '/settings/user-management/users/new/'
+      preLoaderRoute: typeof AdminSettingsUserManagementUsersNewIndexRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
+    '/_admin/settings/user-management/users/$userId/view': {
+      id: '/_admin/settings/user-management/users/$userId/view'
+      path: '/users/$userId/view'
+      fullPath: '/settings/user-management/users/$userId/view'
+      preLoaderRoute: typeof AdminSettingsUserManagementUsersUserIdViewRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
+    '/_admin/settings/user-management/users/$userId/edit': {
+      id: '/_admin/settings/user-management/users/$userId/edit'
+      path: '/users/$userId/edit'
+      fullPath: '/settings/user-management/users/$userId/edit'
+      preLoaderRoute: typeof AdminSettingsUserManagementUsersUserIdEditRouteImport
+      parentRoute: typeof AdminSettingsUserManagementRouteRoute
+    }
   }
 }
+
+interface AdminSettingsUserManagementRouteRouteChildren {
+  AdminSettingsUserManagementPermissionsIndexRoute: typeof AdminSettingsUserManagementPermissionsIndexRoute
+  AdminSettingsUserManagementRolesIndexRoute: typeof AdminSettingsUserManagementRolesIndexRoute
+  AdminSettingsUserManagementUsersIndexRoute: typeof AdminSettingsUserManagementUsersIndexRoute
+  AdminSettingsUserManagementUsersUserIdEditRoute: typeof AdminSettingsUserManagementUsersUserIdEditRoute
+  AdminSettingsUserManagementUsersUserIdViewRoute: typeof AdminSettingsUserManagementUsersUserIdViewRoute
+  AdminSettingsUserManagementUsersNewIndexRoute: typeof AdminSettingsUserManagementUsersNewIndexRoute
+}
+
+const AdminSettingsUserManagementRouteRouteChildren: AdminSettingsUserManagementRouteRouteChildren =
+  {
+    AdminSettingsUserManagementPermissionsIndexRoute:
+      AdminSettingsUserManagementPermissionsIndexRoute,
+    AdminSettingsUserManagementRolesIndexRoute:
+      AdminSettingsUserManagementRolesIndexRoute,
+    AdminSettingsUserManagementUsersIndexRoute:
+      AdminSettingsUserManagementUsersIndexRoute,
+    AdminSettingsUserManagementUsersUserIdEditRoute:
+      AdminSettingsUserManagementUsersUserIdEditRoute,
+    AdminSettingsUserManagementUsersUserIdViewRoute:
+      AdminSettingsUserManagementUsersUserIdViewRoute,
+    AdminSettingsUserManagementUsersNewIndexRoute:
+      AdminSettingsUserManagementUsersNewIndexRoute,
+  }
+
+const AdminSettingsUserManagementRouteRouteWithChildren =
+  AdminSettingsUserManagementRouteRoute._addFileChildren(
+    AdminSettingsUserManagementRouteRouteChildren,
+  )
 
 interface AdminSettingsVehicleConfigRouteRouteChildren {
   AdminSettingsVehicleConfigCarBrandsIndexRoute: typeof AdminSettingsVehicleConfigCarBrandsIndexRoute
@@ -1249,19 +1304,20 @@ const AdminSettingsVehicleConfigRouteRouteWithChildren =
   )
 
 interface AdminSettingsRouteRouteChildren {
+  AdminSettingsUserManagementRouteRoute: typeof AdminSettingsUserManagementRouteRouteWithChildren
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
-  AdminSettingsPermissionsIndexRoute: typeof AdminSettingsPermissionsIndexRoute
   AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
-  AdminSettingsRolesIndexRoute: typeof AdminSettingsRolesIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
 }
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
+  AdminSettingsUserManagementRouteRoute:
+    AdminSettingsUserManagementRouteRouteWithChildren,
   AdminSettingsVehicleConfigRouteRoute:
     AdminSettingsVehicleConfigRouteRouteWithChildren,
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
@@ -1270,9 +1326,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsGenerateNumbersIndexRoute:
     AdminSettingsGenerateNumbersIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
-  AdminSettingsPermissionsIndexRoute: AdminSettingsPermissionsIndexRoute,
   AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
-  AdminSettingsRolesIndexRoute: AdminSettingsRolesIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
 }
 
@@ -1296,7 +1350,6 @@ interface AdminRouteRouteChildren {
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminRidesIndexRoute: typeof AdminRidesIndexRoute
   AdminServicesIndexRoute: typeof AdminServicesIndexRoute
-  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
   AdminBookingsBookingIdEditRoute: typeof AdminBookingsBookingIdEditRoute
   AdminBookingsBookingIdViewRoute: typeof AdminBookingsBookingIdViewRoute
@@ -1310,15 +1363,12 @@ interface AdminRouteRouteChildren {
   AdminRidesRideIdViewRoute: typeof AdminRidesRideIdViewRoute
   AdminServicesServiceIdEditRoute: typeof AdminServicesServiceIdEditRoute
   AdminServicesServiceIdViewRoute: typeof AdminServicesServiceIdViewRoute
-  AdminUsersUserIdEditRoute: typeof AdminUsersUserIdEditRoute
-  AdminUsersUserIdViewRoute: typeof AdminUsersUserIdViewRoute
   AdminVehiclesVehicleIdEditRoute: typeof AdminVehiclesVehicleIdEditRoute
   AdminVehiclesVehicleIdViewRoute: typeof AdminVehiclesVehicleIdViewRoute
   AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
   AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
   AdminServicesNewIndexRoute: typeof AdminServicesNewIndexRoute
-  AdminUsersNewIndexRoute: typeof AdminUsersNewIndexRoute
   AdminVehiclesNewIndexRoute: typeof AdminVehiclesNewIndexRoute
 }
 
@@ -1339,7 +1389,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminRidesIndexRoute: AdminRidesIndexRoute,
   AdminServicesIndexRoute: AdminServicesIndexRoute,
-  AdminUsersIndexRoute: AdminUsersIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
   AdminBookingsBookingIdEditRoute: AdminBookingsBookingIdEditRoute,
   AdminBookingsBookingIdViewRoute: AdminBookingsBookingIdViewRoute,
@@ -1353,15 +1402,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminRidesRideIdViewRoute: AdminRidesRideIdViewRoute,
   AdminServicesServiceIdEditRoute: AdminServicesServiceIdEditRoute,
   AdminServicesServiceIdViewRoute: AdminServicesServiceIdViewRoute,
-  AdminUsersUserIdEditRoute: AdminUsersUserIdEditRoute,
-  AdminUsersUserIdViewRoute: AdminUsersUserIdViewRoute,
   AdminVehiclesVehicleIdEditRoute: AdminVehiclesVehicleIdEditRoute,
   AdminVehiclesVehicleIdViewRoute: AdminVehiclesVehicleIdViewRoute,
   AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
   AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,
   AdminServicesNewIndexRoute: AdminServicesNewIndexRoute,
-  AdminUsersNewIndexRoute: AdminUsersNewIndexRoute,
   AdminVehiclesNewIndexRoute: AdminVehiclesNewIndexRoute,
 }
 
