@@ -14,5 +14,5 @@ export async function checkUserModuleAccess() {
     return { url: firstModuleAccess.url, replace: true } as const
   }
 
-  return { url: "/unauthorized", replace: true } as const
+  return { url: "/unauthorized-module", replace: true } as const
 }
