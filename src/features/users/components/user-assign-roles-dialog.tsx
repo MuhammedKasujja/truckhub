@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -7,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { HiddenField } from "@/components/ui/form-fields"
+import { HiddenField, MultiSelectField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
 import { useQuery } from "@tanstack/react-query"
@@ -77,18 +76,14 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
           </DialogHeader>
           <div className="flex items-center gap-2">
             <HiddenField control={form.control} name={"user_id"} />
-            <div className="flex flex-wrap gap-2">
-              {(data ?? [])?.map((role) => (
-                <Button
-                  key={role.id}
-                  type="button"
-                  variant={"outline"}
-                  onClick={() => form.setValue("roles", [role.id])}
-                >
-                  {role.name}
-                </Button>
-              ))}
-            </div>
+            <MultiSelectField
+              control={form.control}
+              name={"roles"}
+              options={(data ?? [])?.map((role) => ({
+                label: role.name,
+                value: role.id,
+              }))}
+            />
           </div>
           <DialogFooter className="sm:justify-end">
             <SubmitButton
