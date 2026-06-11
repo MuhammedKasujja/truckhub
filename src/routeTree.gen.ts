@@ -38,6 +38,7 @@ import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
 import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
+import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
@@ -220,6 +221,12 @@ const AdminSettingsPdfTemplatesIndexRoute =
   AdminSettingsPdfTemplatesIndexRouteImport.update({
     id: '/pdf-templates/',
     path: '/pdf-templates/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsNotificationsIndexRoute =
+  AdminSettingsNotificationsIndexRouteImport.update({
+    id: '/notifications/',
+    path: '/notifications/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsGenerateNumbersIndexRoute =
@@ -461,6 +468,7 @@ export interface FileRoutesByFullPath {
   '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
@@ -524,6 +532,7 @@ export interface FileRoutesByTo {
   '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
@@ -589,6 +598,7 @@ export interface FileRoutesById {
   '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
@@ -654,6 +664,7 @@ export interface FileRouteTypes {
     | '/settings/booking-routes/'
     | '/settings/company-details/'
     | '/settings/generate-numbers/'
+    | '/settings/notifications/'
     | '/settings/pdf-templates/'
     | '/settings/pricing-config/'
     | '/settings/tax-rates/'
@@ -717,6 +728,7 @@ export interface FileRouteTypes {
     | '/settings/booking-routes'
     | '/settings/company-details'
     | '/settings/generate-numbers'
+    | '/settings/notifications'
     | '/settings/pdf-templates'
     | '/settings/pricing-config'
     | '/settings/tax-rates'
@@ -781,6 +793,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
     | '/_admin/settings/generate-numbers/'
+    | '/_admin/settings/notifications/'
     | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/pricing-config/'
     | '/_admin/settings/tax-rates/'
@@ -1010,6 +1023,13 @@ declare module '@tanstack/react-router' {
       path: '/pdf-templates'
       fullPath: '/settings/pdf-templates/'
       preLoaderRoute: typeof AdminSettingsPdfTemplatesIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/notifications/': {
+      id: '/_admin/settings/notifications/'
+      path: '/notifications'
+      fullPath: '/settings/notifications/'
+      preLoaderRoute: typeof AdminSettingsNotificationsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/generate-numbers/': {
@@ -1310,6 +1330,7 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
+  AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
   AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
@@ -1325,6 +1346,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsGenerateNumbersIndexRoute:
     AdminSettingsGenerateNumbersIndexRoute,
+  AdminSettingsNotificationsIndexRoute: AdminSettingsNotificationsIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
   AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,

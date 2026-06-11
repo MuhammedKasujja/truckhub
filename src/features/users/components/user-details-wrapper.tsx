@@ -26,7 +26,10 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           <CardTitle>{user?.name}</CardTitle>
           <CardAction>
             <Button asChild size={"icon"}>
-              <Link to={"/users/$userId/edit"} params={{ userId: user!.id }}>
+              <Link
+                to={"/settings/user-management/users/$userId/edit"}
+                params={{ userId: user!.id }}
+              >
                 <Edit2Icon />
               </Link>
             </Button>

@@ -32,11 +32,8 @@ import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
 import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
-import {
-  PageHeader,
-  PageTitle,
-  PageTitleIcon,
-} from "@/components/page-header"
+import { Route as NotificationsRoute } from "@/app/_admin/settings/notifications"
+import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
 
 const data = {
@@ -64,7 +61,7 @@ const data = {
       icon: Users,
       route: UsersRoute.to,
     },
-    { name: "Notifications", icon: Bell },
+    { name: "Notifications", icon: Bell, route: NotificationsRoute.to },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
     { name: "PDF Templates", icon: FileText, route: PdfTemplatesRoute.to },
     {
@@ -98,7 +95,10 @@ export function SettingsSidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={item.route == location.pathname}
-                    className={cn(item.route == location.pathname && 'border-l-4 border-primary')}
+                    className={cn(
+                      item.route == location.pathname &&
+                        "border-l-4 border-primary"
+                    )}
                   >
                     {item.route ? (
                       <Link to={item.route}>
