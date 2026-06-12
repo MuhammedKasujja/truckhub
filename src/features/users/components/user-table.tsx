@@ -16,6 +16,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
 import { UserDataTableRowAction } from "../types"
 import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
+import { useTranslation } from "@/i18n"
 
 export function UserTable() {
   const search = useSearch({ from: "/_admin/settings/user-management/users/" })
@@ -24,10 +25,15 @@ export function UserTable() {
     error,
   } = useSuspenseQuery(usersQueryOprions(search))
 
+  const tr = useTranslation()
+
   const [rowAction, setRowAction] =
     React.useState<UserDataTableRowAction | null>(null)
 
-  const columns = React.useMemo(() => getUserTableColumns({ setRowAction }), [])
+  const columns = React.useMemo(
+    () => getUserTableColumns({ setRowAction, tr }),
+    [tr]
+  )
 
   useFetchEror(error)
 

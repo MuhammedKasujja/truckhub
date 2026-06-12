@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslation } from "@/i18n"
 import { toast } from "sonner"
 import { userAssignRolesFn } from "../services"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type Props = {
   user?: SystemUser
@@ -27,6 +28,7 @@ type Props = {
 
 export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
 
   const { data } = useQuery(createRolesQueryOptions())
 
@@ -53,6 +55,7 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
 
     if (message) {
       toast.success(message)
+      queryInvalidator.users.list.invalidate()
     }
     if (error) {
       toast.error(error.message)

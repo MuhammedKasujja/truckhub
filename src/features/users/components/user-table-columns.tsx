@@ -23,20 +23,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import { TFunction } from "@/i18n"
 
 interface GetUserTableColumnsProps {
   setRowAction: React.Dispatch<
     React.SetStateAction<UserDataTableRowAction | null>
   >
+  tr: TFunction
 }
 
 export function getUserTableColumns({
   setRowAction,
+  tr,
 }: GetUserTableColumnsProps): ColumnDef<SystemUser>[] {
   return [
     {
       accessorKey: "name",
-      header: "Name",
+      header: tr("common.form.name"),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -52,14 +55,14 @@ export function getUserTableColumns({
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tr("common.form.email"),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tr("common.form.phone"),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
@@ -68,18 +71,26 @@ export function getUserTableColumns({
       id: "roles",
       header: "Roles",
       cell: ({ row }) => {
+        const roles = row.original.roles
         return (
           <p className="flex gap-0.5">
-            {row.original.roles.map((role) => (
-              <Badge variant={"outline"}>{role.name}</Badge>
+            {roles.slice(0, 3).map((role) => (
+              <Badge key={role.id} variant={"outline"}>
+                {role.name}
+              </Badge>
             ))}
+            {roles.length > 3 && (
+              <Badge variant={"outline"} className="flex gap-0.5">
+                +{roles.slice(3).length}
+              </Badge>
+            )}
           </p>
         )
       },
     },
     {
       accessorKey: "created_at",
-      header: "Date",
+      header: tr("common.form.date"),
       cell: ({ row }) => {
         return <p>{formatDateTime(row.original.created_at)}</p>
       },
