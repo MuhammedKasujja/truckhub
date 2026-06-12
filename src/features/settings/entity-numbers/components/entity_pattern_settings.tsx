@@ -1,7 +1,10 @@
 import { Control, Controller } from "react-hook-form"
 import { NumberingEntityKey, NumberingPatternType } from "../schemas"
-import { NumberField, TextField } from "@/components/ui/form-fields"
-import { ENTITY_NUMBER_PATTERNS } from "@/common/constants"
+import { TextField } from "@/components/ui/form-fields"
+import {
+  ENTITY_NUMBER_PATTERNS,
+  ALLOWDED_NUMBER_COUNTER_PATTERNS,
+} from "@/common/constants"
 import { Card, CardContent } from "@/components/ui/card"
 import { CopyIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -9,6 +12,14 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
 import { Input } from "@/components/ui/input"
 import { useTokenInsertion } from "../hooks/use-token-insertion"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type Props = {
   entityKey: NumberingEntityKey
@@ -21,10 +32,35 @@ export function EntityPatternSettings({ control, entityKey }: Props) {
   return (
     <div className="flex flex-col gap-4 pt-4">
       <div className="flex gap-4 md:flex-row">
-        <NumberField
-          label="Counter Padding"
-          control={control}
+        <Controller
           name={`entities.${entityKey}.counter_padding`}
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>
+                Counter Padding
+                <RequiredLabelIcon />
+              </FieldLabel>
+              <Select {...field} onValueChange={field.onChange}>
+                <SelectTrigger aria-invalid={fieldState.invalid}>
+                  <SelectValue placeholder={"Select"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {ALLOWDED_NUMBER_COUNTER_PATTERNS.map((opt) => (
+                      <SelectItem
+                        key={`entities.${entityKey}.${opt}.counter_padding`}
+                        value={opt.toString()}
+                      >
+                        {'1'.padStart(opt, "0")}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
         />
         <TextField
           required={false}

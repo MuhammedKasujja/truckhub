@@ -98,6 +98,7 @@ export function getUserTableColumns({
     {
       id: "actions",
       cell: ({ row }) => {
+        const user = row.original
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -111,7 +112,7 @@ export function getUserTableColumns({
                   <DropdownMenuItem asChild>
                     <Link
                       to={`/settings/user-management/users/$userId/view`}
-                      params={{ userId: row.original.id }}
+                      params={{ userId: user.id }}
                     >
                       <EyeIcon />
                       View
@@ -122,26 +123,28 @@ export function getUserTableColumns({
                   <DropdownMenuItem asChild>
                     <Link
                       to={`/settings/user-management/users/$userId/edit`}
-                      params={{ userId: row.original.id }}
+                      params={{ userId: user.id }}
                     >
                       <EditIcon />
                       Edit
                     </Link>
                   </DropdownMenuItem>
                 </Can>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={() =>
-                    setRowAction({ row, variant: "assign-permissions" })
-                  }
-                >
-                  <SettingsIcon />
-                  Assign Roles
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <Can permission={"users:delete"}>
-                  <DropdownMenuItem variant="destructive">
-                    {/* <ActionButton
+                {!user.is_admin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onSelect={() =>
+                        setRowAction({ row, variant: "assign-permissions" })
+                      }
+                    >
+                      <SettingsIcon />
+                      Assign Roles
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <Can permission={"users:delete"}>
+                      <DropdownMenuItem variant="destructive">
+                        {/* <ActionButton
                       variant={"destructive"}
                       size={"icon"}
                       requireAreYouSure
@@ -159,14 +162,16 @@ export function getUserTableColumns({
                       }}
                     >
                       <div className="flex gap-4"> */}
-                    {/* <Button type="button" variant={"destructive"}> */}
-                    <Trash2Icon />
-                    Delete
-                    {/* </Button> */}
-                    {/* </div>
+                        {/* <Button type="button" variant={"destructive"}> */}
+                        <Trash2Icon />
+                        Delete
+                        {/* </Button> */}
+                        {/* </div>
                     </ActionButton> */}
-                  </DropdownMenuItem>
-                </Can>
+                      </DropdownMenuItem>
+                    </Can>
+                  </>
+                )}
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>

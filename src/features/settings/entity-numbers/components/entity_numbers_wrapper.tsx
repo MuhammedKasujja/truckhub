@@ -61,7 +61,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (errors) => {
-        console.error(errors)
+        console.error("Errors", errors.entities)
       })}
       className="space-y-5"
     >

@@ -3,7 +3,7 @@ import { NUMBERING_ENTITIES } from "@/common/constants"
 
 const entityNumberSchema = z.object({
   pattern: z.string().min(3, "Required"),
-  counter_padding: z.int().positive(),
+  counter_padding: z.string(),
   last_number: z.int().optional(),
 })
 
@@ -15,4 +15,4 @@ export type NumberingPatternType = z.infer<typeof NumberingPatternSchema>
 
 export type NumberingPattern = z.infer<typeof NumberingPatternSchema>
 
-export type NumberingEntityKey = keyof NumberingPatternType["entities"];
+export type NumberingEntityKey = keyof NumberingPatternType["entities"]

@@ -10,7 +10,7 @@ function transformResponseData(data: EntityNumberPattern[] | undefined) {
         acc[item.entity_name] = {
           id: item.id,
           pattern: item.pattern,
-          counter_padding: item.counter_padding,
+          counter_padding: item.counter_padding.toString(),
           last_number: item.last_number,
         }
         return acc

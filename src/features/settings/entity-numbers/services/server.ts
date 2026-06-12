@@ -4,7 +4,7 @@ import { EntityNumberPattern } from "../types"
 type EntityNumberUpdateRequest = {
   entity_name: string
   pattern: string
-  counter_padding: number
+  counter_padding: string
 }
 
 const endpoint = "/v1/settings/entity-numbers"
