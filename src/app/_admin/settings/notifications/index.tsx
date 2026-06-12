@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
 import { createFileRoute } from "@tanstack/react-router"
 import { BellIcon, MailIcon, PhoneIcon } from "lucide-react"
 
@@ -44,9 +44,7 @@ function RouteComponent() {
             <ItemDescription>Receive notifications via email</ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button variant="outline" size="sm">
-              Action
-            </Button>
+            <Switch />
           </ItemActions>
         </Item>
         <Item>
@@ -58,9 +56,7 @@ function RouteComponent() {
             <ItemDescription>Receive notifications via sms</ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button variant="outline" size="sm">
-              Action
-            </Button>
+            <Switch />
           </ItemActions>
         </Item>
         <Item>
@@ -71,12 +67,10 @@ function RouteComponent() {
             </ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button variant="outline" size="sm">
-              Action
-            </Button>
+            <Switch />
           </ItemActions>
         </Item>
-        <Separator/>
+        <Separator />
         <Item>
           <ItemContent>
             <ItemTitle>Push Notifications</ItemTitle>
@@ -85,9 +79,7 @@ function RouteComponent() {
             </ItemDescription>
           </ItemContent>
           <ItemActions>
-            <Button variant="outline" size="sm">
-              Action
-            </Button>
+            <Switch />
           </ItemActions>
         </Item>
       </CardContent>

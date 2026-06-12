@@ -53,6 +53,7 @@ export async function verifySessionToken(session: string | undefined = "") {
 export async function createSession(payload: AuthResponse) {
   const userSessionData: UserSession = {
     access_token: payload.access_token,
+    refresh_token: payload.refresh_token,
     expires_in: payload.expires_in,
     user: {
       ...payload.user,

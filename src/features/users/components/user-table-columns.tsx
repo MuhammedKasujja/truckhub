@@ -73,7 +73,7 @@ export function getUserTableColumns({
       cell: ({ row }) => {
         const roles = row.original.roles
         return (
-          <p className="flex gap-0.5">
+          <p className="flex gap-1">
             {roles.slice(0, 3).map((role) => (
               <Badge key={role.id} variant={"outline"}>
                 {role.name}
