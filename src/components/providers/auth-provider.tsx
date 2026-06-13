@@ -1,32 +1,39 @@
 "use client"
 
-import { getCurrentUser } from "@/lib/auth"
 import { checkUserPermission } from "@/lib/permissions"
-import { useQuery } from "@tanstack/react-query"
-import { useServerFn } from "@tanstack/react-start"
-import { type ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
+import { useAuthSession } from "@/features/auth/hooks/use-auth-session"
 
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode
-}) {
-  const fetchUser = useServerFn(getCurrentUser)
+export function AuthProvider({ children }: { children: ReactNode }) {
 
-  const { data, refetch } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: () => fetchUser(),
-    staleTime: 5 * 60 * 1000, // 5 min — consider this data as fresh for only 5 minutes
-    refetchInterval: 2 * 60 * 1000, // actively poll every 2 min, regardless of focus
-    retry: false,
-  })
+  const { user, refresh, isLoading, handleSessionExpired } = useAuthSession()
 
-  const hasPermission = data ? checkUserPermission(data) : undefined
+  const hasPermission = user ? checkUserPermission(user) : undefined
+
+  // ── Idle-tab detection ────────────────────────────────────────────────────
+  // If we previously had a user and the poll now returns null, the refresh
+  // token died server-side (expired naturally or revoked elsewhere).
+  const hadUser = useRef(false)
+
+  useEffect(() => {
+    if (user) {
+      hadUser.current = true
+      return
+    }
+    if (!isLoading && user === null && hadUser.current) {
+      handleSessionExpired()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isLoading])
 
   return (
     <AuthContext.Provider
-      value={{ user: data, hasPermission, refresh: refetch }}
+      value={{
+        user: user,
+        hasPermission,
+        refresh,
+      }}
     >
       {children}
     </AuthContext.Provider>

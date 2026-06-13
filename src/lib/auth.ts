@@ -47,12 +47,13 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
     } = await refreshAuthTokenFn({
       data: { refreshToken: data.refreshToken! },
     })
-    logger.info(`Refreshing User auth token Done`)
+    
     if (error || !token) {
+      logger.error(`Refreshing auth token failed ${error}`)
       await session.clear()
       return null
     }
-
+    logger.info(`Token Refresh Done`)
     await session.update({
       ...data,
       accessTokenExpiresAtMs: Date.now() + token.expires_in * 1_000, // Convert in millseconds
