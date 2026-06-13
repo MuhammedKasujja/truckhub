@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
-import { useNavigate } from "@tanstack/react-router"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import z from "zod"
 import { toast } from "sonner"
 import { loginFn } from "@/features/auth/services"
@@ -15,6 +15,7 @@ import { checkUserModuleAccess } from "../utils"
 
 export function LoginForm() {
   const navigate = useNavigate()
+  const search = useSearch({from: '/_auth/login'})
   const queryInvalidator = useQueryInvalidator()
 
   const tr = useTranslation()
@@ -28,9 +29,9 @@ export function LoginForm() {
     if (isSuccess && data) {
       toast.success(`${tr("login_successfully")}`)
       queryInvalidator.session.refresh()
-      const { url, replace } = await checkUserModuleAccess()
-
-      navigate({ to: url, replace })
+      const { redirect, replace } = await checkUserModuleAccess()
+      const loginRedirect = search.redirect ?? redirect
+      navigate({ to: loginRedirect, replace })
     } else {
       toast.error(error!.message)
     }
