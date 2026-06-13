@@ -16,6 +16,14 @@ async function requirePermission(permission: UserPermission) {
   }
 }
 
+export async function requireAuth({
+  redirectTo = "/login",
+}: { redirectTo?: string } = {}) {
+  const user = await getCurrentUser()
+  if (!user) throw redirect({ to: redirectTo })
+  return user
+}
+
 export async function hasPermission(permission: UserPermission) {
   return await requirePermission(permission)
 }
@@ -27,13 +35,18 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
     const data = session.data
 
     if (!data.refreshToken) return null
+    logger.info("Refreshing User auth token")
 
     if (data.accessToken && !isExpiringSoon(data.accessTokenExpiresAtMs)) {
       return data.user
     }
     // Refresh Auth token it about to expire
     logger.info("Refreshing User auth token")
-    const { error, data: token, message } = await refreshAuthTokenFn({
+    const {
+      error,
+      data: token,
+      message,
+    } = await refreshAuthTokenFn({
       data: { refreshToken: data.refreshToken! },
     })
     logger.error(`Refreshing User auth token ${message}`)

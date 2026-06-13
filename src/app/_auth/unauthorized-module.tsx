@@ -11,7 +11,7 @@ function RouteComponent() {
 
   async function logoutUser() {
     await logoutFn()
-    // router.navigate({ to: "/login", replace: true })
+    router.navigate({ to: "/login", replace: true })
   }
 
   return (

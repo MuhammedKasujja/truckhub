@@ -11,7 +11,7 @@ import { EmailField, PasswordField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { LoginSchema } from "@/features/auth/schemas"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { checkUserModuleAccess } from "../utils"
+import { checkUserModuleAccess } from "@/features/auth/utils"
 
 export function LoginForm() {
   const navigate = useNavigate()

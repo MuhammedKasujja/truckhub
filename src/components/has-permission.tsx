@@ -2,8 +2,8 @@
 
 import { UserPermission } from "@/features/auth/permissions";
 import { NoPermissionCard } from "./no-permission-card";
-import { useAuth } from "./providers/auth-provider";
 import { useMemo } from "react";
+import { useAuth } from "./providers/auth-context";
 
 export function HasPermission({
   permission,
@@ -17,7 +17,7 @@ export function HasPermission({
   children: React.ReactNode;
 }) {
   const { hasPermission } = useAuth();
-  const allowed = useMemo(() => hasPermission(permission), [permission]);
+  const allowed = useMemo(() => hasPermission?.(permission), [permission]);
 
   if (allowed) return children;
   if (renderFallback)

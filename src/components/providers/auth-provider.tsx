@@ -1,37 +1,37 @@
-"use client";
+"use client"
 
-import { UserPermission } from "@/features/auth/permissions";
-import { User } from "@/features/auth/types";
-import { checkUserPermission } from "@/lib/permissions";
-import { createContext, useContext, useState, type ReactNode } from "react";
-
-const AuthContext = createContext<{
-  user: User;
-  hasPermission: (permission: UserPermission) => boolean;
-} | null>(null);
+import { User } from "@/features/auth/types"
+import { getCurrentUser } from "@/lib/auth"
+import { checkUserPermission } from "@/lib/permissions"
+import { useQuery } from "@tanstack/react-query"
+import { useServerFn } from "@tanstack/react-start"
+import { type ReactNode } from "react"
+import { AuthContext } from "./auth-context"
 
 export function AuthProvider({
-  value,
+  user,
   children,
 }: {
-  value: User;
-  children: ReactNode;
+  user: User
+  children: ReactNode
 }) {
-  // TODO: Refresh user and token logic
+  const fetchUser = useServerFn(getCurrentUser)
 
-  const [user] = useState(value); // can later add refresh logic if needed
+  const { data, refetch } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => fetchUser(),
+    staleTime: 5 * 60 * 1000, // 5 min — consider this data as fresh for only 5 minutes
+    refetchInterval: 2 * 60 * 1000, // actively poll every 2 min, regardless of focus
+    retry: false,
+  })
 
-  const hasPermission = checkUserPermission(user);
+  const hasPermission = data ? checkUserPermission(data) : undefined
 
   return (
-    <AuthContext.Provider value={{ user, hasPermission }}>
+    <AuthContext.Provider
+      value={{ user: data, hasPermission, refresh: refetch }}
+    >
       {children}
     </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
-  return ctx;
+  )
 }

@@ -31,7 +31,7 @@ function RouteComponent() {
   const { user } = Route.useRouteContext()
   useGlobalShortcuts()
   return (
-    <AuthProvider value={user}>
+    <AuthProvider user={user}>
       <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
         <AppSidebar />
         <SidebarInset className="overflow-x-hidden">
