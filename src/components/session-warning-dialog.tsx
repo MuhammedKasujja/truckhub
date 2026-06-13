@@ -8,8 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog"
+} from "@/components/ui/alert-dialog"
 
 interface SessionIdleWarningDialogProps {
   open: boolean
@@ -62,7 +61,7 @@ export function SessionIdleWarningDialog({
           <AlertDialogCancel onClick={onStayLoggedIn}>
             Stay Logged-in
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onLogoutNow}>
+          <AlertDialogAction onClick={onLogoutNow} variant={'destructive'}>
             Logout now
           </AlertDialogAction>
         </AlertDialogFooter>

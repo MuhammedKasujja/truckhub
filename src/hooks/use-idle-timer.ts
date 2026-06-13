@@ -23,6 +23,7 @@ const DEFAULT_EVENTS = [
   "mousedown",
   "touchstart",
   "keydown",
+  "focus",
   ///
   //   "mousemove",
   //   "scroll",
@@ -69,6 +70,13 @@ export function useIdleTimer({
     }, promptTimeout)
   }, [promptTimeout, timeout, onPrompt, onIdle, onActive])
 
+  /** Call from the "stay logged in" button to dismiss the warning and reset */
+  const stayActive = useCallback(() => {
+    isPromptedRef.current = false
+    onActive?.()
+    reset()
+  }, [reset])
+
   useEffect(() => {
     if (!enabled) {
       if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
@@ -78,29 +86,27 @@ export function useIdleTimer({
 
     reset() // start the timer immediately
 
+    // deliberate user interaction events
     events.forEach((event) =>
       window.addEventListener(event, reset, { passive: true })
     )
 
-    function onVisibilityChange() {
-      if (document.visibilityState === "visible") reset()
+    // tab/window regains focus — separate from element focus bubbling
+    window.addEventListener("focus", stayActive)
+
+    function onVisibility() {
+      if (document.visibilityState === "visible") stayActive()
     }
-    document.addEventListener("visibilitychange", onVisibilityChange)
+    document.addEventListener("visibilitychange", onVisibility)
 
     return () => {
       if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
       events.forEach((event) => window.removeEventListener(event, reset))
-      document.removeEventListener("visibilitychange", onVisibilityChange)
+      window.removeEventListener("focus", reset)
+      document.removeEventListener("visibilitychange", onVisibility)
     }
-  }, [enabled, events, reset])
-
-  /** Call from the "stay logged in" button to dismiss the warning and reset */
-  const stayActive = useCallback(() => {
-    isPromptedRef.current = false;
-    onActive?.();
-    reset()
-  }, [reset])
+  }, [enabled, events, reset, stayActive])
 
   return { stayActive }
 }

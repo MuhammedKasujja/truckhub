@@ -51,6 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      {/* Idle Session Warning Dialog */}
       <SessionIdleWarningDialog
         open={showIdleWarning}
         countdownSeconds={COUNTDOWN_SECONDS}
