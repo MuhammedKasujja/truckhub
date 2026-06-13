@@ -25,7 +25,7 @@ export function useAppSession() {
 
 export async function createSessionToken(payload: UserSession) {
   const sessionDuration = systemDateTime
-    .plus({ minutes: payload.expires_in })
+    .plus({ milliseconds: payload.accessTokenExpiresAtMs })
     .toJSDate()
 
   return new SignJWT({
@@ -52,9 +52,9 @@ export async function verifySessionToken(session: string | undefined = "") {
 
 export async function createSession(payload: AuthResponse) {
   const userSessionData: UserSession = {
-    access_token: payload.access_token,
-    refresh_token: payload.refresh_token,
-    expires_in: payload.expires_in,
+    accessToken: payload.access_token,
+    refreshToken: payload.refresh_token,
+    accessTokenExpiresAtMs: Date.now() * payload.expires_in * 1_000,
     user: {
       ...payload.user,
       permissions: payload.permissions,
@@ -64,15 +64,10 @@ export async function createSession(payload: AuthResponse) {
   const session = await useAppSession()
 
   const sessionDuration = systemDateTime
-    .plus({ minutes: userSessionData.expires_in })
+    .plus({ milliseconds: userSessionData.accessTokenExpiresAtMs })
     .toJSDate()
 
   await session.update(userSessionData)
-}
-
-export async function deleteUserSession() {
-  const session = await useAppSession()
-  await session.clear()
 }
 
 /**
@@ -96,12 +91,20 @@ export async function getAuthSession() {
   return !session
     ? undefined
     : {
-        access_token: session.data.access_token,
+        access_token: session.data.accessToken,
         user: session.data.user,
       }
 }
 
 export async function getAccessToken(): Promise<string | undefined> {
   const session = await useAppSession()
-  return session.data.access_token
+  return session.data.accessToken
+}
+
+export function isExpiringSoon(
+  expiresAt: number | undefined,
+  bufferMs = 60_000
+): boolean {
+  if (!expiresAt) return false
+  return Date.now() > expiresAt - bufferMs
 }

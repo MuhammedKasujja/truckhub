@@ -27,8 +27,8 @@ export type TokenResponse = {
 }
 
 export type UserSession = {
-  access_token: string
-  refresh_token: string
-  expires_in: number
+  accessToken: string
+  refreshToken: string
+  accessTokenExpiresAtMs: number
   user: User
 }

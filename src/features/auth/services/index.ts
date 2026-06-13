@@ -1,8 +1,9 @@
 import { logger } from "@/lib/logger"
-import { login, refreshAuthToken } from "./server"
+import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
+import { login, logout, refreshAuthToken } from "./server"
 import { LoginSchema, RefreshTokenSchema } from "@/features/auth/schemas"
-import { createSession, deleteUserSession, getAccessToken } from "@/lib/session"
+import { createSession, getAccessToken, useAppSession } from "@/lib/session"
 
 export const loginFn = createServerFn({ method: "POST" })
   .inputValidator(LoginSchema)
@@ -19,7 +20,10 @@ export const logoutFn = createServerFn().handler(async () => {
   logger.info(
     "+++++++++++++++ Logging out user +++++++++++++++++++++++++++++++++++++++="
   )
-  await deleteUserSession()
+  const session = await useAppSession()
+  await session.clear()
+  await logout()
+  throw redirect({ to: "/login", replace: true })
 })
 
 export const getAccessTokenFn = createServerFn().handler(async () => {
