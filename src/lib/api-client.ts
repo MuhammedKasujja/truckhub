@@ -20,6 +20,7 @@ export async function getFn<T>(url: string): Promise<Prettify<ApiResponse<T>>> {
       message: response.data.message,
     }
   } catch (error) {
+    await logoutOnServerActions(error)
     return _handleApiException(error)
   }
 }
@@ -36,6 +37,7 @@ export async function getPaginatedFn<T>(
       pagination: response.data.meta,
     }
   } catch (error) {
+    await logoutOnServerActions(error)
     return _handleApiException(error)
   }
 }
@@ -130,5 +132,11 @@ async function logoutOnServerActions(error: unknown) {
   logger.info(
     `API Error with status code ${statusCode} and message: ${(error as any)?.message}`
   )
-  if (statusCode === "NOT_AUTHENTICATED") return logoutFn()
+  // const navigate = useNavigate()
+  if (statusCode === "NOT_AUTHENTICATED") {
+    try {
+      await logoutFn()
+    } catch {}
+    // navigate({ to: "/login" })
+  }
 }

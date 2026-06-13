@@ -5,11 +5,10 @@ import { getCurrentUser } from "@/lib/auth"
 import { checkUserPermission } from "@/lib/permissions"
 import { useQuery } from "@tanstack/react-query"
 import { useServerFn } from "@tanstack/react-start"
-import { type ReactNode } from "react"
+import { useCallback, type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
 
 export function AuthProvider({
-  user,
   children,
 }: {
   user: User

@@ -19,6 +19,7 @@ export function useAppSession() {
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
       sameSite: "lax",
       httpOnly: true,
+      // maxAge: 60 * 60 * 24 * 30, // 30 days — refresh token lifetime
     },
   })
 }
@@ -54,7 +55,7 @@ export async function createSession(payload: AuthResponse) {
   const userSessionData: UserSession = {
     accessToken: payload.access_token,
     refreshToken: payload.refresh_token,
-    accessTokenExpiresAtMs: Date.now() * payload.expires_in * 1_000,
+    accessTokenExpiresAtMs: Date.now() + payload.expires_in * 1_000,
     user: {
       ...payload.user,
       permissions: payload.permissions,
@@ -106,5 +107,5 @@ export function isExpiringSoon(
   bufferMs = 60_000
 ): boolean {
   if (!expiresAt) return false
-  return Date.now() > expiresAt - bufferMs
+  return Date.now() > (expiresAt - bufferMs)
 }

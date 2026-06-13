@@ -44,11 +44,10 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
     const {
       error,
       data: token,
-      message,
     } = await refreshAuthTokenFn({
       data: { refreshToken: data.refreshToken! },
     })
-    logger.error(`Refreshing User auth token ${message}`)
+    logger.info(`Refreshing User auth token Done`)
     if (error || !token) {
       await session.clear()
       return null
@@ -56,7 +55,7 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
 
     await session.update({
       ...data,
-      accessTokenExpiresAtMs: Date.now() * token.expires_in * 1_000, // Convert in millseconds
+      accessTokenExpiresAtMs: Date.now() + token.expires_in * 1_000, // Convert in millseconds
       accessToken: token.access_token,
       refreshToken: token.refresh_token,
     })
