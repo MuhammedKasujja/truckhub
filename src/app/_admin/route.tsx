@@ -28,10 +28,9 @@ export const Route = createFileRoute("/_admin")({
 })
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext()
   useGlobalShortcuts()
   return (
-    <AuthProvider user={user}>
+    <AuthProvider>
       <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
         <AppSidebar />
         <SidebarInset className="overflow-x-hidden">

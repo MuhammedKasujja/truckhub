@@ -1,17 +1,15 @@
 "use client"
 
-import { User } from "@/features/auth/types"
 import { getCurrentUser } from "@/lib/auth"
 import { checkUserPermission } from "@/lib/permissions"
 import { useQuery } from "@tanstack/react-query"
 import { useServerFn } from "@tanstack/react-start"
-import { useCallback, type ReactNode } from "react"
+import { type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
 
 export function AuthProvider({
   children,
 }: {
-  user: User
   children: ReactNode
 }) {
   const fetchUser = useServerFn(getCurrentUser)
