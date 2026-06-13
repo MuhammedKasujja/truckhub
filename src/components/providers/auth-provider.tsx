@@ -1,31 +1,46 @@
 "use client"
 
+const IDLE_TIMEOUT_MS = 2 * 60 * 1000 // total idle time before logout [ 15 min]
+const IDLE_PROMPT_MS = 1 * 60 * 1000 // show warning 1 min before logout
+const COUNTDOWN_SECONDS = (IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000
+
 import { checkUserPermission } from "@/lib/permissions"
-import { useEffect, useRef, type ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
 import { useAuthSession } from "@/features/auth/hooks/use-auth-session"
+import { useIdleTimer } from "@/hooks/use-idle-timer"
+import { SessionIdleWarningDialog } from "../session-warning-dialog"
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { user, refresh, logout } = useAuthSession()
 
-  const { user, refresh, isLoading, handleSessionExpired } = useAuthSession()
+  // ── Idle timeout: show a warning before auto-logout, regardless of
+  // token validity. Only runs while authenticated.
+  const [showIdleWarning, setShowIdleWarning] = useState(false)
+
+  const { stayActive } = useIdleTimer({
+    promptTimeout: IDLE_PROMPT_MS,
+    timeout: IDLE_TIMEOUT_MS,
+    enabled: !!user,
+    onPrompt: () => setShowIdleWarning(true),
+    onActive: () => setShowIdleWarning(false),
+    onIdle: () => {
+      setShowIdleWarning(false)
+      logout()
+    },
+  })
+
+  function handleStayLoggedIn() {
+    setShowIdleWarning(false)
+    stayActive()
+  }
+
+  function handleLogoutNow() {
+    setShowIdleWarning(false)
+    logout()
+  }
 
   const hasPermission = user ? checkUserPermission(user) : undefined
-
-  // ── Idle-tab detection ────────────────────────────────────────────────────
-  // If we previously had a user and the poll now returns null, the refresh
-  // token died server-side (expired naturally or revoked elsewhere).
-  const hadUser = useRef(false)
-
-  useEffect(() => {
-    if (user) {
-      hadUser.current = true
-      return
-    }
-    if (!isLoading && user === null && hadUser.current) {
-      handleSessionExpired()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, isLoading])
 
   return (
     <AuthContext.Provider
@@ -36,6 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      <SessionIdleWarningDialog
+        open={showIdleWarning}
+        countdownSeconds={COUNTDOWN_SECONDS}
+        onStayLoggedIn={handleStayLoggedIn}
+        onLogoutNow={handleLogoutNow}
+      />
     </AuthContext.Provider>
   )
 }
