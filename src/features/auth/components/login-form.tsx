@@ -15,7 +15,7 @@ import { checkUserModuleAccess } from "../utils"
 
 export function LoginForm() {
   const navigate = useNavigate()
-  const search = useSearch({from: '/_auth/login'})
+  const search = useSearch({ from: "/_auth/login" })
   const queryInvalidator = useQueryInvalidator()
 
   const tr = useTranslation()
@@ -24,13 +24,15 @@ export function LoginForm() {
     resolver: zodResolver(LoginSchema),
   })
 
+  const shouldRedirectToLogin = search.redirect && search.redirect !== "/"
+
   async function onSubmit(values: z.infer<typeof LoginSchema>) {
     const { isSuccess, error, data } = await loginFn({ data: values })
     if (isSuccess && data) {
       toast.success(`${tr("login_successfully")}`)
       queryInvalidator.session.refresh()
       const { redirect, replace } = await checkUserModuleAccess()
-      const loginRedirect = search.redirect ?? redirect
+      const loginRedirect = shouldRedirectToLogin ? search.redirect : redirect
       navigate({ to: loginRedirect, replace })
     } else {
       toast.error(error!.message)
