@@ -35,7 +35,6 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
     const data = session.data
 
     if (!data.refreshToken) return null
-    logger.info("Refreshing User auth token")
 
     if (data.accessToken && !isExpiringSoon(data.accessTokenExpiresAtMs)) {
       return data.user

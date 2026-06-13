@@ -1,18 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { logoutFn } from "@/features/auth/services"
-import { createFileRoute, useRouter } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
+import { useServerFn } from "@tanstack/react-start"
 
 export const Route = createFileRoute("/_auth/unauthorized-module")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const router = useRouter()
-
-  async function logoutUser() {
-    await logoutFn()
-    router.navigate({ to: "/login", replace: true })
-  }
+  const logout = useServerFn(logoutFn)
 
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
@@ -26,7 +22,7 @@ function RouteComponent() {
         </p>
 
         <div className="mt-6 flex justify-center gap-4">
-          <Button onClick={logoutUser}>Logout</Button>
+          <Button onClick={()=>logout()}>Logout</Button>
         </div>
       </div>
     </div>

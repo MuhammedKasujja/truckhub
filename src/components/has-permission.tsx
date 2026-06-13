@@ -16,8 +16,8 @@ export function HasPermission({
   fallbackText?: string;
   children: React.ReactNode;
 }) {
-  const { hasPermission } = useAuth();
-  const allowed = useMemo(() => hasPermission?.(permission), [permission]);
+  const { user, hasPermission } = useAuth();
+  const allowed = useMemo(() => hasPermission?.(permission), [permission, user]);
 
   if (allowed) return children;
   if (renderFallback)

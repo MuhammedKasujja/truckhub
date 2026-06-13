@@ -17,6 +17,7 @@ import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { ArrowLeftIcon, ArrowRightIcon, BellIcon } from "lucide-react"
 import { useAuth } from "@/components/providers/auth-context"
 import { generateAvatorFallback } from "@/lib/format"
+import { useServerFn } from "@tanstack/react-start"
 
 export function NavigationActions() {
   return (
@@ -33,11 +34,8 @@ function ProfileDropdown() {
   const router = useRouter()
 
   const { user } = useAuth()
-
-  async function logoutUser() {
-    await logoutFn()
-    router.navigate({ to: "/login", replace: true })
-  }
+  const logout = useServerFn(logoutFn)
+ 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -56,7 +54,7 @@ function ProfileDropdown() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={logoutUser}>
+          <DropdownMenuItem variant="destructive" onClick={()=>logout()}>
             Log out
           </DropdownMenuItem>
         </DropdownMenuGroup>

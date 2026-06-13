@@ -22,8 +22,9 @@ export const logoutFn = createServerFn().handler(async () => {
   )
   const session = await useAppSession()
   await session.clear()
-  await logout()
-  // throw redirect({ to: "/login", replace: true })
+  // avoid await so the user logout is instant
+  logout()
+  throw redirect({ to: "/login", replace: true })
 })
 
 export const getAccessTokenFn = createServerFn().handler(async () => {
