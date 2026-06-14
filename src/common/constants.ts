@@ -42,3 +42,13 @@ export const ALLOWDED_NUMBER_COUNTER_PATTERNS = Array.from(
   { length: 8 },
   (_, index) => index + 1
 )
+
+/**
+ *  Total idle time before logout [ 5 min]
+ */
+export const IDLE_TIMEOUT_MS = 5 * 60 * 1000 // total idle time before logout [ 5 min]
+/**
+ * Show warning 4 min before logout. One minute less of `IDLE_TIMEOUT_MS`
+ */
+export const IDLE_PROMPT_MS = 4 * 60 * 1000 // show warning 4 min before logout
+export const COUNTDOWN_SECONDS = (IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000

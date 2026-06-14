@@ -1,15 +1,12 @@
 "use client"
 
-const IDLE_TIMEOUT_MS = 2 * 60 * 1000 // total idle time before logout [ 15 min]
-const IDLE_PROMPT_MS = 1 * 60 * 1000 // show warning 1 min before logout
-const COUNTDOWN_SECONDS = (IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000
-
 import { checkUserPermission } from "@/lib/permissions"
 import { useState, type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
 import { useAuthSession } from "@/features/auth/hooks/use-auth-session"
 import { useIdleTimer } from "@/hooks/use-idle-timer"
 import { SessionIdleWarningDialog } from "../session-warning-dialog"
+import { COUNTDOWN_SECONDS, IDLE_PROMPT_MS, IDLE_TIMEOUT_MS } from "@/common/constants"
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { user, refresh, logout } = useAuthSession()
@@ -22,8 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     promptTimeout: IDLE_PROMPT_MS,
     timeout: IDLE_TIMEOUT_MS,
     enabled: !!user,
-    onPrompt: () => setShowIdleWarning(true),
-    onActive: () => setShowIdleWarning(false),
+    onPrompt: () => setShowIdleWarning(true),  // when to show the warning
+    onActive: () => setShowIdleWarning(false), // when to actually log out
     onIdle: () => {
       setShowIdleWarning(false)
       logout()

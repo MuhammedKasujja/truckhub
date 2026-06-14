@@ -50,7 +50,7 @@ export function SessionIdleWarningDialog({
     <AlertDialog open={open}>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
-          <AlertDialogTitle>Allow accessory to connect?</AlertDialogTitle>
+          <AlertDialogTitle>Still there?</AlertDialogTitle>
           <AlertDialogDescription>
             Logging out in{" "}
             <span className="font-medium text-foreground">{remaining}</span>{" "}

@@ -64,8 +64,9 @@ export function useIdleTimer({
       logger.info("System is Idle")
       // start the final countdown to logout
       idleTimerRef.current = setTimeout(() => {
-        onIdle()
+        // TODO: Handle clear session trackers after user is logged out
         logger.info("System is about to logout")
+        onIdle()
       }, timeout - promptTimeout)
     }, promptTimeout)
   }, [promptTimeout, timeout, onPrompt, onIdle, onActive])
@@ -81,6 +82,7 @@ export function useIdleTimer({
     if (!enabled) {
       if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+      isPromptedRef.current = false; // ← reset so re-enabling starts clean
       return
     }
 
@@ -103,7 +105,7 @@ export function useIdleTimer({
       if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
       events.forEach((event) => window.removeEventListener(event, reset))
-      window.removeEventListener("focus", reset)
+      window.removeEventListener("focus", stayActive)
       document.removeEventListener("visibilitychange", onVisibility)
     }
   }, [enabled, events, reset, stayActive])
