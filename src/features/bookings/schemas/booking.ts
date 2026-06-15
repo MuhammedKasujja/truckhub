@@ -18,6 +18,7 @@ export const BookingCreateSchema = z.object({
   discount: z.number().optional().nullable(),
   pickup_time: z.date(),
   return_time: z.date(),
+  contacts: z.array(IDSchema).optional().nullable(),
   services: z
     .array(ServiceItem)
     .min(1, "Add at least one service")

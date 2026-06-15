@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
 import {
-  AutoCompleteField,
   HiddenField,
   NumberField,
   TextField,
@@ -41,6 +40,9 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { ClientPicker } from "@/features/clients/components/client-picker"
+import { Client } from "@/features/clients/types"
+import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -49,18 +51,20 @@ type BookingRequestFormProps = {
 export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
+  const [client, setClient] = useState<Client | null>(null)
 
   const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
   const [serviceView, setServiceView] = useState<"list" | "single">("list")
 
   const isEdit = !!initialData
 
-  const { control, handleSubmit, formState, watch } = useForm<
+  const { control, handleSubmit, formState, watch, setValue } = useForm<
     z.infer<typeof BookingCreateSchema>
   >({
     resolver: zodResolver(BookingCreateSchema),
     defaultValues: {
       services: [],
+      contacts: []
     },
     mode: "onChange",
   })
@@ -120,44 +124,86 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   }, [calculatedServicesTotals])
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{isEdit ? tr("edit_booking") : tr("new_booking")}</CardTitle>
-        <CardDescription>{tr("create_booking_help")}</CardDescription>
-        <CardAction>
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.log(errors)
+      })}
+      className="space-y-4"
+    >
+      <Card>
+        <CardHeader>
+          {client &&<CardTitle>{client.name}</CardTitle>}
+          {client &&<CardDescription>{client.phone}</CardDescription>}
+          <CardAction>
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={formState.isSubmitting}
+              disabled={fields.length === 0}
+            />
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <ClientPicker
+            onSelect={(client) => {
+              setValue("client_id", client?.id ?? "")
+              setClient(client)
+            }}
+            clients={clientsResponse?.data ?? []}
+          />
+          {client && (
+            <ClientContactsList
+              contacts={client?.contacts}
+              onSelected={(contacts) => {
+                setValue("contacts", contacts)
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent>
+          <FieldGroup className="grid grid-flow-col md:grid-cols-4">
+            <DateTimePickerField
+              label={"Pickup Date"}
+              name={"pickup_time"}
+              control={control}
+            />
+            <DateTimePickerField
+              label={"Return Date"}
+              name={"return_time"}
+              control={control}
+            />
+            <NumberField
+              label={"Initial Payment"}
+              name={"partial"}
+              control={control}
+              required={false}
+            />
+            <DiscountField
+              label={"Discount"}
+              name={"discount"}
+              control={control}
+              required={false}
+            />
+          </FieldGroup>
+        </CardContent>
+      </Card>
+      <Card>
+        {/* <CardHeader>
           <CardTitle>
-            {formatPrice(grandTotal, { showZeroAsNumber: true })}
+            {isEdit ? tr("edit_booking") : tr("new_booking")}
           </CardTitle>
-        </CardAction>
-      </CardHeader>
-      <form
-        onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log(errors)
-        })}
-      >
+          <CardDescription>{tr("create_booking_help")}</CardDescription>
+          <CardAction>
+            <CardTitle>
+              {formatPrice(grandTotal, { showZeroAsNumber: true })}
+            </CardTitle>
+          </CardAction>
+        </CardHeader> */}
         <CardContent className="grid grid-cols-1 gap-5 pb-5 md:grid-cols-2">
           <Card>
             <CardContent>
               <FieldGroup className="pb-5">
-                <AutoCompleteField
-                  label={tr("client")}
-                  name={"client_id"}
-                  control={control}
-                  options={(clientsResponse?.data ?? [])?.map((ele) => ({
-                    label: ele.name,
-                    value: ele.id,
-                  }))}
-                />
-                <DateTimePickerField
-                  label={"Pickup Date"}
-                  name={"pickup_time"}
-                  control={control}
-                />
-                <DateTimePickerField
-                  label={"Return Date"}
-                  name={"return_time"}
-                  control={control}
-                />
                 <NumberField
                   label={"Initial Payment"}
                   name={"partial"}
@@ -371,14 +417,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
             </CardContent>
           </Card>
         </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={formState.isSubmitting}
-            disabled={fields.length === 0}
-          />
-        </CardFooter>
-      </form>
-    </Card>
+      </Card>
+    </form>
   )
 }
