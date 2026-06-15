@@ -7,8 +7,7 @@ import { refreshAuthTokenFn } from "@/features/auth/services"
 import type { UserPermission } from "@/features/auth/permissions"
 
 async function requirePermission(permission: UserPermission) {
-  const user = await getCurrentUser()
-  if (!user) throw redirect({ to: "/login", replace: true })
+  const user = await requireAuth({ redirectTo: "/login" })
 
   const func = checkUserPermission(user)
   if (!func(permission)) {
@@ -41,13 +40,10 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
     }
     // Refresh Auth token it about to expire
     logger.info("Refreshing User auth token")
-    const {
-      error,
-      data: token,
-    } = await refreshAuthTokenFn({
+    const { error, data: token } = await refreshAuthTokenFn({
       data: { refreshToken: data.refreshToken! },
     })
-    
+
     if (error || !token) {
       logger.error(`Refreshing auth token failed ${error}`)
       await session.clear()

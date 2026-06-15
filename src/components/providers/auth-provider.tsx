@@ -7,6 +7,7 @@ import { useAuthSession } from "@/features/auth/hooks/use-auth-session"
 import { useIdleTimer } from "@/hooks/use-idle-timer"
 import { SessionIdleWarningDialog } from "../session-warning-dialog"
 import { COUNTDOWN_SECONDS, IDLE_PROMPT_MS, IDLE_TIMEOUT_MS } from "@/common/constants"
+import { logger } from "@/lib/logger"
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { user, refresh, logout } = useAuthSession()
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function handleLogoutNow() {
+    logger.info("Logout automatic.... AuthProvider")
     setShowIdleWarning(false)
     logout()
   }

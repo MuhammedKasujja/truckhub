@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select"
 import { useEffect, useState } from "react"
 import { generateReportTemplatePdfFn } from "../services"
+import { logger } from "@/lib/logger"
 
 export function ReportPdfTemplatesWrapper() {
   const [template, setTemplate] = useState<ReportTemplate>("invoice")
@@ -20,9 +21,15 @@ export function ReportPdfTemplatesWrapper() {
   useEffect(() => {
     setPageData(undefined)
     const loadPdf = async () => {
-      const response = await generateReportTemplatePdfFn({ data: { template } })
-      const buffer = await response.arrayBuffer()
-      setPageData(new Uint8Array(buffer))
+      try {
+        const response = await generateReportTemplatePdfFn({
+          data: { template },
+        })
+        const buffer = await response.arrayBuffer()
+        setPageData(new Uint8Array(buffer))
+      } catch (error) {
+        logger.error("Failed to load PDF")
+      }
     }
 
     loadPdf()

@@ -36,6 +36,8 @@ export const REPORT_TEMPLATES = [
 export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]
 
 /**
+ * Allowed Entity Counter Padding
+ * 
  * [1, 2, 3, 4, 5, 6, 7, 8]
  */
 export const ALLOWDED_NUMBER_COUNTER_PATTERNS = Array.from(

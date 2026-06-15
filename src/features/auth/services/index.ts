@@ -17,9 +17,7 @@ export const loginFn = createServerFn({ method: "POST" })
   })
 
 export const logoutFn = createServerFn().handler(async () => {
-  logger.info(
-    "+++++++++++++++ Logging out user +++++++++++++++++++++++++++++++++++++++="
-  )
+  logger.info("Logging out user +++++++++++++++++++++++++++++++++++++++=")
   const session = await useAppSession()
   await session.clear()
   // avoid await so the user logout is instant

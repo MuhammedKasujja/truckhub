@@ -1,15 +1,15 @@
 import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { Service, ServiceGroup } from "@/features/services/types"
 import { formatPrice } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
 import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
   return [
@@ -83,8 +83,8 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
 
 function ServiceListItem({ service }: { service: Service }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <HoverCard openDelay={10} closeDelay={100}>
+      <HoverCardTrigger asChild>
         <Button asChild variant={"outline"}>
           <Link
             to={`/services/$serviceId/edit`}
@@ -93,8 +93,8 @@ function ServiceListItem({ service }: { service: Service }) {
             {service.name}
           </Link>
         </Button>
-      </TooltipTrigger>
-      <TooltipContent side="right" align="center" className="p-4">
+      </HoverCardTrigger>
+      <HoverCardContent className="flex w-64 flex-col gap-0.5">
         <div className="grid grid-cols-1 gap-4">
           <div>
             {service.category} - {service.name}
@@ -104,7 +104,7 @@ function ServiceListItem({ service }: { service: Service }) {
           {/* <div>Tax fee: {formatPrice(service.tax_fee)}</div> */}
           {!service.is_truck && <div>Seats: {service.seats}</div>}
         </div>
-      </TooltipContent>
-    </Tooltip>
+      </HoverCardContent>
+    </HoverCard>
   )
 }

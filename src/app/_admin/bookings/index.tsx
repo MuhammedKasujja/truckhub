@@ -15,6 +15,7 @@ import {
   createBookingStatisticsQueryOptions,
 } from "@/features/bookings/queries-options"
 import { BookingSearchParamsSchema } from "@/features/bookings/schemas"
+import { EditBookingDialog } from "@/features/bookings/components/edit-booking-dialog"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
@@ -37,6 +38,9 @@ function RouteComponent() {
       <PageHeader>
         <PageTitle>Bookings</PageTitle>
         <PageAction>
+          <Can permission="bookings:create">
+            <EditBookingDialog/>
+          </Can>
           <Can permission="bookings:create">
             <Button asChild>
               <Link to={"/bookings/new"}>

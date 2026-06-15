@@ -114,7 +114,6 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // TODO: refresh auth token
       // TODO: clear user session from cookies as this is not allowed to call server actions
-      logger.debug("Logging out user.....")
       // const base = typeof window !== 'undefined'
       //   ? window.location.origin
       //   : '';  // fallback – won't be used on server anyway
