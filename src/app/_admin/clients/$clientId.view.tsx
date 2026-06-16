@@ -7,6 +7,7 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
+import { ButtonGroup } from "@/components/ui/button-group"
 import { ClientRouteTonnagePricingModal } from "@/features/clients/components"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
@@ -43,35 +44,37 @@ function RouteComponent() {
         <PageTitle className="capitalize">{data?.name}</PageTitle>
         <PageAction className="flex gap-2">
           <PageBackButton />
-          <Can permission={"bookings:create"}>
-            <Button asChild size={"sm"} variant={"secondary"}>
-              <Link to={"/bookings/new"} params={{ clientId }}>
-               <PlusIcon/>
-                New Booking
+          <ButtonGroup>
+            <Can permission={"bookings:create"}>
+              <Button asChild variant={"secondary"}>
+                <Link to={"/bookings/new"} search={{ clientId }}>
+                  <PlusIcon />
+                  New Booking
+                </Link>
+              </Button>
+            </Can>
+            <Can permission={"rides:create"}>
+              <Button asChild variant={"secondary"}>
+                <Link to={"/rides/new"} params={{ clientId }}>
+                  <PlusIcon />
+                  New Ride
+                </Link>
+              </Button>
+            </Can>
+            {data?.has_pricing && (
+              <Button asChild variant={"secondary"}>
+                <Link to="/clients/data/$clientId" params={{ clientId }}>
+                  Pricing
+                </Link>
+              </Button>
+            )}
+            <Button asChild variant={"secondary"}>
+              <Link to="/clients/$clientId/pdf" params={{ clientId }}>
+                Pdf
               </Link>
             </Button>
-          </Can>
-          <Can permission={"rides:create"}>
-            <Button asChild size={"sm"} variant={"secondary"}>
-              <Link to={"/rides/new"} params={{ clientId }}>
-                <PlusIcon/>
-                New Ride
-              </Link>
-            </Button>
-          </Can>
-          {data?.has_pricing && (
-            <Button asChild variant={"secondary"} size="sm">
-              <Link to="/clients/data/$clientId" params={{ clientId }}>
-                Pricing
-              </Link>
-            </Button>
-          )}
-          <Button asChild variant={"secondary"} size="sm">
-            <Link to="/clients/$clientId/pdf" params={{ clientId }}>
-              Pdf
-            </Link>
-          </Button>
-          <ClientRouteTonnagePricingModal clientId={clientId} />
+            <ClientRouteTonnagePricingModal clientId={clientId} />
+          </ButtonGroup>
         </PageAction>
       </PageHeader>
       <CustomerDetailsWrapper clientId={clientId} />

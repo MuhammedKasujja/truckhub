@@ -39,7 +39,7 @@ export function ClientRouteTonnagePricingModal({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant={"secondary"} size="sm">
+        <Button variant={"secondary"}>
           {/* <CreditCard /> */}
           Route Pricing
         </Button>

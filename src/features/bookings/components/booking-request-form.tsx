@@ -19,7 +19,7 @@ import {
   DateTimePickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import { Activity, useMemo, useState } from "react"
+import { Activity, useEffect, useMemo, useState } from "react"
 import z from "zod"
 import {
   BookingCreateSchema,
@@ -43,6 +43,7 @@ import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
 import { Client } from "@/features/clients/types"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
+import { useSearch } from "@tanstack/react-router"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -50,6 +51,7 @@ type BookingRequestFormProps = {
 
 export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   const tr = useTranslation()
+  const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
   const [client, setClient] = useState<Client | null>(null)
 
@@ -63,8 +65,9 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   >({
     resolver: zodResolver(BookingCreateSchema),
     defaultValues: {
+      client_id: search.clientId,
       services: [],
-      contacts: []
+      contacts: [],
     },
     mode: "onChange",
   })
@@ -123,6 +126,14 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     )
   }, [calculatedServicesTotals])
 
+  useEffect(() => {
+    setValue("client_id", search.clientId ?? "")
+    if (clientsResponse) {
+      const client = clientsResponse.data.find((c) => c.id === search.clientId)
+      setClient(client ?? null)
+    }
+  }, [search, clientsResponse])
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -132,8 +143,8 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     >
       <Card>
         <CardHeader>
-          {client &&<CardTitle>{client.name}</CardTitle>}
-          {client &&<CardDescription>{client.phone}</CardDescription>}
+          {client && <CardTitle>{client.name}</CardTitle>}
+          {client && <CardDescription>{client.phone}</CardDescription>}
           <CardAction>
             <SubmitButton
               text={tr("common.form.submit")}

@@ -65,13 +65,39 @@ export type ActionResult<T> = {
   error: string | undefined | null
 }
 
+export const ApiErrorCodes = {
+  400: "BAD_REQUEST",
+  401: "NOT_AUTHORIZED",
+  403: "FORBIDDEN",
+  404: "NOT_FOUND",
+  405: "METHOD_NOT_ALLOWED",
+  406: "NOT_ACCEPTABLE",
+  409: "CONFLICT",
+  415: "UNSUPPORTED_MEDIA_TYPE",  
+  422: "VALIDATION_FAILED",
+  429: "TOO_MANY_REQUESTS",
+  500: "INTERNAL_SERVER_ERROR",
+  503: "SERVICE_UNAVAILABLE",
+} as const
+
+type StatusCode = keyof typeof ApiErrorCodes
+
+type ApiErrorCode = (typeof ApiErrorCodes)[keyof typeof ApiErrorCodes]
+
 export class ApiError extends Error {
   constructor(
     public message: string,
-    public statusCode: number,
+    public statusCode: StatusCode,
+    public erroCode?: ApiErrorCode,
     public errors?: Record<string, string[]>
   ) {
     super(message)
     this.name = "ApiError"
   }
+}
+
+export function getError<T extends StatusCode>(
+  code: T
+): (typeof ApiErrorCodes)[T] {
+  return ApiErrorCodes[code]
 }
