@@ -1,4 +1,4 @@
-import { BookingRequestForm } from "@/features/bookings/components/booking-request-form"
+import { TrucksBookingForm } from "@/features/bookings/components"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { hasPermission } from "@/lib/auth"
@@ -19,5 +19,5 @@ export const Route = createFileRoute("/_admin/bookings/new/")({
 })
 
 function RouteComponent() {
-  return <BookingRequestForm />
+  return <TrucksBookingForm />
 }

@@ -1,5 +1,9 @@
-import { EntityId } from "@/schemas";
+import { EntityId } from "@/schemas"
+import { useQuery } from "@tanstack/react-query"
+import { clientRoutePricingQueryOptions } from "../query-options"
 
 export function useClientRoutingPricing(clientId: EntityId) {
-    return 
+  const { data, isLoading } = useQuery(clientRoutePricingQueryOptions(clientId))
+
+  return { isLoading, data: data?.data }
 }

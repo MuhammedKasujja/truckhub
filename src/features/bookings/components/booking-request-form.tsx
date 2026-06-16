@@ -44,6 +44,7 @@ import { ClientPicker } from "@/features/clients/components/client-picker"
 import { Client } from "@/features/clients/types"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useSearch } from "@tanstack/react-router"
+import { RoutePricingDialog } from "./route-pricing-dialog"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -146,6 +147,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
           {client && <CardTitle>{client.name}</CardTitle>}
           {client && <CardDescription>{client.phone}</CardDescription>}
           <CardAction>
+            <RoutePricingDialog clientId={client?.id ?? ""} />
             <SubmitButton
               text={tr("common.form.submit")}
               isSubmitting={formState.isSubmitting}
