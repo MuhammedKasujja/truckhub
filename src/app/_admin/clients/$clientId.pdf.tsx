@@ -1,4 +1,4 @@
-import { PdfViewer } from "@/components/pdf-viewer"
+import { ClientPdf } from "@/features/clients/components/client-pdf"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/pdf")({
@@ -6,11 +6,6 @@ export const Route = createFileRoute("/_admin/clients/$clientId/pdf")({
 })
 
 function RouteComponent() {
-  return (
-    <PdfViewer
-      pdfUrl={
-        "https://pdfobject.com/pdf/sample.pdf"
-      }
-    />
-  )
+  const params = Route.useParams()
+  return <ClientPdf clientId={params.clientId} />
 }

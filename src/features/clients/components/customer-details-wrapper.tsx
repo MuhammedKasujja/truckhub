@@ -9,7 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react"
+import { CreditCard, CalendarDays, MapPin } from "lucide-react"
+import { IconEdit } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router"
 import { formatDate, formatPrice } from "@/lib/format"
 import {
@@ -92,7 +93,7 @@ export function CustomerDetailsWrapper({
                 to={"/clients/$clientId/edit"}
                 params={{ clientId: customer?.id }}
               >
-                <Edit2Icon />
+                <IconEdit />
               </Link>
             </Button>
           </CardAction>
