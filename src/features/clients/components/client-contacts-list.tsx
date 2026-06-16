@@ -57,7 +57,7 @@ export function ClientContactsList({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
+                size="icon-sm"
                 // asChild
               >
                 <Checkbox
