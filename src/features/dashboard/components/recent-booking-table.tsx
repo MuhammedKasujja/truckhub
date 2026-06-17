@@ -55,7 +55,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                 <TableHead>Status</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Balance</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Start Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -71,7 +71,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                     </TableCell>
                     <TableCell>{formatPrice(booking.amount)}</TableCell>
                     <TableCell>{formatPrice(booking.balance)}</TableCell>
-                    <TableCell>{formatDate(booking.created_at)}</TableCell>
+                    <TableCell>{formatDate(booking.estimated_pickup_time)}</TableCell>
                   </TableRow>
                 ))
               ) : (

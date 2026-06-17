@@ -44,3 +44,18 @@ export const BookingSearchParamsSchema = z.object({
 })
 
 export type BookingListSearchParams = z.infer<typeof BookingSearchParamsSchema>
+
+export const TruckBookingSchema = z.object({
+  client_id: IDSchema,
+  partial: z.number().optional().nullable(),
+  discount: z.number().optional().nullable(),
+  pickup_time: z.date(),
+  return_time: z.date(),
+  contacts: z.array(IDSchema).optional().nullable(),
+  services: z
+    .array(ServiceItem)
+    .min(1, "Add at least one service")
+    .max(20, "Maximum 20 items per order"),
+})
+
+export type TruckBookingRequest = z.infer<typeof TruckBookingSchema>

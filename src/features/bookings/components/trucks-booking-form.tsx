@@ -1,5 +1,3 @@
-"use client"
-
 import {
   Card,
   CardAction,
@@ -20,6 +18,7 @@ import z from "zod"
 import {
   BookingCreateSchema,
   BookingUpdateSchemaType,
+  TruckBookingSchema,
 } from "@/features/bookings/schemas"
 import { toast } from "sonner"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
@@ -27,11 +26,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { ListIcon, Plus } from "lucide-react"
 import { createBookingFn } from "@/features/bookings/services"
-import { AutoComplete } from "@/components/ui/autocomplete"
-import { Service } from "@/features/services/types"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
-import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
@@ -48,6 +44,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { IconCloud } from "@tabler/icons-react"
+import { RoutePricing } from "@/features/settings/pricing"
 
 type TrucksBookingFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -58,16 +55,14 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
   const [client, setClient] = useState<Client | null>(null)
-
-  const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
-  const [serviceView, setServiceView] = useState<"list" | "single">("list")
+  const [routesPricings, setRoutesPricings] = useState<RoutePricing[]>([])
 
   const isEdit = !!initialData
 
   const { control, handleSubmit, formState, watch, setValue } = useForm<
-    z.infer<typeof BookingCreateSchema>
+    z.infer<typeof TruckBookingSchema>
   >({
-    resolver: zodResolver(BookingCreateSchema),
+    resolver: zodResolver(TruckBookingSchema),
     defaultValues: {
       client_id: search.clientId,
       services: [],
@@ -146,7 +141,18 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           {client && <CardTitle>{client.name}</CardTitle>}
           {client && <CardDescription>{client.phone}</CardDescription>}
           <CardAction>
-            <RoutePricingDialog clientId={client?.id ?? ""} />
+            <RoutePricingDialog
+              clientId={client?.id ?? ""}
+              onSelectedPricings={(pricings) => {
+                setRoutesPricings(pricings)
+              }}
+              trigger={
+                <Button type="button" disabled={!client}>
+                  <Plus/>
+                  Locations
+                </Button>
+              }
+            />
             <SubmitButton
               text={tr("common.form.submit")}
               isSubmitting={formState.isSubmitting}
@@ -159,6 +165,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
             onSelect={(client) => {
               setValue("client_id", client?.id ?? "")
               setClient(client)
+              setRoutesPricings([])
             }}
             clients={clientsResponse?.data ?? []}
           />
@@ -200,20 +207,45 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           </FieldGroup>
         </CardContent>
       </Card>
-      <Empty className="border border-dashed">
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <Plus />
-          </EmptyMedia>
-          <EmptyTitle>Destination List Empty</EmptyTitle>
-          <EmptyDescription>
-            Click Routes Button to add destinations for the client.
-          </EmptyDescription>
-        </EmptyHeader>
-        <EmptyContent>
-         <RoutePricingDialog clientId={client?.id ?? ""} />
-        </EmptyContent>
-      </Empty>
+      {routesPricings.length > 0 ? (
+        routesPricings.map((route) => (
+          <div key={route.route_id}>
+            <div>{route.destination}</div>
+            <div>{route.distance_km}</div>
+            <div>
+              {route.min_hrs} - {route.max_hrs}
+            </div>
+            <div>
+              {route.pricings.length}
+            </div>
+          </div>
+        ))
+      ) : (
+        <Empty className="border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Plus />
+            </EmptyMedia>
+            <EmptyTitle>Destination List Empty</EmptyTitle>
+            <EmptyDescription>
+              Click Routes Button to add destinations for the client.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <RoutePricingDialog
+              clientId={client?.id ?? ""}
+              onSelectedPricings={(pricings) => {
+                setRoutesPricings(pricings)
+              }}
+              trigger={
+                <Button type="button" disabled={!client}>
+                  Routes
+                </Button>
+              }
+            />
+          </EmptyContent>
+        </Empty>
+      )}
     </form>
   )
 }

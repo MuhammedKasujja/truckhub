@@ -47,12 +47,6 @@ export function ClientPicker({ onSelect, clients }: ClientPickerProps) {
                 is_primary: true
               },
               {
-                name: "Kimera Jackson",
-                id: "983984934",
-                phone: "077453789",
-                // email: "jack@mail.com",
-              },
-              {
                 name: "Isaac Otim",
                 id: "98738943",
                 phone: "0794893400",
