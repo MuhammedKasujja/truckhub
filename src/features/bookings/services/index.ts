@@ -1,5 +1,6 @@
 import { LocationPoint } from "@/features/bookings/types"
 import {
+  TruckBookingSchema,
   BookingUpdateSchema,
   BookingCreateSchema,
   BookingSearchParamsSchema,
@@ -13,6 +14,7 @@ import {
   getBookingById,
   deleteBookingById,
   getBookingsByQuery,
+  createTruckBooking,
   getBookingStatistics,
   getBookingDetailsById,
   computeBookingEsimatedFare,
@@ -58,6 +60,12 @@ export const createBookingFn = createServerFn()
   .inputValidator(BookingCreateSchema)
   .handler(async ({ data }) => {
     return createBooking(data)
+  })
+
+export const createTruckBookingFn = createServerFn()
+  .inputValidator(TruckBookingSchema)
+  .handler(async ({ data }) => {
+    return createTruckBooking(data)
   })
 
 export const getBookingStatisticsFn = createServerFn().handler(async () => {

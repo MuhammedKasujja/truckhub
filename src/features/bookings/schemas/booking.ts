@@ -45,17 +45,38 @@ export const BookingSearchParamsSchema = z.object({
 
 export type BookingListSearchParams = z.infer<typeof BookingSearchParamsSchema>
 
+export const tonnagePricingSchema = z.object({
+  id: IDSchema,
+  min_tons: z.union([z.string(), z.number()]),
+  max_tons: z.union([z.string(), z.number()]),
+  tons: z.string().min(1, "Required"),
+  price: z.union([z.string(), z.number()]).optional(),
+  default_price: z.union([z.string(), z.number()]),
+})
+
+export const routePricingsSchema = z.object({
+  route_id: IDSchema,
+  origin: z.string(),
+  destination: z.string(),
+  distance_km: z.union([z.string(), z.number()]),
+  min_hrs: z.union([z.string(), z.number()]),
+  max_hrs: z.union([z.string(), z.number()]),
+  pricings: z.array(tonnagePricingSchema).min(1, "Pricings cannot empty"),
+})
+
 export const TruckBookingSchema = z.object({
   client_id: IDSchema,
   partial: z.number().optional().nullable(),
   discount: z.number().optional().nullable(),
-  pickup_time: z.date(),
-  return_time: z.date(),
+  pickup_time: z.date("Required"),
+  return_time: z.date("Required"),
   contacts: z.array(IDSchema).optional().nullable(),
-  services: z
-    .array(ServiceItem)
+  locations: z
+    .array(routePricingsSchema)
     .min(1, "Add at least one service")
     .max(20, "Maximum 20 items per order"),
 })
+
+export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 
 export type TruckBookingRequest = z.infer<typeof TruckBookingSchema>

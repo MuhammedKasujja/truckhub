@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { FieldGroup } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import {
   NumberField,
   DiscountField,
@@ -16,18 +16,18 @@ import { useTranslation } from "@/i18n"
 import { useEffect, useMemo, useState } from "react"
 import z from "zod"
 import {
-  BookingCreateSchema,
-  BookingUpdateSchemaType,
+  RoutePricingStruct,
+  TruckBookingRequest,
   TruckBookingSchema,
 } from "@/features/bookings/schemas"
 import { toast } from "sonner"
-import { useFieldArray, useForm, useWatch } from "react-hook-form"
+import { Control, Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { ListIcon, Plus } from "lucide-react"
-import { createBookingFn } from "@/features/bookings/services"
+import { Plus, Trash2 } from "lucide-react"
+import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
@@ -37,17 +37,17 @@ import { useSearch } from "@tanstack/react-router"
 import { RoutePricingDialog } from "./route-pricing-dialog"
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { IconCloud } from "@tabler/icons-react"
-import { RoutePricing } from "@/features/settings/pricing"
+import { Input } from "@/components/ui/input"
+import { formatPrice } from "@/lib/format"
+import { Separator } from "@/components/ui/separator"
 
 type TrucksBookingFormProps = {
-  initialData?: BookingUpdateSchemaType
+  initialData?: TruckBookingRequest
 }
 
 export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
@@ -55,9 +55,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
   const [client, setClient] = useState<Client | null>(null)
-  const [routesPricings, setRoutesPricings] = useState<RoutePricing[]>([])
-
-  const isEdit = !!initialData
+  const [routesPricings, setRoutesPricings] = useState<RoutePricingStruct[]>([])
 
   const { control, handleSubmit, formState, watch, setValue } = useForm<
     z.infer<typeof TruckBookingSchema>
@@ -65,21 +63,21 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     resolver: zodResolver(TruckBookingSchema),
     defaultValues: {
       client_id: search.clientId,
-      services: [],
       contacts: [],
+      locations: [],
     },
     mode: "onChange",
   })
 
-  const { fields, remove, prepend } = useFieldArray({
+  const { fields, remove, prepend, replace } = useFieldArray({
     control,
-    name: "services",
+    name: "locations",
   })
 
   const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
 
-  async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
-    const { isSuccess, error } = await createBookingFn({ data: values })
+  async function onSubmit(values: z.infer<typeof TruckBookingSchema>) {
+    const { isSuccess, error } = await createTruckBookingFn({ data: values })
     if (isSuccess) {
       toast.success(`${tr("bookings.booking_created_successfully")}`)
       queryInvalidator.bookings.list.invalidate()
@@ -88,38 +86,21 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     }
   }
 
-  const watchedServiceItems = useWatch({
-    control,
-    name: "services",
-    defaultValue: [],
-  })
-
   const partialAmount = watch("partial")
   const discount = watch("discount")
 
-  const calculatedServicesTotals = useMemo(() => {
-    return watchedServiceItems.map((item) => {
-      const qty = item.total_items || 0
-      const price = Number(item.cost_per_item) || 0
-      const discount = item.discount || 0
-
-      const subtotalBeforeDiscount = qty * price
-      const discountAmount = subtotalBeforeDiscount * (discount / 100)
-      const lineTotal = subtotalBeforeDiscount - discountAmount
-
-      return {
-        ...item,
-        lineTotal: Math.round(lineTotal * 100) / 100, // 2 decimal places
-      }
-    })
-  }, [watchedServiceItems])
-
   const grandTotal = useMemo(() => {
-    return calculatedServicesTotals.reduce(
-      (sum, item) => sum + (item.lineTotal || 0),
+    const total = routesPricings.reduce(
+      (sum, route) =>
+        sum +
+        route.pricings.reduce(
+          (sum, pricing) => sum + (Number(pricing.price) || 0),
+          0
+        ),
       0
     )
-  }, [calculatedServicesTotals])
+    return total
+  }, [routesPricings])
 
   useEffect(() => {
     setValue("client_id", search.clientId ?? "")
@@ -128,6 +109,10 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
       setClient(client ?? null)
     }
   }, [search, clientsResponse])
+
+  useEffect(() => {
+    replace(routesPricings)
+  }, [routesPricings])
 
   return (
     <form
@@ -141,18 +126,6 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           {client && <CardTitle>{client.name}</CardTitle>}
           {client && <CardDescription>{client.phone}</CardDescription>}
           <CardAction>
-            <RoutePricingDialog
-              clientId={client?.id ?? ""}
-              onSelectedPricings={(pricings) => {
-                setRoutesPricings(pricings)
-              }}
-              trigger={
-                <Button type="button" disabled={!client}>
-                  <Plus/>
-                  Locations
-                </Button>
-              }
-            />
             <SubmitButton
               text={tr("common.form.submit")}
               isSubmitting={formState.isSubmitting}
@@ -207,16 +180,45 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           </FieldGroup>
         </CardContent>
       </Card>
-      {routesPricings.length > 0 ? (
-        routesPricings.map((route) => (
-          <div key={route.route_id}>
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })}
+          </CardTitle>
+          <CardDescription>Locations {routesPricings.length}</CardDescription>
+          <CardAction>
+            <RoutePricingDialog
+              clientId={client?.id ?? ""}
+              onSelectedPricings={(pricings) => {
+                setRoutesPricings(pricings)
+              }}
+              trigger={
+                <Button type="button" disabled={!client}>
+                  <Plus />
+                  Locations
+                </Button>
+              }
+            />
+          </CardAction>
+        </CardHeader>
+      </Card>
+      <Separator />
+      {fields.length > 0 ? (
+        fields.map((route, index) => (
+          <div
+            key={route.route_id}
+            className="rounded-md border border-dashed p-4"
+          >
             <div>{route.destination}</div>
-            <div>{route.distance_km}</div>
-            <div>
-              {route.min_hrs} - {route.max_hrs}
+            <div className="py-2">
+              {route.min_hrs} HRS - {route.max_hrs} HRS {route.distance_km} KM
             </div>
-            <div>
-              {route.pricings.length}
+            <div className="space-y-4">
+              <TonnagePricingRow
+                key={route.route_id}
+                routeIndex={index}
+                control={control}
+              />
             </div>
           </div>
         ))
@@ -228,24 +230,80 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
             </EmptyMedia>
             <EmptyTitle>Destination List Empty</EmptyTitle>
             <EmptyDescription>
-              Click Routes Button to add destinations for the client.
+              Click Locations to add destinations for the client.
             </EmptyDescription>
           </EmptyHeader>
-          <EmptyContent>
-            <RoutePricingDialog
-              clientId={client?.id ?? ""}
-              onSelectedPricings={(pricings) => {
-                setRoutesPricings(pricings)
-              }}
-              trigger={
-                <Button type="button" disabled={!client}>
-                  Routes
-                </Button>
-              }
-            />
-          </EmptyContent>
         </Empty>
       )}
     </form>
+  )
+}
+
+type Props = {
+  control: Control<TruckBookingRequest>
+  routeIndex: number
+}
+
+function TonnagePricingRow({ control, routeIndex }: Props) {
+  const { fields: pricings, remove } = useFieldArray({
+    control,
+    name: `locations.${routeIndex}.pricings`,
+  })
+
+  return (
+    <>
+      {pricings.map((pricing, pricingIndex) => (
+        <div
+          className="flex flex-row gap-4"
+          key={`${routeIndex}_${pricingIndex}_pricing`}
+        >
+          <Input defaultValue={pricing.min_tons} readOnly disabled />
+          <Input defaultValue={pricing.max_tons} readOnly disabled />
+          <Input
+            defaultValue={formatPrice(pricing.default_price)}
+            readOnly
+            disabled
+          />
+          <Controller
+            name={`locations.${routeIndex}.pricings.${pricingIndex}.price`}
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <Input
+                  {...field}
+                  type={"text"}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                />
+              </Field>
+            )}
+          />
+          <Controller
+            name={`locations.${routeIndex}.pricings.${pricingIndex}.tons`}
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <Input
+                  {...field}
+                  type={"text"}
+                  id={field.name}
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                />
+              </Field>
+            )}
+          />
+          <Button
+            type="button"
+            variant="destructive"
+            size={"icon-sm"}
+            onClick={() => remove(pricingIndex)}
+          >
+            <Trash2 />
+          </Button>
+        </div>
+      ))}
+    </>
   )
 }

@@ -8,6 +8,7 @@ import {
   BookingStatistics,
 } from "@/features/bookings/types"
 import {
+  TruckBookingRequest,
   BookingUpdateSchemaType,
   BookingCreateSchemaType,
   BookingListSearchParams,
@@ -65,6 +66,10 @@ export async function updateBooking(data: BookingUpdateSchemaType) {
 }
 
 export async function createBooking(data: BookingCreateSchemaType) {
+  return await apiClient.postFn<Booking>("/v1/bookings", data)
+}
+
+export async function createTruckBooking(data: TruckBookingRequest) {
   return await apiClient.postFn<Booking>("/v1/bookings", data)
 }
 

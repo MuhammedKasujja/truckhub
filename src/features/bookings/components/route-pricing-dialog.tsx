@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import {
   Item,
   ItemContent,
@@ -13,15 +14,17 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
-import { RoutePricing, TonnagePricing } from "@/features/settings/pricing"
+import { TonnagePricing } from "@/features/settings/pricing"
 import { formatPrice } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import React, { useEffect, useMemo, useState } from "react"
+import { RoutePricingStruct } from "../schemas"
 
 type RoutePricingDialogProps = {
   clientId: EntityId
   trigger: React.ReactNode
-  onSelectedPricings: (pricings: RoutePricing[]) => void
+  onSelectedPricings: (pricings: RoutePricingStruct[]) => void
 }
 
 type RouteDetails = {
@@ -39,7 +42,7 @@ export function RoutePricingDialog({
   onSelectedPricings,
 }: RoutePricingDialogProps) {
   const { data, isLoading } = useClientRoutingPricing(clientId)
-  const [pricingsMap, setPricingsMap] = useState<RoutePricing[]>([])
+  const [pricingsMap, setPricingsMap] = useState<RoutePricingStruct[]>([])
   const [query, setQuery] = useState("")
 
   // useEffect(() => {
@@ -47,7 +50,7 @@ export function RoutePricingDialog({
   // }, [data])
 
   const filteredRoutes = useMemo(() => {
-    return pricingsMap.filter((route) => {
+    return (data?.routes ?? []).filter((route) => {
       const q = query.toLowerCase()
 
       return (
@@ -55,7 +58,7 @@ export function RoutePricingDialog({
         route.destination.toLowerCase().includes(q)
       )
     })
-  }, [query, pricingsMap])
+  }, [query, data])
 
   useEffect(() => {
     onSelectedPricings([])
@@ -80,7 +83,7 @@ export function RoutePricingDialog({
             distance_km,
             max_hrs,
             min_hrs,
-            pricings: [pricing],
+            pricings: [{ ...pricing, default_price: pricing.price, tons: "" }],
           },
         ]
       }
@@ -95,7 +98,10 @@ export function RoutePricingDialog({
           ...item,
           pricings: exists
             ? item.pricings.filter((p) => p.id !== pricing.id)
-            : [...item.pricings, pricing],
+            : [
+                ...item.pricings,
+                { ...pricing, default_price: pricing.price, tons: "" },
+              ],
         }
       })
     })
@@ -122,43 +128,45 @@ export function RoutePricingDialog({
           <DialogTitle>Location Pricing {pricingsMap.length}</DialogTitle>
           <DialogDescription>Client configured Route Pricing</DialogDescription>
         </DialogHeader>
-        <div className="min-h-full overflow-y-auto">
+        <div className="min-h-full space-y-4 overflow-y-auto">
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} />
           {isLoading && <div>Loading.....</div>}
           <div className="flex flex-col gap-4">
-            {data &&
-              data.routes.map((route, index) => (
-                <Item key={`${route.route_id}__${index}`} variant={"outline"}>
-                  <ItemContent>
-                    <ItemTitle>
-                      {route.origin} - {route.destination}
-                    </ItemTitle>
-                    <ItemDescription>
-                      {route.min_hrs} hrs to {route.max_hrs} hrs Distance{" "}
-                      {route.distance_km} km
-                    </ItemDescription>
-                    <div className="flex flex-row flex-wrap gap-4">
-                      {route.pricings.map((pricing) => (
-                        <Item
-                          key={pricing.id}
-                          variant={
-                            hasPricings(route.route_id, pricing.id)
-                              ? "outline"
-                              : "muted"
-                          }
-                          onClick={() => handleAppendPricings(pricing, route)}
-                        >
-                          <ItemContent>
-                            <ItemTitle>{formatPrice(pricing.price)}</ItemTitle>
-                            <ItemDescription>
-                              {pricing.min_tons} TONS to {pricing.max_tons} TONS
-                            </ItemDescription>
-                          </ItemContent>
-                        </Item>
-                      ))}
-                    </div>
-                  </ItemContent>
-                </Item>
-              ))}
+            {filteredRoutes.map((route, index) => (
+              <Item key={`${route.route_id}__${index}`} variant={"outline"}>
+                <ItemContent>
+                  <ItemTitle>{route.destination}</ItemTitle>
+                  <ItemDescription>
+                    {route.min_hrs} hrs to {route.max_hrs} hrs Distance{" "}
+                    {route.distance_km} km
+                  </ItemDescription>
+                  <div className="flex flex-row flex-wrap gap-4">
+                    {route.pricings.map((pricing) => (
+                      <Item
+                        key={pricing.id}
+                        variant={
+                          hasPricings(route.route_id, pricing.id)
+                            ? "outline"
+                            : "muted"
+                        }
+                        className={cn(
+                          hasPricings(route.route_id, pricing.id) &&
+                            "border-primary"
+                        )}
+                        onClick={() => handleAppendPricings(pricing, route)}
+                      >
+                        <ItemContent>
+                          <ItemTitle>{formatPrice(pricing.price)}</ItemTitle>
+                          <ItemDescription>
+                            {pricing.min_tons} TONS to {pricing.max_tons} TONS
+                          </ItemDescription>
+                        </ItemContent>
+                      </Item>
+                    ))}
+                  </div>
+                </ItemContent>
+              </Item>
+            ))}
           </div>
         </div>
       </DialogContent>
