@@ -80,3 +80,5 @@ export const TruckBookingSchema = z.object({
 export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 
 export type TruckBookingRequest = z.infer<typeof TruckBookingSchema>
+
+export type TonnagePricingRequest = z.infer<typeof tonnagePricingSchema>

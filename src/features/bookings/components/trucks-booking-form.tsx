@@ -13,25 +13,20 @@ import {
   DateTimePickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import { useEffect, useMemo, useState } from "react"
 import z from "zod"
 import {
-  RoutePricingStruct,
+  TonnagePricingRequest,
   TruckBookingRequest,
   TruckBookingSchema,
 } from "@/features/bookings/schemas"
 import { toast } from "sonner"
-import { Control, Controller, useFieldArray, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { Control, Controller } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQuery } from "@tanstack/react-query"
-import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
-import { Client } from "@/features/clients/types"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useSearch } from "@tanstack/react-router"
 import { RoutePricingDialog } from "./route-pricing-dialog"
@@ -45,6 +40,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
+import { useTruckBookingForm } from "../hooks/use-truck-booking-form"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -54,27 +50,19 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   const tr = useTranslation()
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
-  const [client, setClient] = useState<Client | null>(null)
-  const [routesPricings, setRoutesPricings] = useState<RoutePricingStruct[]>([])
-
-  const { control, handleSubmit, formState, watch, setValue } = useForm<
-    z.infer<typeof TruckBookingSchema>
-  >({
-    resolver: zodResolver(TruckBookingSchema),
-    defaultValues: {
-      client_id: search.clientId,
-      contacts: [],
-      locations: [],
-    },
-    mode: "onChange",
-  })
-
-  const { fields, remove, prepend, replace } = useFieldArray({
+  const {
     control,
-    name: "locations",
-  })
-
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+    grandTotal,
+    selectedClient,
+    clients,
+    locations,
+    handleSelectClient,
+    setContacts,
+    handleSubmit,
+    formState,
+    handleUpdatePricings,
+    removePricingRow,
+  } = useTruckBookingForm(search.clientId, initialData)
 
   async function onSubmit(values: z.infer<typeof TruckBookingSchema>) {
     const { isSuccess, error } = await createTruckBookingFn({ data: values })
@@ -86,34 +74,6 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     }
   }
 
-  const partialAmount = watch("partial")
-  const discount = watch("discount")
-
-  const grandTotal = useMemo(() => {
-    const total = routesPricings.reduce(
-      (sum, route) =>
-        sum +
-        route.pricings.reduce(
-          (sum, pricing) => sum + (Number(pricing.price) || 0),
-          0
-        ),
-      0
-    )
-    return total
-  }, [routesPricings])
-
-  useEffect(() => {
-    setValue("client_id", search.clientId ?? "")
-    if (clientsResponse) {
-      const client = clientsResponse.data.find((c) => c.id === search.clientId)
-      setClient(client ?? null)
-    }
-  }, [search, clientsResponse])
-
-  useEffect(() => {
-    replace(routesPricings)
-  }, [routesPricings])
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -123,31 +83,24 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     >
       <Card>
         <CardHeader>
-          {client && <CardTitle>{client.name}</CardTitle>}
-          {client && <CardDescription>{client.phone}</CardDescription>}
+          {selectedClient && <CardTitle>{selectedClient.name}</CardTitle>}
+          {selectedClient && (
+            <CardDescription>{selectedClient.phone}</CardDescription>
+          )}
           <CardAction>
             <SubmitButton
               text={tr("common.form.submit")}
               isSubmitting={formState.isSubmitting}
-              disabled={fields.length === 0}
+              disabled={locations.length === 0}
             />
           </CardAction>
         </CardHeader>
         <CardContent>
-          <ClientPicker
-            onSelect={(client) => {
-              setValue("client_id", client?.id ?? "")
-              setClient(client)
-              setRoutesPricings([])
-            }}
-            clients={clientsResponse?.data ?? []}
-          />
-          {client && (
+          <ClientPicker onSelect={handleSelectClient} clients={clients} />
+          {selectedClient && (
             <ClientContactsList
-              contacts={client?.contacts}
-              onSelected={(contacts) => {
-                setValue("contacts", contacts)
-              }}
+              contacts={selectedClient?.contacts}
+              onSelected={setContacts}
             />
           )}
         </CardContent>
@@ -185,15 +138,13 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           <CardTitle>
             Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })}
           </CardTitle>
-          <CardDescription>Locations {routesPricings.length}</CardDescription>
+          <CardDescription>Locations {locations.length}</CardDescription>
           <CardAction>
             <RoutePricingDialog
-              clientId={client?.id ?? ""}
-              onSelectedPricings={(pricings) => {
-                setRoutesPricings(pricings)
-              }}
+              clientId={selectedClient?.id ?? ""}
+              onSelectedPricings={handleUpdatePricings}
               trigger={
-                <Button type="button" disabled={!client}>
+                <Button type="button" disabled={!selectedClient}>
                   <Plus />
                   Locations
                 </Button>
@@ -203,8 +154,8 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
         </CardHeader>
       </Card>
       <Separator />
-      {fields.length > 0 ? (
-        fields.map((route, index) => (
+      {locations.length > 0 ? (
+        locations.map((route, index) => (
           <div
             key={route.route_id}
             className="rounded-md border border-dashed p-4"
@@ -214,11 +165,23 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
               {route.min_hrs} HRS - {route.max_hrs} HRS {route.distance_km} KM
             </div>
             <div className="space-y-4">
-              <TonnagePricingRow
-                key={route.route_id}
-                routeIndex={index}
-                control={control}
-              />
+              <div className="grid grid-cols-5 text-xs gap-4">
+                <div>Min Tons</div>
+                <div>Max Tons</div>
+                <div>Cost Price</div>
+                <div>Price</div>
+                <div>Tonnage</div>
+              </div>
+              {route.pricings.map((pricing, pricingIndex) => (
+                <TonnagePricingRow
+                  key={pricing.id}
+                  routeIndex={index}
+                  control={control}
+                  pricingIndex={pricingIndex}
+                  pricing={pricing}
+                  handleRemove={removePricingRow}
+                />
+              ))}
             </div>
           </div>
         ))
@@ -242,68 +205,68 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
 type Props = {
   control: Control<TruckBookingRequest>
   routeIndex: number
+  pricingIndex: number
+  pricing: TonnagePricingRequest
+  handleRemove: (routeIndex: number, pricingIndex: number) => void
 }
 
-function TonnagePricingRow({ control, routeIndex }: Props) {
-  const { fields: pricings, remove } = useFieldArray({
-    control,
-    name: `locations.${routeIndex}.pricings`,
-  })
-
+function TonnagePricingRow({
+  control,
+  routeIndex,
+  pricingIndex,
+  handleRemove,
+  pricing,
+}: Props) {
   return (
-    <>
-      {pricings.map((pricing, pricingIndex) => (
-        <div
-          className="flex flex-row gap-4"
-          key={`${routeIndex}_${pricingIndex}_pricing`}
-        >
-          <Input defaultValue={pricing.min_tons} readOnly disabled />
-          <Input defaultValue={pricing.max_tons} readOnly disabled />
-          <Input
-            defaultValue={formatPrice(pricing.default_price)}
-            readOnly
-            disabled
-          />
-          <Controller
-            name={`locations.${routeIndex}.pricings.${pricingIndex}.price`}
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  type={"text"}
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="off"
-                />
-              </Field>
-            )}
-          />
-          <Controller
-            name={`locations.${routeIndex}.pricings.${pricingIndex}.tons`}
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  type={"text"}
-                  id={field.name}
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="off"
-                />
-              </Field>
-            )}
-          />
-          <Button
-            type="button"
-            variant="destructive"
-            size={"icon-sm"}
-            onClick={() => remove(pricingIndex)}
-          >
-            <Trash2 />
-          </Button>
-        </div>
-      ))}
-    </>
+    <div
+      className="flex flex-row gap-4"
+      key={`${routeIndex}_${pricingIndex}_pricing`}
+    >
+      <Input defaultValue={pricing.min_tons} readOnly disabled />
+      <Input defaultValue={pricing.max_tons} readOnly disabled />
+      <Input
+        defaultValue={formatPrice(pricing.default_price)}
+        readOnly
+        disabled
+      />
+      <Controller
+        name={`locations.${routeIndex}.pricings.${pricingIndex}.price`}
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <Input
+              {...field}
+              type={"text"}
+              id={field.name}
+              aria-invalid={fieldState.invalid}
+              autoComplete="off"
+            />
+          </Field>
+        )}
+      />
+      <Controller
+        name={`locations.${routeIndex}.pricings.${pricingIndex}.tons`}
+        control={control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <Input
+              {...field}
+              type={"text"}
+              id={field.name}
+              aria-invalid={fieldState.invalid}
+              autoComplete="off"
+            />
+          </Field>
+        )}
+      />
+      <Button
+        type="button"
+        variant="destructive"
+        size={"icon-sm"}
+        onClick={() => handleRemove(routeIndex, pricingIndex)}
+      >
+        <Trash2 />
+      </Button>
+    </div>
   )
 }
