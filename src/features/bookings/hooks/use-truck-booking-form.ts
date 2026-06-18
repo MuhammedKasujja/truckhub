@@ -60,7 +60,7 @@ export function useTruckBookingForm(
   const locations = useWatch({ control, name: "locations" })
 
   const grandTotal = useMemo(() => {
-    const total = routesPricings.reduce(
+    const total = locations.reduce(
       (sum, route) =>
         sum +
         route.pricings.reduce(
@@ -70,7 +70,7 @@ export function useTruckBookingForm(
       0
     )
     return total
-  }, [routesPricings])
+  }, [locations])
 
   useEffect(() => {
     setValue("client_id", clientId ?? "")

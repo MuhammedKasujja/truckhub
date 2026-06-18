@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Field, FieldGroup } from "@/components/ui/field"
+import { Field, FieldError, FieldGroup } from "@/components/ui/field"
 import {
   NumberField,
   DiscountField,
@@ -165,7 +165,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
               {route.min_hrs} HRS - {route.max_hrs} HRS {route.distance_km} KM
             </div>
             <div className="space-y-4">
-              <div className="grid grid-cols-5 text-xs gap-4">
+              <div className="grid grid-cols-5 gap-4 text-xs">
                 <div>Min Tons</div>
                 <div>Max Tons</div>
                 <div>Cost Price</div>
@@ -236,11 +236,18 @@ function TonnagePricingRow({
           <Field data-invalid={fieldState.invalid}>
             <Input
               {...field}
-              type={"text"}
+              type={"number"}
               id={field.name}
               aria-invalid={fieldState.invalid}
               autoComplete="off"
+              onChange={(e) => {
+                const number = e.target.valueAsNumber
+                field.onChange(isNaN(number) ? null : number)
+              }}
             />
+            {fieldState.invalid && (
+              <FieldError className="text-xs" errors={[fieldState.error]} />
+            )}
           </Field>
         )}
       />
@@ -256,6 +263,9 @@ function TonnagePricingRow({
               aria-invalid={fieldState.invalid}
               autoComplete="off"
             />
+            {fieldState.invalid && (
+              <FieldError className="text-xs" errors={[fieldState.error]} />
+            )}
           </Field>
         )}
       />
