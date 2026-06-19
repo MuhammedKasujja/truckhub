@@ -1,5 +1,6 @@
 import { AutoComplete } from "@/components/ui/autocomplete"
 import { Client } from "../types"
+import { EntityPickerProps } from "@/common/types"
 
 type ClientPickerProps = {
   onSelect: (client: Client | null) => void
@@ -56,6 +57,27 @@ export function ClientPicker({ onSelect, clients }: ClientPickerProps) {
           })
         else onSelect(null)
       }}
+    />
+  )
+}
+
+
+export function UserPicker({ value, id, onSelected }: EntityPickerProps<Client>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(usersQueryOprions({}))
+  return (
+    <AutoComplete<Client>
+      id={id}
+      options={data?.data ?? []}
+      loading={isLoading}
+      value={value}
+      onChange={(user) => {
+        onSelected?.(user)
+      }}
+      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      label="User"
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.name}</span>}
     />
   )
 }

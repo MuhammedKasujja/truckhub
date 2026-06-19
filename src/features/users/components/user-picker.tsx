@@ -8,21 +8,13 @@ import {
   FormAutoCompleteProps,
 } from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
 import { FieldValues } from "react-hook-form"
+import { EntityPickerProps } from "@/common/types"
 
-type UserPickerProps = {
-  id?: string
-  value?: SystemUser
-  label?: string
-  placeholder?: string
-  disabled?: boolean
-  /** Switch to remote API search instead of local filter */
-  remote?: boolean
-  /** Min chars before triggering remote search */
-  minSearchLength?: number
-  onSelected?: (value: SystemUser | null | undefined) => void
-}
-
-export function UserPicker({ value, id, onSelected }: UserPickerProps) {
+export function UserPicker({
+  value,
+  id,
+  onSelected,
+}: EntityPickerProps<SystemUser>) {
   const [query, setQuery] = useState("")
   const { data, isLoading } = useQuery(usersQueryOprions({}))
   return (
