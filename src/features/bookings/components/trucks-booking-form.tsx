@@ -28,7 +28,7 @@ import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
-import { useSearch } from "@tanstack/react-router"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import { RoutePricingDialog } from "./route-pricing-dialog"
 import {
   Empty,
@@ -42,6 +42,7 @@ import { formatPrice } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
 import { useTruckBookingForm } from "../hooks/use-truck-booking-form"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
+import { Client } from "@/features/clients/types"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -49,6 +50,8 @@ type TrucksBookingFormProps = {
 
 export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   const tr = useTranslation()
+  const navigate = useNavigate()
+
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
   const {
@@ -75,6 +78,18 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     }
   }
 
+  function handleClientSelected(client: Client | null) {
+    handleSelectClient(client)
+    navigate({
+      to: "/bookings/new",
+      search: (prev) => ({
+        ...prev,
+        clientId: client?.id,
+      }),
+      replace: true,
+    })
+  }
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -97,16 +112,18 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <ClientPicker onSelect={handleSelectClient} clients={clients} />
+          <ClientPicker onSelect={handleClientSelected} clients={clients} />
           {selectedClient && (
             <ClientContactsList
               contacts={selectedClient?.contacts}
               onSelected={setContacts}
             />
           )}
-          <TaxRatePicker onSelect={(taxRate)=>{
-            console.log(taxRate)
-          }}/>
+          <TaxRatePicker
+            onSelect={(taxRate) => {
+              console.log(taxRate)
+            }}
+          />
         </CardContent>
       </Card>
       <Card>
