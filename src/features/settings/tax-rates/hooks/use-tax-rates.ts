@@ -2,9 +2,9 @@ import { createTaxRatesQueryOptions } from "../query-options"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 
 export function useTaxRatesQuery() {
-  const { data, isLoading } = useQuery(createTaxRatesQueryOptions())
+  const { data, isLoading, refetch } = useQuery(createTaxRatesQueryOptions())
 
-  return { data: data?.data, error: data?.error, isLoading }
+  return { data: data?.data, error: data?.error, isLoading, refetch }
 }
 
 export function useTaxRatesSuspense() {

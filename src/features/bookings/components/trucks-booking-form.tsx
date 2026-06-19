@@ -41,6 +41,7 @@ import { Input } from "@/components/ui/input"
 import { formatPrice } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
 import { useTruckBookingForm } from "../hooks/use-truck-booking-form"
+import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -103,6 +104,9 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
               onSelected={setContacts}
             />
           )}
+          <TaxRatePicker onSelect={(taxRate)=>{
+            console.log(taxRate)
+          }}/>
         </CardContent>
       </Card>
       <Card>
