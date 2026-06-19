@@ -12,12 +12,18 @@ import {
   EditPaymentSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
+import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getPaymentsFn = createServerFn()
   .inputValidator(PaymentSearchParamsCache)
   .handler(async ({ data }) => {
-    return await getPayments(data)
+    const response = await getPayments(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getPaymentsByQueryFn = createServerFn()

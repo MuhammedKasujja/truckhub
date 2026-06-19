@@ -16,18 +16,29 @@ import {
   computeRideEsimatedFare,
   getRideRequestDetailsById,
 } from "./server"
+import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getRidesFn = createServerFn()
   .inputValidator(RideRequestSearchParamsCache)
   .handler(async ({ data }) => {
-    return getRideRequests(data)
+    const response = await getRideRequests(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return response.data
   })
 
 export const getRideRequestsByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
   .handler(async ({ data }) => {
-    return getRideRequestsByQuery(data)
+    const response = await getRideRequestsByQuery(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return response.data
   })
 
 export const getRideRequestByIdFn = createServerFn()

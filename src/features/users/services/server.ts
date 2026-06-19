@@ -13,20 +13,17 @@ import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export async function getUsers(input: UserListSearchParams) {
-  const { page, perPage } = input
-
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    pagination: paginator,
-    error,
-  } = await apiClient.getPaginatedFn<SystemUser[]>(`/v1/users/?${params}`)
+  const response = await apiClient.getPaginatedFn<SystemUser[]>(`/v1/users/?${params}`)
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
+  if (response.success) {
+    return {
+      data: { data: response.data, pagination: response.pagination },
+    }
+  }
 
-  return { data: isSuccess ? data! : [], pagination, error }
+  return { error: response.error }
 }
 
 export async function getUsersByQuery(query: SearchQuery) {

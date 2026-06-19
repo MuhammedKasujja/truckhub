@@ -19,11 +19,17 @@ import {
   getBookingDetailsById,
   computeBookingEsimatedFare,
 } from "./server"
+import { ApiError } from "@/types"
 
 export const getBookingsFn = createServerFn({ method: "POST" })
   .inputValidator(BookingSearchParamsSchema)
   .handler(async ({ data }) => {
-    return getBookings(data)
+    const response = await getBookings(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getBookingsByQueryFn = createServerFn()

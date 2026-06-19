@@ -36,13 +36,13 @@ export function useTruckBookingForm(
       },
       mode: "onChange",
     })
-
-  const { remove, replace } = useFieldArray({
+  
+  const { replace } = useFieldArray({
     control,
     name: "locations",
   })
 
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const { data } = useQuery(clientsSearchQueryOptions())
 
   async function onSubmit(values: z.infer<typeof TruckBookingSchema>) {
     const { isSuccess, error } = await createTruckBookingFn({ data: values })

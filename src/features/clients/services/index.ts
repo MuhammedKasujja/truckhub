@@ -19,18 +19,29 @@ import {
   getCustomerDetailsById,
   createClientBatchRoutePricing,
 } from "./server"
+import { ApiError } from "@/types"
 import { BatchPricingPayloadUpdateSchema } from "@/features/settings/pricing/schemas"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(CustomerSearchParamsCache)
   .handler(async ({ data }) => {
-    return await getCustomers(data)
+    const response = await getCustomers(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getClientsByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
   .handler(async ({ data }) => {
-    return getCustomersByQuery(data)
+    const response = await getCustomersByQuery(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return response.data
   })
 
 export const getClientByIdFn = createServerFn()

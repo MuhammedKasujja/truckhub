@@ -1,5 +1,3 @@
-"use server"
-
 import { api } from "@/lib/api"
 import { AxiosError } from "axios"
 import { logoutFn } from "@/features/auth/services"
@@ -31,14 +29,23 @@ export async function getPaginatedFn<T>(
   try {
     const response = await api.get(url)
     return {
-      isSuccess: true,
+      success: true,
       data: response.data.data,
       message: response.data.message,
       pagination: response.data.meta,
     }
   } catch (error) {
     await logoutOnServerActions(error)
-    return _handleApiException(error)
+    const errorCode = handleErrorCodes(error)
+    return {
+      success: false,
+      error: {
+        message: (error as any).response.data.error.message,
+        code: (error as any).response.data.error.code,
+        statusCode: 400,
+        erroCode: errorCode,
+      },
+    }
   }
 }
 

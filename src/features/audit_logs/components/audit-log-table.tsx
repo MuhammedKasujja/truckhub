@@ -13,11 +13,11 @@ import { useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createAuditLogsQueryOptions } from "../query-options"
 
-
 export function AuditLogTable() {
   const search = useSearch({ from: "/_admin/reports/audits/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createAuditLogsQueryOptions(search))
   const tr = useTranslation()
   const columns = React.useMemo(() => getAuditLogTableColumns(tr), [tr])

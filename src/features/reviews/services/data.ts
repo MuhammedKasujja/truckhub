@@ -1,42 +1,41 @@
-"use server";
+"use server"
 
-import  * as apiClient from "@/lib/api-client";
-import { Review } from "@/features/reviews/types";
+import * as apiClient from "@/lib/api-client"
+import { Review } from "@/features/reviews/types"
 import {
   ReviewCreateSchemaType,
   ReviewListSearchParams,
   ReviewUpdateSchemaType,
-} from "@/features/reviews/schemas";
-import { generateApiSearchParams } from "@/lib/search-params";
+} from "@/features/reviews/schemas"
+import { generateApiSearchParams } from "@/lib/search-params"
 
 export async function getReviews(input: ReviewListSearchParams) {
-  const { page, perPage } = input;
-  const params = generateApiSearchParams(input);
+  const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Review[]>(`/v1/reviews/?${params}`);
+  const response = await apiClient.getPaginatedFn<Review[]>(
+    `/v1/reviews/?${params}`
+  )
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 };
-  return { data: isSuccess ? data! : [], error, pagination };
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getReviewById(reviewId: number | string) {
-  return await apiClient.getFn<Review>(`/v1/reviews/${reviewId}`);
+  return await apiClient.getFn<Review>(`/v1/reviews/${reviewId}`)
 }
 
 export async function deleteReviewById(reviewId: number | string) {
-  return await apiClient.deleteFn(`/v1/reviews/${reviewId}`);
+  return await apiClient.deleteFn(`/v1/reviews/${reviewId}`)
 }
 
 export async function updateReview(data: ReviewUpdateSchemaType) {
-  const { id: reviewId, ...rest } = data;
-  return await apiClient.putFn<Review>(`/v1/reviews/${reviewId}`, rest);
+  const { id: reviewId, ...rest } = data
+  return await apiClient.putFn<Review>(`/v1/reviews/${reviewId}`, rest)
 }
 
 export async function createReview(data: ReviewCreateSchemaType) {
-  return await apiClient.postFn<Review>("/v1/reviews", data);
+  return await apiClient.postFn<Review>("/v1/reviews", data)
 }

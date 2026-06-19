@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 import { routeTree } from "./routeTree.gen"
-import { AppErrorDetails } from "./types"
+import { ApiError } from "./types"
 
 export function getRouter() {
   const queryClient = new QueryClient({
@@ -35,8 +35,8 @@ declare module "@tanstack/react-router" {
   }
 }
 
-// declare module '@tanstack/react-query' {
-//   interface Register {
-//     defaultError: AppErrorDetails;  // 👈 globally register api error type
-//   }
-// }
+declare module '@tanstack/react-query' {
+  interface Register {
+    defaultError: ApiError;  // 👈 globally register api error type for react query
+  }
+}

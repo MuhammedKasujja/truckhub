@@ -22,19 +22,17 @@ import { RoutePricingResponse } from "@/features/settings/pricing/types"
 const endpoint = "/v1/clients"
 
 export async function getCustomers(input: CustomerListSearchParams) {
-  const { page, perPage } = input
-
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Customer[]>(`${endpoint}?${params}`)
+  const response = await apiClient.getPaginatedFn<Customer[]>(
+    `${endpoint}?${params}`
+  )
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-  return { data: isSuccess ? data! : [], error, pagination }
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getCustomersByQuery({ search }: SearchQuery) {

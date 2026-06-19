@@ -17,17 +17,28 @@ import {
   getVehicleDetailsById,
   vehicleUnAssignDriver,
 } from "./server"
+import { ApiError } from "@/types"
 
 export const getVehiclesFn = createServerFn()
   .inputValidator(VehicleSearchParamsCache)
   .handler(async ({ data }) => {
-    return await getVehicles(data)
+    const response = await getVehicles(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getVehiclesByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
   .handler(async ({ data }) => {
-    return getVehiclesByQuery(data)
+    const response = await getVehiclesByQuery(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getVehicleByIdFn = createServerFn()
