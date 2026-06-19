@@ -10,7 +10,23 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 
-export interface FormAutoCompleteProps<
+export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
+  name: FieldPath<TFieldValues>
+  control: Control<TFieldValues>
+  description?: string
+  onSelected?: (value: T | null) => void
+  /** Switch to remote API search instead of local filter */
+  remote?: boolean
+  /** Min chars before triggering remote search */
+  minSearchLength?: number
+  label: string
+  placeholder?: string
+  disabled?: boolean
+  clearable?: boolean
+  noResultsMessage?: React.ReactNode
+}
+
+interface FormAutoCompleteFieldProps<
   TFieldValues extends FieldValues,
   T,
 > extends Omit<AutoCompleteProps<T>, "id" | "value" | "onChange"> {
@@ -36,7 +52,7 @@ export function FormAutoComplete<TFieldValues extends FieldValues, T>({
   filterFn,
   onSearch,
   ...props
-}: FormAutoCompleteProps<TFieldValues, T>) {
+}: FormAutoCompleteFieldProps<TFieldValues, T>) {
   return (
     <div className="flex flex-col gap-1">
       <Controller
@@ -55,7 +71,7 @@ export function FormAutoComplete<TFieldValues extends FieldValues, T>({
                 {...props}
                 id={field.name}
                 options={options}
-                // Remote mode: pass onSearch, skip filterFn
+                // API mode search: pass onSearch, skip filterFn
                 {...(remote
                   ? { onSearch: onSearch }
                   : {

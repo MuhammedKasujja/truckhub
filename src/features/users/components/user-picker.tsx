@@ -3,6 +3,11 @@ import { SystemUser } from "../types"
 import { useQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
 import { useState } from "react"
+import {
+  FormAutoComplete,
+  FormAutoCompleteProps,
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
+import { FieldValues } from "react-hook-form"
 
 type UserPickerProps = {
   id?: string
@@ -14,25 +19,55 @@ type UserPickerProps = {
   remote?: boolean
   /** Min chars before triggering remote search */
   minSearchLength?: number
+  onSelected?: (value: SystemUser | null | undefined) => void
 }
 
-export function UserPicker({ value, id }: UserPickerProps) {
+export function UserPicker({ value, id, onSelected }: UserPickerProps) {
   const [query, setQuery] = useState("")
   const { data, isLoading } = useQuery(usersQueryOprions({}))
-  const [selectedUser, setSelectedUser] = useState(value)
   return (
     <AutoComplete<SystemUser>
       id={id}
       options={data?.data ?? []}
       loading={isLoading}
-      value={selectedUser}
+      value={value}
       onChange={(user) => {
-        setSelectedUser(user)
+        onSelected?.(user)
       }}
       filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
       label="User"
       getOptionValue={(u) => u.id}
       renderOption={(u) => <span>{u.name}</span>}
+    />
+  )
+}
+
+export function UserPickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, SystemUser>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(usersQueryOprions({}))
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={data?.data ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      onSearch={(q) => setQuery(q)}
+      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.name}</span>}
+      onSelected={onSelected}
+      {...props}
     />
   )
 }
