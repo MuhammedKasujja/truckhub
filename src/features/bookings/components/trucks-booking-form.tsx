@@ -43,6 +43,8 @@ import { Separator } from "@/components/ui/separator"
 import { useTruckBookingForm } from "../hooks/use-truck-booking-form"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
+import { useState } from "react"
+import { TaxRate } from "@/features/settings/tax-rates/types"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -52,6 +54,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   const tr = useTranslation()
   const navigate = useNavigate()
 
+  const [taxRate, setTaxRate] = useState<TaxRate>()
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
   const {
@@ -79,15 +82,15 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
   }
 
   function handleClientSelected(client: Client | null) {
+    // navigate({
+    //   to: "/bookings/new",
+    //   search: (prev) => ({
+    //     ...prev,
+    //     clientId: client?.id,
+    //   }),
+    //   replace: true,
+    // })
     handleSelectClient(client)
-    navigate({
-      to: "/bookings/new",
-      search: (prev) => ({
-        ...prev,
-        clientId: client?.id,
-      }),
-      replace: true,
-    })
   }
 
   return (
@@ -120,8 +123,9 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
             />
           )}
           <TaxRatePicker
-            onSelect={(taxRate) => {
-              console.log(taxRate)
+            value={taxRate}
+            onSelected={(taxRate) => {
+              setTaxRate(taxRate)
             }}
           />
         </CardContent>

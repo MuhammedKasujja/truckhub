@@ -8,9 +8,16 @@ import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
+import { ClientTableActions } from "./client-table-actions"
 
 export function getCustomerTableColumns(): ColumnDef<Client>[] {
   return [
+    {
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => <ClientTableActions client={row.original} />,
+    },
     {
       accessorKey: "name",
       header: "Name",
@@ -53,26 +60,6 @@ export function getCustomerTableColumns(): ColumnDef<Client>[] {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2">
-            <Can permission={"clients:view"}>
-              <Button variant={"outline"} size={"icon"}>
-                <Link
-                  to={"/clients/$clientId/view"}
-                  params={{ clientId: row.original.id }}
-                >
-                  <EyeIcon />
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"clients:edit"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link
-                  to={"/clients/$clientId/edit"}
-                  params={{ clientId: row.original.id }}
-                >
-                  <EditIcon />
-                </Link>
-              </Button>
-            </Can>
             <Can permission={"clients:delete"}>
               <ActionButton
                 variant={"destructive"}

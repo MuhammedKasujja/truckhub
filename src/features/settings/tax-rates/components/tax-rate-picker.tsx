@@ -1,44 +1,27 @@
-import { AutoComplete } from "@/components/ui/autocomplete"
 import { TaxRate } from "../types"
 import { useTaxRatesQuery } from "../hooks/use-tax-rates"
+import { EntityPickerProps } from "@/common/types"
+import { AutoComplete } from "@/components/ui/autocomplete-modified"
 
-type TaxRatePickerProps = {
-  onSelect: (taxRate: TaxRate | null) => void
-}
-
-export function TaxRatePicker({ onSelect }: TaxRatePickerProps) {
-  const { data } = useTaxRatesQuery()
+export function TaxRatePicker({
+  id,
+  value,
+  onSelected,
+}: EntityPickerProps<TaxRate>) {
+  const { data, isLoading } = useTaxRatesQuery()
   return (
     <AutoComplete<TaxRate>
-      triggerClassName="flex-1 w-full"
-      fetcher={async (_) => {
-        return data?? []
+      id={id}
+      options={data ?? []}
+      loading={isLoading}
+      value={value}
+      onChange={(user) => {
+        onSelected?.(user)
       }}
-      renderOption={(taxRate) => (
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col">
-            <div className="font-medium">{taxRate.name}</div>
-          </div>
-        </div>
-      )}
-      getOptionValue={(taxRate) => taxRate.id.toString()}
-      getDisplayValue={(taxRate) => (
-        <div className="flex items-center gap-2 text-left">
-          <div className="flex flex-col leading-tight">
-            <div className="font-medium">{taxRate.name}</div>
-          </div>
-        </div>
-      )}
-      notFound={
-        <div className="py-6 text-center text-sm">No Tax Rates found</div>
-      }
+      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
       label="Tax Rate"
-      placeholder="Search tax rates..."
-      value={undefined}
-      onChange={(client) => {
-        if (client) onSelect(client)
-        else onSelect(null)
-      }}
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.name}</span>}
     />
   )
 }
