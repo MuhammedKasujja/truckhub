@@ -1,5 +1,3 @@
-"use client"
-
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -47,7 +45,7 @@ export function BookingTable() {
 export function BookingTableSkeleton() {
   return (
     <DataTableSkeleton
-      columnCount={getBookingTableColumns().length}
+      columnCount={8}
       filterCount={1}
       shrinkZero
     />

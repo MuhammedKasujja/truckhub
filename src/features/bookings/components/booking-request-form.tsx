@@ -81,7 +81,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     data: { data: services },
   } = useSuspenseQuery(servicesSearchQueryOptions())
 
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const { data: clients } = useQuery(clientsSearchQueryOptions())
 
   async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
     const { isSuccess, error } = await createBookingFn({ data: values })
@@ -128,11 +128,11 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
 
   useEffect(() => {
     setValue("client_id", search.clientId ?? "")
-    if (clientsResponse) {
-      const client = clientsResponse.data.find((c) => c.id === search.clientId)
+    if (clients) {
+      const client = clients.find((c) => c.id === search.clientId)
       setClient(client ?? null)
     }
-  }, [search, clientsResponse])
+  }, [search, clients])
 
   return (
     <form
@@ -159,7 +159,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
               setValue("client_id", client?.id ?? "")
               setClient(client)
             }}
-            clients={clientsResponse?.data ?? []}
+            clients={clients ?? []}
           />
           {client && (
             <ClientContactsList

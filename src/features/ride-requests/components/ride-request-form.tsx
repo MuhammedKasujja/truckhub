@@ -51,7 +51,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
     data: { data: serviceList },
   } = useSuspenseQuery(servicesSearchQueryOptions())
 
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const { data: clients } = useQuery(clientsSearchQueryOptions())
   const mapRef = React.useRef<MapRef>(null)
 
   const tr = useTranslation()
@@ -85,7 +85,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
                 label={tr("common.passenger")}
                 name={"client_id"}
                 control={form.control}
-                options={(clientsResponse?.data ?? []).map((ele) => ({
+                options={(clients ?? []).map((ele) => ({
                   label: ele.name,
                   value: ele.id,
                 }))}

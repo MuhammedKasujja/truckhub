@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/item"
 import { ClientContact } from "../types"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { EntityId } from "@/schemas"
 // import { PlusIcon } from "lucide-react"
@@ -54,19 +53,12 @@ export function ClientContactsList({
           </ItemContent>
           <ItemActions>
             {onSelected && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                // asChild
-              >
                 <Checkbox
                   checked={selected.has(contact.id)}
                   onCheckedChange={(checked) => {
                     handleContactSelect(contact.id, checked as boolean)
                   }}
                 />
-              </Button>
             )}
           </ItemActions>
         </Item>

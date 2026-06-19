@@ -36,13 +36,13 @@ export function useTruckBookingForm(
       },
       mode: "onChange",
     })
-  
+
   const { replace } = useFieldArray({
     control,
     name: "locations",
   })
 
-  const { data } = useQuery(clientsSearchQueryOptions())
+  const { data: clients } = useQuery(clientsSearchQueryOptions())
 
   async function onSubmit(values: z.infer<typeof TruckBookingSchema>) {
     const { isSuccess, error } = await createTruckBookingFn({ data: values })
@@ -74,11 +74,11 @@ export function useTruckBookingForm(
 
   useEffect(() => {
     setValue("client_id", clientId ?? "")
-    if (clientsResponse) {
-      const client = clientsResponse.data.find((c) => c.id === clientId)
+    if (clients) {
+      const client = clients.find((c) => c.id === clientId)
       setClient(client ?? null)
     }
-  }, [clientId, clientsResponse])
+  }, [clientId, clients])
 
   useEffect(() => {
     replace(routesPricings)
@@ -122,7 +122,7 @@ export function useTruckBookingForm(
     setContacts,
     handleSubmit,
     handleUpdatePricings,
-    clients: clientsResponse?.data ?? [],
+    clients: clients ?? [],
     removePricingRow,
   }
 }
