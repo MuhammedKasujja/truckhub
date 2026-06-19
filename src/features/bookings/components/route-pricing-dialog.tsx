@@ -116,6 +116,15 @@ export function RoutePricingDialog({
       .find((route) => route.route_id === routeId)
       ?.pricings.find((pricing) => pricing.id === pricingId) !== undefined
 
+  const totalPrincings = useMemo(()=>{
+    return pricingsMap.reduce(
+      (sum, route) =>
+        sum +
+        route.pricings.length,
+      0
+    )
+  }, [pricingsMap])
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -125,7 +134,7 @@ export function RoutePricingDialog({
         className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-y-auto md:min-w-[90vw]"
       >
         <DialogHeader className="min-h-8">
-          <DialogTitle>Location Pricing {pricingsMap.length}</DialogTitle>
+          <DialogTitle>Location Pricing {totalPrincings}</DialogTitle>
           <DialogDescription>Client configured Route Pricing</DialogDescription>
         </DialogHeader>
         <div className="min-h-full space-y-4 overflow-y-auto">

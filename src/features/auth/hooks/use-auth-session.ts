@@ -17,7 +17,7 @@ export function useAuthSession() {
   } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => fetchUser(),
-    staleTime: 10 * 60 * 1000, // 10 min — consider this data as fresh for only 10 minutes
+    staleTime: 10 * 60 * 1000, // 10 min — staleTime means repeated searches for the same queryKey(s) hit the cache instead of the network.
     refetchInterval: 5 * 60 * 1000, // actively poll every 5 min, regardless of focus
     retry: false,
   })

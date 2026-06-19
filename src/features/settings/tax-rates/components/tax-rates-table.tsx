@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
@@ -8,13 +6,10 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { getTaxRateColumns } from "./tax-rates-table-columns"
 import { TaxRateForm } from "./tax-rate-form"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createTaxRatesQueryOptions } from "../query-options"
+import { useTaxRatesSuspense } from "../hooks/use-tax-rates"
 
 export function TaxRatesTable() {
-  const {
-    data: { data, error },
-  } = useSuspenseQuery(createTaxRatesQueryOptions())
+  const { data, error } = useTaxRatesSuspense()
   const columns = React.useMemo(() => getTaxRateColumns(), [])
 
   useFetchEror(error)

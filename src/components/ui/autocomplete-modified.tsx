@@ -1,0 +1,162 @@
+import { useState, useMemo } from "react"
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+export interface AutoCompleteProps<T> {
+  id?: string
+  options: T[]
+  value?: T | null
+  loading?: boolean
+
+  onChange: (value: T | null | undefined) => void
+
+  /** remote search mode */
+  onSearch?: (query: string) => void
+
+  /** local filter mode */
+  filterFn?: (option: T, query: string) => boolean
+
+  getOptionValue: (option: T) => string
+
+  renderOption: (option: T, selected: boolean) => React.ReactNode
+  renderValue?: (option: T) => React.ReactNode
+
+  label: string
+  placeholder?: string
+  disabled?: boolean
+  clearable?: boolean
+
+  noResultsMessage?: React.ReactNode
+}
+
+export function AutoComplete<T>({
+  id,
+  options,
+  value,
+  loading = false,
+  onChange,
+  onSearch,
+  filterFn,
+  getOptionValue,
+  renderOption,
+  renderValue,
+  label,
+  placeholder = "Select...",
+  disabled,
+  clearable = true,
+  noResultsMessage,
+}: AutoCompleteProps<T>) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState("")
+
+  const filteredOptions = useMemo(() => {
+    // Remote mode (React Query / API)
+    if (onSearch) return options
+
+    // Local filter mode
+    if (filterFn && search) {
+      return options.filter((opt) => filterFn(opt, search))
+    }
+
+    return options
+  }, [options, search, filterFn, onSearch])
+
+  const isSelected = (option: T) => {
+    if (!value) return false
+    return getOptionValue(option) === getOptionValue(value)
+  }
+
+  const handleSelect = (option: T) => {
+    if (clearable && value && isSelected(option)) {
+      onChange(null)
+    } else {
+      onChange(option)
+    }
+    setOpen(false)
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className="w-full justify-between"
+        >
+          {value
+            ? (renderValue?.(value) ?? renderOption(value, true))
+            : placeholder}
+
+          <ChevronsUpDown className="opacity-50" />
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder={`Search ${label.toLowerCase()}...`}
+            value={search}
+            onValueChange={(val) => {
+              setSearch(val)
+              onSearch?.(val) // 🔥 remote mode trigger
+            }}
+          />
+
+          <CommandList>
+            {loading && (
+              <div className="flex justify-center p-3">
+                <Loader2 className="h-4 w-4 animate-spin" />
+              </div>
+            )}
+
+            {!loading && filteredOptions.length === 0 && (
+              <CommandEmpty>
+                {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
+              </CommandEmpty>
+            )}
+
+            <CommandGroup>
+              {filteredOptions.map((option) => {
+                const selected = isSelected(option)
+
+                return (
+                  <CommandItem
+                    key={getOptionValue(option)}
+                    value={getOptionValue(option)}
+                    onSelect={() => handleSelect(option)}
+                  >
+                    {renderOption(option, selected)}
+
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        selected ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                )
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}

@@ -10,7 +10,8 @@ export function useTaxRatesQuery() {
 export function useTaxRatesSuspense() {
   const {
     data: { data, error },
+    isLoading,
   } = useSuspenseQuery(createTaxRatesQueryOptions())
 
-  return { data, error }
+  return { data, error, isLoading }
 }

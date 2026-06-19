@@ -26,6 +26,7 @@ import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { UserPicker } from "@/features/users/components/user-picker"
 
 type ClientFormProps = {
   initialData?: z.infer<typeof CustomerUpdateSchema>
@@ -111,6 +112,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               required={false}
             />
+            <UserPicker/>
             {!isEdit && (
               <PasswordField
                 label={tr("common.form.password")}
