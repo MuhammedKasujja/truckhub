@@ -15,7 +15,7 @@ import { useSearch } from "@tanstack/react-router"
 export function DriverTable() {
   const search = useSearch({ from: "/_admin/drivers/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination }, error,
   } = useSuspenseQuery(createDriverListQueryOptions(search))
   const columns = useMemo(() => getDriverTableColumns(), [])
 

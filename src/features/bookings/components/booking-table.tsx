@@ -15,7 +15,7 @@ import { createBookingQueryOptions } from "../queries-options"
 export function BookingTable() {
   const search = useSearch({ from: "/_admin/bookings/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination }, error,
   } = useSuspenseQuery(createBookingQueryOptions(search))
 
   const columns = React.useMemo(() => getBookingTableColumns(), [])

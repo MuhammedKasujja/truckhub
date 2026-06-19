@@ -20,7 +20,7 @@ export function RideRequestTable() {
   const tr = useTranslation()
 
   const {
-    data: { data, error, pagination },
+    data: { data, pagination }, error,
   } = useSuspenseQuery(createRidesQueryOptions(search))
 
   const columns = React.useMemo(() => getRideRequestTableColumns(tr), [tr])
@@ -58,7 +58,7 @@ export function RideRequestTable() {
 export function RideRequestTableSkeleton() {
   return (
     <DataTableSkeleton
-      columnCount={getRideRequestTableColumns().length}
+      columnCount={8}
       filterCount={1}
       shrinkZero
     />

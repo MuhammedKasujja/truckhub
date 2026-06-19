@@ -20,9 +20,7 @@ export async function getRideRequests(input: RideRequestListSearchParams) {
     `/v1/ride_requests/?${params}`
   )
   if (response.success) {
-    return {
-      data: { data: response.data, pagination: response.pagination },
-    }
+    return { data: response.data, pagination: response.pagination }
   }
 
   return { error: response.error }

@@ -22,12 +22,12 @@ import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 export const getRidesFn = createServerFn()
   .inputValidator(RideRequestSearchParamsCache)
   .handler(async ({ data }) => {
-    const response = await getRideRequests(data)
-    if (response.error) {
-      const { message, erroCode, statusCode } = response.error
+    const { error, data: rides, pagination } = await getRideRequests(data)
+    if (error) {
+      const { message, erroCode, statusCode } = error
       throw new ApiError(message, statusCode, erroCode)
     }
-    return response.data
+    return { data: rides, pagination: pagination }
   })
 
 export const getRideRequestsByQueryFn = createServerFn()

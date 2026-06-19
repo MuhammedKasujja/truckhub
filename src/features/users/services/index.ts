@@ -14,6 +14,7 @@ import {
   userAssignRoles,
   getUserProfileById,
 } from "./server"
+import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getUsersFn = createServerFn()
@@ -21,6 +22,8 @@ export const getUsersFn = createServerFn()
   .handler(async ({ data: query }) => {
     const { data, pagination, error } = await getUsers(query)
     if (error) {
+      const { message, erroCode, statusCode } = error
+      throw new ApiError(message, statusCode, erroCode)
     }
 
     return { data, pagination }

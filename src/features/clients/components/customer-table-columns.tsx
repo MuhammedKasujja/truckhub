@@ -2,14 +2,14 @@ import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
 import { deleteClientFn } from "@/features/clients/services"
-import { Customer } from "@/features/clients/types"
+import { Client } from "@/features/clients/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 
-export function getCustomerTableColumns(): ColumnDef<Customer>[] {
+export function getCustomerTableColumns(): ColumnDef<Client>[] {
   return [
     {
       accessorKey: "name",

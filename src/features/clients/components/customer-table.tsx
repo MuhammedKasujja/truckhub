@@ -16,9 +16,9 @@ export function CustomerTable() {
   // const [{ data, error, pagination }] = React.use(props.promises);
   const search = useSearch({ from: "/_admin/clients/" })
 
-  const { data: response } = useSuspenseQuery(clientsQueryOptions(search))
+  const { data: response, error } = useSuspenseQuery(clientsQueryOptions(search))
   const columns = React.useMemo(() => getCustomerTableColumns(), [])
-  const { data, error, pagination } = response
+  const { data, pagination } = response
 
   useFetchEror(error)
 

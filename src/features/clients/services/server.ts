@@ -1,8 +1,8 @@
 "use server"
 
 import * as apiClient from "@/lib/api-client"
+import { Client } from "@/features/clients/types"
 import { Booking } from "@/features/bookings/types"
-import { Customer } from "@/features/clients/types"
 import { RideRequest } from "@/features/ride-requests/types"
 import {
   CustomerCreateSchemaType,
@@ -24,7 +24,7 @@ const endpoint = "/v1/clients"
 export async function getCustomers(input: CustomerListSearchParams) {
   const params = generateApiSearchParams(input)
 
-  const response = await apiClient.getPaginatedFn<Customer[]>(
+  const response = await apiClient.getPaginatedFn<Client[]>(
     `${endpoint}?${params}`
   )
 
@@ -48,11 +48,11 @@ export async function getCustomersByQuery({ search }: SearchQuery) {
 }
 
 export async function getCustomerById(clientId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${clientId}`)
+  return await apiClient.getFn<Client>(`${endpoint}/${clientId}`)
 }
 
 export async function getCustomerDetailsById(customerId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${customerId}`)
+  return await apiClient.getFn<Client>(`${endpoint}/${customerId}`)
 }
 
 export async function deleteCustomerById(clientId: EntityId) {
@@ -61,11 +61,11 @@ export async function deleteCustomerById(clientId: EntityId) {
 
 export async function updateClient(data: CustomerUpdateSchemaType) {
   const { id: clientId, ...rest } = data
-  return await apiClient.putFn<Customer>(`${endpoint}/${clientId}`, rest)
+  return await apiClient.putFn<Client>(`${endpoint}/${clientId}`, rest)
 }
 
 export async function createClient(data: CustomerCreateSchemaType) {
-  return await apiClient.postFn<Customer>(endpoint, data)
+  return await apiClient.postFn<Client>(endpoint, data)
 }
 
 export async function getClientPayments(clientId: EntityId) {

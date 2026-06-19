@@ -15,12 +15,12 @@ import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 export async function getUsers(input: UserListSearchParams) {
   const params = generateApiSearchParams(input)
 
-  const response = await apiClient.getPaginatedFn<SystemUser[]>(`/v1/users/?${params}`)
+  const response = await apiClient.getPaginatedFn<SystemUser[]>(
+    `/v1/users/?${params}`
+  )
 
   if (response.success) {
-    return {
-      data: { data: response.data, pagination: response.pagination },
-    }
+    return { data: response.data, pagination: response.pagination }
   }
 
   return { error: response.error }

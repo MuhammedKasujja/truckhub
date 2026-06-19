@@ -8,7 +8,7 @@ export type ClientContact = {
   is_primary?: boolean
 }
 
-export type Customer = {
+export type Client = {
   id: EntityId
   number: string
   name: string
@@ -23,4 +23,4 @@ export type Customer = {
   contacts: ClientContact[]
 }
 
-export type Client = Customer
+export type Customer = Client
