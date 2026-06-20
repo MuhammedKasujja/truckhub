@@ -3,8 +3,8 @@
 # Default
 # =============================================================================
 
+#  === List all available commands ====
 default:
-    #!/usr/bin/env bash
     @just --list
 
 # Start the dev server
@@ -12,11 +12,12 @@ dev:
     #!/usr/bin/env bash
     pnpm tauri dev
 
-# Start the dev server
+# Creates a desktop installeable image of the application
 build:
     #!/usr/bin/env bash
     pnpm tauri build
 
+# Builds a web app
 build-web:
     #!/usr/bin/env bash
     pnpm run build

@@ -4,7 +4,9 @@ import { createBatchRoutePricingFn } from "@/features/settings/pricing/services"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
 
-export const Route = createFileRoute("/_admin/settings/pricing-config/")({
+export const Route = createFileRoute(
+  "/_admin/settings/pricing-config/route-tonnage-pricing"
+)({
   component: RouteComponent,
 })
 

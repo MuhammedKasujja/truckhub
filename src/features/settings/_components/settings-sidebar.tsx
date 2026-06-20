@@ -27,7 +27,7 @@ import { Route as VehicleConfigDefaultRoute } from "@/app/_admin/settings/vehicl
 import { Route as CompanyDetailsRoute } from "@/app/_admin/settings/company-details"
 import { Route as UsersRoute } from "@/app/_admin/settings/user-management/users"
 import { Route as AdvancedSettingsRoute } from "@/app/_admin/settings/advanced"
-import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config"
+import { Route as PricingConfigRoute } from "@/app/_admin/settings/pricing-config/route-tonnage-pricing"
 import { Route as BookingRoutes } from "@/app/_admin/settings/booking-routes"
 import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"

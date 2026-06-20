@@ -145,7 +145,6 @@ export function RoutePricingDataGridForm({
       } else {
         await new Promise((r) => setTimeout(r, 600))
       }
-      setStatus("success")
       setTimeout(() => setStatus("idle"), 1000)
     } catch (e: any) {
       setStatus("error")

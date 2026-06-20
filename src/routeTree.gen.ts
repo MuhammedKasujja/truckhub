@@ -34,9 +34,9 @@ import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clien
 import { Route as AdminClientsPricingRouteImport } from './app/_admin/clients/pricing'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
+import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
-import { Route as AdminSettingsPricingConfigIndexRouteImport } from './app/_admin/settings/pricing-config/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
 import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
@@ -49,6 +49,8 @@ import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/n
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/vehicles/$vehicleId.view'
 import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
+import { Route as AdminSettingsPricingConfigRouteTonnagePricingRouteImport } from './app/_admin/settings/pricing-config/route-tonnage-pricing'
+import { Route as AdminSettingsPricingConfigDistancePricingRouteImport } from './app/_admin/settings/pricing-config/distance-pricing'
 import { Route as AdminServicesServiceIdViewRouteImport } from './app/_admin/services/$serviceId.view'
 import { Route as AdminServicesServiceIdEditRouteImport } from './app/_admin/services/$serviceId.edit'
 import { Route as AdminRidesRideIdViewRouteImport } from './app/_admin/rides/$rideId.view'
@@ -200,6 +202,12 @@ const AdminSettingsUserManagementRouteRoute =
     path: '/user-management',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
+const AdminSettingsPricingConfigRouteRoute =
+  AdminSettingsPricingConfigRouteRouteImport.update({
+    id: '/pricing-config',
+    path: '/pricing-config',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminVehiclesNewIndexRoute = AdminVehiclesNewIndexRouteImport.update({
   id: '/vehicles/new/',
   path: '/vehicles/new/',
@@ -209,12 +217,6 @@ const AdminSettingsTaxRatesIndexRoute =
   AdminSettingsTaxRatesIndexRouteImport.update({
     id: '/tax-rates/',
     path: '/tax-rates/',
-    getParentRoute: () => AdminSettingsRouteRoute,
-  } as any)
-const AdminSettingsPricingConfigIndexRoute =
-  AdminSettingsPricingConfigIndexRouteImport.update({
-    id: '/pricing-config/',
-    path: '/pricing-config/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsPdfTemplatesIndexRoute =
@@ -284,6 +286,18 @@ const AdminVehiclesVehicleIdEditRoute =
     id: '/vehicles/$vehicleId/edit',
     path: '/vehicles/$vehicleId/edit',
     getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminSettingsPricingConfigRouteTonnagePricingRoute =
+  AdminSettingsPricingConfigRouteTonnagePricingRouteImport.update({
+    id: '/route-tonnage-pricing',
+    path: '/route-tonnage-pricing',
+    getParentRoute: () => AdminSettingsPricingConfigRouteRoute,
+  } as any)
+const AdminSettingsPricingConfigDistancePricingRoute =
+  AdminSettingsPricingConfigDistancePricingRouteImport.update({
+    id: '/distance-pricing',
+    path: '/distance-pricing',
+    getParentRoute: () => AdminSettingsPricingConfigRouteRoute,
   } as any)
 const AdminServicesServiceIdViewRoute =
   AdminServicesServiceIdViewRouteImport.update({
@@ -428,6 +442,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/pricing': typeof AdminClientsPricingRoute
@@ -458,6 +473,8 @@ export interface FileRoutesByFullPath {
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
@@ -470,7 +487,6 @@ export interface FileRoutesByFullPath {
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -492,6 +508,7 @@ export interface FileRoutesByTo {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/pricing': typeof AdminClientsPricingRoute
@@ -522,6 +539,8 @@ export interface FileRoutesByTo {
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
@@ -534,7 +553,6 @@ export interface FileRoutesByTo {
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/settings/pricing-config': typeof AdminSettingsPricingConfigIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -558,6 +576,7 @@ export interface FileRoutesById {
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
   '/_auth/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/_admin/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/_admin/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/_admin/clients/pricing': typeof AdminClientsPricingRoute
@@ -588,6 +607,8 @@ export interface FileRoutesById {
   '/_admin/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/_admin/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/_admin/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
+  '/_admin/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/_admin/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/_admin/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
@@ -600,7 +621,6 @@ export interface FileRoutesById {
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
-  '/_admin/settings/pricing-config/': typeof AdminSettingsPricingConfigIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -624,6 +644,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
     | '/clients/pricing'
@@ -654,6 +675,8 @@ export interface FileRouteTypes {
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
+    | '/settings/pricing-config/distance-pricing'
+    | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
     | '/bookings/new/'
@@ -666,7 +689,6 @@ export interface FileRouteTypes {
     | '/settings/generate-numbers/'
     | '/settings/notifications/'
     | '/settings/pdf-templates/'
-    | '/settings/pricing-config/'
     | '/settings/tax-rates/'
     | '/vehicles/new/'
     | '/settings/user-management/permissions/'
@@ -688,6 +710,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
     | '/clients/pricing'
@@ -718,6 +741,8 @@ export interface FileRouteTypes {
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
+    | '/settings/pricing-config/distance-pricing'
+    | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
     | '/bookings/new'
@@ -730,7 +755,6 @@ export interface FileRouteTypes {
     | '/settings/generate-numbers'
     | '/settings/notifications'
     | '/settings/pdf-templates'
-    | '/settings/pricing-config'
     | '/settings/tax-rates'
     | '/vehicles/new'
     | '/settings/user-management/permissions'
@@ -753,6 +777,7 @@ export interface FileRouteTypes {
     | '/_auth/logout'
     | '/_auth/unauthorized'
     | '/_auth/unauthorized-module'
+    | '/_admin/settings/pricing-config'
     | '/_admin/settings/user-management'
     | '/_admin/settings/vehicle-config'
     | '/_admin/clients/pricing'
@@ -783,6 +808,8 @@ export interface FileRouteTypes {
     | '/_admin/rides/$rideId/view'
     | '/_admin/services/$serviceId/edit'
     | '/_admin/services/$serviceId/view'
+    | '/_admin/settings/pricing-config/distance-pricing'
+    | '/_admin/settings/pricing-config/route-tonnage-pricing'
     | '/_admin/vehicles/$vehicleId/edit'
     | '/_admin/vehicles/$vehicleId/view'
     | '/_admin/bookings/new/'
@@ -795,7 +822,6 @@ export interface FileRouteTypes {
     | '/_admin/settings/generate-numbers/'
     | '/_admin/settings/notifications/'
     | '/_admin/settings/pdf-templates/'
-    | '/_admin/settings/pricing-config/'
     | '/_admin/settings/tax-rates/'
     | '/_admin/vehicles/new/'
     | '/_admin/settings/user-management/permissions/'
@@ -997,6 +1023,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsUserManagementRouteRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/pricing-config': {
+      id: '/_admin/settings/pricing-config'
+      path: '/pricing-config'
+      fullPath: '/settings/pricing-config'
+      preLoaderRoute: typeof AdminSettingsPricingConfigRouteRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/vehicles/new/': {
       id: '/_admin/vehicles/new/'
       path: '/vehicles/new'
@@ -1009,13 +1042,6 @@ declare module '@tanstack/react-router' {
       path: '/tax-rates'
       fullPath: '/settings/tax-rates/'
       preLoaderRoute: typeof AdminSettingsTaxRatesIndexRouteImport
-      parentRoute: typeof AdminSettingsRouteRoute
-    }
-    '/_admin/settings/pricing-config/': {
-      id: '/_admin/settings/pricing-config/'
-      path: '/pricing-config'
-      fullPath: '/settings/pricing-config/'
-      preLoaderRoute: typeof AdminSettingsPricingConfigIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/pdf-templates/': {
@@ -1101,6 +1127,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/vehicles/$vehicleId/edit'
       preLoaderRoute: typeof AdminVehiclesVehicleIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/settings/pricing-config/route-tonnage-pricing': {
+      id: '/_admin/settings/pricing-config/route-tonnage-pricing'
+      path: '/route-tonnage-pricing'
+      fullPath: '/settings/pricing-config/route-tonnage-pricing'
+      preLoaderRoute: typeof AdminSettingsPricingConfigRouteTonnagePricingRouteImport
+      parentRoute: typeof AdminSettingsPricingConfigRouteRoute
+    }
+    '/_admin/settings/pricing-config/distance-pricing': {
+      id: '/_admin/settings/pricing-config/distance-pricing'
+      path: '/distance-pricing'
+      fullPath: '/settings/pricing-config/distance-pricing'
+      preLoaderRoute: typeof AdminSettingsPricingConfigDistancePricingRouteImport
+      parentRoute: typeof AdminSettingsPricingConfigRouteRoute
     }
     '/_admin/services/$serviceId/view': {
       id: '/_admin/services/$serviceId/view'
@@ -1266,6 +1306,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminSettingsPricingConfigRouteRouteChildren {
+  AdminSettingsPricingConfigDistancePricingRoute: typeof AdminSettingsPricingConfigDistancePricingRoute
+  AdminSettingsPricingConfigRouteTonnagePricingRoute: typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
+}
+
+const AdminSettingsPricingConfigRouteRouteChildren: AdminSettingsPricingConfigRouteRouteChildren =
+  {
+    AdminSettingsPricingConfigDistancePricingRoute:
+      AdminSettingsPricingConfigDistancePricingRoute,
+    AdminSettingsPricingConfigRouteTonnagePricingRoute:
+      AdminSettingsPricingConfigRouteTonnagePricingRoute,
+  }
+
+const AdminSettingsPricingConfigRouteRouteWithChildren =
+  AdminSettingsPricingConfigRouteRoute._addFileChildren(
+    AdminSettingsPricingConfigRouteRouteChildren,
+  )
+
 interface AdminSettingsUserManagementRouteRouteChildren {
   AdminSettingsUserManagementPermissionsIndexRoute: typeof AdminSettingsUserManagementPermissionsIndexRoute
   AdminSettingsUserManagementRolesIndexRoute: typeof AdminSettingsUserManagementRolesIndexRoute
@@ -1324,6 +1382,7 @@ const AdminSettingsVehicleConfigRouteRouteWithChildren =
   )
 
 interface AdminSettingsRouteRouteChildren {
+  AdminSettingsPricingConfigRouteRoute: typeof AdminSettingsPricingConfigRouteRouteWithChildren
   AdminSettingsUserManagementRouteRoute: typeof AdminSettingsUserManagementRouteRouteWithChildren
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
@@ -1332,11 +1391,12 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
   AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
-  AdminSettingsPricingConfigIndexRoute: typeof AdminSettingsPricingConfigIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
 }
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
+  AdminSettingsPricingConfigRouteRoute:
+    AdminSettingsPricingConfigRouteRouteWithChildren,
   AdminSettingsUserManagementRouteRoute:
     AdminSettingsUserManagementRouteRouteWithChildren,
   AdminSettingsVehicleConfigRouteRoute:
@@ -1348,7 +1408,6 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
     AdminSettingsGenerateNumbersIndexRoute,
   AdminSettingsNotificationsIndexRoute: AdminSettingsNotificationsIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
-  AdminSettingsPricingConfigIndexRoute: AdminSettingsPricingConfigIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
 }
 
