@@ -8,5 +8,8 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  return <DistancePricingScheduleForm onSave={undefined} />
+  return <DistancePricingScheduleForm onSave={(rows, schedule) => {
+    console.log("Rows", rows)
+    console.log("Schedule", schedule)
+  }} />
 }

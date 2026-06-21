@@ -9,6 +9,7 @@ export const en = {
   interior_color: "Interior color",
   cylinders: "Cylinders",
   tank_capacity: "Tank capacity",
+  number_of_axles: "Number of Axles",
   fuel_type: "Fuel Type",
   gearbox: "Gearbox",
   year_of_manufacture: "Year of Manufacture",

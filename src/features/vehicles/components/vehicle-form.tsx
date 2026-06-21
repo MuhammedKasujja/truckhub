@@ -170,6 +170,11 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 control={form.control}
               />
               <NumberField
+                label={tr("number_of_axles")}
+                name={"total_axles"}
+                control={form.control}
+              />
+              <NumberField
                 label={"Consumption Rate"}
                 name={"consumption_rate"}
                 control={form.control}
