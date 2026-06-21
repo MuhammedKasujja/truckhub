@@ -49,7 +49,17 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import {
+  useForm,
+  useFieldArray,
+  type Control,
+  type FieldErrors,
+  type UseFormRegister,
+  type UseFormGetValues,
+  type UseFieldArrayRemove,
+  type FieldError,
+  type UseFormRegisterReturn,
+} from 'react-hook-form';
 import {
   useReactTable,
   getCoreRowModel,
@@ -57,6 +67,10 @@ import {
   getFilteredRowModel,
   createColumnHelper,
   flexRender,
+  type Table,
+  type SortingState,
+  type SortingFn,
+  type VisibilityState,
 } from '@tanstack/react-table';
 import {
   Plus,
@@ -77,17 +91,75 @@ import {
 const MAX_TONNAGE = 30;
 
 // ---------------------------------------------------------------------------
+// Domain types
+// ---------------------------------------------------------------------------
+
+export interface TonnageRange {
+  id: string;
+  min: number;
+  max: number;
+}
+
+export interface DistanceRange {
+  id: string;
+  min: number;
+  max: number | null; // null when noUpperLimit is true
+  noUpperLimit: boolean;
+}
+
+export interface RateEntry {
+  distanceRangeId: string;
+  tonnageRangeId: string;
+  minPrice: number;
+  maxPrice: number;
+}
+
+export interface PriceSchedule {
+  tonnageRanges: TonnageRange[];
+  distanceRanges: DistanceRange[];
+  rates: RateEntry[];
+}
+
+/** One row of the single `distance_tonnage_rates` table. */
+export interface DbRateRow {
+  distance_min: number;
+  distance_max: number | null;
+  distance_no_upper_limit: boolean;
+  tonnage_min: number;
+  tonnage_max: number;
+  min_price: number;
+  max_price: number;
+}
+
+/** The pivoted row shape used by the read-only Grid view. */
+interface GridRow {
+  id: string;
+  distance: string;
+  rowType: 'min' | 'max';
+  cells: Record<string, number | null>;
+}
+
+type FormValues = PriceSchedule;
+
+export interface PriceScheduleFormProps {
+  /** Schedule to start from. Build with `fromDbRows(rows)` to load from your DB. */
+  initialSchedule?: PriceSchedule;
+  /** Called after a successful save with the DB-ready rows (and the bracket-shaped schedule, if useful). */
+  onSave?: (rows: DbRateRow[], schedule: PriceSchedule) => void;
+}
+
+// ---------------------------------------------------------------------------
 // Id generation - keeps our own stable ids separate from RHF's internal keys.
 // ---------------------------------------------------------------------------
 let idCounter = 0;
-const makeId = (prefix) => `${prefix}_${Date.now().toString(36)}_${idCounter++}`;
+const makeId = (prefix: string): string => `${prefix}_${Date.now().toString(36)}_${idCounter++}`;
 
 // ---------------------------------------------------------------------------
 // Seed data - mirrors the source price-schedule spreadsheet so the component
 // renders something meaningful out of the box. Replace with your own data,
 // or pass an `initialSchedule` prop (see README.md).
 // ---------------------------------------------------------------------------
-const SEED_TONNAGE_RANGES = [
+const SEED_TONNAGE_RANGES: TonnageRange[] = [
   { id: 't_0_2', min: 0, max: 2 },
   { id: 't_3_5', min: 3, max: 5 },
   { id: 't_6_10', min: 6, max: 10 },
@@ -96,7 +168,7 @@ const SEED_TONNAGE_RANGES = [
   { id: 't_21_25', min: 21, max: 25 },
 ];
 
-const SEED_DISTANCE_RANGES = [
+const SEED_DISTANCE_RANGES: DistanceRange[] = [
   { id: 'd_0_40', min: 0, max: 40, noUpperLimit: false },
   { id: 'd_41_100', min: 41, max: 100, noUpperLimit: false },
   { id: 'd_101_150', min: 101, max: 150, noUpperLimit: false },
@@ -108,38 +180,40 @@ const SEED_DISTANCE_RANGES = [
 ];
 
 // [distanceRangeId, tonnageRangeId, minPrice, maxPrice] - flat, list-shaped from the start.
-const SEED_RATES = [
-  ['d_0_40', 't_0_2', 2220, 2664], ['d_0_40', 't_3_5', 1120, 1344], ['d_0_40', 't_6_10', 920, 1104],
-  ['d_0_40', 't_11_15', 820, 984], ['d_0_40', 't_16_20', 620, 744], ['d_0_40', 't_21_25', 520, 624],
+const SEED_RATES: RateEntry[] = (
+  [
+    ['d_0_40', 't_0_2', 2220, 2664], ['d_0_40', 't_3_5', 1120, 1344], ['d_0_40', 't_6_10', 920, 1104],
+    ['d_0_40', 't_11_15', 820, 984], ['d_0_40', 't_16_20', 620, 744], ['d_0_40', 't_21_25', 520, 624],
 
-  ['d_41_100', 't_0_2', 1150, 1380], ['d_41_100', 't_3_5', 1120, 1344], ['d_41_100', 't_6_10', 820, 984],
-  ['d_41_100', 't_11_15', 720, 864], ['d_41_100', 't_16_20', 520, 624], ['d_41_100', 't_21_25', 470, 564],
+    ['d_41_100', 't_0_2', 1150, 1380], ['d_41_100', 't_3_5', 1120, 1344], ['d_41_100', 't_6_10', 820, 984],
+    ['d_41_100', 't_11_15', 720, 864], ['d_41_100', 't_16_20', 520, 624], ['d_41_100', 't_21_25', 470, 564],
 
-  ['d_101_150', 't_0_2', 1060, 1272], ['d_101_150', 't_3_5', 620, 744], ['d_101_150', 't_6_10', 570, 684],
-  ['d_101_150', 't_11_15', 570, 684], ['d_101_150', 't_16_20', 420, 504], ['d_101_150', 't_21_25', 400, 480],
+    ['d_101_150', 't_0_2', 1060, 1272], ['d_101_150', 't_3_5', 620, 744], ['d_101_150', 't_6_10', 570, 684],
+    ['d_101_150', 't_11_15', 570, 684], ['d_101_150', 't_16_20', 420, 504], ['d_101_150', 't_21_25', 400, 480],
 
-  ['d_151_200', 't_0_2', 1060, 1272], ['d_151_200', 't_3_5', 590, 708], ['d_151_200', 't_6_10', 490, 588],
-  ['d_151_200', 't_11_15', 490, 588], ['d_151_200', 't_16_20', 400, 480], ['d_151_200', 't_21_25', 380, 456],
+    ['d_151_200', 't_0_2', 1060, 1272], ['d_151_200', 't_3_5', 590, 708], ['d_151_200', 't_6_10', 490, 588],
+    ['d_151_200', 't_11_15', 490, 588], ['d_151_200', 't_16_20', 400, 480], ['d_151_200', 't_21_25', 380, 456],
 
-  ['d_201_300', 't_0_2', 970, 1164], ['d_201_300', 't_3_5', 560, 672], ['d_201_300', 't_6_10', 470, 564],
-  ['d_201_300', 't_11_15', 470, 564], ['d_201_300', 't_16_20', 400, 480], ['d_201_300', 't_21_25', 370, 444],
+    ['d_201_300', 't_0_2', 970, 1164], ['d_201_300', 't_3_5', 560, 672], ['d_201_300', 't_6_10', 470, 564],
+    ['d_201_300', 't_11_15', 470, 564], ['d_201_300', 't_16_20', 400, 480], ['d_201_300', 't_21_25', 370, 444],
 
-  ['d_301_400', 't_0_2', 970, 1164], ['d_301_400', 't_3_5', 490, 588], ['d_301_400', 't_6_10', 450, 540],
-  ['d_301_400', 't_11_15', 450, 540], ['d_301_400', 't_16_20', 370, 444], ['d_301_400', 't_21_25', 340, 408],
+    ['d_301_400', 't_0_2', 970, 1164], ['d_301_400', 't_3_5', 490, 588], ['d_301_400', 't_6_10', 450, 540],
+    ['d_301_400', 't_11_15', 450, 540], ['d_301_400', 't_16_20', 370, 444], ['d_301_400', 't_21_25', 340, 408],
 
-  ['d_401_600', 't_0_2', 920, 1104], ['d_401_600', 't_3_5', 470, 564], ['d_401_600', 't_6_10', 420, 504],
-  ['d_401_600', 't_11_15', 420, 504], ['d_401_600', 't_16_20', 370, 444], ['d_401_600', 't_21_25', 340, 408],
+    ['d_401_600', 't_0_2', 920, 1104], ['d_401_600', 't_3_5', 470, 564], ['d_401_600', 't_6_10', 420, 504],
+    ['d_401_600', 't_11_15', 420, 504], ['d_401_600', 't_16_20', 370, 444], ['d_401_600', 't_21_25', 340, 408],
 
-  ['d_601_up', 't_0_2', 720, 864], ['d_601_up', 't_3_5', 420, 504], ['d_601_up', 't_6_10', 400, 480],
-  ['d_601_up', 't_11_15', 370, 444], ['d_601_up', 't_16_20', 340, 408], ['d_601_up', 't_21_25', 340, 408],
-].map(([distanceRangeId, tonnageRangeId, minPrice, maxPrice]) => ({
+    ['d_601_up', 't_0_2', 720, 864], ['d_601_up', 't_3_5', 420, 504], ['d_601_up', 't_6_10', 400, 480],
+    ['d_601_up', 't_11_15', 370, 444], ['d_601_up', 't_16_20', 340, 408], ['d_601_up', 't_21_25', 340, 408],
+  ] as Array<[string, string, number, number]>
+).map(([distanceRangeId, tonnageRangeId, minPrice, maxPrice]) => ({
   distanceRangeId,
   tonnageRangeId,
   minPrice,
   maxPrice,
 }));
 
-const SEED_SCHEDULE = {
+const SEED_SCHEDULE: PriceSchedule = {
   tonnageRanges: SEED_TONNAGE_RANGES,
   distanceRanges: SEED_DISTANCE_RANGES,
   rates: SEED_RATES,
@@ -150,8 +224,11 @@ const SEED_SCHEDULE = {
 // ---------------------------------------------------------------------------
 
 /** Returns the set of bracket ids whose [min,max] interval overlaps another. */
-function findOverlapIds(ranges, getMax) {
-  const overlapping = new Set();
+function findOverlapIds<T extends { id: string; min: number }>(
+  ranges: T[],
+  getMax: (r: T) => number,
+): Set<string> {
+  const overlapping = new Set<string>();
   const usable = ranges
     .map((r) => ({ id: r.id, min: Number(r.min), max: getMax(r) }))
     .filter((r) => Number.isFinite(r.min) && Number.isFinite(r.max));
@@ -169,29 +246,30 @@ function findOverlapIds(ranges, getMax) {
   return overlapping;
 }
 
-const rateKey = (distanceRangeId, tonnageRangeId) => `${distanceRangeId}__${tonnageRangeId}`;
+const rateKey = (distanceRangeId: string, tonnageRangeId: string): string =>
+  `${distanceRangeId}__${tonnageRangeId}`;
 
-function tonnageLabel(t) {
+function tonnageLabel(t: TonnageRange): string {
   return `${t.min} - ${t.max} MT`;
 }
 
-function distanceLabel(d) {
+function distanceLabel(d: DistanceRange): string {
   return d.noUpperLimit ? `${d.min}+ km` : `${d.min} - ${d.max} km`;
 }
 
-function formatUgx(value) {
-  if (value === null || value === undefined || value === '' || Number.isNaN(Number(value))) return '—';
+function formatUgx(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(Number(value))) return '—';
   return `UGX ${Number(value).toLocaleString()}`;
 }
 
 /** Sorts a column's value numerically by reading the leading number out of a label string. */
-function numericLeadingSort(rowA, rowB, columnId) {
-  const a = parseFloat(rowA.getValue(columnId));
-  const b = parseFloat(rowB.getValue(columnId));
+const numericLeadingSort: SortingFn<RateEntry> = (rowA, rowB, columnId) => {
+  const a = parseFloat(String(rowA.getValue(columnId)));
+  const b = parseFloat(String(rowB.getValue(columnId)));
   return (Number.isNaN(a) ? 0 : a) - (Number.isNaN(b) ? 0 : b);
-}
+};
 
-function scheduleToFormValues(schedule) {
+function scheduleToFormValues(schedule: PriceSchedule): FormValues {
   return {
     tonnageRanges: schedule.tonnageRanges,
     distanceRanges: schedule.distanceRanges,
@@ -200,7 +278,7 @@ function scheduleToFormValues(schedule) {
 }
 
 /** Sorts both axes by min value, drops orphaned rates, and returns the clean save payload. */
-function buildScheduleFromForm(data) {
+function buildScheduleFromForm(data: FormValues): PriceSchedule {
   const tonnageRanges = [...data.tonnageRanges]
     .map((t) => ({ ...t, min: Number(t.min), max: Number(t.max) }))
     .sort((a, b) => a.min - b.min);
@@ -228,8 +306,8 @@ function buildScheduleFromForm(data) {
     }))
     .sort(
       (a, b) =>
-        distanceOrder.get(a.distanceRangeId) - distanceOrder.get(b.distanceRangeId) ||
-        tonnageOrder.get(a.tonnageRangeId) - tonnageOrder.get(b.tonnageRangeId),
+        (distanceOrder.get(a.distanceRangeId) ?? 0) - (distanceOrder.get(b.distanceRangeId) ?? 0) ||
+        (tonnageOrder.get(a.tonnageRangeId) ?? 0) - (tonnageOrder.get(b.tonnageRangeId) ?? 0),
     );
 
   return { tonnageRanges, distanceRanges, rates };
@@ -240,13 +318,16 @@ function buildScheduleFromForm(data) {
  * table - bracket bounds inlined into every row, no ids, no joins. This is
  * what you bulk insert/upsert.
  */
-function toDbRows(schedule) {
+function toDbRows(schedule: PriceSchedule): DbRateRow[] {
   const distanceById = new Map(schedule.distanceRanges.map((d) => [d.id, d]));
   const tonnageById = new Map(schedule.tonnageRanges.map((t) => [t.id, t]));
 
   return schedule.rates.map((r) => {
     const d = distanceById.get(r.distanceRangeId);
     const t = tonnageById.get(r.tonnageRangeId);
+    if (!d || !t) {
+      throw new Error(`Rate references a bracket that no longer exists: ${r.distanceRangeId} / ${r.tonnageRangeId}`);
+    }
     return {
       distance_min: d.min,
       distance_max: d.noUpperLimit ? null : d.max,
@@ -265,9 +346,9 @@ function toDbRows(schedule) {
  * (generating fresh client-side ids for them) and rebuilds the `rates` list -
  * i.e. reconstructs the editing-model schedule from flat DB rows.
  */
-function fromDbRows(rows) {
-  const distanceByKey = new Map();
-  const tonnageByKey = new Map();
+function fromDbRows(rows: DbRateRow[]): PriceSchedule {
+  const distanceByKey = new Map<string, DistanceRange>();
+  const tonnageByKey = new Map<string, TonnageRange>();
 
   rows.forEach((row) => {
     const dKey = `${row.distance_min}_${row.distance_max}_${row.distance_no_upper_limit}`;
@@ -292,12 +373,14 @@ function fromDbRows(rows) {
   const distanceRanges = [...distanceByKey.values()].sort((a, b) => a.min - b.min);
   const tonnageRanges = [...tonnageByKey.values()].sort((a, b) => a.min - b.min);
 
-  const rates = rows.map((row) => {
+  const rates: RateEntry[] = rows.map((row) => {
     const dKey = `${row.distance_min}_${row.distance_max}_${row.distance_no_upper_limit}`;
     const tKey = `${row.tonnage_min}_${row.tonnage_max}`;
+    const d = distanceByKey.get(dKey) as DistanceRange;
+    const t = tonnageByKey.get(tKey) as TonnageRange;
     return {
-      distanceRangeId: distanceByKey.get(dKey).id,
-      tonnageRangeId: tonnageByKey.get(tKey).id,
+      distanceRangeId: d.id,
+      tonnageRangeId: t.id,
       minPrice: Number(row.min_price),
       maxPrice: Number(row.max_price),
     };
@@ -306,18 +389,22 @@ function fromDbRows(rows) {
   return { tonnageRanges, distanceRanges, rates };
 }
 
-const columnHelper = createColumnHelper();
+const gridColumnHelper = createColumnHelper<GridRow>();
+const listColumnHelper = createColumnHelper<RateEntry>();
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCHEDULE, onSave }) {
-  const [mode, setMode] = useState('view'); // 'view' | 'edit'
-  const [submittedSchedule, setSubmittedSchedule] = useState(initialSchedule);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [sorting, setSorting] = useState([]);
+export default function PriceScheduleForm({
+  initialSchedule = SEED_SCHEDULE,
+  onSave,
+}: PriceScheduleFormProps) {
+  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [submittedSchedule, setSubmittedSchedule] = useState<PriceSchedule>(initialSchedule);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
 
   const {
@@ -328,7 +415,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
     getValues,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormValues>({
     defaultValues: scheduleToFormValues(initialSchedule),
     mode: 'onBlur',
   });
@@ -364,7 +451,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
   // identity and don't lose focus/remount while the user is mid-edit.
   useEffect(() => {
     const current = getValues('rates') || [];
-    const validKeys = new Set();
+    const validKeys = new Set<string>();
     watchedDistance.forEach((d) => watchedTonnage.forEach((t) => validKeys.add(rateKey(d.id, t.id))));
 
     for (let i = current.length - 1; i >= 0; i -= 1) {
@@ -376,12 +463,12 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
     const existingKeys = new Set(
       (getValues('rates') || []).map((r) => rateKey(r.distanceRangeId, r.tonnageRangeId)),
     );
-    const toAppend = [];
+    const toAppend: RateEntry[] = [];
     watchedDistance.forEach((d) => {
       watchedTonnage.forEach((t) => {
         const key = rateKey(d.id, t.id);
         if (!existingKeys.has(key)) {
-          toAppend.push({ distanceRangeId: d.id, tonnageRangeId: t.id, minPrice: '', maxPrice: '' });
+          toAppend.push({ distanceRangeId: d.id, tonnageRangeId: t.id, minPrice: NaN, maxPrice: NaN });
         }
       });
     });
@@ -403,7 +490,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
     distanceArray.append({ id: makeId('d'), min: nextMin, max: nextMin + 50, noUpperLimit: false });
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: FormValues) => {
     if (hasBlockingErrors) return;
     const schedule = buildScheduleFromForm(data);
     setSubmittedSchedule(schedule);
@@ -440,14 +527,14 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
   // bracket). Built with @tanstack/react-table; column show/hide is wired
   // up as a real table feature.
   // ---------------------------------------------------------------------
-  const gridData = useMemo(() => {
+  const gridData = useMemo<GridRow[]>(() => {
     const rateMap = new Map(
       submittedSchedule.rates.map((r) => [rateKey(r.distanceRangeId, r.tonnageRangeId), r]),
     );
-    const rows = [];
+    const rows: GridRow[] = [];
     submittedSchedule.distanceRanges.forEach((d) => {
-      const minRow = { id: `${d.id}-min`, distance: distanceLabel(d), rowType: 'min', cells: {} };
-      const maxRow = { id: `${d.id}-max`, distance: '', rowType: 'max', cells: {} };
+      const minRow: GridRow = { id: `${d.id}-min`, distance: distanceLabel(d), rowType: 'min', cells: {} };
+      const maxRow: GridRow = { id: `${d.id}-max`, distance: '', rowType: 'max', cells: {} };
       submittedSchedule.tonnageRanges.forEach((t) => {
         const rate = rateMap.get(rateKey(d.id, t.id));
         minRow.cells[t.id] = rate ? rate.minPrice : null;
@@ -460,13 +547,13 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
 
   const gridColumns = useMemo(
     () => [
-      columnHelper.accessor('distance', {
+      gridColumnHelper.accessor('distance', {
         id: 'distance',
         header: 'Distance (KM)',
         cell: (info) => <span className="font-semibold text-slate-700">{info.getValue()}</span>,
       }),
       ...submittedSchedule.tonnageRanges.map((t) =>
-        columnHelper.accessor((row) => row.cells[t.id], {
+        gridColumnHelper.accessor((row) => row.cells[t.id], {
           id: t.id,
           header: tonnageLabel(t),
           cell: (info) => formatUgx(info.getValue()),
@@ -499,24 +586,24 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
 
   const listColumns = useMemo(
     () => [
-      columnHelper.accessor((r) => distanceLabelById.get(r.distanceRangeId) ?? r.distanceRangeId, {
+      listColumnHelper.accessor((r) => distanceLabelById.get(r.distanceRangeId) ?? r.distanceRangeId, {
         id: 'distance',
         header: 'Distance (KM)',
         sortingFn: numericLeadingSort,
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor((r) => tonnageLabelById.get(r.tonnageRangeId) ?? r.tonnageRangeId, {
+      listColumnHelper.accessor((r) => tonnageLabelById.get(r.tonnageRangeId) ?? r.tonnageRangeId, {
         id: 'tonnage',
         header: 'Tonnage (MT)',
         sortingFn: numericLeadingSort,
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor('minPrice', {
+      listColumnHelper.accessor('minPrice', {
         id: 'minPrice',
         header: 'Min price',
         cell: (info) => formatUgx(info.getValue()),
       }),
-      columnHelper.accessor('maxPrice', {
+      listColumnHelper.accessor('maxPrice', {
         id: 'maxPrice',
         header: 'Max price',
         cell: (info) => formatUgx(info.getValue()),
@@ -579,7 +666,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
       {mode === 'edit' && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <BracketCard
+            <BracketCard<TonnageRange>
               title="Tonnage brackets"
               hint={`Weight ranges in metric tonnes (MT), capped at ${MAX_TONNAGE} MT.`}
               fields={tonnageArray.fields}
@@ -587,7 +674,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
               onAdd={addTonnageRange}
               onRemove={tonnageArray.remove}
               addDisabled={lastTonnageMax >= MAX_TONNAGE}
-              renderRow={(field, index) => (
+              renderRow={(_field, index) => (
                 <>
                   <NumberField
                     label="Min (MT)"
@@ -614,7 +701,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
               )}
             />
 
-            <BracketCard
+            <BracketCard<DistanceRange>
               title="Distance brackets"
               hint="Distance ranges in kilometres (KM). The last bracket can be open-ended."
               fields={distanceArray.fields}
@@ -622,7 +709,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
               onAdd={addDistanceRange}
               onRemove={distanceArray.remove}
               addDisabled={lastDistanceOpenEnded}
-              renderRow={(field, index) => {
+              renderRow={(_field, index) => {
                 const isOpenEnded = watchedDistance[index]?.noUpperLimit;
                 return (
                   <>
@@ -642,7 +729,7 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
                       inputProps={register(`distanceRanges.${index}.max`, {
                         validate: (v) => {
                           if (getValues(`distanceRanges.${index}.noUpperLimit`)) return true;
-                          if (v === '' || v === undefined || Number.isNaN(Number(v))) return 'Required';
+                          if (v === undefined || v === null || Number.isNaN(Number(v))) return 'Required';
                           return (
                             Number(v) > Number(getValues(`distanceRanges.${index}.min`)) || 'Must be > min'
                           );
@@ -712,7 +799,14 @@ export default function DistancePricingScheduleForm({ initialSchedule = SEED_SCH
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function NumberField({ label, error, inputProps, disabled }) {
+interface NumberFieldProps {
+  label: string;
+  error?: FieldError;
+  inputProps: UseFormRegisterReturn;
+  disabled?: boolean;
+}
+
+function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
   return (
     <div className="flex-1">
       <label className="block text-[10px] font-medium uppercase text-slate-400">{label}</label>
@@ -732,7 +826,27 @@ function NumberField({ label, error, inputProps, disabled }) {
   );
 }
 
-function BracketCard({ title, hint, fields, overlapIds, onAdd, onRemove, addDisabled, renderRow }) {
+interface BracketCardProps<T extends { id: string }> {
+  title: string;
+  hint: string;
+  fields: (T & { fieldKey: string })[];
+  overlapIds: Set<string>;
+  onAdd: () => void;
+  onRemove: UseFieldArrayRemove;
+  addDisabled: boolean;
+  renderRow: (field: T & { fieldKey: string }, index: number) => React.ReactNode;
+}
+
+function BracketCard<T extends { id: string }>({
+  title,
+  hint,
+  fields,
+  overlapIds,
+  onAdd,
+  onRemove,
+  addDisabled,
+  renderRow,
+}: BracketCardProps<T>) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-2">
@@ -784,9 +898,25 @@ function BracketCard({ title, hint, fields, overlapIds, onAdd, onRemove, addDisa
   );
 }
 
-function PriceGridCard({ distanceRanges, tonnageRanges, ratesFields, register, getValues, errors }) {
+interface PriceGridCardProps {
+  distanceRanges: DistanceRange[];
+  tonnageRanges: TonnageRange[];
+  ratesFields: (RateEntry & { fieldKey: string })[];
+  register: UseFormRegister<FormValues>;
+  getValues: UseFormGetValues<FormValues>;
+  errors: FieldErrors<FormValues>;
+}
+
+function PriceGridCard({
+  distanceRanges,
+  tonnageRanges,
+  ratesFields,
+  register,
+  getValues,
+  errors,
+}: PriceGridCardProps) {
   // Index lookup into the `rates` field array by (distanceRangeId, tonnageRangeId).
-  const indexByKey = {};
+  const indexByKey: Record<string, number> = {};
   ratesFields.forEach((r, i) => {
     indexByKey[rateKey(r.distanceRangeId, r.tonnageRangeId)] = i;
   });
@@ -866,7 +996,7 @@ function PriceGridCard({ distanceRanges, tonnageRanges, ratesFields, register, g
                         />
                         {(cellError?.minPrice || cellError?.maxPrice) && (
                           <p className="text-[10px] leading-tight text-rose-600">
-                            {cellError.minPrice?.message || cellError.maxPrice?.message}
+                            {cellError?.minPrice?.message || cellError?.maxPrice?.message}
                           </p>
                         )}
                       </div>
@@ -882,7 +1012,23 @@ function PriceGridCard({ distanceRanges, tonnageRanges, ratesFields, register, g
   );
 }
 
-function SchedulePanel({ viewMode, onViewModeChange, gridTable, listTable, globalFilter, onGlobalFilterChange }) {
+interface SchedulePanelProps {
+  viewMode: 'grid' | 'list';
+  onViewModeChange: (mode: 'grid' | 'list') => void;
+  gridTable: Table<GridRow>;
+  listTable: Table<RateEntry>;
+  globalFilter: string;
+  onGlobalFilterChange: (value: string) => void;
+}
+
+function SchedulePanel({
+  viewMode,
+  onViewModeChange,
+  gridTable,
+  listTable,
+  globalFilter,
+  onGlobalFilterChange,
+}: SchedulePanelProps) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -927,7 +1073,7 @@ function SchedulePanel({ viewMode, onViewModeChange, gridTable, listTable, globa
                     }`}
                   >
                     {col.getIsVisible() ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                    {col.columnDef.header}
+                    {String(col.columnDef.header)}
                   </button>
                 ))}
             </div>
@@ -957,7 +1103,7 @@ function SchedulePanel({ viewMode, onViewModeChange, gridTable, listTable, globa
   );
 }
 
-function GridTable({ table }) {
+function GridTable({ table }: { table: Table<GridRow> }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200">
       <table className="w-full border-collapse text-sm">
@@ -991,7 +1137,7 @@ function GridTable({ table }) {
   );
 }
 
-function ListTable({ table }) {
+function ListTable({ table }: { table: Table<RateEntry> }) {
   const columnCount = table.getAllLeafColumns().length;
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-200">
@@ -1037,7 +1183,7 @@ function ListTable({ table }) {
   );
 }
 
-function SortIcon({ direction }) {
+function SortIcon({ direction }: { direction: false | 'asc' | 'desc' }) {
   if (direction === 'asc') return <ArrowUp className="h-3 w-3" />;
   if (direction === 'desc') return <ArrowDown className="h-3 w-3" />;
   return <ArrowUpDown className="h-3 w-3 text-slate-300" />;
