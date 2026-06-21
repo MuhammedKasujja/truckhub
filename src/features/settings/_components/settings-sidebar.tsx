@@ -33,6 +33,7 @@ import { Route as TaxRatesRoutes } from "@/app/_admin/settings/tax-rates"
 import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
 import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
 import { Route as NotificationsRoute } from "@/app/_admin/settings/notifications"
+import { Route as ProfileRoute } from "@/app/_admin/settings/user-profile"
 import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
 
@@ -69,8 +70,13 @@ const data = {
       icon: ListOrdered,
       route: GenerateNumbersRoute.to,
     },
+    {
+      name: "User Profile",
+      icon: ListOrdered,
+      route: ProfileRoute.to,
+    },
   ],
-}
+}as const
 
 export function SettingsSidebar() {
   const location = useLocation()

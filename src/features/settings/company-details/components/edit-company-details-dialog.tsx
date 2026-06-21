@@ -44,7 +44,7 @@ export function EditCompanyDetailsDialog({
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button type="button" size={"icon"}>
           <Edit />
         </Button>

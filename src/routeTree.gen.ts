@@ -36,6 +36,7 @@ import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admi
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
+import { Route as AdminSettingsUserProfileIndexRouteImport } from './app/_admin/settings/user-profile/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
 import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
@@ -213,6 +214,12 @@ const AdminVehiclesNewIndexRoute = AdminVehiclesNewIndexRouteImport.update({
   path: '/vehicles/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminSettingsUserProfileIndexRoute =
+  AdminSettingsUserProfileIndexRouteImport.update({
+    id: '/user-profile/',
+    path: '/user-profile/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminSettingsTaxRatesIndexRoute =
   AdminSettingsTaxRatesIndexRouteImport.update({
     id: '/tax-rates/',
@@ -488,6 +495,7 @@ export interface FileRoutesByFullPath {
   '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
+  '/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -554,6 +562,7 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
+  '/settings/user-profile': typeof AdminSettingsUserProfileIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -622,6 +631,7 @@ export interface FileRoutesById {
   '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
+  '/_admin/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/_admin/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -690,6 +700,7 @@ export interface FileRouteTypes {
     | '/settings/notifications/'
     | '/settings/pdf-templates/'
     | '/settings/tax-rates/'
+    | '/settings/user-profile/'
     | '/vehicles/new/'
     | '/settings/user-management/permissions/'
     | '/settings/user-management/roles/'
@@ -756,6 +767,7 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/pdf-templates'
     | '/settings/tax-rates'
+    | '/settings/user-profile'
     | '/vehicles/new'
     | '/settings/user-management/permissions'
     | '/settings/user-management/roles'
@@ -823,6 +835,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/notifications/'
     | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/tax-rates/'
+    | '/_admin/settings/user-profile/'
     | '/_admin/vehicles/new/'
     | '/_admin/settings/user-management/permissions/'
     | '/_admin/settings/user-management/roles/'
@@ -1036,6 +1049,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/vehicles/new/'
       preLoaderRoute: typeof AdminVehiclesNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/settings/user-profile/': {
+      id: '/_admin/settings/user-profile/'
+      path: '/user-profile'
+      fullPath: '/settings/user-profile/'
+      preLoaderRoute: typeof AdminSettingsUserProfileIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/tax-rates/': {
       id: '/_admin/settings/tax-rates/'
@@ -1392,6 +1412,7 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
+  AdminSettingsUserProfileIndexRoute: typeof AdminSettingsUserProfileIndexRoute
 }
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
@@ -1409,6 +1430,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsNotificationsIndexRoute: AdminSettingsNotificationsIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
+  AdminSettingsUserProfileIndexRoute: AdminSettingsUserProfileIndexRoute,
 }
 
 const AdminSettingsRouteRouteWithChildren =
