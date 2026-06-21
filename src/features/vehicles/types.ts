@@ -43,6 +43,7 @@ export interface Vehicle extends VehicleBase {
   vehicle_type: {
     id: EntityId
     name: string
+    is_truck: boolean
   }
   car_model: {
     id: EntityId
@@ -56,4 +57,8 @@ export interface Vehicle extends VehicleBase {
     id: EntityId
     name: string
   }
+  features: {
+    id: EntityId
+    name: string
+  }[]
 }

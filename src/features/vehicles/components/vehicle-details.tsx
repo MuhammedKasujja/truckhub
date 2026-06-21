@@ -21,6 +21,9 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { Can } from "@/components/has-permission"
+import { Field } from "@/components/ui/field"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -127,13 +130,21 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               <DetailItem label="Vehicle Number" value={vehicle.number} />
 
               <DetailItem label="Plate Number" value={vehicle.plate_number} />
+              {vehicle.vehicle_type.is_truck && (
+                <DetailItem
+                  label="Second Plate"
+                  value={vehicle.second_plate_number ?? "-"}
+                />
+              )}
 
               <DetailItem
-                label="Second Plate"
-                value={vehicle.second_plate_number ?? "-"}
+                label="Make/Model"
+                value={
+                  <>
+                    {vehicle.car_model.car_brand.name}/{vehicle.car_model.name}
+                  </>
+                }
               />
-
-              <DetailItem label="Model" value={vehicle.car_model.name} />
 
               <DetailItem label="Type" value={vehicle.vehicle_type.name} />
 
@@ -154,11 +165,12 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 label="Interior Color"
                 value={vehicle.interior_color}
               />
-
-              <DetailItem
-                label="Tonnage Capacity"
-                value={vehicle.tonnage_capacity ?? "-"}
-              />
+              {vehicle.vehicle_type.is_truck && (
+                <DetailItem
+                  label="Tonnage Capacity"
+                  value={vehicle.tonnage_capacity ?? "-"}
+                />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -191,7 +203,24 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
         )}
       </div>
 
-      {/* Metadata */}
+      {/* Vehicle Features */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Features</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6 md:grid-cols-2">
+          {vehicle.features.map((feat) => (
+            <Field
+              key={feat.id}
+              orientation="horizontal"
+              className="capitalize"
+            >
+              <Checkbox id={feat.id} name={feat.id} checked={true} />
+              <Label htmlFor={feat.id}>{feat.name}</Label>
+            </Field>
+          ))}
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>System Information</CardTitle>

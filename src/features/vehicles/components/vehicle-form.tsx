@@ -246,7 +246,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     id={feat.id}
                     name={feat.id}
                     checked={selectedFeatures?.includes(feat.id)}
-                    onCheckedChange={(state) => toggleFeatures(feat.id, state)}
+                    onCheckedChange={(state: boolean) => toggleFeatures(feat.id, state)}
                   />
                   <Label htmlFor={feat.id}>{feat.name}</Label>
                 </Field>

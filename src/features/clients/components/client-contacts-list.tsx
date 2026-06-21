@@ -53,12 +53,12 @@ export function ClientContactsList({
           </ItemContent>
           <ItemActions>
             {onSelected && (
-                <Checkbox
-                  checked={selected.has(contact.id)}
-                  onCheckedChange={(checked) => {
-                    handleContactSelect(contact.id, checked as boolean)
-                  }}
-                />
+              <Checkbox
+                checked={selected.has(contact.id)}
+                onCheckedChange={(checked: boolean) => {
+                  handleContactSelect(contact.id, checked)
+                }}
+              />
             )}
           </ItemActions>
         </Item>

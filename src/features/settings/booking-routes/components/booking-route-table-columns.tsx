@@ -26,7 +26,7 @@ export function getBookingRoutesColumns(): ColumnDef<BookingRoute>[] {
     },
     {
       accessorKey: "distance_km",
-      header: "Distance",
+      header: "Distance (km)",
       cell: ({ row }) => {
         return <p>{row.original.distance_km}</p>
       },

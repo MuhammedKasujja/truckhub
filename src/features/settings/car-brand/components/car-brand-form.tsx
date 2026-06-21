@@ -58,6 +58,7 @@ export function CarBrandForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      form.reset()
       queryInvalidator.settings.carBrands.list()
     } else {
       toast.error(error?.message)
