@@ -1,3 +1,5 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ChangePasswordForm } from "@/features/auth/components"
 import { UserProfileView } from "@/features/users/components"
 import { userProfileQueryOptions } from "@/features/users/query-options"
 import { requireAuth } from "@/lib/auth"
@@ -17,5 +19,18 @@ function RouteComponent() {
   if (!user) {
     return <div>Failed to load user profile {error?.message}</div>
   }
-  return <UserProfileView user={user} />
+  return (
+    <Tabs defaultValue="profile" className="w-full">
+      <TabsList>
+        <TabsTrigger value={"profile"}>User Profile</TabsTrigger>
+        <TabsTrigger value={"change-password"}>Password Change</TabsTrigger>
+      </TabsList>
+      <TabsContent value="profile">
+        <UserProfileView user={user} />
+      </TabsContent>
+      <TabsContent value="change-password">
+        <ChangePasswordForm />
+      </TabsContent>
+    </Tabs>
+  )
 }

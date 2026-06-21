@@ -67,7 +67,6 @@ export function UserTable() {
       </DataTable>
       {/* Assign User roles  Dialog */}
       <UserAssignRolesDialog
-        key={rowAction?.row.original.id} // Force rebuild whenever the user changes
         user={rowAction?.row.original}
         open={rowAction?.variant === "assign-permissions"}
         onOpenChange={() => setRowAction(null)}

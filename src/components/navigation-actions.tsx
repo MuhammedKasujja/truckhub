@@ -1,5 +1,4 @@
-"use client"
-import { useRouter } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { ThemeToggle } from "./theme/toggler"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -31,30 +30,33 @@ export function NavigationActions() {
 }
 
 function ProfileDropdown() {
-  const router = useRouter()
-
   const { user } = useAuth()
   const logout = useServerFn(logoutFn)
- 
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-full grayscale">
           <Avatar>
             <AvatarImage src={user?.photo_url} alt={user?.name} />
-            <AvatarFallback>{generateAvatorFallback(user?.name)}</AvatarFallback>
+            <AvatarFallback>
+              {generateAvatorFallback(user?.name)}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-32">
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Billing</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/settings/user-profile">Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link to="/settings/company-details">Settings</Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem variant="destructive" onClick={()=>logout()}>
+          <DropdownMenuItem variant="destructive" onClick={() => logout()}>
             Log out
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -86,12 +88,12 @@ function NotificationBell() {
   const unreadCount = 3
 
   return (
-    <Button 
+    <Button
       type="button"
       className="relative inline-flex items-center justify-center rounded-md p-2 hover:bg-accent"
       aria-label="Notifications"
-      size={'icon-sm'}
-      variant={'ghost'}
+      size={"icon-sm"}
+      variant={"ghost"}
     >
       <BellIcon className="h-5 w-5" />
 

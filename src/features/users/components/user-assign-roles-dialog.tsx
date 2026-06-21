@@ -19,6 +19,7 @@ import { useTranslation } from "@/i18n"
 import { toast } from "sonner"
 import { userAssignRolesFn } from "../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useEffect } from "react"
 
 type Props = {
   user?: SystemUser
@@ -41,14 +42,14 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
   })
 
   // Force rebuild whenever the user changes if no key is used in the parent component
-  //   useEffect(() => {
-  //     if (user) {
-  //       form.reset({
-  //         user_id: user?.id,
-  //         roles: (user?.roles ?? []).map((role) => role.id),
-  //       })
-  //     }
-  //   }, [user, form])
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        user_id: user?.id,
+        roles: (user?.roles ?? []).map((role) => role.id),
+      })
+    }
+  }, [user, form])
 
   async function onSubmit(data: z.infer<typeof UserAssignRolesSchema>) {
     const { message, error } = await userAssignRolesFn({ data })
