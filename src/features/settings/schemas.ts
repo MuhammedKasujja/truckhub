@@ -5,6 +5,7 @@ export const CompanySchema = z.object({
   email: z.email(),
   phone: z.string(),
   website: z.url().optional().nullable(),
+  address: z.string().optional().nullable(),
   description: z.string().min(3).optional().nullable(),
 })
 

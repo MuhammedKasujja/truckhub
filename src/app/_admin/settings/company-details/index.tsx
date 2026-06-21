@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CompanyDetailsView } from "@/features/settings/company-details/components"
 import { settingsQueryOptions } from "@/features/settings/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { SquareDotIcon } from "lucide-react"
@@ -12,16 +13,13 @@ export const Route = createFileRoute("/_admin/settings/company-details/")({
 function RouteComponent() {
   const { data: settings } = Route.useLoaderData()
 
+  if (!settings) {
+    return "Failed to load"
+  }
+
   return (
     <div className="flex flex-col gap-5">
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-semibold text-2xl">{settings?.company.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div>{settings?.company.phone}</div>
-        </CardContent>
-      </Card>
+      <CompanyDetailsView company={settings?.company} />
       <Card>
         <CardHeader>
           <CardTitle>Invoice Terms</CardTitle>
@@ -29,7 +27,10 @@ function RouteComponent() {
         <CardContent>
           <div className="space-y-4">
             {settings?.invoice_terms?.map((term) => (
-              <div className="flex items-center gap-2 text-muted-foreground" key={term}>
+              <div
+                className="flex items-center gap-2 text-muted-foreground"
+                key={term}
+              >
                 <SquareDotIcon className="h-3 w-3 text-muted-foreground" />
                 <p>{term}</p>
               </div>
@@ -44,7 +45,10 @@ function RouteComponent() {
         <CardContent>
           <div className="space-y-4">
             {settings?.quotation_terms?.map((term) => (
-              <div className="flex items-center gap-2 text-muted-foreground" key={term}>
+              <div
+                className="flex items-center gap-2 text-muted-foreground"
+                key={term}
+              >
                 <SquareDotIcon className="h-3 w-3 text-muted-foreground" />
                 <p>{term}</p>
               </div>
