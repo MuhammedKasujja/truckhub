@@ -1,5 +1,4 @@
 import { Can } from "@/components/has-permission"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
@@ -13,8 +12,8 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item"
-import { Edit } from "lucide-react"
 import { Company } from "../../schemas"
+import { EditCompanyDetailsDialog } from "./edit-company-details-dialog"
 
 type CompanyDetailsProps = {
   company: Company
@@ -27,9 +26,7 @@ export function CompanyDetailsView({ company }: CompanyDetailsProps) {
         <CardTitle className="text-xl font-semibold">{company.name}</CardTitle>
         <CardAction>
           <Can permission="config:company:update">
-            <Button type="button">
-              <Edit />
-            </Button>
+            <EditCompanyDetailsDialog company={company}/>
           </Can>
         </CardAction>
       </CardHeader>

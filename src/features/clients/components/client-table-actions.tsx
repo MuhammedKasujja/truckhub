@@ -29,7 +29,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={"sm"}>
+        <Button variant="ghost" size={'icon-sm'}>
           <MoreVertical />
         </Button>
       </DropdownMenuTrigger>

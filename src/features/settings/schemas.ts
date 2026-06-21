@@ -1,9 +1,9 @@
 import z from "zod"
 
 export const CompanySchema = z.object({
-  name: z.string(),
+  name: z.string().min(2, "Required"),
   email: z.email(),
-  phone: z.string(),
+  phone: z.string().min(2, "Required"),
   website: z.url().optional().nullable(),
   address: z.string().optional().nullable(),
   description: z.string().min(3).optional().nullable(),

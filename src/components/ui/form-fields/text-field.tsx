@@ -1,14 +1,14 @@
-import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
-import { RequiredLabelIcon } from '@/components/required-label-icon'
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
 
-export type InputType = 'text' | 'number' | 'email' | 'url' | 'phone'
+export type InputType = "text" | "number" | "email" | "url" | "phone"
 
 export type TextFieldProps<F extends FieldValues> = {
   label?: string
@@ -26,9 +26,9 @@ export function TextField<T extends FieldValues>({
   name,
   label,
   placeholder,
-  type = 'text',
+  type = "text",
   required = true,
-  readOnly= false,
+  readOnly = false,
   description,
 }: Readonly<TextFieldProps<T>>) {
   return (
@@ -37,10 +37,12 @@ export function TextField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <RequiredLabelIcon />}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <RequiredLabelIcon />}
+            </FieldLabel>
+          )}
           <Input
             {...field}
             readOnly={readOnly}

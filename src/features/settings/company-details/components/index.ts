@@ -1,1 +1,1 @@
-export { CompanyDetailsView } from "./company-details.tsx"
+export { CompanyDetailsView } from "./company-details-view.tsx"
