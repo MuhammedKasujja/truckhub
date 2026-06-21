@@ -9,6 +9,7 @@ import {
   getUsers,
   createUser,
   updateUser,
+  getUserById,
   deleteUserById,
   getUsersByQuery,
   userAssignRoles,
@@ -35,10 +36,15 @@ export const getUsersByQueryFn = createServerFn()
     return getUsersByQuery(data)
   })
 
-export const getUserProfileFn = createServerFn()
+export const getUserDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getUserProfileById(data.id)
+    return getUserById(data.id)
+  })
+
+export const getUserProfileDetailsFn = createServerFn()
+  .handler(async () => {
+    return getUserProfileById()
   })
 
 export const deleteUserFn = createServerFn()

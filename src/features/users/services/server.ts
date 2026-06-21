@@ -12,11 +12,13 @@ import { EntityId, SearchQuery } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
+const endpoint = "/v1/users"
+
 export async function getUsers(input: UserListSearchParams) {
   const params = generateApiSearchParams(input)
 
   const response = await apiClient.getPaginatedFn<SystemUser[]>(
-    `/v1/users/?${params}`
+    `${endpoint}/?${params}`
   )
 
   if (response.success) {
@@ -39,29 +41,29 @@ export async function getUsersByQuery(query: SearchQuery) {
 }
 
 export async function getUserById(userId: EntityId) {
-  return await apiClient.getFn<SystemUser>(`/v1/users/${userId}`)
+  return await apiClient.getFn<SystemUser>(`${endpoint}/${userId}`)
 }
 
-export async function getUserProfileById(userId: EntityId) {
-  return await apiClient.getFn<SystemUser>(`/v1/users/${userId}`)
+export async function getUserProfileById() {
+  return await apiClient.getFn<SystemUser>(`/v1/auth/me`)
 }
 
 export async function deleteUserById(userId: EntityId) {
-  return await apiClient.deleteFn<null>(`/v1/users/${userId}`)
+  return await apiClient.deleteFn<null>(`${endpoint}/${userId}`)
 }
 
 export async function updateUser(data: Partial<UserUpdateSchemaType>) {
   const { id: userId, ...updateData } = data
-  return await apiClient.patchFn<SystemUser>(`/v1/users/${userId}`, updateData)
+  return await apiClient.patchFn<SystemUser>(`${endpoint}/${userId}`, updateData)
 }
 
 export async function createUser(data: UserCreateSchemaType) {
-  return await apiClient.postFn<SystemUser>("/v1/users", data)
+  return await apiClient.postFn<SystemUser>(endpoint, data)
 }
 
 export async function userAssignRoles(data: UserAssignRolesType) {
   const { user_id, roles } = data
-  return await apiClient.postFn<SystemUser>(`/v1/users/${user_id}/roles`, roles)
+  return await apiClient.postFn<SystemUser>(`${endpoint}/${user_id}/roles`, roles)
 }
 
 // export async function editUser(

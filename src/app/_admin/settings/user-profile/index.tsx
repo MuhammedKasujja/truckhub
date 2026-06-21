@@ -9,9 +9,7 @@ export const Route = createFileRoute("/_admin/settings/user-profile/")({
   component: RouteComponent,
   beforeLoad: () => requireAuth(),
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(
-      userProfileQueryOptions(context.user.id)
-    ),
+    context.queryClient.ensureQueryData(userProfileQueryOptions()),
 })
 
 function RouteComponent() {
