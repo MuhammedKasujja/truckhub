@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Field, FieldGroup } from "@/components/ui/field"
+import { Field, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field"
 import {
   AutoCompleteField,
   NumberField,
@@ -15,24 +15,20 @@ import {
   TextField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import {
-  VehicleCreateSchema,
-  VehicleUpdateSchema,
-} from "@/features/vehicles/schemas"
+import { VehicleUpdateSchema } from "@/features/vehicles/schemas"
 import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
 import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
-import { zodResolver } from "@hookform/resolvers/zod"
-import React from "react"
-import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
-import { EntityId } from "@/schemas"
 import { VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { CarModel, DriveTrain } from "@/types/setting"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { Separator } from "@/components/ui/separator"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { useVehicleForm } from "../hooks/use-vehicle-form"
 
 type VehicleFormProps = {
   initialData?: z.infer<typeof VehicleUpdateSchema>
@@ -44,61 +40,16 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
   const {
     data: { data: vehicleCofig },
   } = useSuspenseQuery(createVehicleConfigurationsQueryOptions())
-  const [vehicleType, setVehicleType] = React.useState<
-    | {
-        name: string
-        is_truck: boolean
-        id: EntityId
-      }
-    | undefined
-  >()
-
-  const [driveTrains, setDriveTrains] = React.useState<DriveTrain[]>(
-    vehicleCofig?.drive_trains ?? []
-  )
-
-  const [carModels, setCarModels] = React.useState<CarModel[]>(
-    vehicleCofig?.car_models ?? []
-  )
-
-  const isEdit = !!initialData
-
-  const formSchema = isEdit ? VehicleUpdateSchema : VehicleCreateSchema
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: initialData,
-  })
-
-  const selectedCarBrandId = form.watch("car_brand_id")
-  const selectedCarModelId = form.watch("car_model_id")
-
-  //  Track vehicle type when car model changes to populate drive trains for small cars and trucks
-  React.useEffect(() => {
-    const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
-      carModels.find((model) => model.vehicle_type_id === ele.id)
-    )
-    form.setValue("vehicle_type_id", vehicleType?.id)
-    setVehicleType(vehicleType)
-    setDriveTrains(
-      vehicleCofig?.drive_trains.filter(
-        (ele) => ele.is_truck === vehicleType?.is_truck
-      ) ?? []
-    )
-    // form.reset({ drive_train_id: undefined, tonnage_id: undefined });
-  }, [vehicleCofig, selectedCarModelId])
-
-  //  Populate car models basing on selected car make
-  React.useEffect(() => {
-    const carBrand = vehicleCofig?.car_brands.find(
-      (ele) => ele.id === selectedCarBrandId
-    )
-    setCarModels(
-      vehicleCofig?.car_models.filter(
-        (ele) => ele.car_brand_id === carBrand?.id
-      ) ?? []
-    )
-  }, [selectedCarBrandId, vehicleCofig])
+  const {
+    formSchema,
+    form,
+    vehicleType,
+    toggleFeatures,
+    driveTrains,
+    selectedFeatures,
+    isEdit,
+    carModels,
+  } = useVehicleForm(vehicleCofig, initialData)
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
@@ -279,6 +230,29 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
               )}
             </FieldGroup>
           </div>
+          <Separator />
+          <FieldSet className="mt-4">
+            <FieldLegend className="my-4" variant="label">
+              Vehicle Added on Features
+            </FieldLegend>
+            <FieldGroup className="gap-5">
+              {vehicleCofig?.features.map((feat) => (
+                <Field
+                  key={feat.id}
+                  orientation="horizontal"
+                  className="capitalize"
+                >
+                  <Checkbox
+                    id={feat.id}
+                    name={feat.id}
+                    checked={selectedFeatures?.includes(feat.id)}
+                    onCheckedChange={(state) => toggleFeatures(feat.id, state)}
+                  />
+                  <Label htmlFor={feat.id}>{feat.name}</Label>
+                </Field>
+              ))}
+            </FieldGroup>
+          </FieldSet>
         </CardContent>
         <CardFooter>
           <SubmitButton

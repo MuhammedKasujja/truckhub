@@ -23,6 +23,7 @@ export const VehicleCreateSchema = z.object({
   drive_train_id: IDSchema,
   tonnage_id: IDSchema.optional().nullable(),
   second_plate_number: z.string().optional().nullable(),
+  features: z.array(IDSchema).default([]).optional(),
   tonnage_capacity: z.union([z.number(), z.string()]).optional().nullable(),
 })
 

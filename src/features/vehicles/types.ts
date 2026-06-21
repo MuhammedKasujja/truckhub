@@ -35,6 +35,7 @@ export interface VehicleBase {
   updated_at: Date
   second_plate_number?: string
   tonnage_capacity?: number
+  total_axles?: number
 }
 
 export interface Vehicle extends VehicleBase {
