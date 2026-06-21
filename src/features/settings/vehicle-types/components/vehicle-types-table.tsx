@@ -38,7 +38,7 @@ export function VehicleTypeTable() {
   })
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <VehicleTypeForm />
         <DataTableSortList table={table} align="end" />
@@ -50,7 +50,7 @@ export function VehicleTypeTable() {
 export function VehicleTypeTableSkeleton() {
   return (
     <DataTableSkeleton
-      columnCount={getVehicleTypeColumns().length}
+      columnCount={2}
       filterCount={1}
       shrinkZero
     />

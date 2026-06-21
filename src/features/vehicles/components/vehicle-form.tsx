@@ -22,13 +22,12 @@ import { toast } from "sonner"
 import z from "zod"
 import { VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useVehicleForm } from "../hooks/use-vehicle-form"
+import { useVehicleConfigurationsSuspense } from "@/features/settings/hooks/use-vehicle-configurations"
 
 type VehicleFormProps = {
   initialData?: z.infer<typeof VehicleUpdateSchema>
@@ -37,9 +36,7 @@ type VehicleFormProps = {
 export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
-  const {
-    data: { data: vehicleCofig },
-  } = useSuspenseQuery(createVehicleConfigurationsQueryOptions())
+  const { data: vehicleCofig } = useVehicleConfigurationsSuspense()
   const {
     formSchema,
     form,
@@ -246,7 +243,9 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     id={feat.id}
                     name={feat.id}
                     checked={selectedFeatures?.includes(feat.id)}
-                    onCheckedChange={(state: boolean) => toggleFeatures(feat.id, state)}
+                    onCheckedChange={(state: boolean) =>
+                      toggleFeatures(feat.id, state)
+                    }
                   />
                   <Label htmlFor={feat.id}>{feat.name}</Label>
                 </Field>

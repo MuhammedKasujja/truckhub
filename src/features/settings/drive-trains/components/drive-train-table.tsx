@@ -42,7 +42,7 @@ export function DriveTrainTable() {
   })
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <DriveTrainForm />
         <DataTableSortList table={table} align="end" />
