@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Edit } from "lucide-react"
 import { updateCompanyDetailsFn } from "../services"
 import { toast } from "sonner"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type EditCompanyDetailsDialogProps = {
   company: Company
@@ -25,6 +26,7 @@ type EditCompanyDetailsDialogProps = {
 export function EditCompanyDetailsDialog({
   company,
 }: EditCompanyDetailsDialogProps) {
+  const invalidator = useQueryInvalidator()
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
     defaultValues: { ...company },
@@ -34,6 +36,7 @@ export function EditCompanyDetailsDialog({
     const { message, error } = await updateCompanyDetailsFn({ data })
     if (error) {
       toast.error(error.message)
+      invalidator.settings.refresh()
     } else {
       toast.success(message)
     }

@@ -10,6 +10,7 @@ export type SystemUser = {
   email: string
   phone: string | undefined
   is_admin: boolean
+  username: string | undefined
   created_at: string
   last_login: string | null
   updated_at: string

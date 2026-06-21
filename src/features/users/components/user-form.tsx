@@ -86,6 +86,12 @@ export function UserForm({ initialData }: UserFormProps) {
               control={form.control}
               required={true}
             />
+            <TextField
+              label={tr("common.form.username")}
+              name={"username"}
+              control={form.control}
+              required={false}
+            />
             <EmailField
               label={tr("common.form.email")}
               name={"email"}

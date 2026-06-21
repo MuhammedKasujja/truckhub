@@ -17,7 +17,7 @@ class QueryInvalidator {
     /** `Clear all app Cached data after User login` */
     invalidate: () => this.queryClient.clear(),
   }
-  
+
   session = {
     /** `Clear all app Cached data after User login` */
     refresh: () => this.queryClient.clear(),
@@ -124,10 +124,11 @@ class QueryInvalidator {
   }
 
   settings = {
-    refresh: () =>
+    refresh: () => {
       this.queryClient.invalidateQueries({
         queryKey: queryKeys.settings.app(),
-      }),
+      })
+    },
 
     routes: {
       all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
