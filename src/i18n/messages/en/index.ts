@@ -101,6 +101,7 @@ const en = {
       assigned: "Assigned",
       description: "Description",
       short_name: "Short Name",
+      last_login: "Last Login",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",

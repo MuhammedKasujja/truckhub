@@ -37,7 +37,7 @@ export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]
 
 /**
  * Allowed Entity Counter Padding
- * 
+ *
  * [1, 2, 3, 4, 5, 6, 7, 8]
  */
 export const ALLOWDED_NUMBER_COUNTER_PATTERNS = Array.from(
@@ -54,3 +54,10 @@ export const IDLE_TIMEOUT_MS = 5 * 60 * 1000 // total idle time before logout [ 
  */
 export const IDLE_PROMPT_MS = 4 * 60 * 1000 // show warning 4 min before logout
 export const COUNTDOWN_SECONDS = (IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000
+
+export const DATE_FORMATS = [
+  "DD/MMM/YYYY",
+  "DD-MM-YYYY",
+  "MMM D, YYYY",
+  "YYYY-MM-DD",
+]

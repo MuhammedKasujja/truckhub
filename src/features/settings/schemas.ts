@@ -11,6 +11,8 @@ export const CompanySchema = z.object({
 export const EditSettingsSchema = z.object({
   search_radius: z.number(),
   counter_padding: z.number().optional(),
+  date_format: z.string().min(2, "Required").optional(),
+  currency_code: z.string().min(2, "Required").optional(),
   invoice_terms: z.array(z.string()).optional().nullable(),
   quotation_terms: z.array(z.string()).optional().nullable(),
 })

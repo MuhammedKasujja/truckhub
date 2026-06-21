@@ -8,7 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
-import { NumberField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  SelectField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
   EditSettingsSchema,
@@ -21,6 +25,7 @@ import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { DATE_FORMATS } from "@/common/constants"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -70,6 +75,17 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
             <NumberField
               label={"Counter Padding"}
               name={"counter_padding"}
+              control={form.control}
+            />
+            <SelectField
+              label={"Date Format"}
+              name={"date_format"}
+              control={form.control}
+              options={DATE_FORMATS.map((f) => ({ label: f, value: f }))}
+            />
+            <TextField
+              label={"Currency Code"}
+              name={"currency_code"}
               control={form.control}
             />
           </FieldGroup>

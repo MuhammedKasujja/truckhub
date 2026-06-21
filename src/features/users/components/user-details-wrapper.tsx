@@ -35,9 +35,10 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           <CardDescription></CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>{user?.email}</div>
-          <div>{user?.phone}</div>
-          <div>{formatDate(user?.created_at)}</div>
+          <div>Email: {user?.email}</div>
+          <div>Phone: {user?.phone}</div>
+          <div>Last Login: {formatDate(user?.last_login)}</div>
+          <div>Registration Date: {formatDate(user?.created_at)}</div>
         </CardContent>
       </Card>
     </div>

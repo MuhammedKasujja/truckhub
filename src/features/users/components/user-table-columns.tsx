@@ -89,10 +89,10 @@ export function getUserTableColumns({
       },
     },
     {
-      accessorKey: "created_at",
-      header: tr("common.form.date"),
+      accessorKey: "last_login",
+      header: tr("common.form.last_login"),
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.last_login)}</p>
       },
     },
     {

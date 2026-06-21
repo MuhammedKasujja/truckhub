@@ -11,6 +11,7 @@ export type SystemUser = {
   phone: string | undefined
   is_admin: boolean
   created_at: string
+  last_login: string | null
   updated_at: string
   roles: {
     id: EntityId

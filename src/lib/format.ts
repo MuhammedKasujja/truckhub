@@ -25,7 +25,7 @@ export function formatNumber(
 }
 
 export function formatDate(
-  date: Date | string | number | undefined,
+  date: Date | string | number | null |undefined,
   opts: Intl.DateTimeFormatOptions = {}
 ) {
   if (!date) return ""

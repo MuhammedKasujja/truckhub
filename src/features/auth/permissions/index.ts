@@ -8,11 +8,13 @@ import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
 import { ClientModulePermissions } from "./customer_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
+import { DashboardModulePermissions } from "./dashboard_permissions";
 
 /**
  * Derived system permissions based on the `StoreDatabasePermissions`
  */
 export const KeyNamedPermissions = {
+  ...DashboardModulePermissions,
   ...UserModulePermissions,
   ...BookingModulePermissions,
   ...ServiceModulePermissions,
@@ -28,6 +30,7 @@ export const KeyNamedPermissions = {
 export type UserPermission = keyof typeof KeyNamedPermissions;
 
 export const SystemPermissions = {
+  dashboard: DashboardModulePermissions,
   users: UserModulePermissions,
   bookings: BookingModulePermissions,
   services: ServiceModulePermissions,

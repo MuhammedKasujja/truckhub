@@ -33,12 +33,12 @@ import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { getModuleIcon } from "@/components/icons"
 
-export const sibebarModules = [
+export const sibebarModules: SidebarItem[] = [
   {
     title: "routes.dashboard",
     url: DashboardRoute.to,
     icon: getModuleIcon("Dashboard"),
-    permission: "bookings:view",
+    permission: "dashboard:view",
   },
   {
     title: "routes.rides",

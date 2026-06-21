@@ -3,7 +3,7 @@
 export const BookingModulePermissions = {
   "bookings:create": [
     "bookings:create",
-    "passengers:read",
+    "clients:read",
     "services:read",
     "tax_rates:read",
   ],
