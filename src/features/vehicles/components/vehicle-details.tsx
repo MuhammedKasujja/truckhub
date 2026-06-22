@@ -9,14 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { DriverSearchFilter } from "@/features/drivers/components/driver-search-filter"
+import { DriverPicker } from "@/features/drivers/components/driver-search-filter"
 import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
 import { Vehicle, VehicleDriver } from "../types"
 import { vehicleAssignDriverFn } from "../services"
-import { EntityId } from "@/schemas"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
@@ -31,26 +30,24 @@ type VehicleDetailsProps = {
 
 export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
   const queryInvalidator = useQueryInvalidator()
-  const [driverId, setDriverId] = React.useState<EntityId | undefined>(
-    vehicle?.driver?.id
-  )
-  const driver = vehicle?.driver
+  const [driver, setDriver] = React.useState(vehicle?.driver)
+  const [isChangeDriver, setIsChangeDriver] = React.useState(false)
 
   async function assignDriver() {
-    if (!driverId) {
+    if (!driver) {
       toast.error("Please select a driver")
       return
     }
     const { isSuccess, error, message } = await vehicleAssignDriverFn({
       data: {
         vehicleId: vehicle!.id,
-        driverId: driverId,
+        driverId: driver.id,
       },
     })
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.vehicles.details(vehicle!.id).invalidate()
-      queryInvalidator.drivers.details(driverId).invalidate()
+      queryInvalidator.drivers.details(driver.id).invalidate()
     } else {
       toast.error(error?.message)
     }
@@ -176,8 +173,14 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
         </Card>
 
         {/* Driver */}
-        {driver !== null ? (
-          <DriverDetails driver={driver} />
+        {vehicle.driver && !isChangeDriver ? (
+          <DriverDetails
+            driver={vehicle.driver}
+            onChangeDriver={() => {
+              setIsChangeDriver(true)
+              setDriver(null)
+            }}
+          />
         ) : (
           <Card>
             <CardHeader>
@@ -187,15 +190,27 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-1">
-              <DriverSearchFilter
-                className="flex-1"
+              <DriverPicker
+                value={driver}
                 onSelected={(driver) => {
-                  setDriverId(driver?.id)
+                  setDriver({ ...driver, name: driver?.fullname })
                 }}
               />
             </CardContent>
-            <CardFooter>
-              <Button type="button" onClick={() => assignDriver()}>
+            <CardFooter className="grid grid-cols-2 items-end gap-4">
+              {vehicle.driver && (
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    setDriver(null)
+                    setIsChangeDriver(false)
+                  }}
+                  variant={"outline"}
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button className="w-full" onClick={() => assignDriver()}>
                 Submit
               </Button>
             </CardFooter>
@@ -255,35 +270,41 @@ function DetailItem({
   )
 }
 
-function DriverDetails({ driver }: { driver: VehicleDriver }) {
+function DriverDetails({
+  driver,
+  onChangeDriver,
+}: {
+  driver: VehicleDriver
+  onChangeDriver: () => void
+}) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Assigned Driver</CardTitle>
       </CardHeader>
-
       <CardContent className="space-y-4">
         <div>
           <p className="font-medium capitalize">{driver.name}</p>
-
           <p className="text-sm text-muted-foreground">{driver.email}</p>
         </div>
-
         <Separator />
-
         <div>
           <p className="text-sm text-muted-foreground">Phone</p>
-
           <p>{driver.phone}</p>
         </div>
-
         <Separator />
-
         <div>
           <p className="text-sm text-muted-foreground">Driver ID</p>
-
           <p className="text-xs break-all">{driver.id}</p>
         </div>
+        <Button
+          type="button"
+          className="w-full"
+          variant={"secondary"}
+          onClick={onChangeDriver}
+        >
+          Change Driver
+        </Button>
       </CardContent>
     </Card>
   )

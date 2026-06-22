@@ -44,16 +44,19 @@ const data = {
       name: "Pricing Plans",
       icon: Wallet,
       route: PricingConfigRoute.to,
+      permission: "",
     },
     {
       name: "Vehicle Config",
       icon: Globe,
       route: VehicleConfigDefaultRoute.to,
+      permission: "config:edit",
     },
     {
       name: "Routes",
       icon: LocateFixed,
       route: BookingRoutes.to,
+      permission: "",
     },
     { name: "Tax Rates", icon: SquareSigma, route: TaxRatesRoutes.to },
     // { name: "Privacy & visibility", icon: Lock },
@@ -61,6 +64,7 @@ const data = {
       name: "User Management",
       icon: Users,
       route: UsersRoute.to,
+      permission: "",
     },
     { name: "Notifications", icon: Bell, route: NotificationsRoute.to },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
@@ -69,6 +73,7 @@ const data = {
       name: "Generate Numbers",
       icon: ListOrdered,
       route: GenerateNumbersRoute.to,
+      permission: "config:manage_entity_numbers",
     },
     {
       name: "User Profile",
@@ -76,7 +81,7 @@ const data = {
       route: ProfileRoute.to,
     },
   ],
-}as const
+} as const
 
 export function SettingsSidebar() {
   const location = useLocation()

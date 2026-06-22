@@ -1,60 +1,70 @@
 "use client"
 
-import { AutoComplete } from "@/components/ui/autocomplete"
 import { Driver } from "../types"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { createDriverSearchQueryOptions } from "../queries"
+import { EntityPickerProps } from "@/common/types"
+import {
+  FormAutoComplete,
+  FormAutoCompleteProps,
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
+import { FieldValues } from "react-hook-form"
+import { AutoComplete } from "@/components/ui/autocomplete-modified"
 
-interface DriverSearchFilterProps {
-  onSelected: (driver?: Driver | null) => void
-  className?: string
-}
-
-export function DriverSearchFilter({
+export function DriverPicker({
+  value,
+  id,
   onSelected,
-  className,
-}: DriverSearchFilterProps) {
-  const [driverId, setDriverId] = useState<string>("")
-  const [search, setSearch] = useState<string>()
-  
-  const { data } = useQuery({
-    ...createDriverSearchQueryOptions(search),
-    enabled: (search ?? "").trim().length > 0,
+}: EntityPickerProps<Driver>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery({
+    ...createDriverSearchQueryOptions(query),
+    // enabled: query.trim().length > 2,
   })
-
   return (
     <AutoComplete<Driver>
-      triggerClassName={className}
-      fetcher={async (search) => {
-        setSearch(search)
-        return data?.data ?? []
+      id={id}
+      options={data ?? []}
+      loading={isLoading}
+      value={value}
+      onChange={(driver) => {
+        onSelected?.(driver)
       }}
-      renderOption={(driver) => (
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col">
-            <div className="font-medium">{driver.fullname}</div>
-          </div>
-        </div>
-      )}
-      getOptionValue={(location) => location.id.toString()}
-      getDisplayValue={(location) => (
-        <div className="flex items-center gap-2 text-left">
-          <div className="flex flex-col leading-tight">
-            <div className="font-medium">{location.fullname}</div>
-          </div>
-        </div>
-      )}
-      notFound={
-        <div className="py-6 text-center text-sm">No Drivers found</div>
-      }
+      filterFn={(u, q) => u.fullname.toLowerCase().includes(q.toLowerCase())}
       label="Driver"
-      placeholder="Search driver..."
-      value={driverId}
-      onChange={async (driver) => {
-        setDriverId(driver?.id.toString() ?? "")
-        onSelected(driver)
-      }}
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.fullname}</span>}
+    />
+  )
+}
+
+export function DriverPickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, Driver>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(createDriverSearchQueryOptions(query))
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={data ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      onSearch={(q) => setQuery(q)}
+      filterFn={(u, q) => u.fullname.toLowerCase().includes(q.toLowerCase())}
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.fullname}</span>}
+      onSelected={onSelected}
+      {...props}
     />
   )
 }

@@ -44,7 +44,9 @@ export function UserPickerField<TFieldValues extends FieldValues>({
   ...props
 }: FormAutoCompleteProps<TFieldValues, SystemUser>) {
   const [query, setQuery] = useState("")
-  const { data, isLoading } = useQuery(usersQueryOprions({}))
+  const { data, isLoading } = useQuery(
+    usersQueryOprions(remote ? { search: query } : {})
+  )
   return (
     <FormAutoComplete
       name={name}
