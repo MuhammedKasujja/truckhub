@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { VehicleSearchFilter } from "@/features/vehicles/components/vehicle-search-filter"
+import { VehiclePicker } from "@/features/vehicles/components/vehicle-search-filter"
 import {
   vehicleAssignDriverFn,
   vehicleUnAssignDriverFn,
@@ -28,20 +28,24 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
+import { Vehicle } from "@/features/vehicles/types"
 
 type DriverDetailsProps = {
   driver: Driver
 }
 
 export function DriverDetails({ driver }: DriverDetailsProps) {
-  const [vehicleId, setVehicleId] = React.useState<string | null>()
+  const [selectedVehicle, setSelectedVehicle] = React.useState<Vehicle | null>()
   const vehicle = driver?.vehicle
 
   async function assignDriver() {
+    if (!selectedVehicle) {
+      return toast.error("Please select a vehicle")
+    }
     const { isSuccess, error, message } = await vehicleAssignDriverFn({
       data: {
         driverId: driver!.id,
-        vehicleId: vehicleId!,
+        vehicleId: selectedVehicle.id,
       },
     })
     if (isSuccess) {
@@ -103,9 +107,9 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
             <CardDescription>Attach vehicle to the driver</CardDescription>
           </CardHeader>
           <CardContent className="flex">
-            <VehicleSearchFilter
-              className="flex-1"
-              onSelected={(vehicle) => setVehicleId(vehicle?.id)}
+            <VehiclePicker
+              value={selectedVehicle}
+              onSelected={(vehicle) => setSelectedVehicle(vehicle)}
             />
           </CardContent>
           <CardFooter>

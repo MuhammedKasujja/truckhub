@@ -1,61 +1,72 @@
-"use client"
-
-import { AutoComplete } from "@/components/ui/autocomplete"
-import { Vehicle } from "@/features/vehicles/types"
+import { Vehicle } from "../types"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { EntityPickerProps } from "@/common/types"
+import {
+  FormAutoComplete,
+  FormAutoCompleteProps,
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
+import { FieldValues } from "react-hook-form"
+import { AutoComplete } from "@/components/ui/autocomplete-modified"
 import { vehicleSearchQueryOptions } from "../query-options"
 
-interface VehicleSearchFilterProps {
-  onSelected: (Vehicle?: Vehicle | null) => void
-  className?: string
-}
-
-export function VehicleSearchFilter({
+export function VehiclePicker({
+  value,
+  id,
   onSelected,
-  className,
-}: VehicleSearchFilterProps) {
-  const [vehicleId, setVehicleId] = useState<string>("")
-  const [search, setSearch] = useState<string>()
-
-  const { data } = useQuery({
-    ...vehicleSearchQueryOptions(search ?? ""),
-    enabled: search !== null,
+}: EntityPickerProps<Vehicle>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery({
+    ...vehicleSearchQueryOptions(query),
+    // enabled: query.trim().length > 2,
   })
-
   return (
     <AutoComplete<Vehicle>
-      triggerClassName={className}
-      fetcher={async (search) => {
-        // if (!search || search.length < 3) return [];
-        setSearch(search)
-        return data?.data ?? []
+      id={id}
+      options={data?.data ?? []}
+      loading={isLoading}
+      value={value}
+      onChange={(vehicle) => {
+        onSelected?.(vehicle)
       }}
-      renderOption={(vehicle) => (
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col">
-            <div className="font-medium">{vehicle.plate_number}</div>
-          </div>
-        </div>
-      )}
-      getOptionValue={(vehicle) => vehicle.id.toString()}
-      getDisplayValue={(vehicle) => (
-        <div className="flex items-center gap-2 text-left">
-          <div className="flex flex-col leading-tight">
-            <div className="font-medium">{vehicle.plate_number}</div>
-          </div>
-        </div>
-      )}
-      notFound={
-        <div className="py-6 text-center text-sm">No Vehicles found</div>
+      filterFn={(u, q) =>
+        u.display_name.toLowerCase().includes(q.toLowerCase())
       }
-      label="Location"
-      placeholder="Search vehicles..."
-      value={vehicleId}
-      onChange={async (vehicle) => {
-        setVehicleId(vehicle?.id.toString() ?? "")
-        onSelected(vehicle)
-      }}
+      label="Vehicle"
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.plate_number}</span>}
+    />
+  )
+}
+
+export function VehiclePickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, Vehicle>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(vehicleSearchQueryOptions(query))
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={data?.data ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      onSearch={(q) => setQuery(q)}
+      filterFn={(u, q) =>
+        u.display_name.toLowerCase().includes(q.toLowerCase())
+      }
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.plate_number}</span>}
+      onSelected={onSelected}
+      {...props}
     />
   )
 }

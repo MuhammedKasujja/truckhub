@@ -210,7 +210,11 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                   Cancel
                 </Button>
               )}
-              <Button className="w-full" onClick={() => assignDriver()}>
+              <Button
+                className="w-full"
+                onClick={() => assignDriver()}
+                disabled={driver === null}
+              >
                 Submit
               </Button>
             </CardFooter>

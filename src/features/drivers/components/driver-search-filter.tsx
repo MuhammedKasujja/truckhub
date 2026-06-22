@@ -1,5 +1,3 @@
-"use client"
-
 import { Driver } from "../types"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
