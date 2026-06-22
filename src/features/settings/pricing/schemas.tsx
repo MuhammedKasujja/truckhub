@@ -88,6 +88,28 @@ export const ListDistancePricingSchema = z.object({
   pricings: z.array(DistancePricingSchema),
 })
 
-export type ListDistancePricingRequest = z.infer<typeof ListDistancePricingSchema>
+export type ListDistancePricingRequest = z.infer<
+  typeof ListDistancePricingSchema
+>
 
 export type DistancePricingRequest = z.infer<typeof DistancePricingSchema>
+
+const loadingOffloadingPricingSchema = z.object({
+  tonnage_min: z.string().min(1, "Required"),
+  tonnage_max: z.string().min(1, "Required"),
+  price: z.string().min(1, "Required"),
+  cbm_min: z.string().min(1, "Required"),
+  cbm_max: z.string().min(1, "Required"),
+  loading_fees: z.string().min(1, "Required"),
+  offloading_fees: z.string().min(1, "Required"),
+})
+
+
+
+export const LoadingOffloadingPricingSchema = z.object({
+  pricings: z.array(loadingOffloadingPricingSchema),
+})
+
+export type LoadingOffloadingPricingRequest = z.infer<
+  typeof LoadingOffloadingPricingSchema
+>

@@ -4,6 +4,7 @@ import {
   BatchPricingPayload,
   DistancePricingRequest,
   ListDistancePricingRequest,
+  LoadingOffloadingPricingRequest,
 } from "../schemas"
 
 const endpoint = "/v1/routes/pricing"
@@ -32,5 +33,14 @@ export async function createBatchDistancePricing(
 export async function getDistanceTonnagePricing() {
   return await apiClient.getFn<DistancePricingRequest[]>(
     "/v1/pricing/distance-tonnage"
+  )
+}
+
+export async function createBatchLoadingPricing(
+  data: LoadingOffloadingPricingRequest
+) {
+  return await apiClient.postFn<DistancePricingRequest[]>(
+    "/v1/pricing/loading-offloading",
+    data.pricings
   )
 }

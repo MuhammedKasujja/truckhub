@@ -103,6 +103,9 @@ import {
   tonnageLabel,
   TonnageRange,
 } from "../utils/distance-tonnage-pricing-utils"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
 
 const gridColumnHelper = createColumnHelper<GridRow>()
 const listColumnHelper = createColumnHelper<RateEntry>()
@@ -426,20 +429,16 @@ export function DistancePricingScheduleForm({
         </div>
         {mode === "view" && (
           <div className="flex flex-wrap gap-2">
-            <button
+            {/* <button
               type="button"
               onClick={handleExportClick}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
             >
               <Download className="h-4 w-4" /> Export JSON
-            </button>
-            <button
-              type="button"
-              onClick={handleEditClick}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-            >
+            </button> */}
+            <Button type="button" onClick={handleEditClick}>
               <Pencil className="h-4 w-4" /> Edit schedule
-            </button>
+            </Button>
           </div>
         )}
       </header>
@@ -546,7 +545,7 @@ export function DistancePricingScheduleForm({
                       Open-ended
                       <input
                         type="checkbox"
-                        className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        className="h-4 w-4 rounded border-slate-300 text-primary-foreground focus:ring-primary"
                         {...register(`distanceRanges.${index}.noUpperLimit`)}
                       />
                     </label>
@@ -581,20 +580,16 @@ export function DistancePricingScheduleForm({
               )}
             </div>
             <div className="flex gap-2">
-              <button
+              <Button
                 type="button"
                 onClick={handleCancelClick}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                variant={"outline"}
               >
                 <X className="h-4 w-4" /> Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={hasBlockingErrors}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-              >
+              </Button>
+              <Button type="submit" disabled={hasBlockingErrors}>
                 <CheckCircle2 className="h-4 w-4" /> Save schedule
-              </button>
+              </Button>
             </div>
           </div>
         </form>
@@ -628,7 +623,7 @@ function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
         className={`w-full rounded-md border px-2 py-1 text-sm tabular-nums focus:ring-1 focus:outline-none ${
           disabled
             ? "border-slate-200 bg-slate-100 text-slate-400"
-            : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+            : "border-slate-300 focus:border-primay focus:ring-primary"
         }`}
       />
       {error && (
@@ -668,14 +663,9 @@ function BracketCard<T extends { id: string }>({
           </h2>
           <p className="text-xs text-slate-400">{hint}</p>
         </div>
-        <button
-          type="button"
-          onClick={onAdd}
-          disabled={addDisabled}
-          className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
-        >
+        <Button type="button" onClick={onAdd} disabled={addDisabled}>
           <Plus className="h-3.5 w-3.5" /> Add
-        </button>
+        </Button>
       </div>
 
       <div className="space-y-2">
@@ -808,7 +798,7 @@ function PriceGridCard({
                             valueAsNumber: true,
                             min: { value: 0, message: "≥ 0" },
                           })}
-                          className="w-24 rounded-md border border-slate-300 px-2 py-1 text-xs tabular-nums focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                          className="w-24 rounded-md border border-slate-300 px-2 py-1 text-xs tabular-nums focus:border-primary focus:ring-1 focus:ring-primay focus:outline-none"
                         />
                         <input
                           type="number"
@@ -862,7 +852,7 @@ function SchedulePanel({
   onGlobalFilterChange,
 }: SchedulePanelProps) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-slate-200 bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
@@ -877,7 +867,7 @@ function SchedulePanel({
               onClick={() => onViewModeChange("grid")}
               className={`rounded-md px-2.5 py-1 text-xs font-medium ${
                 viewMode === "grid"
-                  ? "bg-indigo-50 text-indigo-700"
+                  ? "border-[0.5px] bg-primary/5 text-primary"
                   : "text-slate-400 hover:bg-slate-50"
               }`}
             >
@@ -888,7 +878,7 @@ function SchedulePanel({
               onClick={() => onViewModeChange("list")}
               className={`rounded-md px-2.5 py-1 text-xs font-medium ${
                 viewMode === "list"
-                  ? "bg-indigo-50 text-indigo-700"
+                  ? "border-[0.5px] bg-primary/5 text-primary"
                   : "text-slate-400 hover:bg-slate-50"
               }`}
             >
@@ -897,7 +887,7 @@ function SchedulePanel({
           </div>
 
           {viewMode === "grid" && (
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 p-1">
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 p-1 dark:border-gray-50">
               {gridTable
                 .getAllLeafColumns()
                 .filter((col) => col.id !== "distance")
@@ -908,7 +898,7 @@ function SchedulePanel({
                     onClick={col.getToggleVisibilityHandler()}
                     className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium ${
                       col.getIsVisible()
-                        ? "bg-indigo-50 text-indigo-700"
+                        ? "border-[0.5px] bg-primary/5 text-primary"
                         : "text-slate-400 hover:bg-slate-50"
                     }`}
                   >
@@ -926,12 +916,12 @@ function SchedulePanel({
           {viewMode === "list" && (
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-              <input
+              <Input
                 type="text"
                 value={globalFilter}
                 onChange={(e) => onGlobalFilterChange(e.target.value)}
                 placeholder="Search distance, tonnage…"
-                className="rounded-lg border border-slate-300 py-1.5 pr-3 pl-7 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                className="rounded-lg border border-slate-300 py-1.5 pr-3 pl-7 text-xs focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
               />
             </div>
           )}
@@ -977,9 +967,9 @@ function GridTable({ table }: { table: Table<GridRow> }) {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={
-                row.original.rowType === "max" ? "bg-amber-50" : "bg-white"
-              }
+              className={cn(
+                row.original.rowType === "max" ? "bg-amber-50 dark:bg-gray-500" : "bg-white dark:bg-card"
+              )}
             >
               {row.getVisibleCells().map((cell) => (
                 <td

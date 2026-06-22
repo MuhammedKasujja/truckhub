@@ -1,12 +1,14 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getDistanceTonnagePricing,
+  createBatchLoadingPricing,
   createBatchDistancePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
 } from "./server"
 import {
   ListDistancePricingSchema,
+  LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
 
@@ -33,3 +35,9 @@ export const getDistanceTonnagePricingFn = createServerFn().handler(
     return getDistanceTonnagePricing()
   }
 )
+
+export const createBatchLoadingPricingFn = createServerFn()
+  .inputValidator(LoadingOffloadingPricingSchema)
+  .handler(async ({ data }) => {
+    return createBatchLoadingPricing(data)
+  })

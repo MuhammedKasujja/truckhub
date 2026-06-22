@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, useLocation, useRouter } from "@tanstack/react-router"
 import { Route as DistancePricingRoute } from "@/app/_admin/settings/pricing-config/distance-pricing"
 import { Route as LoacationPricingRoute } from "@/app/_admin/settings/pricing-config/route-tonnage-pricing"
+import { Route as LoadingOffloadingPricingRoute } from "@/app/_admin/settings/pricing-config/loading-offloading-pricing"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const userManagementTabs = [
@@ -11,6 +12,10 @@ const userManagementTabs = [
   {
     name: "Distance Pricing",
     route: DistancePricingRoute.to,
+  },
+  {
+    name: "Loading-Offloading Pricing",
+    route: LoadingOffloadingPricingRoute.to,
   },
 ]
 
