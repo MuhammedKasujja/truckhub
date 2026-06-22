@@ -27,6 +27,7 @@ import { Link } from "@tanstack/react-router"
 import { ArrowUpRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "@/i18n"
+import { Can } from "@/components/has-permission"
 
 type PaymentTableprops = {
   payments: Payment[]
@@ -39,12 +40,14 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
       <CardHeader>
         <CardTitle>Recent Payments</CardTitle>
         <CardAction>
-          <Button type="button" variant={"secondary"} asChild>
-            <Link to={"/payments"}>
-              View
-              <ArrowUpRight />
-            </Link>
-          </Button>
+          <Can permission="payments:view">
+            <Button type="button" variant={"secondary"} asChild>
+              <Link to={"/payments"}>
+                View
+                <ArrowUpRight />
+              </Link>
+            </Button>
+          </Can>
         </CardAction>
       </CardHeader>
       <CardContent>

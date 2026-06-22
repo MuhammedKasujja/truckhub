@@ -26,6 +26,7 @@ import { Link } from "@tanstack/react-router"
 import { ArrowUpRight, PlusIcon } from "lucide-react"
 import { Booking } from "@/features/bookings/types"
 import { Badge } from "@/components/ui/badge"
+import { Can } from "@/components/has-permission"
 
 type RecentBookingTableProps = {
   bookings: Booking[]
@@ -37,12 +38,14 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
       <CardHeader>
         <CardTitle>Recent Bookings</CardTitle>
         <CardAction>
-          <Button type="button" variant={"secondary"} asChild>
-            <Link to={"/bookings"}>
-              View
-              <ArrowUpRight />
-            </Link>
-          </Button>
+          <Can permission="bookings:view">
+            <Button type="button" variant={"secondary"} asChild>
+              <Link to={"/bookings"}>
+                View
+                <ArrowUpRight />
+              </Link>
+            </Button>
+          </Can>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -71,7 +74,9 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                     </TableCell>
                     <TableCell>{formatPrice(booking.amount)}</TableCell>
                     <TableCell>{formatPrice(booking.balance)}</TableCell>
-                    <TableCell>{formatDate(booking.estimated_pickup_time)}</TableCell>
+                    <TableCell>
+                      {formatDate(booking.estimated_pickup_time)}
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -80,11 +85,13 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                     <Empty className="">
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
-                          <Button type="button" asChild size={"icon"}>
-                            <Link to={"/bookings/new"}>
-                              <PlusIcon />
-                            </Link>
-                          </Button>
+                          <Can permission="bookings:create">
+                            <Button type="button" asChild size={"icon"}>
+                              <Link to={"/bookings/new"}>
+                                <PlusIcon />
+                              </Link>
+                            </Button>
+                          </Can>
                         </EmptyMedia>
                         <EmptyTitle>No Bookings Found</EmptyTitle>
                       </EmptyHeader>

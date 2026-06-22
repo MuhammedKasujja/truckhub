@@ -21,7 +21,7 @@ function RouteComponent() {
     <Tabs defaultValue="profile" className="w-full">
       <TabsList>
         <TabsTrigger value={"profile"}>User Profile</TabsTrigger>
-        <TabsTrigger value={"change-password"}>Password Change</TabsTrigger>
+        <TabsTrigger value={"change-password"}>Change Password</TabsTrigger>
       </TabsList>
       <TabsContent value="profile">
         <UserProfileView user={user} />

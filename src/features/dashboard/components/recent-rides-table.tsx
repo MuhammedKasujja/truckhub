@@ -27,6 +27,7 @@ import { PlusIcon, ChevronRightIcon } from "lucide-react"
 import { RideRequest } from "@/features/ride-requests/types"
 import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "@/i18n"
+import { Can } from "@/components/has-permission"
 
 type RecentRideTableProps = {
   rides: RideRequest[]
@@ -34,18 +35,20 @@ type RecentRideTableProps = {
 
 export function RecentRidesTable({ rides }: RecentRideTableProps) {
   const tr = useTranslation()
-  
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Recent Rides</CardTitle>
         <CardAction>
-          <Button type="button" variant={"secondary"} asChild>
-            <Link to={"/rides"}>
-              View
-              <ChevronRightIcon />
-            </Link>
-          </Button>
+          <Can permission="rides:view">
+            <Button type="button" variant={"secondary"} asChild>
+              <Link to={"/rides"}>
+                View
+                <ChevronRightIcon />
+              </Link>
+            </Button>
+          </Can>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -70,7 +73,9 @@ export function RecentRidesTable({ rides }: RecentRideTableProps) {
                       {ride.client.fullname}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={"outline"}>{tr(`rides.statues.${ride.status}`)}</Badge>
+                      <Badge variant={"outline"}>
+                        {tr(`rides.statues.${ride.status}`)}
+                      </Badge>
                     </TableCell>
                     <TableCell>{formatPrice(ride.amount)}</TableCell>
                     <TableCell>{formatPrice(ride.balance)}</TableCell>
@@ -83,11 +88,13 @@ export function RecentRidesTable({ rides }: RecentRideTableProps) {
                     <Empty className="">
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
-                          <Button type="button" asChild size={"icon"}>
-                            <Link to={"/rides/new"}>
-                              <PlusIcon />
-                            </Link>
-                          </Button>
+                          <Can permission="rides:create">
+                            <Button type="button" asChild size={"icon"}>
+                              <Link to={"/rides/new"}>
+                                <PlusIcon />
+                              </Link>
+                            </Button>
+                          </Can>
                         </EmptyMedia>
                         <EmptyTitle>No Rides Found</EmptyTitle>
                       </EmptyHeader>

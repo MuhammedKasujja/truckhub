@@ -6,13 +6,21 @@ import { createFileRoute } from "@tanstack/react-router"
 export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
   component: RouteComponent,
   beforeLoad: () => hasPermission("vehicles:edit"),
-  loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
+  loader: async ({ context, params }) => {
+    const { data } = await context.queryClient.ensureQueryData(
       vehicleDetailsQueryOptions(params.vehicleId)
-    ),
+    )
+    return {
+      ...data,
+      car_brand_id: data?.car_model.car_brand.id,
+      cylinders: data?.cylinders.toString(),
+      car_model_id: data?.car_model_id,
+      features: data?.features.map((feat) => feat.id),
+    }
+  },
 })
 
 function RouteComponent() {
-  const { data } = Route.useLoaderData()
-  return <VehicleForm initialData={data} />
+  const vehicle = Route.useLoaderData()
+  return <VehicleForm initialData={{ ...vehicle }} />
 }
