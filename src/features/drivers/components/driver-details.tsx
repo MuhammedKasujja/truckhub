@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { VehiclePicker } from "@/features/vehicles/components/vehicle-search-filter"
+import { VehiclePicker } from "@/features/vehicles/components"
 import {
   vehicleAssignDriverFn,
   vehicleUnAssignDriverFn,

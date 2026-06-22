@@ -65,6 +65,29 @@ export const BatchPricingPayloadCreateSchema = z.object({
 
 export type BatchPayload = z.infer<typeof BatchPricingPayloadUpdateSchema>
 
-export type BatchPricingPayload = z.infer<typeof BatchPricingPayloadUpdateSchema>
+export type BatchPricingPayload = z.infer<
+  typeof BatchPricingPayloadUpdateSchema
+>
 
-export type BatchPricingPayloadCreate = z.infer<typeof BatchPricingPayloadCreateSchema>
+export type BatchPricingPayloadCreate = z.infer<
+  typeof BatchPricingPayloadCreateSchema
+>
+
+/** One row of the single `distance_tonnage_rates` table. */
+export const DistancePricingSchema = z.object({
+  distance_min_km: z.number(),
+  distance_max_km: z.number().optional().nullable(),
+  distance_no_upper_limit: z.boolean().default(false),
+  tonnage_min: z.number(),
+  tonnage_max: z.number(),
+  min_price: z.number(),
+  max_price: z.number(),
+})
+
+export const ListDistancePricingSchema = z.object({
+  pricings: z.array(DistancePricingSchema),
+})
+
+export type ListDistancePricingRequest = z.infer<typeof ListDistancePricingSchema>
+
+export type DistancePricingRequest = z.infer<typeof DistancePricingSchema>
