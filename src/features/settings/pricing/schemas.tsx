@@ -104,9 +104,8 @@ const loadingOffloadingPricingSchema = z.object({
   offloading_fees: z.string().min(1, "Required"),
 })
 
-
-
 export const LoadingOffloadingPricingSchema = z.object({
+  client_id: IDSchema.optional().nullable(),
   pricings: z.array(loadingOffloadingPricingSchema),
 })
 

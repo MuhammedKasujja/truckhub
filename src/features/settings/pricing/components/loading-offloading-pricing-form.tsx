@@ -4,13 +4,80 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Plus } from "lucide-react"
 import { useFieldArray, useForm } from "react-hook-form"
 import z from "zod"
-import { LoadingOffloadingPricingSchema } from "../schemas"
+import {
+  LoadingOffloadingPricingRequest,
+  LoadingOffloadingPricingSchema,
+} from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
-import { createBatchLoadingPricingFn } from "../services"
-import { toast } from "sonner"
+
+const emptyPricingList = [
+  {
+    tonnage_min: "2",
+    tonnage_max: "3",
+    price: "",
+    cbm_min: "6",
+    cbm_max: "9",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "4",
+    tonnage_max: "6",
+    price: "",
+    cbm_min: "10",
+    cbm_max: "21",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "7",
+    tonnage_max: "8",
+    price: "",
+    cbm_min: "22",
+    cbm_max: "32",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "9",
+    tonnage_max: "10",
+    price: "",
+    cbm_min: "33",
+    cbm_max: "40",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "11",
+    tonnage_max: "13",
+    price: "",
+    cbm_min: "41",
+    cbm_max: "50",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "14",
+    tonnage_max: "18",
+    price: "",
+    cbm_min: "51",
+    cbm_max: "60",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+  {
+    tonnage_min: "19",
+    tonnage_max: "25",
+    price: "",
+    cbm_min: "61",
+    cbm_max: "76",
+    loading_fees: "",
+    offloading_fees: "",
+  },
+]
 
 const emptyPricing = {
   tonnage_min: "",
@@ -22,11 +89,20 @@ const emptyPricing = {
   offloading_fees: "",
 }
 
-export function LoadingOffloadingPricingForm() {
+interface LoadingOffloadingPricingSchemaProp {
+  initialData?: LoadingOffloadingPricingRequest
+  onSubmit: (data: LoadingOffloadingPricingRequest) => Promise<void>
+}
+
+export function LoadingOffloadingPricingForm({
+  initialData,
+  onSubmit,
+}: LoadingOffloadingPricingSchemaProp) {
   const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
-      pricings: [emptyPricing],
+      client_id: initialData?.client_id,
+      pricings: initialData?.pricings ?? emptyPricingList,
     },
   })
 
@@ -35,23 +111,25 @@ export function LoadingOffloadingPricingForm() {
     name: "pricings",
   })
 
-  async function onSubmit(
-    data: z.infer<typeof LoadingOffloadingPricingSchema>
-  ) {
-    const { message, error } = await createBatchLoadingPricingFn({ data })
-    if (error) {
-      toast.error(error.message)
-    } else {
-      toast.success(message)
-    }
+  async function onSubmitData(data: LoadingOffloadingPricingRequest) {
+    await onSubmit(data)
   }
 
   // Tonnage  Ranges should not overlap
   return (
     <Card>
       <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup className="space-y-4">
+        <form onSubmit={form.handleSubmit(onSubmitData)}>
+          <FieldGroup className="space-y-1">
+            <Field orientation={"horizontal"} className="grid grid-cols-7">
+              <div>TONS Min</div>
+              <div>TONS Max</div>
+              <div>CBM Min</div>
+              <div>CBM Max</div>
+              <div>Loading fees</div>
+              <div>Offloading fees</div>
+              <div>Price</div>
+            </Field>
             {fields.map((ele, index) => (
               <Field key={ele.id} orientation={"horizontal"}>
                 <TextField
