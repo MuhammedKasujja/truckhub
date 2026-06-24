@@ -73,7 +73,6 @@ import {
   Trash2,
   AlertTriangle,
   Pencil,
-  Download,
   Eye,
   EyeOff,
   CheckCircle2,
@@ -271,21 +270,6 @@ export function DistancePricingScheduleForm({
     setMode("view")
   }
 
-  const handleExportClick = () => {
-    // This is exactly the row payload you'd bulk insert/upsert into
-    // `distance_tonnage_rates` - flat, bounds inlined, no foreign keys.
-    const rows = toDbRows(submittedSchedule)
-    const blob = new Blob([JSON.stringify(rows, null, 2)], {
-      type: "application/json",
-    })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "distance_tonnage_rates.json"
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
   // ---------------------------------------------------------------------
   // Grid view: pivot the flat `rates` list into a spreadsheet-style table
   // (two rows - Min / Max - per distance bracket, one column per tonnage
@@ -418,7 +402,7 @@ export function DistancePricingScheduleForm({
   })
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <div className="mx-auto space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-slate-800">Price schedule</h1>
@@ -727,7 +711,7 @@ function PriceGridCard({
   })
 
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border border-slate-200 p-5 shadow-sm">
       <div className="mb-3">
         <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
           Price grid
@@ -968,7 +952,7 @@ function GridTable({ table }: { table: Table<GridRow> }) {
             <tr
               key={row.id}
               className={cn(
-                row.original.rowType === "max" ? "bg-amber-50 dark:bg-gray-500" : "bg-white dark:bg-card"
+                row.original.rowType === "max" ? "bg-amber-50 dark:bg-gray-500" : "bg-card"
               )}
             >
               {row.getVisibleCells().map((cell) => (

@@ -73,6 +73,14 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
               </Link>
             </DropdownMenuItem>
           </Can>
+          <Can permission={"rides:create"}>
+            <DropdownMenuItem asChild>
+              <Link to={"/clients/data/$clientId"} params={{ clientId: client.id }}>
+                <EyeIcon />
+                Pricing
+              </Link>
+            </DropdownMenuItem>
+          </Can>
           <Can permission={"clients:delete"}>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">
