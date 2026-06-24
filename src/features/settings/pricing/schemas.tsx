@@ -97,7 +97,6 @@ export type DistancePricingRequest = z.infer<typeof DistancePricingSchema>
 const loadingOffloadingPricingSchema = z.object({
   tonnage_min: z.string().min(1, "Required"),
   tonnage_max: z.string().min(1, "Required"),
-  price: z.string().min(1, "Required"),
   cbm_min: z.string().min(1, "Required"),
   cbm_max: z.string().min(1, "Required"),
   loading_fees: z.string().min(1, "Required"),

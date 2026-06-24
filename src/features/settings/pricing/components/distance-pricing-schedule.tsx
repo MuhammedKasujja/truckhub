@@ -105,6 +105,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 
 const gridColumnHelper = createColumnHelper<GridRow>()
 const listColumnHelper = createColumnHelper<RateEntry>()
@@ -405,7 +406,7 @@ export function DistancePricingScheduleForm({
     <div className="mx-auto space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">Price schedule</h1>
+          <h1 className="text-xl font-bold">Price schedule</h1>
           <p className="text-sm text-slate-500">
             Rates by distance and tonnage bracket. Tonnage is capped at{" "}
             {MAX_TONNAGE} MT, and neither axis may overlap itself.
@@ -525,11 +526,10 @@ export function DistancePricingScheduleForm({
                         },
                       })}
                     />
-                    <label className="mt-4 flex shrink-0 flex-col items-center gap-1 text-[10px] font-medium text-slate-400 uppercase">
+                    <label className="mt-4 flex shrink-0 flex-col items-center gap-1 text-[8px] font-medium text-slate-400 uppercase">
                       Open-ended
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-slate-300 text-primary-foreground focus:ring-primary"
+                      <Checkbox
+                        className="h-4 w-4 rounded"
                         {...register(`distanceRanges.${index}.noUpperLimit`)}
                       />
                     </label>
@@ -548,7 +548,7 @@ export function DistancePricingScheduleForm({
             errors={errors}
           />
 
-          <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white/95 p-4 shadow-sm backdrop-blur">
+          <div className="sticky bottom-0 flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm backdrop-blur">
             <div className="min-h-4">
               {openEndedCount > 1 && (
                 <p className="flex items-center gap-1.5 text-xs font-medium text-rose-600">
@@ -611,7 +611,7 @@ function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
         }`}
       />
       {error && (
-        <p className="mt-0.5 text-[11px] text-rose-600">{error.message}</p>
+        <p className="mt-0.5 text-[10px] text-rose-600">{error.message}</p>
       )}
     </div>
   )
@@ -639,7 +639,7 @@ function BracketCard<T extends { id: string }>({
   renderRow,
 }: BracketCardProps<T>) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="rounded-xl border  bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
@@ -711,7 +711,7 @@ function PriceGridCard({
   })
 
   return (
-    <section className="rounded-xl border border-slate-200 p-5 shadow-sm">
+    <section className="rounded-xl border p-5 shadow-sm">
       <div className="mb-3">
         <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
           Price grid
@@ -744,7 +744,7 @@ function PriceGridCard({
             {distanceRanges.map((d, dIndex) => (
               <tr
                 key={d.id}
-                className={dIndex % 2 === 0 ? "bg-white" : "bg-slate-50/60"}
+                className={cn(dIndex % 2 === 0 && "bg-slate-50/60")}
               >
                 <td className="sticky left-0 z-10 border-b border-slate-200 bg-inherit px-3 py-2 text-xs font-medium whitespace-nowrap text-slate-600">
                   {distanceLabel(d)}
@@ -836,7 +836,7 @@ function SchedulePanel({
   onGlobalFilterChange,
 }: SchedulePanelProps) {
   return (
-    <section className="rounded-xl border border-slate-200 bg-card p-5 shadow-sm">
+    <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
@@ -845,7 +845,7 @@ function SchedulePanel({
           <p className="text-xs text-slate-400">Rates are VAT exclusive.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-slate-200 p-0.5">
+          <div className="flex rounded-lg border p-0.5">
             <button
               type="button"
               onClick={() => onViewModeChange("grid")}
@@ -871,7 +871,7 @@ function SchedulePanel({
           </div>
 
           {viewMode === "grid" && (
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-slate-200 p-1 dark:border-gray-50">
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border p-1">
               {gridTable
                 .getAllLeafColumns()
                 .filter((col) => col.id !== "distance")
@@ -928,7 +928,7 @@ function SchedulePanel({
 
 function GridTable({ table }: { table: Table<GridRow> }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200">
+    <div className="overflow-x-auto rounded-lg border">
       <table className="w-full border-collapse text-sm">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

@@ -8,7 +8,7 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
-import { ClientRouteTonnagePricingModal } from "@/features/clients/components"
+import { ClientLoadingFeesModal, ClientRouteTonnagePricingModal } from "@/features/clients/components"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
   clientBookingsQueryOptions,
@@ -74,6 +74,7 @@ function RouteComponent() {
               </Link>
             </Button>
             <ClientRouteTonnagePricingModal clientId={clientId} />
+            <ClientLoadingFeesModal clientId={clientId} clientName={data?.name}/>
           </ButtonGroup>
         </PageAction>
       </PageHeader>
