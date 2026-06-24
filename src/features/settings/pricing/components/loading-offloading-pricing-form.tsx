@@ -94,7 +94,10 @@ export function LoadingOffloadingPricingForm({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
       client_id: initialData?.client_id,
-      pricings: initialData?.pricings ?? emptyPricingList,
+      pricings:
+        initialData?.pricings && initialData?.pricings.length > 0
+          ? initialData?.pricings
+          : emptyPricingList,
     },
   })
 

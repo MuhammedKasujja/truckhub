@@ -10,6 +10,7 @@ import {
   getClientPaymentsFn,
   getClientsByQueryFn,
   getClientRoutePricingFn,
+  getClientLoadingOffloadingFreesFn,
 } from "./services"
 
 export const clientQueryKeys = {
@@ -25,6 +26,11 @@ export const clientQueryKeys = {
   routePricing: (id: EntityId) => [
     ...clientQueryKeys.details(),
     "route_pricing",
+    id,
+  ],
+  loadingFees: (id: EntityId) => [
+    ...clientQueryKeys.details(),
+    "loading_fees",
     id,
   ],
   search: (query?: string | undefined) => [
@@ -82,4 +88,11 @@ export const clientRoutePricingQueryOptions = (clientId: EntityId) =>
   queryOptions({
     queryKey: clientQueryKeys.routePricing(clientId),
     queryFn: () => getClientRoutePricingFn({ data: { id: clientId } }),
+  })
+
+export const clientLoadingFeesQueryOptions = (clientId: EntityId) =>
+  queryOptions({
+    queryKey: clientQueryKeys.loadingFees(clientId),
+    queryFn: () =>
+      getClientLoadingOffloadingFreesFn({ data: { id: clientId } }),
   })

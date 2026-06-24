@@ -3,6 +3,7 @@ import {
   BatchPayload,
   BatchPricingPayload,
   DistancePricingRequest,
+  LoadingOffloadingPricing,
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
 } from "../schemas"
@@ -42,5 +43,11 @@ export async function createBatchLoadingPricing(
   return await apiClient.postFn<DistancePricingRequest[]>(
     "/v1/pricing/loading-offloading",
     data.pricings
+  )
+}
+
+export async function getLoadingOffloadingFrees() {
+  return await apiClient.getFn<LoadingOffloadingPricing[]>(
+    "/v1/pricing/loading-offloading"
   )
 }

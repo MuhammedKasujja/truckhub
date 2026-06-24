@@ -108,6 +108,8 @@ export const LoadingOffloadingPricingSchema = z.object({
   pricings: z.array(loadingOffloadingPricingSchema),
 })
 
+export type LoadingOffloadingPricing = z.infer<typeof loadingOffloadingPricingSchema>
+
 export type LoadingOffloadingPricingRequest = z.infer<
   typeof LoadingOffloadingPricingSchema
 >

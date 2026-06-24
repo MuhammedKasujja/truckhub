@@ -16,6 +16,9 @@ import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 import {
   BatchPayload,
   BatchPricingPayload,
+  DistancePricingRequest,
+  LoadingOffloadingPricing,
+  LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
 import { RoutePricingResponse } from "@/features/settings/pricing/types"
 
@@ -92,4 +95,19 @@ export async function getClientRoutePricing(clientId: EntityId) {
   // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
   const url = `${endpoint}/${clientId}/routes/pricing`
   return await apiClient.getFn<RoutePricingResponse>(url)
+}
+
+export async function getClientLoadingOffloadingFrees(clientId: EntityId) {
+  return await apiClient.getFn<LoadingOffloadingPricing[]>(
+    `${endpoint}/${clientId}/loading-offloading/pricing`
+  )
+}
+
+export async function createClientLoadingOffloadingPricing(
+  data: LoadingOffloadingPricingRequest
+) {
+  return await apiClient.postFn<DistancePricingRequest[]>(
+    `${endpoint}/${data.client_id}/loading-offloading/pricing`,
+    data.pricings
+  )
 }

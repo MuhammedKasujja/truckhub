@@ -10,7 +10,8 @@ import { LoadingOffloadingPricingForm } from "@/features/settings/pricing/compon
 import { LoadingOffloadingPricingRequest } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { createBatchLoadingPricingFn } from "@/features/settings/pricing/services"
+import { useClientLoadingOffloadingFees } from "../hooks/use-client-loading-fees"
+import { createClientLoadingOffloadingPricingFn } from "../services"
 
 type ClientPricingProps = {
   clientId: string
@@ -21,12 +22,14 @@ export function ClientLoadingFeesModal({
   clientId,
   clientName = "",
 }: ClientPricingProps) {
+  const { data } = useClientLoadingOffloadingFees(clientId)
   const queryInvaidator = useQueryInvalidator()
 
   async function handleSubmit(values: LoadingOffloadingPricingRequest) {
-    const { message, error, isSuccess } = await createBatchLoadingPricingFn({
-      data: { ...values, client_id: clientId },
-    })
+    const { message, error, isSuccess } =
+      await createClientLoadingOffloadingPricingFn({
+        data: { ...values, client_id: clientId },
+      })
     if (isSuccess && message) {
       toast.success(message)
       queryInvaidator.clients.details(clientId).routePricing.invalidate()
@@ -46,7 +49,12 @@ export function ClientLoadingFeesModal({
           <SheetTitle>{clientName} - Loading Fees</SheetTitle>
         </SheetHeader>
         <div className="no-scrollbar overflow-y-auto px-4 pb-5">
-          <LoadingOffloadingPricingForm onSubmit={handleSubmit} />
+          <LoadingOffloadingPricingForm
+            initialData={
+              data ? { pricings: data, client_id: clientId } : undefined
+            }
+            onSubmit={handleSubmit}
+          />
         </div>
       </SheetContent>
     </Sheet>

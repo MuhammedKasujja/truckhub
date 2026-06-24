@@ -18,9 +18,14 @@ import {
   getClientRoutePricing,
   getCustomerDetailsById,
   createClientBatchRoutePricing,
+  getClientLoadingOffloadingFrees,
+  createClientLoadingOffloadingPricing,
 } from "./server"
 import { ApiError } from "@/types"
-import { BatchPricingPayloadUpdateSchema } from "@/features/settings/pricing/schemas"
+import {
+  LoadingOffloadingPricingSchema,
+  BatchPricingPayloadUpdateSchema,
+} from "@/features/settings/pricing/schemas"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(CustomerSearchParamsCache)
@@ -102,4 +107,16 @@ export const getClientRoutePricingFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientRoutePricing(data.id)
+  })
+
+export const getClientLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientLoadingOffloadingFrees(data.id)
+  })
+
+export const createClientLoadingOffloadingPricingFn = createServerFn()
+  .inputValidator(LoadingOffloadingPricingSchema)
+  .handler(async ({ data }) => {
+    return createClientLoadingOffloadingPricing(data)
   })
