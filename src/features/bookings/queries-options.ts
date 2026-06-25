@@ -3,18 +3,21 @@ import { BookingSearchParamsSchema } from "./schemas"
 import {
   getBookingsFn,
   getBookingDetailsFn,
+  getBookingsByQueryFn,
   getBookingStatisticsFn,
 } from "./services"
 import {
   generateApiSearchParams,
   generatePageSearchParams,
 } from "@/lib/search-params"
+import { SearchQuery } from "@/types"
 
 export const bookingsQueryKeys = {
   all: () => ["bookings"],
   list: () => [...bookingsQueryKeys.all(), "list"],
   details: () => [...bookingsQueryKeys.all(), "detail"],
   statistics: () => [...bookingsQueryKeys.all(), "statistics"],
+  search: (search?: string) => [...bookingsQueryKeys.all(), "search", search],
   detail: (id: string) => [...bookingsQueryKeys.details(), id],
 }
 
@@ -45,4 +48,10 @@ export const bookingDetailsQueryOptions = (bookingId: string) =>
   queryOptions({
     queryKey: bookingsQueryKeys.detail(bookingId),
     queryFn: () => getBookingDetailsFn({ data: { id: bookingId } }),
+  })
+
+export const bookingsListSearchQueryOptions = ({ search }: SearchQuery) =>
+  queryOptions({
+    queryKey: bookingsQueryKeys.search(search),
+    queryFn: () => getBookingsByQueryFn({ data: { search } }),
   })

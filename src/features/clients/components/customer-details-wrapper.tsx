@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/card"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { CreditCard, CalendarDays, MapPin } from "lucide-react"
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatPrice, generateAvatorFallback } from "@/lib/format"
 import {
   Table,
   TableBody,
@@ -98,11 +98,16 @@ export function CustomerDetailsWrapper({
             </Button>
           </CardAction>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>{customer?.email}</div>
-          <div>{customer?.phone}</div>
-          <div>Balance: {formatPrice(customer?.balance)}</div>
-          <div>Paid to Date: {formatPrice(customer?.paid_to_date)}</div>
+        <CardContent className="flex flex-row gap-5 space-y-4">
+          <div className="w-40 bg-muted dark:bg-background/70 rounded-lg flex items-center justify-center text-2xl font-extrabold uppercase">
+            {generateAvatorFallback(customer?.name)}
+          </div>
+          <div className="space-y-4">
+            <div>{customer?.email}</div>
+            <div>{customer?.phone}</div>
+            <div>Balance: {formatPrice(customer?.balance)}</div>
+            <div>Paid to Date: {formatPrice(customer?.paid_to_date)}</div>
+          </div>
         </CardContent>
       </Card>
 
@@ -241,8 +246,12 @@ export function CustomerDetailsWrapper({
                             {payment.number}
                           </TableCell>
                           <TableCell>{formatPrice(payment.amount)}</TableCell>
-                          <TableCell>{tr(`payments.statuses.${payment.status}`)}</TableCell>
-                          <TableCell>{tr(`payments.methods.${payment.payment_mode}`)}</TableCell>
+                          <TableCell>
+                            {tr(`payments.statuses.${payment.status}`)}
+                          </TableCell>
+                          <TableCell>
+                            {tr(`payments.methods.${payment.payment_mode}`)}
+                          </TableCell>
                           <TableCell>{formatDate(payment.date)}</TableCell>
                         </TableRow>
                       ))
