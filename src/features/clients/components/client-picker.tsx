@@ -1,43 +1,31 @@
-import { AutoComplete } from "@/components/ui/autocomplete"
+import { AutoComplete } from "@/components/ui/autocomplete-modified"
 import { Client } from "../types"
 import { EntityPickerProps } from "@/common/types"
+import {
+  FormAutoComplete,
+  FormAutoCompleteProps,
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { FieldValues } from "react-hook-form"
+import { clientsSearchQueryOptions } from "../query-options"
 
-type ClientPickerProps = {
-  onSelect: (client: Client | null) => void
-  clients: Client[]
-}
-
-export function ClientPicker({ onSelect, clients }: ClientPickerProps) {
+export function ClientPicker({
+  value,
+  id,
+  onSelected,
+}: EntityPickerProps<Client>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(clientsSearchQueryOptions())
   return (
     <AutoComplete<Client>
-      triggerClassName="flex-1 w-full"
-      fetcher={async (_) => {
-        return clients
-      }}
-      renderOption={(client) => (
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col">
-            <div className="font-medium">{client.name}</div>
-          </div>
-        </div>
-      )}
-      getOptionValue={(client) => client.id.toString()}
-      getDisplayValue={(client) => (
-        <div className="flex items-center gap-2 text-left">
-          <div className="flex flex-col leading-tight">
-            <div className="font-medium">{client.name}</div>
-          </div>
-        </div>
-      )}
-      notFound={
-        <div className="py-6 text-center text-sm">No Clients found</div>
-      }
-      label="Client"
-      placeholder="Search client..."
-      value={undefined}
+      id={id}
+      options={data ?? []}
+      loading={isLoading}
+      value={value}
       onChange={(client) => {
         if (client)
-          onSelect({
+          onSelected?.({
             ...client,
             contacts: [
               {
@@ -45,7 +33,7 @@ export function ClientPicker({ onSelect, clients }: ClientPickerProps) {
                 id: "739403043",
                 phone: "078493843",
                 email: "musa@mail.com",
-                is_primary: true
+                is_primary: true,
               },
               {
                 name: "Isaac Otim",
@@ -55,29 +43,44 @@ export function ClientPicker({ onSelect, clients }: ClientPickerProps) {
               },
             ],
           })
-        else onSelect(null)
-      }}
-    />
-  )
-}
-
-
-export function UserPicker({ value, id, onSelected }: EntityPickerProps<Client>) {
-  const [query, setQuery] = useState("")
-  const { data, isLoading } = useQuery(usersQueryOprions({}))
-  return (
-    <AutoComplete<Client>
-      id={id}
-      options={data?.data ?? []}
-      loading={isLoading}
-      value={value}
-      onChange={(user) => {
-        onSelected?.(user)
+        else onSelected?.(null)
       }}
       filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
       label="User"
       getOptionValue={(u) => u.id}
       renderOption={(u) => <span>{u.name}</span>}
+    />
+  )
+}
+
+export function ClientPickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, Client>) {
+  const [query, setQuery] = useState("")
+  const { data, isLoading } = useQuery(clientsSearchQueryOptions(query))
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={data ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      onSearch={(q) => setQuery(q)}
+      filterFn={(client, q) =>
+        client.name.toLowerCase().includes(q.toLowerCase())
+      }
+      getOptionValue={(client) => client.id}
+      renderOption={(client) => <span>{client.name}</span>}
+      onSelected={onSelected}
+      {...props}
     />
   )
 }

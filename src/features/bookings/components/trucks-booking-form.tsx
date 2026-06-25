@@ -61,7 +61,6 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     control,
     grandTotal,
     selectedClient,
-    clients,
     locations,
     handleSelectClient,
     setContacts,
@@ -115,7 +114,10 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           </CardAction>
         </CardHeader>
         <CardContent>
-          <ClientPicker onSelect={handleClientSelected} clients={clients} />
+          <ClientPicker
+            value={selectedClient}
+            onSelected={handleClientSelected}
+          />
           {selectedClient && (
             <ClientContactsList
               contacts={selectedClient?.contacts}

@@ -11,6 +11,12 @@ import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { formatDate } from "@/lib/format"
 import { SystemUser } from "../types"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item"
 
 type UserDetailsWrapperProps = {
   user: SystemUser | undefined
@@ -34,11 +40,43 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           </CardAction>
           <CardDescription></CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>Email: {user?.email}</div>
-          <div>Phone: {user?.phone}</div>
-          <div>Last Login: {formatDate(user?.last_login)}</div>
-          <div>Registration Date: {formatDate(user?.created_at)}</div>
+        <CardContent>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Name</ItemDescription>
+              <ItemTitle>{user?.name}</ItemTitle>
+            </ItemContent>
+          </Item>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Phone</ItemDescription>
+              <ItemTitle>{user?.phone ?? "-"}</ItemTitle>
+            </ItemContent>
+          </Item>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Email</ItemDescription>
+              <ItemTitle>{user?.email}</ItemTitle>
+            </ItemContent>
+          </Item>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Username</ItemDescription>
+              <ItemTitle>{user?.username??"-"}</ItemTitle>
+            </ItemContent>
+          </Item>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Last Login</ItemDescription>
+              <ItemTitle>{formatDate(user?.last_login)}</ItemTitle>
+            </ItemContent>
+          </Item>
+          <Item>
+            <ItemContent>
+              <ItemDescription>Registration Date</ItemDescription>
+              <ItemTitle>{formatDate(user?.created_at)}</ItemTitle>
+            </ItemContent>
+          </Item>
         </CardContent>
       </Card>
     </div>

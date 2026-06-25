@@ -314,7 +314,7 @@ export function DistancePricingScheduleForm({
         id: "distance",
         header: "Distance (KM)",
         cell: (info) => (
-          <span className="font-semibold text-slate-700">
+          <span className="font-semibold text-accent-foreground">
             {info.getValue()}
           </span>
         ),
@@ -871,7 +871,7 @@ function SchedulePanel({
           </div>
 
           {viewMode === "grid" && (
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border p-1">
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border p-1 bg-background">
               {gridTable
                 .getAllLeafColumns()
                 .filter((col) => col.id !== "distance")
@@ -936,7 +936,7 @@ function GridTable({ table }: { table: Table<GridRow> }) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase"
+                  className="border-b bg-background px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-muted-foreground uppercase"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -952,13 +952,13 @@ function GridTable({ table }: { table: Table<GridRow> }) {
             <tr
               key={row.id}
               className={cn(
-                row.original.rowType === "max" ? "bg-amber-50 dark:bg-gray-500" : "bg-card"
+                row.original.rowType === "max" ? "bg-amber-50 dark:bg-background/60" : "bg-card"
               )}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="border-b border-slate-100 px-3 py-2 tabular-nums"
+                  className="border-b  px-3 py-2 tabular-nums text-muted-foreground"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -974,7 +974,7 @@ function GridTable({ table }: { table: Table<GridRow> }) {
 function ListTable({ table }: { table: Table<RateEntry> }) {
   const columnCount = table.getAllLeafColumns().length
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200">
+    <div className="overflow-x-auto rounded-lg border">
       <table className="w-full border-collapse text-sm">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -983,7 +983,7 @@ function ListTable({ table }: { table: Table<RateEntry> }) {
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer border-b border-slate-200 bg-slate-50 px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase select-none hover:bg-slate-100"
+                  className="cursor-pointer border-b bg-background px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase select-none hover:bg-slate-100"
                 >
                   <span className="inline-flex items-center gap-1">
                     {flexRender(
@@ -999,11 +999,11 @@ function ListTable({ table }: { table: Table<RateEntry> }) {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="odd:bg-white even:bg-slate-50/60">
+            <tr key={row.id} className="odd:bg-card even:bg-background/60">
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="border-b border-slate-100 px-3 py-2 tabular-nums"
+                  className="border-b px-3 py-2 tabular-nums"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>

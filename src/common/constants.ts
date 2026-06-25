@@ -31,6 +31,7 @@ export const REPORT_TEMPLATES = [
   "driver",
   "vehicle",
   "route_pricing",
+  "loading_offloading_fees",
 ] as const
 
 export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]

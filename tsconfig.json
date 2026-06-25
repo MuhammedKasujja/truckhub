@@ -5,7 +5,7 @@
     "eslint.config.js",
     "prettier.config.js",
     "vite.config.js"
-  ],
+, "src/features/settings/pricing/components/distance-pricing"  ],
 
   "compilerOptions": {
     "target": "ES2024",
