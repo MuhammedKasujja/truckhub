@@ -23,7 +23,7 @@ const emptyFeature = {
   id: makeId("__feature__"),
 }
 
-export function VehicleFeatureForm() {
+export function EditVehicleFeatureForm() {
   const { data } = useVehicleConfigurations()
   const form = useForm<z.infer<typeof vehicleFeatureFormSchema>>({
     resolver: zodResolver(vehicleFeatureFormSchema),

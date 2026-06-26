@@ -51,6 +51,7 @@ import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/veh
 import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
 import { Route as AdminSettingsPricingConfigRouteTonnagePricingRouteImport } from './app/_admin/settings/pricing-config/route-tonnage-pricing'
 import { Route as AdminSettingsPricingConfigLoadingOffloadingPricingRouteImport } from './app/_admin/settings/pricing-config/loading-offloading-pricing'
+import { Route as AdminSettingsPricingConfigIslandsPricingRouteImport } from './app/_admin/settings/pricing-config/islands-pricing'
 import { Route as AdminSettingsPricingConfigDistancePricingRouteImport } from './app/_admin/settings/pricing-config/distance-pricing'
 import { Route as AdminServicesServiceIdViewRouteImport } from './app/_admin/services/$serviceId.view'
 import { Route as AdminServicesServiceIdEditRouteImport } from './app/_admin/services/$serviceId.edit'
@@ -301,6 +302,12 @@ const AdminSettingsPricingConfigLoadingOffloadingPricingRoute =
     path: '/loading-offloading-pricing',
     getParentRoute: () => AdminSettingsPricingConfigRouteRoute,
   } as any)
+const AdminSettingsPricingConfigIslandsPricingRoute =
+  AdminSettingsPricingConfigIslandsPricingRouteImport.update({
+    id: '/islands-pricing',
+    path: '/islands-pricing',
+    getParentRoute: () => AdminSettingsPricingConfigRouteRoute,
+  } as any)
 const AdminSettingsPricingConfigDistancePricingRoute =
   AdminSettingsPricingConfigDistancePricingRouteImport.update({
     id: '/distance-pricing',
@@ -481,6 +488,7 @@ export interface FileRoutesByFullPath {
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
   '/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/settings/pricing-config/islands-pricing': typeof AdminSettingsPricingConfigIslandsPricingRoute
   '/settings/pricing-config/loading-offloading-pricing': typeof AdminSettingsPricingConfigLoadingOffloadingPricingRoute
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
@@ -548,6 +556,7 @@ export interface FileRoutesByTo {
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
   '/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/settings/pricing-config/islands-pricing': typeof AdminSettingsPricingConfigIslandsPricingRoute
   '/settings/pricing-config/loading-offloading-pricing': typeof AdminSettingsPricingConfigLoadingOffloadingPricingRoute
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
@@ -617,6 +626,7 @@ export interface FileRoutesById {
   '/_admin/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
   '/_admin/services/$serviceId/view': typeof AdminServicesServiceIdViewRoute
   '/_admin/settings/pricing-config/distance-pricing': typeof AdminSettingsPricingConfigDistancePricingRoute
+  '/_admin/settings/pricing-config/islands-pricing': typeof AdminSettingsPricingConfigIslandsPricingRoute
   '/_admin/settings/pricing-config/loading-offloading-pricing': typeof AdminSettingsPricingConfigLoadingOffloadingPricingRoute
   '/_admin/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
@@ -686,6 +696,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
     | '/settings/pricing-config/distance-pricing'
+    | '/settings/pricing-config/islands-pricing'
     | '/settings/pricing-config/loading-offloading-pricing'
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
@@ -753,6 +764,7 @@ export interface FileRouteTypes {
     | '/services/$serviceId/edit'
     | '/services/$serviceId/view'
     | '/settings/pricing-config/distance-pricing'
+    | '/settings/pricing-config/islands-pricing'
     | '/settings/pricing-config/loading-offloading-pricing'
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
@@ -821,6 +833,7 @@ export interface FileRouteTypes {
     | '/_admin/services/$serviceId/edit'
     | '/_admin/services/$serviceId/view'
     | '/_admin/settings/pricing-config/distance-pricing'
+    | '/_admin/settings/pricing-config/islands-pricing'
     | '/_admin/settings/pricing-config/loading-offloading-pricing'
     | '/_admin/settings/pricing-config/route-tonnage-pricing'
     | '/_admin/vehicles/$vehicleId/edit'
@@ -1156,6 +1169,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsPricingConfigLoadingOffloadingPricingRouteImport
       parentRoute: typeof AdminSettingsPricingConfigRouteRoute
     }
+    '/_admin/settings/pricing-config/islands-pricing': {
+      id: '/_admin/settings/pricing-config/islands-pricing'
+      path: '/islands-pricing'
+      fullPath: '/settings/pricing-config/islands-pricing'
+      preLoaderRoute: typeof AdminSettingsPricingConfigIslandsPricingRouteImport
+      parentRoute: typeof AdminSettingsPricingConfigRouteRoute
+    }
     '/_admin/settings/pricing-config/distance-pricing': {
       id: '/_admin/settings/pricing-config/distance-pricing'
       path: '/distance-pricing'
@@ -1329,6 +1349,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminSettingsPricingConfigRouteRouteChildren {
   AdminSettingsPricingConfigDistancePricingRoute: typeof AdminSettingsPricingConfigDistancePricingRoute
+  AdminSettingsPricingConfigIslandsPricingRoute: typeof AdminSettingsPricingConfigIslandsPricingRoute
   AdminSettingsPricingConfigLoadingOffloadingPricingRoute: typeof AdminSettingsPricingConfigLoadingOffloadingPricingRoute
   AdminSettingsPricingConfigRouteTonnagePricingRoute: typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
 }
@@ -1337,6 +1358,8 @@ const AdminSettingsPricingConfigRouteRouteChildren: AdminSettingsPricingConfigRo
   {
     AdminSettingsPricingConfigDistancePricingRoute:
       AdminSettingsPricingConfigDistancePricingRoute,
+    AdminSettingsPricingConfigIslandsPricingRoute:
+      AdminSettingsPricingConfigIslandsPricingRoute,
     AdminSettingsPricingConfigLoadingOffloadingPricingRoute:
       AdminSettingsPricingConfigLoadingOffloadingPricingRoute,
     AdminSettingsPricingConfigRouteTonnagePricingRoute:
