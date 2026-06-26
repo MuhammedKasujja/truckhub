@@ -127,7 +127,7 @@ export function AutoComplete<T>({
             )}
 
             {!loading && filteredOptions.length === 0 && (
-              <CommandEmpty>
+              <CommandEmpty className="text-muted-foreground">
                 {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
               </CommandEmpty>
             )}

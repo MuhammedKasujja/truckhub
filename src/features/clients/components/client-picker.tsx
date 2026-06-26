@@ -46,7 +46,7 @@ export function ClientPicker({
         else onSelected?.(null)
       }}
       filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
-      label="User"
+      label="Client"
       getOptionValue={(u) => u.id}
       renderOption={(u) => <span>{u.name}</span>}
     />

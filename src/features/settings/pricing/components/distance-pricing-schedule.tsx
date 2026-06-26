@@ -711,7 +711,7 @@ function PriceGridCard({
   })
 
   return (
-    <section className="rounded-xl border p-5 shadow-sm">
+    <section className="rounded-xl border p-5 shadow-sm bg-card">
       <div className="mb-3">
         <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
           Price grid
@@ -723,17 +723,17 @@ function PriceGridCard({
           must be ≥ Min) below.
         </p>
       </div>
-      <div className="overflow-x-auto rounded-lg border border-slate-200">
+      <div className="overflow-x-auto rounded-lg border">
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr>
-              <th className="sticky left-0 z-10 border-b border-slate-200 bg-slate-50 px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase">
+              <th className="sticky left-0 z-10 border-b bg-background px-3 py-2 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase">
                 Distance (KM)
               </th>
               {tonnageRanges.map((t) => (
                 <th
                   key={t.id}
-                  className="border-b border-l border-slate-200 bg-slate-50 px-3 py-2 text-center text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase"
+                  className="border-b border-l bg-background px-3 py-2 text-center text-[11px] font-semibold tracking-wide whitespace-nowrap text-slate-500 uppercase"
                 >
                   {tonnageLabel(t)}
                 </th>
@@ -744,9 +744,9 @@ function PriceGridCard({
             {distanceRanges.map((d, dIndex) => (
               <tr
                 key={d.id}
-                className={cn(dIndex % 2 === 0 && "bg-slate-50/60")}
+                className={cn(dIndex % 2 === 0 ? "bg-background/60": "bg-card")}
               >
-                <td className="sticky left-0 z-10 border-b border-slate-200 bg-inherit px-3 py-2 text-xs font-medium whitespace-nowrap text-slate-600">
+                <td className="sticky left-0 z-10 border-b bg-inherit px-3 py-2 text-xs font-medium whitespace-nowrap text-slate-600">
                   {distanceLabel(d)}
                 </td>
                 {tonnageRanges.map((t) => {
@@ -758,7 +758,7 @@ function PriceGridCard({
                     return (
                       <td
                         key={t.id}
-                        className="border-b border-l border-slate-200 px-2 py-2 text-center align-middle"
+                        className="border-b border-l px-2 py-2 text-center align-middle"
                       >
                         <span className="text-[10px] text-slate-300">
                           syncing…
@@ -770,7 +770,7 @@ function PriceGridCard({
                   return (
                     <td
                       key={t.id}
-                      className="border-b border-l border-slate-200 px-2 py-2 align-top"
+                      className="border-b border-l px-2 py-2 align-top"
                     >
                       <div className="flex flex-col gap-1">
                         <input
@@ -782,7 +782,7 @@ function PriceGridCard({
                             valueAsNumber: true,
                             min: { value: 0, message: "≥ 0" },
                           })}
-                          className="w-24 rounded-md border border-slate-300 px-2 py-1 text-xs tabular-nums focus:border-primary focus:ring-1 focus:ring-primay focus:outline-none"
+                          className="w-24 rounded-md border px-2 py-1 text-xs tabular-nums focus:border-primary focus:ring-1 focus:ring-primay focus:outline-none"
                         />
                         <input
                           type="number"

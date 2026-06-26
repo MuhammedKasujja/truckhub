@@ -572,10 +572,4 @@ export {
   SortableItem,
   SortableItemHandle,
   SortableOverlay,
-  //
-  SortableRoot as Root,
-  SortableContent as Content,
-  SortableItem as Item,
-  SortableItemHandle as ItemHandle,
-  SortableOverlay as Overlay,
 };
