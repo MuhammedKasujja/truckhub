@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
+  getIslandsPricings,
+  createBatchIslandPricing,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
@@ -8,6 +10,7 @@ import {
   updateBatchRouteTonnagePricing,
 } from "./server"
 import {
+  IslandsListPricingSchema,
   ListDistancePricingSchema,
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
@@ -48,3 +51,18 @@ export const getLoadingOffloadingFreesFn = createServerFn().handler(
     return getLoadingOffloadingFrees()
   }
 )
+
+export const createBatchIslandPricingsFn = createServerFn()
+  .inputValidator(IslandsListPricingSchema)
+  .handler(async ({ data }) => {
+    const request = data.pricings.map((p) => ({
+      name: p.name,
+      price: p.priceRate,
+      locations: p.locations.map((l) => l.value),
+    }))
+    return createBatchIslandPricing(request)
+  })
+
+export const getIslandPricingsFn = createServerFn().handler(async () => {
+  return getIslandsPricings()
+})

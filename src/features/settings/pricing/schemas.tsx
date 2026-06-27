@@ -108,8 +108,25 @@ export const LoadingOffloadingPricingSchema = z.object({
   pricings: z.array(loadingOffloadingPricingSchema),
 })
 
-export type LoadingOffloadingPricing = z.infer<typeof loadingOffloadingPricingSchema>
+export type LoadingOffloadingPricing = z.infer<
+  typeof loadingOffloadingPricingSchema
+>
 
 export type LoadingOffloadingPricingRequest = z.infer<
   typeof LoadingOffloadingPricingSchema
 >
+
+export const islandPricingSchema = z.object({
+  name: z.string().min(3, "Required"),
+  locations: z
+    .array(z.object({ value: z.string('Required').trim().min(2, "Too Short") }))
+    .min(1, "Locations cannot be empty"),
+  priceRate: z.number().positive("Required"),
+  newPriceRate: z.number().positive().optional().nullable(),
+})
+
+export const IslandsListPricingSchema = z.object({
+  pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
+})
+
+export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>

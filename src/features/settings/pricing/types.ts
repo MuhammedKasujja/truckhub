@@ -27,3 +27,9 @@ export type RoutePricingResponse = {
   tonnages: TonnageRange[]
   routes: RoutePricing[]
 }
+
+export type IslandPricingDto = {
+  name: string
+  locations: string[]
+  price: number | string
+}

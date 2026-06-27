@@ -101,7 +101,7 @@ export function LoadingOffloadingPricingForm({
     },
   })
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control: form.control,
     name: "pricings",
   })
