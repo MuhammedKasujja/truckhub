@@ -7,7 +7,7 @@ import {
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
 } from "../schemas"
-import { IslandPricingDto } from "../types"
+import { IslandPricingDto, IslandPricingResponse } from "../types"
 
 const endpoint = "/v1/routes/pricing"
 
@@ -54,9 +54,9 @@ export async function getLoadingOffloadingFrees() {
 }
 
 export async function getIslandsPricings() {
-  return await apiClient.getFn<IslandPricingDto[]>("/v1/pricing/islands")
+  return await apiClient.getFn<IslandPricingResponse[]>("/v1/pricing/islands")
 }
 
 export async function createBatchIslandPricing(data: IslandPricingDto[]) {
-  return await apiClient.postFn<IslandPricingDto[]>("/v1/pricing/islands", data)
+  return await apiClient.postFn<IslandPricingResponse[]>("/v1/pricing/islands", data)
 }

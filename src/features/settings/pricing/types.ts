@@ -33,3 +33,9 @@ export type IslandPricingDto = {
   locations: string[]
   price: number | string
 }
+
+export type IslandPricingResponse = {
+  name: string
+  locations: string[]
+  general_price: number | string
+}

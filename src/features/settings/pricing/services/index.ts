@@ -10,6 +10,7 @@ import {
   updateBatchRouteTonnagePricing,
 } from "./server"
 import {
+  IslandPricingRequest,
   IslandsListPricingSchema,
   ListDistancePricingSchema,
   LoadingOffloadingPricingSchema,
@@ -64,5 +65,14 @@ export const createBatchIslandPricingsFn = createServerFn()
   })
 
 export const getIslandPricingsFn = createServerFn().handler(async () => {
-  return getIslandsPricings()
+  const { data } = await getIslandsPricings()
+  if (data) {
+    const pricings: IslandPricingRequest[] = data.map((p) => ({
+      name: p.name,
+      priceRate: Number(p.general_price),
+      locations: p.locations.map((l) => ({ value: l })),
+    }))
+    return pricings
+  }
+  return undefined
 })

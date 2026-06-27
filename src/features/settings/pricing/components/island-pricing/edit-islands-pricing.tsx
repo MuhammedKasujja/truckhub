@@ -31,7 +31,10 @@ export function EditIslandsPricing({
   const form = useForm<IslandsListPricingRequest>({
     resolver: zodResolver(IslandsListPricingSchema),
     defaultValues: {
-      pricings: [emptyIslandPricing],
+      pricings:
+        initialData && initialData.pricings.length != 0
+          ? initialData.pricings
+          : [emptyIslandPricing],
     },
   })
 
@@ -47,7 +50,7 @@ export function EditIslandsPricing({
   return (
     <form onSubmit={form.handleSubmit(onSubmitData)}>
       <div className="mb-4 flex flex-row gap-4">
-        <div>Islands {pricingFields.fields.length} </div>
+        <div className="uppercase">Islands {pricingFields.fields.length} </div>
         <Button
           type="button"
           variant={"outline"}
@@ -61,7 +64,7 @@ export function EditIslandsPricing({
       <Card>
         <CardContent className="space-y-5">
           {pricingFields.fields.map((pricing, pricingIndex) => (
-            <Card>
+            <Card key={pricing.id}>
               <CardContent>
                 <Field orientation={"horizontal"} className="gap-4">
                   <TextField

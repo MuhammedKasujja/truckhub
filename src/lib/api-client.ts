@@ -14,8 +14,8 @@ export async function getFn<T>(url: string): Promise<Prettify<ApiResponse<T>>> {
     const response = await api.get(url)
     return {
       isSuccess: true,
-      data: response.data.data,
-      message: response.data.message,
+      data: response.data?.data,
+      message: response.data?.message,
     }
   } catch (error) {
     await logoutOnServerActions(error)
@@ -119,8 +119,8 @@ function _handleApiException<T>(error: unknown): ApiResponse<T> {
   return {
     isSuccess: false,
     error: {
-      message: (error as any).response.data.error.message,
-      code: (error as any).response.data.error.code,
+      message: (error as any).response.data.error?.message,
+      code: (error as any).response.data.error?.code,
       status: statusCode,
     },
   }

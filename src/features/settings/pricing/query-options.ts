@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import {
+  getIslandPricingsFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
 } from "./services"
@@ -17,6 +18,11 @@ export const routePricingQueryKeys = {
 export const loadingFeesQueryKeys = {
   all: () => ["loading-fees"] as const,
   list: () => [...loadingFeesQueryKeys.all(), "list"] as const,
+} as const
+
+export const islandPricingQueryKeys = {
+  all: () => ["island-pricing"] as const,
+  list: () => [...islandPricingQueryKeys.all(), "list"] as const,
 } as const
 
 export const distancePricingQueryOptions = () =>
@@ -37,5 +43,12 @@ export const createCompanyLoadingFreesQueryOptions = () =>
   queryOptions({
     queryKey: loadingFeesQueryKeys.list(),
     queryFn: getLoadingOffloadingFreesFn,
+    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+  })
+
+export const createCompanyIslandPricingQueryOptions = () =>
+  queryOptions({
+    queryKey: islandPricingQueryKeys.list(),
+    queryFn: getIslandPricingsFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })

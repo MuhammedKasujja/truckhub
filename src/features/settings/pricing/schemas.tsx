@@ -125,6 +125,8 @@ export const islandPricingSchema = z.object({
   newPriceRate: z.number().positive().optional().nullable(),
 })
 
+export type IslandPricingRequest = z.infer<typeof islandPricingSchema>
+
 export const IslandsListPricingSchema = z.object({
   pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
 })
