@@ -15,7 +15,7 @@ const userManagementTabs = [
     route: DistancePricingRoute.to,
   },
   {
-    name: "Loading-Offloading Pricing",
+    name: "Loading-Offloading Fees",
     route: LoadingOffloadingPricingRoute.to,
   },
   {

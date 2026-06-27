@@ -56,12 +56,15 @@ export const getLoadingOffloadingFreesFn = createServerFn().handler(
 export const createBatchIslandPricingsFn = createServerFn()
   .inputValidator(IslandsListPricingSchema)
   .handler(async ({ data }) => {
-    const request = data.pricings.map((p) => ({
+    const pricings = data.pricings.map((p) => ({
       name: p.name,
       price: p.priceRate,
       locations: p.locations.map((l) => l.value),
     }))
-    return createBatchIslandPricing(request)
+    return createBatchIslandPricing({
+      pricings,
+      valid_from: data.validFromDate.toISOString().split("T")[0],
+    })
   })
 
 export const getIslandPricingsFn = createServerFn().handler(async () => {

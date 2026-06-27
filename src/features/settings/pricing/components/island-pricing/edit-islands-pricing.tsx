@@ -5,7 +5,11 @@ import {
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { NumberField, TextField } from "@/components/ui/form-fields"
+import {
+  DatePickerField,
+  NumberField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
@@ -31,6 +35,7 @@ export function EditIslandsPricing({
   const form = useForm<IslandsListPricingRequest>({
     resolver: zodResolver(IslandsListPricingSchema),
     defaultValues: {
+      validFromDate: initialData?.validFromDate,
       pricings:
         initialData && initialData.pricings.length != 0
           ? initialData.pricings
@@ -50,7 +55,12 @@ export function EditIslandsPricing({
   return (
     <form onSubmit={form.handleSubmit(onSubmitData)}>
       <div className="mb-4 flex flex-row gap-4">
-        <div className="uppercase">Islands {pricingFields.fields.length} </div>
+        {/* <div className="uppercase">Islands {pricingFields.fields.length} </div> */}
+        <DatePickerField
+          control={form.control}
+          name="validFromDate"
+          label="Valid From"
+        />
         <Button
           type="button"
           variant={"outline"}

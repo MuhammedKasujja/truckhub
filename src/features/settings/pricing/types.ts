@@ -28,10 +28,15 @@ export type RoutePricingResponse = {
   routes: RoutePricing[]
 }
 
-export type IslandPricingDto = {
+type IslandPricingDto = {
   name: string
   locations: string[]
   price: number | string
+}
+
+export type IslandPricingCreateDto = {
+  pricings: IslandPricingDto[]
+  valid_from: string | Date
 }
 
 export type IslandPricingResponse = {

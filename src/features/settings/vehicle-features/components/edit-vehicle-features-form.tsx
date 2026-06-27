@@ -73,7 +73,7 @@ export function EditVehicleFeatureForm() {
             <Separator />
             <Button
               type="button"
-              variant={"outline"}
+              variant={"secondary"}
               className="mb-5"
               onClick={() => append(emptyFeature)}
             >

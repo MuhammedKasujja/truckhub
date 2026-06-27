@@ -54,10 +54,12 @@ export function DatePickerField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor={field.name}>
-            {label}
-            {required && <RequiredLabelIcon />}
-          </FieldLabel>
+          {label && (
+            <FieldLabel htmlFor={field.name}>
+              {label}
+              {required && <RequiredLabelIcon />}
+            </FieldLabel>
+          )}
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -111,7 +113,7 @@ interface DatePickerProps {
   startDate?: Date
   endDate?: Date
   initialDate?: Date
-  format?: 'PPP' | 'P'
+  format?: "PPP" | "P"
   onDateChanged: (date: Date | undefined) => void
 }
 
@@ -122,7 +124,7 @@ export function DatePicker({
   placeholder,
   onDateChanged,
   initialDate,
-  format= 'PPP'
+  format = "PPP",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [activeDate, setActiveDate] = React.useState<Date | undefined>(

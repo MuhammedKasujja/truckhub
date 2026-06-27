@@ -18,7 +18,7 @@ function RouteComponent() {
   const pricings = Route.useLoaderData()
   return (
     <EditIslandsPricing
-      initialData={{ pricings: pricings ?? [] }}
+      initialData={{ pricings: pricings ?? [], validFromDate: new Date() }}
       onSubmit={async (data) => {
         const { message, error } = await createBatchIslandPricingsFn({ data })
         if (error) {
