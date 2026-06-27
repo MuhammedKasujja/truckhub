@@ -9,6 +9,17 @@ export const CompanySchema = z.object({
   description: z.string().min(3).optional().nullable(),
 })
 
+export const EditInvoiceTermsSchema = z.object({
+  invoiceTerms: z
+    .array(z.object({ value: z.string() }))
+    .optional()
+    .nullable(),
+  quotationTerms: z
+    .array(z.object({ value: z.string() }))
+    .optional()
+    .nullable(),
+})
+
 export const EditSettingsSchema = z.object({
   search_radius: z.number(),
   counter_padding: z.number().optional(),
@@ -21,6 +32,8 @@ export const EditSettingsSchema = z.object({
 export type Settings = z.infer<typeof EditSettingsSchema>
 
 export type EditSettingsSchemaType = z.infer<typeof EditSettingsSchema>
+
+export type EditInvoiceTermsRequest = z.infer<typeof EditInvoiceTermsSchema>
 
 export type Company = z.infer<typeof CompanySchema>
 

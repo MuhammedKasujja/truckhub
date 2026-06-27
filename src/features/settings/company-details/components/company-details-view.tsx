@@ -26,7 +26,7 @@ export function CompanyDetailsView({ company }: CompanyDetailsProps) {
         <CardTitle className="text-xl font-semibold">{company.name}</CardTitle>
         <CardAction>
           <Can permission="config:company:update">
-            <EditCompanyDetailsDialog company={company}/>
+            <EditCompanyDetailsDialog company={company} />
           </Can>
         </CardAction>
       </CardHeader>

@@ -17,23 +17,23 @@ import { TextField } from "@/components/ui/form-fields"
 const emptyPaymentTerm = {
   value: "",
 }
-interface EditInvioceTermsFormProps {
+interface EditQuotationTermsFormProps {
   initialData: EditInvoiceTermsRequest
   onSubmit: (data: EditInvoiceTermsRequest) => void
 }
 
-export function EditInvoiceTermsForm({
+export function EditQuotationTermsForm({
   initialData,
   onSubmit,
-}: EditInvioceTermsFormProps) {
+}: EditQuotationTermsFormProps) {
   const form = useForm<EditInvoiceTermsRequest>({
     resolver: zodResolver(EditInvoiceTermsSchema),
     defaultValues: initialData,
   })
 
-  const invoiceTermsFields = useFieldArray({
+  const quotationTermsFields = useFieldArray({
     control: form.control,
-    name: "invoiceTerms",
+    name: "quotationTerms",
   })
 
   async function onSubmitData(data: EditInvoiceTermsRequest) {
@@ -49,27 +49,27 @@ export function EditInvoiceTermsForm({
       </DialogTrigger>
       <DialogContent className="max-w-[90%] md:min-w-3xl">
         <DialogHeader>
-          <DialogTitle>Edit Invoice Terms</DialogTitle>
+          <DialogTitle>Edit Quotation Terms</DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmitData)} className="space-y-4">
           <Button
             type="button"
             variant={"secondary"}
-            onClick={() => invoiceTermsFields.append(emptyPaymentTerm)}
+            onClick={() => quotationTermsFields.append(emptyPaymentTerm)}
           >
             <Plus /> Add
           </Button>
           <FieldGroup>
-            {invoiceTermsFields.fields.map((ele, index) => (
+            {quotationTermsFields.fields.map((ele, index) => (
               <Field key={ele.id} orientation={"horizontal"}>
                 <TextField
                   control={form.control}
-                  name={`invoiceTerms.${index}.value`}
+                  name={`quotationTerms.${index}.value`}
                 />
                 <Button
                   type="button"
                   variant={"destructive"}
-                  onClick={() => invoiceTermsFields.remove(index)}
+                  onClick={() => quotationTermsFields.remove(index)}
                   size={"icon-sm"}
                 >
                   <Trash2 />

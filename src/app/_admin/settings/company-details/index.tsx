@@ -1,8 +1,22 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  EditInvoiceTermsForm,
+  EditQuotationTermsForm,
+} from "@/features/settings/_components"
 import { CompanyDetailsView } from "@/features/settings/company-details/components"
 import { settingsQueryOptions } from "@/features/settings/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { SquareDotIcon } from "lucide-react"
+
+function transformToTerms(terms?: string[] | null) {
+  return terms?.map((t) => ({ value: t })) ?? []
+}
 
 export const Route = createFileRoute("/_admin/settings/company-details/")({
   component: RouteComponent,
@@ -38,9 +52,29 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
+      <EditInvoiceTermsForm
+        initialData={{
+          invoiceTerms: transformToTerms(settings.invoice_terms),
+          quotationTerms: transformToTerms(settings.quotation_terms),
+        }}
+        onSubmit={(data) => {
+          console.log("Updated data", data)
+        }}
+      />
       <Card>
         <CardHeader>
           <CardTitle>Quotation Terms</CardTitle>
+          <CardAction>
+            <EditQuotationTermsForm
+              initialData={{
+                invoiceTerms: transformToTerms(settings.invoice_terms),
+                quotationTerms: transformToTerms(settings.quotation_terms),
+              }}
+              onSubmit={(data) => {
+                console.log("Updated data", data)
+              }}
+            />
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
