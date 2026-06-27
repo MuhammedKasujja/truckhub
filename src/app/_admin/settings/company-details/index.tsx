@@ -57,9 +57,6 @@ function RouteComponent() {
           invoiceTerms: transformToTerms(settings.invoice_terms),
           quotationTerms: transformToTerms(settings.quotation_terms),
         }}
-        onSubmit={(data) => {
-          console.log("Updated data", data)
-        }}
       />
       <Card>
         <CardHeader>
@@ -69,9 +66,6 @@ function RouteComponent() {
               initialData={{
                 invoiceTerms: transformToTerms(settings.invoice_terms),
                 quotationTerms: transformToTerms(settings.quotation_terms),
-              }}
-              onSubmit={(data) => {
-                console.log("Updated data", data)
               }}
             />
           </CardAction>

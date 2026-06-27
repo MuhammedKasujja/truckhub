@@ -49,7 +49,7 @@ export function EditCompanyDetailsDialog({
           <Edit />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-[90%] md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Company Details</DialogTitle>
           <DialogDescription>

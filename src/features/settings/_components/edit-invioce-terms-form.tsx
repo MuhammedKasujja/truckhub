@@ -13,19 +13,25 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { TextField } from "@/components/ui/form-fields"
+import { updateInvoiceTermsFn } from "../service"
+import { toast } from "sonner"
+import { useState } from "react"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 const emptyPaymentTerm = {
   value: "",
 }
 interface EditInvioceTermsFormProps {
   initialData: EditInvoiceTermsRequest
-  onSubmit: (data: EditInvoiceTermsRequest) => void
+  onSubmit?: (data: EditInvoiceTermsRequest) => void
 }
 
 export function EditInvoiceTermsForm({
   initialData,
-  onSubmit,
 }: EditInvioceTermsFormProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const queryInvalidator = useQueryInvalidator()
+
   const form = useForm<EditInvoiceTermsRequest>({
     resolver: zodResolver(EditInvoiceTermsSchema),
     defaultValues: initialData,
@@ -37,11 +43,19 @@ export function EditInvoiceTermsForm({
   })
 
   async function onSubmitData(data: EditInvoiceTermsRequest) {
-    onSubmit(data)
+    // onSubmit(data)
+    const { error } = await updateInvoiceTermsFn({ data })
+    if (error) {
+      toast.error(error.message)
+    } else {
+      toast.success("Invoice terms updated successfully")
+      queryInvalidator.settings.refresh()
+      setIsOpen(false)
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant={"secondary"}>
           <Edit /> Edit Terms
