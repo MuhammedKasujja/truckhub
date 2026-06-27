@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,24 +25,26 @@ export function SessionIdleWarningDialog({
   onStayLoggedIn,
 }: SessionIdleWarningDialogProps) {
   const [remaining, setRemaining] = useState(countdownSeconds)
+  const remainingRef = useRef(countdownSeconds)
 
   useEffect(() => {
     if (!open) return
     setRemaining(countdownSeconds)
+    remainingRef.current = countdownSeconds
 
-    const interval = setInterval(() => {
-      setRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          onLogoutNow() // ← fires logout when counter hits 0
-          return 0
-        }
-        return prev - 1
-      })
+    let interval = setInterval(() => {
+      remainingRef.current = Math.max(0, remainingRef.current - 1)
+      setRemaining(remainingRef.current)
+
+      if (remainingRef.current <= 0) {
+        clearInterval(interval)
+        // defer logout to avoid triggering state updates during render
+        setTimeout(() => onLogoutNow(), 0)
+      }
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [open, countdownSeconds])
+  }, [open, countdownSeconds, onLogoutNow])
 
   if (!open) return null
 
