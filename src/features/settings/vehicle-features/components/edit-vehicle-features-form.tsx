@@ -17,6 +17,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { makeId } from "../../pricing/utils/distance-tonnage-pricing-utils"
+import { bulkUpertVehicleFeaturesFn } from "../services"
+import { toast } from "sonner"
 
 const emptyFeature = {
   name: "",
@@ -38,13 +40,18 @@ export function EditVehicleFeatureForm() {
   })
 
   async function onSubmitData(data: z.infer<typeof vehicleFeatureFormSchema>) {
-    console.log(data)
+    const { message, error } = await bulkUpertVehicleFeaturesFn({ data })
+    if (error) {
+      toast.error(error.message)
+    } else {
+      toast.success(message)
+    }
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={'secondary'}>
+        <Button variant={"secondary"}>
           <View /> Features
         </Button>
       </DialogTrigger>
