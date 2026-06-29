@@ -8,12 +8,13 @@ import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
+import { TFunction } from "@/i18n"
 
-export function getDriverTableColumns(): ColumnDef<Driver>[] {
+export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
   return [
     {
       accessorKey: "name",
-      header: "Name",
+      header: tr('form.name'),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -29,21 +30,21 @@ export function getDriverTableColumns(): ColumnDef<Driver>[] {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tr('form.name'),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tr('form.phone'),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
     },
     {
       accessorKey: "created_at",
-      header: "Date",
+      header: tr('form.date'),
       cell: ({ row }) => {
         return <p>{formatDateTime(row.original.created_at)}</p>
       },

@@ -11,13 +11,16 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createDriverListQueryOptions } from "../queries"
 import { useSearch } from "@tanstack/react-router"
+import { useTranslation } from "@/i18n"
 
 export function DriverTable() {
   const search = useSearch({ from: "/_admin/drivers/" })
   const {
-    data: { data, pagination }, error,
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createDriverListQueryOptions(search))
-  const columns = useMemo(() => getDriverTableColumns(), [])
+  const tr = useTranslation()
+  const columns = useMemo(() => getDriverTableColumns(tr), [tr])
 
   useFetchEror(error)
 
@@ -46,7 +49,7 @@ export function DriverTable() {
 export function DriverTableSkeleton() {
   return (
     <DataTableSkeleton
-      columnCount={getDriverTableColumns().length}
+      columnCount={5}
       filterCount={1}
       shrinkZero
     />

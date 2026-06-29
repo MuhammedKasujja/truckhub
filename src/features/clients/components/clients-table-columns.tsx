@@ -4,13 +4,14 @@ import { formatDateTime } from "@/lib/format"
 import { deleteClientFn } from "@/features/clients/services"
 import { Client } from "@/features/clients/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
+import { Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { ClientTableActions } from "./client-table-actions"
+import { TFunction } from "@/i18n"
 
-export function getCustomerTableColumns(): ColumnDef<Client>[] {
+export function getClientsTableColumns(tr: TFunction): ColumnDef<Client>[] {
   return [
     {
       id: "left-actions",
@@ -20,7 +21,7 @@ export function getCustomerTableColumns(): ColumnDef<Client>[] {
     },
     {
       accessorKey: "name",
-      header: "Name",
+      header: tr("form.name"),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -36,21 +37,21 @@ export function getCustomerTableColumns(): ColumnDef<Client>[] {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tr("form.email"),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tr("form.phone"),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
     },
     {
       accessorKey: "created_at",
-      header: "Date",
+      header: tr("date"),
       cell: ({ row }) => {
         return <p>{formatDateTime(row.original.created_at)}</p>
       },

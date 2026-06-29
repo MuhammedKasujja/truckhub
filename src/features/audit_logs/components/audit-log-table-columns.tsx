@@ -1,41 +1,41 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import type { AuditLog } from "@/features/audit_logs/types";
-import { TFunction } from "@/i18n";
-import { formatDate } from "@/lib/format";
-import { ActionButton } from "@/components/ui/action-button";
-import { Trash2Icon } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table"
+import type { AuditLog } from "@/features/audit_logs/types"
+import { TFunction } from "@/i18n"
+import { formatDate } from "@/lib/format"
+import { ActionButton } from "@/components/ui/action-button"
+import { Trash2Icon } from "lucide-react"
 
 export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
   return [
     {
       accessorKey: "actor_name",
-      header: "User",
+      header: tr("user"),
       cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.actor_name}</div>;
+        return <div className="flex gap-2">{row.original.actor_name}</div>
       },
       meta: {
-        label: "User",
+        label: tr("user"),
       },
     },
     {
       accessorKey: "action",
-      header: "Action",
+      header: tr("action"),
       cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.action}</div>;
+        return <div className="flex gap-2">{row.original.action}</div>
       },
     },
     {
       accessorKey: "source",
-      header: "Source",
+      header: tr("source"),
       cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.source}</div>;
+        return <div className="flex gap-2">{row.original.source}</div>
       },
     },
     {
       accessorKey: "created_at",
       header: tr("payments.date"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>;
+        return <p>{formatDate(row.original.created_at)}</p>
       },
       meta: {
         label: tr("payments.date"),
@@ -53,15 +53,15 @@ export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
               size={"icon"}
               requireAreYouSure
               action={async () => {
-                return { error: true, message: "Not implemented yet...." };
+                return { error: true, message: "Not implemented yet...." }
               }}
             >
               <Trash2Icon />
             </ActionButton>
           </div>
-        );
+        )
       },
       size: 100,
     },
-  ];
+  ]
 }

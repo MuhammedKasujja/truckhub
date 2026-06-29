@@ -78,6 +78,11 @@ const en = {
     km: "KM",
     kilo_meters: "kilometers",
     miles: "Miles",
+    user: "User",
+    action: "Action",
+    actions: "Actions",
+    source: "Source",
+    balance: "Balance",
     form: {
       name: "Name",
       first_name: "First name",

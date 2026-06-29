@@ -1,4 +1,3 @@
-"use client"
 import { Button } from "@/components/ui/button"
 import { formatDateTime, formatPrice } from "@/lib/format"
 import { Booking } from "@/features/bookings/types"
@@ -9,8 +8,9 @@ import { EditIcon, EyeIcon } from "lucide-react"
 import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { TFunction } from "@/i18n"
 
-export function getBookingTableColumns(): ColumnDef<Booking>[] {
+export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
   return [
     {
       accessorKey: "id",
@@ -32,7 +32,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
     {
       accessorKey: "customer",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} label="Client" />
+        <DataTableColumnHeader column={column} label={tr('client')} />
       ),
       cell: ({ row }) => {
         return (
@@ -50,7 +50,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
     },
     {
       id: "services",
-      header: "Services",
+      header: tr('services'),
       cell: ({ row }) => {
         return <p className="text-center">{row.original.services.length}</p>
       },
@@ -58,7 +58,7 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: tr('status'),
       cell: ({ row }) => {
         return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
@@ -72,14 +72,14 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
     },
     {
       accessorKey: "amount",
-      header: "Amount",
+      header: tr('amount'),
       cell: ({ row }) => {
         return <p>{formatPrice(row.original.amount)}</p>
       },
     },
     {
       accessorKey: "balance",
-      header: "Balance",
+      header: tr('balance'),
       cell: ({ row }) => {
         return <p>{formatPrice(row.original.balance)}</p>
       },

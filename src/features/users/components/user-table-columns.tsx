@@ -1,7 +1,5 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
-import { deleteUserFn } from "@/features/users/services"
 import { SystemUser, UserDataTableRowAction } from "@/features/users/types"
 import { ColumnDef } from "@tanstack/react-table"
 import {
@@ -12,7 +10,6 @@ import {
   Trash2Icon,
 } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import {
   DropdownMenu,
@@ -115,7 +112,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EyeIcon />
-                      View
+                      {tr('form.view')}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -126,7 +123,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EditIcon />
-                      Edit
+                      {tr('form.edit')}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -164,7 +161,7 @@ export function getUserTableColumns({
                       <div className="flex gap-4"> */}
                         {/* <Button type="button" variant={"destructive"}> */}
                         <Trash2Icon />
-                        Delete
+                        {tr('form.delete')}
                         {/* </Button> */}
                         {/* </div>
                     </ActionButton> */}
