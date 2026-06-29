@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/item";
 import { formatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 
-export function SearchForm({ ...props }: React.ComponentProps<"div">) {
+export function GlobalSearchDialog({ ...props }: React.ComponentProps<"div">) {
   const tr = useTranslation();
   const [locations, setLocations] = useState<MapLocation[]>([]);
   const [isOpen, setIsOpen] = useState(false)
@@ -58,7 +58,7 @@ export function SearchForm({ ...props }: React.ComponentProps<"div">) {
             </Button>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm ring-4">
+        <DialogContent className="sm:max-w-sm ring-4 md:min-w-lg md:min-h-60">
           <DialogHeader>
             <DialogTitle>Search Truckhub</DialogTitle>
             <DialogDescription>

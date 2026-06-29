@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
 import { NavigationActions, NavigationButtons } from "@/components/navigation-actions"
-import { SearchForm } from "@/components/search-form"
+import { GlobalSearchDialog } from "@/components/global-search-dialog"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
 
@@ -43,7 +43,7 @@ function RouteComponent() {
             <div className="flex w-full items-center justify-between gap-4">
               <div className="flex gap-2 items-center">
                 <NavigationButtons />
-                <SearchForm />
+                <GlobalSearchDialog />
                 <CreateEntityDialog />
               </div>
               <NavigationActions />
