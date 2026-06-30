@@ -6,7 +6,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const VehicleCreateSchema = z.object({
   plate_number: z.string(),
-  color: z.string(),
+  color: z.string("Exteria color is needed"),
   interior_color: z.string().optional().nullable(),
   cylinders: z.string(),
   tank_capacity: z.number(),

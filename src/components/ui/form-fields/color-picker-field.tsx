@@ -7,7 +7,9 @@ import { ColorSwatch } from "../color-swatch"
 
 interface Color {
   label: string
-  colorCode: string
+  hex: string
+  /** Will use color `hex` as `field value` if `value` is not provided */
+  value?: string
 }
 
 interface ColorPickerFieldProps<
@@ -35,10 +37,10 @@ export function ColorPickerField<TFieldValues extends FieldValues>({
       label={label}
       remote={remote}
       filterFn={(c, q) => c.label.toLowerCase().includes(q.toLowerCase())}
-      getOptionValue={(c) => c.colorCode}
+      getOptionValue={(c) => c.value ?? c.hex}
       renderOption={(c) => (
-        <div className="flex w-full gap-4">
-          <ColorSwatch color={c.colorCode} size={"xs"} />
+        <div className="flex w-full gap-4 items-center">
+          <ColorSwatch color={c.hex} size={"xs"} />
           {c.label}
         </div>
       )}

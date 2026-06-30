@@ -29,6 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useVehicleForm } from "../hooks/use-vehicle-form"
 import { useVehicleConfigurationsSuspense } from "@/features/settings/hooks/use-vehicle-configurations"
+import { CAR_COLOR_OPTIONS } from "@/common/config"
 
 type VehicleFormProps = {
   initialData?: z.infer<typeof VehicleUpdateSchema>
@@ -87,25 +88,16 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 <ColorPickerField
                   label={tr("color")}
                   name={"color"}
+                  required
                   control={form.control}
-                  options={[
-                    { label: "Red", colorCode: "#ef4444" },
-                    { label: "Red", colorCode: "#f97316" },
-                    { label: "Red", colorCode: "#eab308" },
-                    { label: "Red", colorCode: "#22c55e" },
-                  ]}
+                  options={CAR_COLOR_OPTIONS}
                 />
                 <ColorPickerField
                   label={tr("interior_color")}
                   name={"interior_color"}
                   control={form.control}
-                  // required={false}
-                  options={[
-                    { label: "Red", colorCode: "#ef4444" },
-                    { label: "Red", colorCode: "#f97316" },
-                    { label: "Red", colorCode: "#eab308" },
-                    { label: "Red", colorCode: "#22c55e" },
-                  ]}
+                  required={false}
+                  options={CAR_COLOR_OPTIONS}
                 />
               </Field>
               <Field className="" orientation={"horizontal"}>
