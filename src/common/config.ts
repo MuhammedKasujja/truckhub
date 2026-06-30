@@ -153,3 +153,47 @@ export const CAR_COLOR_OPTIONS = Object.entries(CAR_COLORS).map(
     hex: color.hex,
   })
 )
+
+
+export const COMMON_CAR_COLORS = {
+  white: {
+    name: "White",
+    hex: "#FFFFFF",
+  },
+  black: {
+    name: "Black",
+    hex: "#000000",
+  },
+  gray: {
+    name: "Gray",
+    hex: "#808080",
+  },
+  silver: {
+    name: "Silver",
+    hex: "#C0C0C0",
+  },
+  blue: {
+    name: "Blue",
+    hex: "#1976D2",
+  },
+  red: {
+    name: "Red",
+    hex: "#D32F2F",
+  },
+  green: {
+    name: "Green",
+    hex: "#2E7D32",
+  },
+  brown: {
+    name: "Brown",
+    hex: "#6D4C41",
+  },
+  beige: {
+    name: "Beige / Champagne",
+    hex: "#D6C4A1",
+  },
+  yellow: {
+    name: "Yellow / Gold",
+    hex: "#FFD600",
+  },
+} as const;

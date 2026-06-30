@@ -6,10 +6,10 @@ import {
 import { ColorSwatch } from "../color-swatch"
 
 interface Color {
-  label: string
-  hex: string
+  readonly label: string
+  readonly hex: string
   /** Will use color `hex` as `field value` if `value` is not provided */
-  value?: string
+  readonly value?: string
 }
 
 interface ColorPickerFieldProps<
