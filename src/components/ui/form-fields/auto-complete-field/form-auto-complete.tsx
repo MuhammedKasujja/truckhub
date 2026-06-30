@@ -9,6 +9,7 @@ import {
   FieldError,
   FieldLabel,
 } from "@/components/ui/field"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
 
 export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   name: FieldPath<TFieldValues>
@@ -23,6 +24,7 @@ export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   placeholder?: string
   disabled?: boolean
   clearable?: boolean
+  required?: boolean
   noResultsMessage?: React.ReactNode
 }
 
@@ -38,6 +40,7 @@ interface FormAutoCompleteFieldProps<
   remote?: boolean
   /** Min chars before triggering remote search */
   minSearchLength?: number
+  required?: boolean
 }
 
 export function FormAutoComplete<TFieldValues extends FieldValues, T>({
@@ -51,6 +54,7 @@ export function FormAutoComplete<TFieldValues extends FieldValues, T>({
   control,
   filterFn,
   onSearch,
+  required = false,
   ...props
 }: FormAutoCompleteFieldProps<TFieldValues, T>) {
   return (
@@ -65,7 +69,12 @@ export function FormAutoComplete<TFieldValues extends FieldValues, T>({
 
           return (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+              {label && (
+                <FieldLabel htmlFor={field.name}>
+                  {label}
+                  {required && <RequiredLabelIcon />}
+                </FieldLabel>
+              )}
               <AutoComplete<T>
                 label={label}
                 {...props}

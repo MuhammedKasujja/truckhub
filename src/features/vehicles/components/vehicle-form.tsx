@@ -10,6 +10,7 @@ import {
 import { Field, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field"
 import {
   AutoCompleteField,
+  ColorPickerField,
   NumberField,
   SelectField,
   TextField,
@@ -82,17 +83,29 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 name={"plate_number"}
                 control={form.control}
               />
-              <Field className="" orientation={"horizontal"}>
-                <TextField
+              <Field className="grid md:grid-cols-2" orientation={"horizontal"}>
+                <ColorPickerField
                   label={tr("color")}
                   name={"color"}
                   control={form.control}
+                  options={[
+                    { label: "Red", colorCode: "#ef4444" },
+                    { label: "Red", colorCode: "#f97316" },
+                    { label: "Red", colorCode: "#eab308" },
+                    { label: "Red", colorCode: "#22c55e" },
+                  ]}
                 />
-                <TextField
+                <ColorPickerField
                   label={tr("interior_color")}
                   name={"interior_color"}
                   control={form.control}
-                  required={false}
+                  // required={false}
+                  options={[
+                    { label: "Red", colorCode: "#ef4444" },
+                    { label: "Red", colorCode: "#f97316" },
+                    { label: "Red", colorCode: "#eab308" },
+                    { label: "Red", colorCode: "#22c55e" },
+                  ]}
                 />
               </Field>
               <Field className="" orientation={"horizontal"}>
