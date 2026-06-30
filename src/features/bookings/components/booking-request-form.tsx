@@ -155,7 +155,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
         </CardHeader>
         <CardContent>
           <ClientPicker
-            onSelect={(client) => {
+            onSelected={(client) => {
               setValue("client_id", client?.id ?? "")
               setClient(client)
             }}
@@ -200,17 +200,6 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
         </CardContent>
       </Card>
       <Card>
-        {/* <CardHeader>
-          <CardTitle>
-            {isEdit ? tr("edit_booking") : tr("new_booking")}
-          </CardTitle>
-          <CardDescription>{tr("create_booking_help")}</CardDescription>
-          <CardAction>
-            <CardTitle>
-              {formatPrice(grandTotal, { showZeroAsNumber: true })}
-            </CardTitle>
-          </CardAction>
-        </CardHeader> */}
         <CardContent className="grid grid-cols-1 gap-5 pb-5 md:grid-cols-2">
           <Card>
             <CardContent>

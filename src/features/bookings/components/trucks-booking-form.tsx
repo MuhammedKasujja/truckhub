@@ -22,14 +22,13 @@ import {
 import { toast } from "sonner"
 import { Control, Controller } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2 } from "lucide-react"
+import { Copy, Plus, Trash2, X } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useNavigate, useSearch } from "@tanstack/react-router"
-import { RoutePricingDialog } from "./route-pricing-dialog"
 import {
   Empty,
   EmptyDescription,
@@ -45,6 +44,7 @@ import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
 import { useState } from "react"
 import { TaxRate } from "@/features/settings/tax-rates/types"
+import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -167,7 +167,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           </CardTitle>
           <CardDescription>Locations {locations.length}</CardDescription>
           <CardAction>
-            <RoutePricingDialog
+            <RoutePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
               onSelectedPricings={handleUpdatePricings}
               trigger={

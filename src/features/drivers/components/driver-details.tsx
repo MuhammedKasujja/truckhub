@@ -103,7 +103,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
         </Card>
         <Card className="md:col-span-2">
           <CardHeader>
-            <CardTitle>Assign Vehicle to driver</CardTitle>
+            <CardTitle>Assign Vehicle</CardTitle>
             <CardDescription>Attach vehicle to the driver</CardDescription>
           </CardHeader>
           <CardContent className="flex">
