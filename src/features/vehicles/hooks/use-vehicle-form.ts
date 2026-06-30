@@ -37,6 +37,7 @@ export function useVehicleForm(
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { ...initialData, features: initialData?.features ?? [] },
+    reValidateMode: "onChange"
   })
 
   const selectedCarBrandId = form.watch("car_brand_id")
