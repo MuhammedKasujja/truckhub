@@ -16,6 +16,7 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
       cylinders: data?.cylinders.toString(),
       car_model_id: data?.car_model_id,
       features: data?.features.map((feat) => feat.id),
+      consumption_rate: Number(data?.consumption_rate)
     }
   },
 })
