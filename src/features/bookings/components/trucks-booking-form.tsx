@@ -257,7 +257,7 @@ function TonnagePricingRow({
         disabled
       />
       <Controller
-        name={`locations.${routeIndex}.pricings.${pricingIndex}.price`}
+        name={`services.${routeIndex}.pricings.${pricingIndex}.price`}
         control={control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
@@ -279,7 +279,7 @@ function TonnagePricingRow({
         )}
       />
       <Controller
-        name={`locations.${routeIndex}.pricings.${pricingIndex}.tons`}
+        name={`services.${routeIndex}.pricings.${pricingIndex}.tons`}
         control={control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>

@@ -71,7 +71,7 @@ export const TruckBookingSchema = z.object({
   pickup_time: z.date("Required"),
   return_time: z.date("Required"),
   contacts: z.array(IDSchema).optional().nullable(),
-  locations: z
+  services: z
     .array(routePricingsSchema)
     .min(1, "Add at least one service")
     .max(20, "Maximum 20 items per order"),

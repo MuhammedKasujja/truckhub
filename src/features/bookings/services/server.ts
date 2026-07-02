@@ -68,7 +68,7 @@ export async function createBooking(data: BookingCreateSchemaType) {
 }
 
 export async function createTruckBooking(data: TruckBookingRequest) {
-  return await apiClient.postFn<Booking>("/v1/bookings", data)
+  return await apiClient.postFn<Booking>("/v1/bookings/trucks", data)
 }
 
 export const getBookingStatistics = createServerFn().handler(async () => {

@@ -32,14 +32,14 @@ export function useTruckBookingForm(
       defaultValues: {
         client_id: clientId,
         contacts: [],
-        locations: [],
+        services: [],
       },
       mode: "onChange",
     })
 
   const { replace } = useFieldArray({
     control,
-    name: "locations",
+    name: "services",
   })
 
   const { data: clients } = useQuery(clientsSearchQueryOptions())
@@ -57,7 +57,7 @@ export function useTruckBookingForm(
   const partialAmount = watch("partial")
   const discount = watch("discount")
 
-  const locations = useWatch({ control, name: "locations" })
+  const locations = useWatch({ control, name: "services" })
 
   const grandTotal = useMemo(() => {
     const total = locations.reduce(
@@ -85,15 +85,15 @@ export function useTruckBookingForm(
   }, [routesPricings])
 
   function removePricingRow(routeIndex: number, pricingIndex: number) {
-    const pricings = getValues(`locations.${routeIndex}.pricings`)
+    const pricings = getValues(`services.${routeIndex}.pricings`)
     pricings.splice(pricingIndex, 1)
     // if the pricings list is empty, remove the location from the list
     if (pricings.length === 0) {
-      const locations = getValues("locations")
+      const locations = getValues("services")
       const updated = locations.filter((_, i) => i !== routeIndex)
       replace(updated)
     } else {
-      setValue(`locations.${routeIndex}.pricings`, pricings)
+      setValue(`services.${routeIndex}.pricings`, pricings)
     }
   }
 
