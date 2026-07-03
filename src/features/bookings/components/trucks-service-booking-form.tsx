@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner"
 import { Control, Controller, useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2 } from "lucide-react"
+import { MapPin, Plus, Trash2 } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
@@ -46,6 +46,7 @@ import { TaxRate } from "@/features/settings/tax-rates/types"
 import { ServicesList } from "./create/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
+import { Badge } from "@/components/ui/badge"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -117,8 +118,10 @@ export function TrucksServiceBookingForm({
       className="space-y-4"
     >
       <Card>
-        <CardHeader>
-          {selectedClient && <CardTitle>{selectedClient.name}</CardTitle>}
+        <CardHeader className="gap-1">
+          {selectedClient && (
+            <CardTitle className="text-lg">{selectedClient.name}</CardTitle>
+          )}
           {selectedClient && (
             <CardDescription>{selectedClient.phone}</CardDescription>
           )}
@@ -129,7 +132,7 @@ export function TrucksServiceBookingForm({
             />
           </CardAction>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <ClientPicker
             value={selectedClient}
             onSelected={handleClientSelected}
@@ -148,9 +151,10 @@ export function TrucksServiceBookingForm({
           />
         </CardContent>
       </Card>
+
       <Card>
         <CardContent>
-          <FieldGroup className="grid grid-flow-col md:grid-cols-4">
+          <FieldGroup className="grid gap-4 md:grid-flow-col md:grid-cols-4">
             <DateTimePickerField
               label={"Pickup Date"}
               name={"pickup_time"}
@@ -176,14 +180,23 @@ export function TrucksServiceBookingForm({
           </FieldGroup>
         </CardContent>
       </Card>
+
       <Card>
-        <CardHeader>
-          <CardTitle>
-            {/* Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })} */}
-          </CardTitle>
-          <CardDescription>
-            Locations - {serviceFields.fields.length}
-          </CardDescription>
+        <CardHeader className="flex-row items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <MapPin className="h-4 w-4" />
+            </div>
+            <div>
+              <CardTitle className="text-base">Locations</CardTitle>
+              <CardDescription>
+                <Badge variant="secondary" className="font-normal">
+                  {serviceFields.fields.length}{" "}
+                  {serviceFields.fields.length === 1 ? "location" : "locations"}
+                </Badge>
+              </CardDescription>
+            </div>
+          </div>
           <CardAction>
             <Button
               disabled={!selectedClient}
@@ -202,7 +215,9 @@ export function TrucksServiceBookingForm({
           </CardAction>
         </CardHeader>
       </Card>
+
       <Separator />
+
       {/* {locations.length > 0 ? ( */}
       <ServicesList
         control={control}
