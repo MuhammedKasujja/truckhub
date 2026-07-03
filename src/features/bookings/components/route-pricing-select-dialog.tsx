@@ -4,7 +4,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import {
@@ -18,8 +17,8 @@ import { TonnagePricing } from "@/features/settings/pricing"
 import { formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
-import { useEffect, useMemo, useState } from "react"
-import { RoutePricingStruct } from "../schemas"
+import { useMemo, useState } from "react"
+import { routePricingsSchema, RoutePricingStruct } from "../schemas"
 import {
   Sortable,
   SortableContent,
@@ -36,6 +35,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import z from "zod"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Field, FieldError } from "@/components/ui/field"
+
+const formSchema = z.object({
+  routes: z.array(routePricingsSchema).min(1, "At least one route required"),
+})
+
+type FormValues = z.infer<typeof formSchema>
 
 type RoutePricingDialogProps = {
   clientId: EntityId
@@ -43,6 +52,7 @@ type RoutePricingDialogProps = {
   selectedPricings: RoutePricingStruct[]
   onOpenChange: (v: boolean) => void
   onSelectedPricings: (pricings: RoutePricingStruct[]) => void
+  onLiveChange?: (route: RoutePricingStruct) => void
 }
 
 type RouteDetails = {
@@ -59,11 +69,21 @@ export function RoutePricingSelectDialog({
   selectedPricings,
   onOpenChange,
   onSelectedPricings,
+  onLiveChange,
 }: RoutePricingDialogProps) {
   const { data, isLoading } = useClientRoutingPricing(clientId)
 
-  const [routesMap, setRoutesMap] =
-    useState<RoutePricingStruct[]>(selectedPricings)
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      routes: selectedPricings ?? [],
+    },
+    mode: "onChange",
+  })
+
+  const { watch } = form
+
+  const routes = watch("routes")
 
   const [query, setQuery] = useState("")
 
@@ -79,65 +99,63 @@ export function RoutePricingSelectDialog({
   }, [query, data])
 
   // reset when client changes
-  useEffect(() => {
-    setRoutesMap(selectedPricings)
-  }, [clientId, selectedPricings])
+  // useEffect(() => {
+  //   setRoutesMap(selectedPricings)
+  // }, [clientId, selectedPricings])
 
-  // ✅ SINGLE pricing select per route
   function handleSelectPricing(pricing: TonnagePricing, route: RouteDetails) {
-    setRoutesMap((prev) => {
-      const existing = prev.find((r) => r.route_id === route.route_id)
+    const updated: RoutePricingStruct = {
+      tempId: route.route_id,
+      route_id: route.route_id,
+      origin: route.origin,
+      destination: route.destination,
+      distance_km: route.distance_km,
+      min_hrs: route.min_hrs,
+      max_hrs: route.max_hrs,
+      pricing: {
+        id: pricing.id,
+        min_tons: Number(pricing.min_tons),
+        max_tons: Number(pricing.max_tons),
+        price: Number(pricing.price),
+        tons: "",
+        default_price: pricing.price,
+      },
+    }
 
-      // ➜ route does not exist → create it
-      if (!existing) {
-        return [
-          ...prev,
-          {
-            tempId: route.route_id,
-            route_id: route.route_id,
-            origin: route.origin,
-            destination: route.destination,
-            distance_km: route.distance_km,
-            min_hrs: route.min_hrs,
-            max_hrs: route.max_hrs,
-            pricing: {
-              ...pricing,
-              tons: "",
-              default_price: pricing.price,
-            },
-          },
-        ]
-      }
+    const current = form.getValues("routes")
 
-      const isSamePricing = existing.pricing.id === pricing.id
+    const exists = current.find((r) => r.route_id === route.route_id)
 
-      // ❌ toggle off → REMOVE ROUTE COMPLETELY
-      if (isSamePricing) {
-        return prev.filter((r) => r.route_id !== route.route_id)
-      }
+    let next: RoutePricingStruct[]
 
-      // ✔ replace pricing
-      return prev.map((r) => {
-        if (r.route_id !== route.route_id) return r
+    // ➜ add
+    if (!exists) {
+      next = [...current, updated]
+    }
+    // ➜ toggle off (remove route)
+    else if (exists.pricing.id === pricing.id) {
+      next = current.filter((r) => r.route_id !== route.route_id)
+    }
+    // ➜ replace
+    else {
+      next = current.map((r) => (r.route_id === route.route_id ? updated : r))
+    }
 
-        return {
-          ...r,
-          pricing: {
-            ...pricing,
-            tons: "",
-            default_price: pricing.price,
-          },
-        }
-      })
+    form.setValue("routes", next, {
+      shouldDirty: true,
+      shouldValidate: true,
     })
+
+    // 🔥 LIVE SYNC to MAIN FORM
+    onLiveChange?.(updated)
   }
 
   const isSelected = (routeId: EntityId, pricingId: EntityId) =>
-    routesMap.find((r) => r.route_id === routeId)?.pricing?.id === pricingId
+    routes.find((r) => r.route_id === routeId)?.pricing?.id === pricingId
 
   const totalSelected = useMemo(() => {
-    return routesMap.filter((r) => r.pricing).length
-  }, [routesMap])
+    return routes.filter((r) => r.pricing).length
+  }, [routes])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -151,10 +169,10 @@ export function RoutePricingSelectDialog({
 
             <Button
               type="button"
-              onClick={() => {
-                onSelectedPricings(routesMap)
+              onClick={form.handleSubmit((data) => {
+                onSelectedPricings(data.routes)
                 onOpenChange(false)
-              }}
+              })}
             >
               Accept ({totalSelected})
             </Button>
@@ -235,12 +253,16 @@ export function RoutePricingSelectDialog({
           {/* RIGHT SIDE (SORTABLE) */}
           <div className="md:col-span-2">
             <Sortable
-              value={routesMap}
-              onValueChange={setRoutesMap}
+              value={routes}
+              onValueChange={(updated) =>
+                form.setValue("routes", updated, {
+                  shouldDirty: true,
+                })
+              }
               getItemValue={(item) => item.route_id}
             >
               <SortableContent className="flex flex-col gap-2">
-                {routesMap.map((r) => (
+                {routes.map((r, routeIndex) => (
                   <SortableItem key={r.route_id} value={r.route_id}>
                     <SortableItemHandle asChild>
                       <Button variant="ghost" size="icon" className="size-8">
@@ -249,17 +271,59 @@ export function RoutePricingSelectDialog({
                     </SortableItemHandle>
 
                     <div className="font-medium">{r.destination}</div>
-
-                    {r.pricing ? (
-                      <div className="text-sm">
-                        {r.pricing.min_tons} - {r.pricing.max_tons} tons •{" "}
-                        {formatPrice(r.pricing.price)}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted">
-                        No pricing selected
-                      </div>
-                    )}
+                    <div className="text-sm">
+                      {r.pricing.min_tons} - {r.pricing.max_tons} tons •{" "}
+                      {formatPrice(r.pricing.price)}
+                    </div>
+                    <Controller
+                      name={`routes.${routeIndex}.pricing.price`}
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <div>Price</div>
+                          <Input
+                            {...field}
+                            type={"text"}
+                            id={field.name}
+                            aria-invalid={fieldState.invalid}
+                            autoComplete="off"
+                          />
+                          {fieldState.invalid && (
+                            <FieldError
+                              className="text-[10px]"
+                              errors={[fieldState.error]}
+                            />
+                          )}
+                        </Field>
+                      )}
+                    />
+                    <Controller
+                      name={`routes.${routeIndex}.pricing.tons`}
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <div>
+                            Tons{" "}
+                            <span className="text-[10px] text-muted-foreground">
+                              ({r.pricing.min_tons}-{r.pricing.max_tons})
+                            </span>
+                          </div>
+                          <Input
+                            {...field}
+                            type={"text"}
+                            id={field.name}
+                            aria-invalid={fieldState.invalid}
+                            autoComplete="off"
+                          />
+                          {fieldState.invalid && (
+                            <FieldError
+                              className="text-[10px]"
+                              errors={[fieldState.error]}
+                            />
+                          )}
+                        </Field>
+                      )}
+                    />
                   </SortableItem>
                 ))}
               </SortableContent>

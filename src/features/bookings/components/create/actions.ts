@@ -192,6 +192,41 @@ export function useBookingFormActions(
     })
   }
 
+  function upsertRoutePricing(
+  services: any[],
+  serviceId: string,
+  route: any
+) {
+  return services.map((s) => {
+    if (s.id !== serviceId) return s;
+
+    const existingIndex = s.routes.findIndex(
+      (r: any) => r.route_id === route.route_id
+    );
+
+    // ➜ add
+    if (existingIndex === -1) {
+      return {
+        ...s,
+        routes: [...s.routes, route],
+      };
+    }
+
+    // ➜ update or remove
+    const updatedRoutes = s.routes
+      .map((r: any) =>
+        r.route_id === route.route_id ? route : r
+      )
+      // remove if pricing missing (strict rule)
+      .filter((r: any) => r.pricing !== null);
+
+    return {
+      ...s,
+      routes: updatedRoutes,
+    };
+  });
+}
+
   return {
     reorderPricings,
     updatePricingField,
@@ -199,6 +234,7 @@ export function useBookingFormActions(
     addRoutes,
     syncRoutes,
     applyPricingUpdates,
+    upsertRoutePricing,
   }
 }
 

@@ -96,7 +96,7 @@ function ServiceRow({
   serviceIndex,
   control,
 }: ServiceRowProps) {
-  const { reorderRoutes, syncRoutes } = useBookingFormActions(
+  const { reorderRoutes, syncRoutes, upsertRoutePricing } = useBookingFormActions(
     getValues,
     setValue
   )
@@ -166,6 +166,13 @@ function ServiceRow({
               selectedPricings={routes}
               onSelectedPricings={(routes) => {
                 syncRoutes({ serviceId: service.tempId, routes })
+              }}
+              onLiveChange={(route) => {
+                setValue(
+                  "services",
+                  upsertRoutePricing(services, service.tempId, route),
+                  { shouldDirty: true }
+                )
               }}
             />
           </div>
