@@ -45,16 +45,27 @@ export const BookingSearchParamsSchema = z.object({
 
 export type BookingListSearchParams = z.infer<typeof BookingSearchParamsSchema>
 
-export const tonnagePricingSchema = z.object({
-  id: IDSchema,
-  min_tons: z.union([z.string(), z.number()]),
-  max_tons: z.union([z.string(), z.number()]),
-  tons: z.string().min(1, "Required"),
-  price: z.union([z.string(), z.number()]).optional(),
-  default_price: z.union([z.string(), z.number()]),
-})
+export const tonnagePricingSchema = z
+  .object({
+    id: IDSchema,
+    min_tons: z.union([z.string(), z.number()]),
+    max_tons: z.union([z.string(), z.number()]),
+    tons: z.string().min(1, "Required"),
+    price: z.union([z.string(), z.number()]).optional(),
+    default_price: z.union([z.string(), z.number()]),
+  })
+  .superRefine(({ tons, min_tons, max_tons }, ctx) => {
+    if (tons < min_tons || tons > max_tons) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tons"],
+        message: `Tons must be between ${min_tons} and ${max_tons}`,
+      })
+    }
+  })
 
 export const routePricingsSchema = z.object({
+  tempId: IDSchema,
   route_id: IDSchema,
   origin: z.string(),
   destination: z.string(),
@@ -62,6 +73,15 @@ export const routePricingsSchema = z.object({
   min_hrs: z.union([z.string(), z.number()]),
   max_hrs: z.union([z.string(), z.number()]),
   pricings: z.array(tonnagePricingSchema).min(1, "Pricings cannot empty"),
+})
+
+export const bookingRoutesSchema = z.object({
+  tempId: IDSchema,
+  is_round_trip: z.boolean().default(false).optional(),
+  routes: z
+    .array(routePricingsSchema)
+    .min(1, "Add at least one destination")
+    .max(20, "Maximum 20 items per order"),
 })
 
 export const TruckBookingSchema = z.object({
@@ -72,7 +92,7 @@ export const TruckBookingSchema = z.object({
   return_time: z.date("Required"),
   contacts: z.array(IDSchema).optional().nullable(),
   services: z
-    .array(routePricingsSchema)
+    .array(bookingRoutesSchema)
     .min(1, "Add at least one service")
     .max(20, "Maximum 20 items per order"),
 })
@@ -82,3 +102,5 @@ export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 export type TruckBookingRequest = z.infer<typeof TruckBookingSchema>
 
 export type TonnagePricingRequest = z.infer<typeof tonnagePricingSchema>
+
+export type BookingRouteRequest = z.infer<typeof bookingRoutesSchema>

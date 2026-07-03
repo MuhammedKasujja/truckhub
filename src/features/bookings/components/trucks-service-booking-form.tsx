@@ -20,7 +20,7 @@ import {
   TruckBookingSchema,
 } from "@/features/bookings/schemas"
 import { toast } from "sonner"
-import { Control, Controller } from "react-hook-form"
+import { Control, Controller, useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
@@ -45,37 +45,53 @@ import { Client } from "@/features/clients/types"
 import { useState } from "react"
 import { TaxRate } from "@/features/settings/tax-rates/types"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
+import { ServicesList } from "./create/form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
 }
 
-export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
+export function TrucksServiceBookingForm({
+  initialData,
+}: TrucksBookingFormProps) {
   const tr = useTranslation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
   const [taxRate, setTaxRate] = useState<TaxRate>()
+  const [selectedClient, setSelectedClient] = useState<Client>()
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
-  const {
+  const form = useForm<TruckBookingRequest>({
+    resolver: zodResolver(TruckBookingSchema),
+    defaultValues: {
+      client_id: search.clientId,
+      services: [],
+    },
+  })
+
+  const { control, getValues, setValue } = form
+
+  const serviceFields = useFieldArray({
     control,
-    grandTotal,
-    selectedClient,
-    locations,
-    handleSelectClient,
-    setContacts,
-    handleSubmit,
-    formState,
-    handleUpdatePricings,
-    removePricingRow,
-  } = useTruckBookingForm(search.clientId, initialData)
+    name: "services",
+  })
 
   async function onSubmit(values: z.infer<typeof TruckBookingSchema>) {
-    const { isSuccess, error } = await createTruckBookingFn({ data: values })
+    const { isSuccess, error, data } = await createTruckBookingFn({
+      data: values,
+    })
     if (isSuccess) {
       toast.success(`${tr("bookings.booking_created_successfully")}`)
       queryInvalidator.bookings.list.invalidate()
+      if (data) {
+        navigate({
+          from: "/bookings/$bookingId/view",
+          params: { bookingId: data.id },
+        })
+      }
     } else {
       toast.error(error!.message)
     }
@@ -90,13 +106,15 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
     //   }),
     //   replace: true,
     // })
-    handleSelectClient(client)
+    form.reset()
+    setSelectedClient(client)
+    setValue("client_id", client?.id ?? "")
   }
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit, (errors) => {
-        console.log(errors)
+      onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        console.log(errors.services)
       })}
       className="space-y-4"
     >
@@ -109,8 +127,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           <CardAction>
             <SubmitButton
               text={tr("common.form.submit")}
-              isSubmitting={formState.isSubmitting}
-              disabled={locations.length === 0}
+              isSubmitting={form.formState.isSubmitting}
             />
           </CardAction>
         </CardHeader>
@@ -122,7 +139,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
           {selectedClient && (
             <ClientContactsList
               contacts={selectedClient?.contacts}
-              onSelected={setContacts}
+              // onSelected={setContacts}
             />
           )}
           <TaxRatePicker
@@ -164,60 +181,37 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
       <Card>
         <CardHeader>
           <CardTitle>
-            Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })}
+            {/* Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })} */}
           </CardTitle>
-          <CardDescription>Locations {locations.length}</CardDescription>
+          <CardDescription>
+            Locations - {serviceFields.fields.length}
+          </CardDescription>
           <CardAction>
             <Button
-              type="button"
               disabled={!selectedClient}
-              onClick={() => setOpen(true)}
+              type="button"
+              variant={"outline"}
+              onClick={() =>
+                serviceFields.prepend({
+                  tempId: makeId("__service__"),
+                  routes: [],
+                })
+              }
             >
               <Plus />
               Locations
             </Button>
-            <RoutePricingSelectDialog
-              open={open}
-              onOpenChange={setOpen}
-              clientId={selectedClient?.id ?? ""}
-              onSelectedPricings={handleUpdatePricings}
-            />
           </CardAction>
         </CardHeader>
       </Card>
       <Separator />
-      {locations.length > 0 ? (
-        locations.map((route, index) => (
-          <div
-            key={route.route_id}
-            className="rounded-md border border-dashed p-4"
-          >
-            <div>{route.destination}</div>
-            <div className="py-2">
-              {route.min_hrs} HRS - {route.max_hrs} HRS {route.distance_km} KM
-            </div>
-            <div className="space-y-4">
-              <div className="grid grid-cols-5 gap-4 text-xs">
-                <div>Min Tons</div>
-                <div>Max Tons</div>
-                <div>Cost Price</div>
-                <div>Price</div>
-                <div>Tonnage</div>
-              </div>
-              {route.pricings.map((pricing, pricingIndex) => (
-                <TonnagePricingRow
-                  key={pricing.id}
-                  routeIndex={index}
-                  control={control}
-                  pricingIndex={pricingIndex}
-                  pricing={pricing}
-                  handleRemove={removePricingRow}
-                />
-              ))}
-            </div>
-          </div>
-        ))
-      ) : (
+      {/* {locations.length > 0 ? ( */}
+      <ServicesList
+        control={control}
+        getValues={getValues}
+        setValue={setValue}
+      />
+      {/* ) : (
         <Empty className="border border-dashed">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -229,7 +223,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
-      )}
+      )} */}
     </form>
   )
 }

@@ -18,7 +18,7 @@ import { TonnagePricing } from "@/features/settings/pricing"
 import { formatPrice } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { RoutePricingStruct } from "../schemas"
 import {
   Sortable,
@@ -31,7 +31,9 @@ import { GripVertical } from "lucide-react"
 
 type RoutePricingDialogProps = {
   clientId: EntityId
-  trigger: React.ReactNode
+  open: boolean
+  selectedPricings: RoutePricingStruct[]
+  onOpenChange: (v: boolean) => void
   onSelectedPricings: (pricings: RoutePricingStruct[]) => void
 }
 
@@ -46,12 +48,16 @@ type RouteDetails = {
 
 export function RoutePricingSelectDialog({
   clientId,
-  trigger,
+  open,
+  selectedPricings,
+  onOpenChange,
   onSelectedPricings,
 }: RoutePricingDialogProps) {
   const { data, isLoading } = useClientRoutingPricing(clientId)
-  const [pricingsMap, setPricingsMap] = useState<RoutePricingStruct[]>([])
-  const [pricings, setPricings] = useState<RoutePricingStruct[]>([])
+  const [pricingsMap, setPricingsMap] =
+    useState<RoutePricingStruct[]>(selectedPricings)
+  const [pricings, setPricings] =
+    useState<RoutePricingStruct[]>(selectedPricings)
   const [query, setQuery] = useState("")
 
   // useEffect(() => {
@@ -70,7 +76,7 @@ export function RoutePricingSelectDialog({
   }, [query, data])
 
   useEffect(() => {
-    onSelectedPricings([])
+    // onSelectedPricings([])
     setPricingsMap([])
   }, [clientId])
 
@@ -86,6 +92,7 @@ export function RoutePricingSelectDialog({
         return [
           ...prev,
           {
+            tempId: route_id,
             route_id,
             origin,
             destination,
@@ -116,9 +123,8 @@ export function RoutePricingSelectDialog({
   }
 
   useEffect(() => {
-    onSelectedPricings(pricingsMap)
     setPricings(pricingsMap)
-  }, [pricingsMap, onSelectedPricings])
+  }, [pricingsMap, selectedPricings])
 
   const hasPricings = (routeId: EntityId, pricingId: EntityId) =>
     pricingsMap
@@ -130,8 +136,7 @@ export function RoutePricingSelectDialog({
   }, [pricingsMap])
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-description="Route Pricing"
         aria-describedby="app"
@@ -139,7 +144,18 @@ export function RoutePricingSelectDialog({
       >
         <DialogHeader className="min-h-8">
           <DialogTitle>Location Pricing</DialogTitle>
-          <DialogDescription>Client configured Route Pricing</DialogDescription>
+          <DialogDescription>
+            Client configured Route Pricing
+            <Button
+              type="button"
+              onClick={() => {
+                onSelectedPricings(pricings)
+                onOpenChange(false)
+              }}
+            >
+              Accept
+            </Button>
+          </DialogDescription>
         </DialogHeader>
         <div className="grid min-h-full gap-4 space-y-4 overflow-y-auto md:grid-cols-5">
           <div className="space-y-4 md:col-span-3">
@@ -207,7 +223,9 @@ export function RoutePricingSelectDialog({
           <div className="space-y-2 md:col-span-2">
             <Sortable
               value={pricings}
-              onValueChange={setPricings}
+              onValueChange={(updated) => {
+                setPricings(updated)
+              }}
               getItemValue={(item) => item.route_id}
             >
               <SortableContent asChild>
