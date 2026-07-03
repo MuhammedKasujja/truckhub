@@ -62,7 +62,6 @@ export function useBookingFormActions(
   const updatePricingField = ({
     serviceId,
     routeId,
-    pricingId,
     patch,
   }: {
     serviceId: string
@@ -85,14 +84,7 @@ export function useBookingFormActions(
 
           return {
             ...route,
-            pricings: route.pricings.map((p) =>
-              p.id === pricingId
-                ? {
-                    ...p,
-                    ...patch,
-                  }
-                : p
-            ),
+            pricing: { ...route.pricing, ...patch },
           }
         }),
       }
@@ -182,7 +174,7 @@ export function useBookingFormActions(
 
           return {
             ...route,
-            pricings: route.pricings.map((pricing) => {
+            pricing: route.pricing.map((pricing) => {
               const update = routeUpdates.find(
                 (u) => u.pricingId === pricing.id
               )

@@ -72,7 +72,7 @@ export const routePricingsSchema = z.object({
   distance_km: z.union([z.string(), z.number()]),
   min_hrs: z.union([z.string(), z.number()]),
   max_hrs: z.union([z.string(), z.number()]),
-  pricings: z.array(tonnagePricingSchema).min(1, "Pricings cannot empty"),
+  pricing: tonnagePricingSchema
 })
 
 export const bookingRoutesSchema = z.object({

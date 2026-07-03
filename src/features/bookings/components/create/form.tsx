@@ -1,7 +1,6 @@
 import {
   Control,
   Controller,
-  useFieldArray,
   useForm,
   UseFormGetValues,
   UseFormSetValue,
@@ -29,7 +28,6 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -65,11 +63,6 @@ type Props = {
 }
 
 export function ServicesList({ control, getValues, setValue }: Props) {
-  const serviceFields = useFieldArray({
-    control,
-    name: "services",
-  })
-
   const services = useWatch({ control, name: "services" })
 
   return (
@@ -122,8 +115,7 @@ function ServiceRow({
     () =>
       routes.reduce(
         (curr, route) =>
-          curr +
-          Number(route.pricings[0].price ?? route.pricings[0].default_price),
+          curr + Number(route.pricing.price ?? route.pricing.default_price),
         0
       ),
     [routes]
@@ -136,12 +128,15 @@ function ServiceRow({
           {routes.at(0)?.destination} - {routes.at(-1)?.destination}{" "}
           {formatPrice(routeTotalCost)}
         </CardTitle>
-        <CardAction>
+        <CardAction className="flex gap-4">
           <Controller
             name={`services.${serviceIndex}.is_round_trip`}
             control={control}
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid} orientation={'horizontal'}>
+              <Field
+                data-invalid={fieldState.invalid}
+                orientation={"horizontal"}
+              >
                 <FieldLabel htmlFor={field.name}>Round Trip</FieldLabel>
                 <Checkbox
                   id={field.name}
@@ -155,6 +150,25 @@ function ServiceRow({
               </Field>
             )}
           />
+          <div>
+            <Button
+              className="flex"
+              type="button"
+              onClick={() => setOpen(true)}
+              variant={"outline"}
+            >
+              Add Routes
+            </Button>
+            <RoutePricingSelectDialog
+              open={open}
+              onOpenChange={setOpen}
+              clientId={getValues("client_id")}
+              selectedPricings={routes}
+              onSelectedPricings={(routes) => {
+                syncRoutes({ serviceId: service.tempId, routes })
+              }}
+            />
+          </div>
         </CardAction>
       </CardHeader>
       <CardContent>
@@ -196,25 +210,6 @@ function ServiceRow({
           </SortableContent>
         </Sortable>
       </CardContent>
-      <CardFooter>
-        <Button
-          className="flex"
-          type="button"
-          onClick={() => setOpen(true)}
-          variant={"outline"}
-        >
-          Add Routes
-        </Button>
-        <RoutePricingSelectDialog
-          open={open}
-          onOpenChange={setOpen}
-          clientId={getValues("client_id")}
-          selectedPricings={routes}
-          onSelectedPricings={(routes) => {
-            syncRoutes({ serviceId: service.tempId, routes })
-          }}
-        />
-      </CardFooter>
     </Card>
   )
 }

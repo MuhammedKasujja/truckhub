@@ -28,6 +28,14 @@ import {
 } from "@/components/ui/sortable"
 import { Button } from "@/components/ui/button"
 import { GripVertical } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type RoutePricingDialogProps = {
   clientId: EntityId
@@ -45,7 +53,6 @@ type RouteDetails = {
   min_hrs: string | number
   max_hrs: string | number
 }
-
 export function RoutePricingSelectDialog({
   clientId,
   open,
@@ -54,15 +61,11 @@ export function RoutePricingSelectDialog({
   onSelectedPricings,
 }: RoutePricingDialogProps) {
   const { data, isLoading } = useClientRoutingPricing(clientId)
-  const [pricingsMap, setPricingsMap] =
-    useState<RoutePricingStruct[]>(selectedPricings)
-  const [pricings, setPricings] =
-    useState<RoutePricingStruct[]>(selectedPricings)
-  const [query, setQuery] = useState("")
 
-  // useEffect(() => {
-  //   setPricingsMap(data?.routes ?? [])
-  // }, [data])
+  const [routesMap, setRoutesMap] =
+    useState<RoutePricingStruct[]>(selectedPricings)
+
+  const [query, setQuery] = useState("")
 
   const filteredRoutes = useMemo(() => {
     return (data?.routes ?? []).filter((route) => {
@@ -75,186 +78,190 @@ export function RoutePricingSelectDialog({
     })
   }, [query, data])
 
+  // reset when client changes
   useEffect(() => {
-    // onSelectedPricings([])
-    setPricingsMap([])
-  }, [clientId])
+    setRoutesMap(selectedPricings)
+  }, [clientId, selectedPricings])
 
-  function handleAppendPricings(pricing: TonnagePricing, route: RouteDetails) {
-    setPricingsMap((prev) => {
-      const existingRoute = prev.find((ele) => ele.route_id === route.route_id)
+  // ✅ SINGLE pricing select per route
+  function handleSelectPricing(pricing: TonnagePricing, route: RouteDetails) {
+    setRoutesMap((prev) => {
+      const existing = prev.find((r) => r.route_id === route.route_id)
 
-      // 1. route does not exist yet → create it
-      if (!existingRoute) {
-        const { route_id, origin, destination, distance_km, max_hrs, min_hrs } =
-          route
-
+      // ➜ route does not exist → create it
+      if (!existing) {
         return [
           ...prev,
           {
-            tempId: route_id,
-            route_id,
-            origin,
-            destination,
-            distance_km,
-            max_hrs,
-            min_hrs,
-            pricings: [{ ...pricing, default_price: pricing.price, tons: "" }],
+            tempId: route.route_id,
+            route_id: route.route_id,
+            origin: route.origin,
+            destination: route.destination,
+            distance_km: route.distance_km,
+            min_hrs: route.min_hrs,
+            max_hrs: route.max_hrs,
+            pricing: {
+              ...pricing,
+              tons: "",
+              default_price: pricing.price,
+            },
           },
         ]
       }
-      const existingPricing = existingRoute.pricings.find(
-        (p) => p.id === pricing.id
-      )
-      if (existingPricing) {
-        return prev.filter((ele) => ele.route_id !== route.route_id)
+
+      const isSamePricing = existing.pricing.id === pricing.id
+
+      // ❌ toggle off → REMOVE ROUTE COMPLETELY
+      if (isSamePricing) {
+        return prev.filter((r) => r.route_id !== route.route_id)
       }
 
-      return prev.map((ele) => {
-        if (ele.route_id === route.route_id) {
-          return {
-            ...ele,
-            pricings: [{ ...pricing, default_price: pricing.price, tons: "" }],
-          }
+      // ✔ replace pricing
+      return prev.map((r) => {
+        if (r.route_id !== route.route_id) return r
+
+        return {
+          ...r,
+          pricing: {
+            ...pricing,
+            tons: "",
+            default_price: pricing.price,
+          },
         }
-        return ele
       })
     })
   }
 
-  useEffect(() => {
-    setPricings(pricingsMap)
-  }, [pricingsMap, selectedPricings])
+  const isSelected = (routeId: EntityId, pricingId: EntityId) =>
+    routesMap.find((r) => r.route_id === routeId)?.pricing?.id === pricingId
 
-  const hasPricings = (routeId: EntityId, pricingId: EntityId) =>
-    pricingsMap
-      .find((route) => route.route_id === routeId)
-      ?.pricings.find((pricing) => pricing.id === pricingId) !== undefined
-
-  const totalPrincings = useMemo(() => {
-    return pricingsMap.reduce((sum, route) => sum + route.pricings.length, 0)
-  }, [pricingsMap])
+  const totalSelected = useMemo(() => {
+    return routesMap.filter((r) => r.pricing).length
+  }, [routesMap])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        aria-description="Route Pricing"
-        aria-describedby="app"
-        className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-y-auto md:min-w-[90vw]"
-      >
-        <DialogHeader className="min-h-8">
+      <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-y-auto md:min-w-[90vw]">
+        {/* HEADER */}
+        <DialogHeader>
           <DialogTitle>Location Pricing</DialogTitle>
-          <DialogDescription>
-            Client configured Route Pricing
+
+          <DialogDescription className="flex items-center justify-between">
+            <span>Select one pricing per route</span>
+
             <Button
               type="button"
               onClick={() => {
-                onSelectedPricings(pricings)
+                onSelectedPricings(routesMap)
                 onOpenChange(false)
               }}
             >
-              Accept
+              Accept ({totalSelected})
             </Button>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid min-h-full gap-4 space-y-4 overflow-y-auto md:grid-cols-5">
+
+        <div className="grid gap-4 md:grid-cols-5">
+          {/* LEFT SIDE */}
           <div className="space-y-4 md:col-span-3">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for locations..."
+              placeholder="Search routes..."
               type="search"
             />
-            {isLoading && <div>Loading.....</div>}
-            <div>
-              <div className="flex flex-col gap-4">
-                {filteredRoutes.map((route, index) => (
-                  <Item
-                    key={`${route.route_id}__${index}`}
-                    variant={"outline"}
-                    className={cn(
-                      "border-dashed",
-                      query.toLowerCase().length > 0 &&
-                        route.destination
-                          .toLowerCase()
-                          .includes(query.toLowerCase()) &&
-                        "bg-background"
-                    )}
-                  >
-                    <ItemContent>
-                      <ItemTitle>{route.destination}</ItemTitle>
-                      <ItemDescription>
-                        {route.min_hrs} hrs to {route.max_hrs} hrs Distance{" "}
-                        {route.distance_km} km
-                      </ItemDescription>
-                      <div className="flex flex-row flex-wrap gap-4">
-                        {route.pricings.map((pricing) => (
+            <Select items={data?.tonnages ?? []}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {" "}
+                  {data?.tonnages?.map((item) => (
+                    <SelectItem
+                      key={item.min_tons}
+                      value={item.min_tons.toString()}
+                    >
+                      {item.min_tons} - {item.max_tons} TONS
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            {isLoading && <div>Loading...</div>}
+
+            <div className="flex flex-col gap-4">
+              {filteredRoutes.map((route) => (
+                <Item key={route.route_id} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>{route.destination}</ItemTitle>
+
+                    <ItemDescription>
+                      {route.min_hrs} - {route.max_hrs} hrs •{" "}
+                      {route.distance_km} km
+                    </ItemDescription>
+
+                    <div className="flex flex-wrap gap-2">
+                      {route.pricings.map((pricing) => {
+                        const active = isSelected(route.route_id, pricing.id)
+
+                        return (
                           <Item
                             key={pricing.id}
-                            variant={
-                              hasPricings(route.route_id, pricing.id)
-                                ? "outline"
-                                : "muted"
-                            }
-                            className={cn(
-                              hasPricings(route.route_id, pricing.id) &&
-                                "border-primary"
-                            )}
-                            onClick={() => handleAppendPricings(pricing, route)}
+                            variant={active ? "outline" : "muted"}
+                            className={cn(active && "border-primary")}
+                            onClick={() => handleSelectPricing(pricing, route)}
                           >
                             <ItemContent>
                               <ItemTitle>
                                 {formatPrice(pricing.price)}
                               </ItemTitle>
+
                               <ItemDescription>
-                                {pricing.min_tons} TONS to {pricing.max_tons}{" "}
-                                TONS
+                                {pricing.min_tons} - {pricing.max_tons} tons
                               </ItemDescription>
                             </ItemContent>
                           </Item>
-                        ))}
-                      </div>
-                    </ItemContent>
-                  </Item>
-                ))}
-              </div>
+                        )
+                      })}
+                    </div>
+                  </ItemContent>
+                </Item>
+              ))}
             </div>
           </div>
-          <div className="space-y-2 md:col-span-2">
+
+          {/* RIGHT SIDE (SORTABLE) */}
+          <div className="md:col-span-2">
             <Sortable
-              value={pricings}
-              onValueChange={(updated) => {
-                setPricings(updated)
-              }}
+              value={routesMap}
+              onValueChange={setRoutesMap}
               getItemValue={(item) => item.route_id}
             >
-              <SortableContent asChild>
-                <div className="flex flex-col gap-2">
-                  {pricings.map((r) => (
-                    <SortableItem key={r.route_id} value={r.route_id} asChild>
-                      <div>
-                        <SortableItemHandle asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-8"
-                          >
-                            <GripVertical className="h-4 w-4" />
-                          </Button>
-                        </SortableItemHandle>
-                        <div>{r.destination}</div>
-                        {r.pricings.map((p) => (
-                          <div key={p.id}>
-                            <div>
-                              {p.min_tons}-{p.max_tons} TONS
-                            </div>
-                            <div>{formatPrice(p.default_price)}</div>
-                          </div>
-                        ))}
+              <SortableContent className="flex flex-col gap-2">
+                {routesMap.map((r) => (
+                  <SortableItem key={r.route_id} value={r.route_id}>
+                    <SortableItemHandle asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <GripVertical className="h-4 w-4" />
+                      </Button>
+                    </SortableItemHandle>
+
+                    <div className="font-medium">{r.destination}</div>
+
+                    {r.pricing ? (
+                      <div className="text-sm">
+                        {r.pricing.min_tons} - {r.pricing.max_tons} tons •{" "}
+                        {formatPrice(r.pricing.price)}
                       </div>
-                    </SortableItem>
-                  ))}
-                </div>
+                    ) : (
+                      <div className="text-sm text-muted">
+                        No pricing selected
+                      </div>
+                    )}
+                  </SortableItem>
+                ))}
               </SortableContent>
             </Sortable>
           </div>

@@ -1,10 +1,3 @@
-import {
-  Sortable,
-  SortableContent,
-  SortableItem,
-  SortableItemHandle,
-} from "@/components/ui/sortable"
-
 import { useBookingFormActions } from "./actions"
 import { EntityId } from "@/schemas"
 import {
@@ -34,10 +27,7 @@ export function PricingsSortable({
   setValue,
   control,
 }: Props) {
-  const { reorderPricings, updatePricingField } = useBookingFormActions(
-    getValues,
-    setValue
-  )
+  const {} = useBookingFormActions(getValues, setValue)
 
   const services = getValues("services")
 
@@ -71,71 +61,57 @@ export function PricingsSortable({
           {route.min_hrs} - {route.max_hrs} hrs | {route.distance_km} km
         </div>
       </div>
-      <Sortable
-        value={route.pricings}
-        getItemValue={(item) => item.id}
-        onValueChange={(newOrder) =>
-          reorderPricings({
-            serviceId,
-            routeId,
-            pricings: newOrder,
-          })
-        }
-      >
-        <SortableContent>
-          {route.pricings.map((item, pricingIndex) => (
-            <SortableItem key={item.id} value={item.id}>
-              <div className="flex items-center gap-2">
-                <SortableItemHandle />
-                <Controller
-                  name={`services.${serviceIndex}.routes.${routeIndex}.pricings.${pricingIndex}.price`}
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <div>Price</div>
-                      <Input
-                        {...field}
-                        type={"text"}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        autoComplete="off"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError
-                          className="text-[10px]"
-                          errors={[fieldState.error]}
-                        />
-                      )}
-                    </Field>
-                  )}
+      <div className="flex items-center gap-2">
+        <Controller
+          name={`services.${serviceIndex}.routes.${routeIndex}.pricing.price`}
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <div>Price</div>
+              <Input
+                {...field}
+                type={"text"}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
+              {fieldState.invalid && (
+                <FieldError
+                  className="text-[10px]"
+                  errors={[fieldState.error]}
                 />
-                <Controller
-                  name={`services.${serviceIndex}.routes.${routeIndex}.pricings.${pricingIndex}.tons`}
-                  control={control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <div>Tons <span className="text-muted-foreground text-[10px]">({item.min_tons}-{item.max_tons})</span></div>
-                      <Input
-                        {...field}
-                        type={"text"}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        autoComplete="off"
-                      />
-                      {fieldState.invalid && (
-                        <FieldError
-                          className="text-[10px]"
-                          errors={[fieldState.error]}
-                        />
-                      )}
-                    </Field>
-                  )}
-                />
+              )}
+            </Field>
+          )}
+        />
+        <Controller
+          name={`services.${serviceIndex}.routes.${routeIndex}.pricing.tons`}
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <div>
+                Tons{" "}
+                <span className="text-[10px] text-muted-foreground">
+                  ({route.pricing.min_tons}-{route.pricing.max_tons})
+                </span>
               </div>
-            </SortableItem>
-          ))}
-        </SortableContent>
-      </Sortable>
+              <Input
+                {...field}
+                type={"text"}
+                id={field.name}
+                aria-invalid={fieldState.invalid}
+                autoComplete="off"
+              />
+              {fieldState.invalid && (
+                <FieldError
+                  className="text-[10px]"
+                  errors={[fieldState.error]}
+                />
+              )}
+            </Field>
+          )}
+        />
+      </div>
     </div>
   )
 }
