@@ -18,7 +18,7 @@ import {
 import { useTranslation } from "@/i18n"
 import React from "react"
 import { LocationAutoComplete } from "@/components/location-autocomplete"
-import { formatDistance, formatDuration, formatPrice } from "@/lib/format"
+import { formatDistance, formatDuration, formatMoney } from "@/lib/format"
 import {
   Map,
   MapMarker,
@@ -219,7 +219,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-lg font-semibold">
-                      {formatPrice(
+                      {formatMoney(
                         parseFloat(locationDistanceTime.estimated_cost)
                       )}
                     </CardContent>

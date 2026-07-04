@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Payment } from "@/features/payments/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useTranslation } from "@/i18n"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { EyeIcon } from "lucide-react"
 
 export function PaymentViewModal({ payment }: { payment: Payment }) {
@@ -53,19 +53,19 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {formatPrice(payment.entity.amount)}
+              {formatMoney(payment.entity.amount)}
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="header">{tr("payments.amount")}</Label>
-                {formatPrice(payment.amount)}
+                {formatMoney(payment.amount)}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="type">{tr("payments.applied")}</Label>
-                  {formatPrice(payment.applied)}
+                  {formatMoney(payment.applied)}
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="status">{tr("payments.status")}</Label>

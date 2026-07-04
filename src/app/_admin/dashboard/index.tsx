@@ -12,7 +12,7 @@ import {
   RecentRidesTable,
 } from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-picker"
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
@@ -69,7 +69,7 @@ function RouteComponent() {
         <Stat>
           <StatLabel>Payments</StatLabel>
           <StatValue>
-            {formatPrice(data.statistics.payments.total_amount)}
+            {formatMoney(data.statistics.payments.total_amount)}
           </StatValue>
           <StatIndicator variant="icon" color="success">
             <DollarSign />

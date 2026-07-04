@@ -33,7 +33,7 @@ import { ListIcon, Trash2Icon } from "lucide-react"
 import { createBookingFn } from "@/features/bookings/services"
 import { AutoComplete } from "@/components/ui/autocomplete"
 import { Service } from "@/features/services/types"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
@@ -356,7 +356,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                             </CardContent>
                             <CardFooter>
                               Total:{" "}
-                              {formatPrice(serviceWithTotal?.lineTotal, {
+                              {formatMoney(serviceWithTotal?.lineTotal, {
                                 showZeroAsNumber: true,
                               })}
                             </CardFooter>
@@ -405,7 +405,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                         </CardContent>
                         <CardFooter>
                           Total:{" "}
-                          {formatPrice(serviceWithTotal?.lineTotal, {
+                          {formatMoney(serviceWithTotal?.lineTotal, {
                             showZeroAsNumber: true,
                           })}
                         </CardFooter>

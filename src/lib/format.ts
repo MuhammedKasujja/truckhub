@@ -1,6 +1,6 @@
 import { CURRENCY_CODE } from "@/config/constants"
 
-export function formatPrice(
+export function formatMoney(
   amount?: number | string,
   { showZeroAsNumber = false } = {}
 ) {
@@ -29,7 +29,7 @@ export function formatNumber(
 }
 
 export function formatDate(
-  date: Date | string | number | null |undefined,
+  date: Date | string | number | null | undefined,
   opts: Intl.DateTimeFormatOptions = {}
 ) {
   if (!date) return ""

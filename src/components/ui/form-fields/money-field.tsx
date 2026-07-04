@@ -13,7 +13,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { CURRENCY_CODE } from "@/config/constants";
+import { useSettings } from "@/features/settings/hooks/use-settings";
 
 type MoneyFieldProps<F extends FieldValues> = Omit<TextFieldProps<F>, "type">;
 
@@ -25,6 +25,7 @@ export function MoneyField<T extends FieldValues>({
   required = true,
   description,
 }: Readonly<MoneyFieldProps<T>>) {
+  const { settings } = useSettings()
   return (
     <Controller
       name={name}
@@ -49,7 +50,7 @@ export function MoneyField<T extends FieldValues>({
               }}
             />
             <InputGroupAddon align="inline-start">
-              <InputGroupButton variant="secondary">{CURRENCY_CODE}</InputGroupButton>
+              <InputGroupButton variant="secondary">{settings?.currency_code}</InputGroupButton>
             </InputGroupAddon>
           </InputGroup>
           {description && <FieldDescription>{description}</FieldDescription>}

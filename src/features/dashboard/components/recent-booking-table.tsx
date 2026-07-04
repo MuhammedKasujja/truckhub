@@ -20,7 +20,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
 import { ArrowUpRight, PlusIcon } from "lucide-react"
@@ -72,8 +72,8 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                     <TableCell>
                       <Badge variant={"outline"}>{booking.status}</Badge>
                     </TableCell>
-                    <TableCell>{formatPrice(booking.amount)}</TableCell>
-                    <TableCell>{formatPrice(booking.balance)}</TableCell>
+                    <TableCell>{formatMoney(booking.amount)}</TableCell>
+                    <TableCell>{formatMoney(booking.balance)}</TableCell>
                     <TableCell>
                       {formatDate(booking.estimated_pickup_time)}
                     </TableCell>

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/item"
 import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
 import { TonnagePricing } from "@/features/settings/pricing"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { useMemo, useState } from "react"
@@ -282,7 +282,7 @@ export function RoutePricingSelectDialog({
                                   active && "text-primary"
                                 )}
                               >
-                                {formatPrice(pricing.price)}
+                                {formatMoney(pricing.price)}
                               </ItemTitle>
 
                               <ItemDescription className="text-xs">
@@ -352,7 +352,7 @@ export function RoutePricingSelectDialog({
                         </div>
                         <div className="text-sm text-muted-foreground">
                           {r.pricing.min_tons}–{r.pricing.max_tons} tons
-                          &nbsp;•&nbsp; {formatPrice(r.pricing.price)}
+                          &nbsp;•&nbsp; {formatMoney(r.pricing.price)}
                         </div>
                       </div>
 

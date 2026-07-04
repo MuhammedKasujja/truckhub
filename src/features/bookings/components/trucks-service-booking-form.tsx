@@ -37,7 +37,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
@@ -265,7 +265,7 @@ function TonnagePricingRow({
       <Input defaultValue={pricing.min_tons} readOnly disabled />
       <Input defaultValue={pricing.max_tons} readOnly disabled />
       <Input
-        defaultValue={formatPrice(pricing.default_price)}
+        defaultValue={formatMoney(pricing.default_price)}
         readOnly
         disabled
       />

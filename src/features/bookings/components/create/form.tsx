@@ -32,7 +32,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
 
@@ -165,7 +165,7 @@ function ServiceRow({
                   {routes.length} {routes.length === 1 ? "route" : "routes"}
                 </Badge>
                 <span className="text-sm font-medium">
-                  {formatPrice(routeTotalCost)}
+                  {formatMoney(routeTotalCost)}
                 </span>
               </div>
             </div>

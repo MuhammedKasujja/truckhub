@@ -1,7 +1,7 @@
 import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { Service, ServiceGroup } from "@/features/services/types"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
 import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
@@ -99,9 +99,9 @@ function ServiceListItem({ service }: { service: Service }) {
           <div>
             {service.category} - {service.name}
           </div>
-          <div>Base fee: {formatPrice(service.base_fare)}</div>
-          <div>Booking fee: {formatPrice(service.booking_fee)}</div>
-          {/* <div>Tax fee: {formatPrice(service.tax_fee)}</div> */}
+          <div>Base fee: {formatMoney(service.base_fare)}</div>
+          <div>Booking fee: {formatMoney(service.booking_fee)}</div>
+          {/* <div>Tax fee: {formatMoney(service.tax_fee)}</div> */}
           {!service.is_truck && <div>Seats: {service.seats}</div>}
         </div>
       </HoverCardContent>

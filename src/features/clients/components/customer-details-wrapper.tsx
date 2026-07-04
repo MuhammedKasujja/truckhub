@@ -12,7 +12,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { CreditCard, CalendarDays, MapPin } from "lucide-react"
 import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatPrice, generateAvatorFallback } from "@/lib/format"
+import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
 import {
   Table,
   TableBody,
@@ -105,8 +105,8 @@ export function CustomerDetailsWrapper({
           <div className="space-y-4">
             <div>{customer?.email}</div>
             <div>{customer?.phone}</div>
-            <div>Balance: {formatPrice(customer?.balance)}</div>
-            <div>Paid to Date: {formatPrice(customer?.paid_to_date)}</div>
+            <div>Balance: {formatMoney(customer?.balance)}</div>
+            <div>Paid to Date: {formatMoney(customer?.paid_to_date)}</div>
           </div>
         </CardContent>
       </Card>
@@ -123,7 +123,7 @@ export function CustomerDetailsWrapper({
                   {formatDate(latestPayment.date)}
                 </div>
                 <div className="text-lg font-semibold">
-                  {formatPrice(latestPayment.amount)}
+                  {formatMoney(latestPayment.amount)}
                 </div>
                 <div className="text-sm">{latestPayment.status}</div>
                 <div className="text-sm text-muted-foreground">
@@ -156,7 +156,7 @@ export function CustomerDetailsWrapper({
                 </div>
                 <div className="text-sm">{latestBooking.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {formatPrice(latestBooking.amount)}
+                  {formatMoney(latestBooking.amount)}
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
@@ -245,7 +245,7 @@ export function CustomerDetailsWrapper({
                           <TableCell className="font-medium">
                             {payment.number}
                           </TableCell>
-                          <TableCell>{formatPrice(payment.amount)}</TableCell>
+                          <TableCell>{formatMoney(payment.amount)}</TableCell>
                           <TableCell>
                             {tr(`payments.statuses.${payment.status}`)}
                           </TableCell>
@@ -310,7 +310,7 @@ export function CustomerDetailsWrapper({
                           <TableCell>
                             {formatDate(booking.pickup_time)}
                           </TableCell>
-                          <TableCell>{formatPrice(booking.amount)}</TableCell>
+                          <TableCell>{formatMoney(booking.amount)}</TableCell>
                         </TableRow>
                       ))
                     ) : (

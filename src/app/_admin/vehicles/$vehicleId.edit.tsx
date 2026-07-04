@@ -1,6 +1,6 @@
 import { VehicleForm } from "@/features/vehicles/components/vehicle-form"
 import { vehicleDetailsQueryOptions } from "@/features/vehicles/query-options"
-import { toEditVehicle } from "@/features/vehicles/serializers"
+import { mapEditVehicle } from "@/features/vehicles/serializers"
 import { hasPermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
     const { data } = await context.queryClient.ensureQueryData(
       vehicleDetailsQueryOptions(params.vehicleId)
     )
-    return toEditVehicle(data)
+    return mapEditVehicle(data)
   },
 })
 

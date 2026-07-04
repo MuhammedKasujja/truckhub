@@ -37,7 +37,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Input } from "@/components/ui/input"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
 import { useTruckBookingForm } from "../hooks/use-truck-booking-form"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
@@ -164,7 +164,7 @@ export function TrucksBookingForm({ initialData }: TrucksBookingFormProps) {
       <Card>
         <CardHeader>
           <CardTitle>
-            Grand Total {formatPrice(grandTotal, { showZeroAsNumber: true })}
+            Grand Total {formatMoney(grandTotal, { showZeroAsNumber: true })}
           </CardTitle>
           <CardDescription>Locations {locations.length}</CardDescription>
           <CardAction>
@@ -257,7 +257,7 @@ function TonnagePricingRow({
       <Input defaultValue={pricing.min_tons} readOnly disabled />
       <Input defaultValue={pricing.max_tons} readOnly disabled />
       <Input
-        defaultValue={formatPrice(pricing.default_price)}
+        defaultValue={formatMoney(pricing.default_price)}
         readOnly
         disabled
       />

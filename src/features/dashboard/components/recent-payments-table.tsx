@@ -20,7 +20,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { Link } from "@tanstack/react-router"
@@ -71,7 +71,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
                       {payment.number}
                     </TableCell>
                     <TableCell>{payment.client.fullname}</TableCell>
-                    <TableCell>{formatPrice(payment.amount)}</TableCell>
+                    <TableCell>{formatMoney(payment.amount)}</TableCell>
                     <TableCell>
                       <Badge variant={"outline"}>
                         {tr(`payments.statuses.${payment.status}`)}

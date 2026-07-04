@@ -1,6 +1,6 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Payment } from "@/features/payments/types"
 import { PaymentStatuses } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
@@ -36,7 +36,7 @@ export const createEditPaymentSchema = (maxAmount: number = 0) => {
       .number()
       .min(minAmount)
       .max(maxAmount, {
-        error: `Payment amount cannot exceed ${formatPrice(maxAmount, { showZeroAsNumber: true })}`,
+        error: `Payment amount cannot exceed ${formatMoney(maxAmount, { showZeroAsNumber: true })}`,
       }),
     ...EditPaymentBaseSchema.shape,
   })

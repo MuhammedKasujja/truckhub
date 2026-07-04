@@ -1,6 +1,6 @@
 import { Vehicle } from "./types"
 
-export function toEditVehicle(data: Vehicle | undefined) {
+export function mapEditVehicle(data: Vehicle | undefined) {
   if (!data) return undefined
   return {
     ...data,

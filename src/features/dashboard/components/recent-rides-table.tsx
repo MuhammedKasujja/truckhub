@@ -20,7 +20,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
 import { PlusIcon, ChevronRightIcon } from "lucide-react"
@@ -77,8 +77,8 @@ export function RecentRidesTable({ rides }: RecentRideTableProps) {
                         {tr(`rides.statues.${ride.status}`)}
                       </Badge>
                     </TableCell>
-                    <TableCell>{formatPrice(ride.amount)}</TableCell>
-                    <TableCell>{formatPrice(ride.balance)}</TableCell>
+                    <TableCell>{formatMoney(ride.amount)}</TableCell>
+                    <TableCell>{formatMoney(ride.balance)}</TableCell>
                     <TableCell>{formatDate(ride.created_at)}</TableCell>
                   </TableRow>
                 ))

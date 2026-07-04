@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ServiceGroup } from "@/features/services/types"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 
@@ -45,32 +45,32 @@ export function ServiceList({ services }: ServiceListProps) {
 
             <div className="flex justify-between">
               <span>Base Fare</span>
-              <span>{formatPrice(service.base_fare)}</span>
+              <span>{formatMoney(service.base_fare)}</span>
             </div>
 
             <div className="flex justify-between">
               <span>Min Fare</span>
-              <span>{formatPrice(service.min_fare)}</span>
+              <span>{formatMoney(service.min_fare)}</span>
             </div>
 
             <div className="flex justify-between">
               <span>Per Min</span>
-              <span>{formatPrice(service.price_per_min)}</span>
+              <span>{formatMoney(service.price_per_min)}</span>
             </div>
 
             <div className="flex justify-between">
               <span>Per Distance</span>
-              <span>{formatPrice(service.price_per_unit_distance)}</span>
+              <span>{formatMoney(service.price_per_unit_distance)}</span>
             </div>
 
             <div className="flex justify-between">
               <span>Booking Fee</span>
-              <span>{formatPrice(service.booking_fee)}</span>
+              <span>{formatMoney(service.booking_fee)}</span>
             </div>
 
             {/* <div className="flex justify-between">
               <span>Tax</span>
-              <span>{formatPrice(service.tax_fee)}</span>
+              <span>{formatMoney(service.tax_fee)}</span>
             </div> */}
 
             <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">

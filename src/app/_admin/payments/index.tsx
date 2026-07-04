@@ -20,7 +20,7 @@ import {
   PaymentTable,
   PaymentTableSkeleton,
 } from "@/features/payments/components/payment-table"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { PlusIcon } from "lucide-react"
 import { Suspense } from "react"
 import {
@@ -73,14 +73,14 @@ function RouteComponent() {
           <CardContent className="grid grid-flow-col gap-5">
             <div className="space-y-1.5">
               <CardTitle className="font-bold">
-                {formatPrice(statistics?.grandTotal.newValue)}
+                {formatMoney(statistics?.grandTotal.newValue)}
               </CardTitle>
               <CardDescription>This month</CardDescription>
             </div>
             <Separator orientation="vertical" />
             <div className="space-y-1.5">
               <CardTitle className="font-bold text-muted-foreground">
-                {formatPrice(statistics?.grandTotal.oldValue)}
+                {formatMoney(statistics?.grandTotal.oldValue)}
               </CardTitle>
               <CardDescription>Last month</CardDescription>
             </div>
@@ -95,14 +95,14 @@ function RouteComponent() {
           <CardContent className="grid grid-flow-col gap-5">
             <div className="space-y-1.5">
               <CardTitle className="font-bold">
-                {formatPrice(statistics?.bookings.newValue)}
+                {formatMoney(statistics?.bookings.newValue)}
               </CardTitle>
               <CardDescription>This month</CardDescription>
             </div>
             <Separator orientation="vertical" />
             <div className="space-y-1.5">
               <CardTitle className="font-bold text-muted-foreground">
-                {formatPrice(statistics?.bookings.oldValue)}
+                {formatMoney(statistics?.bookings.oldValue)}
               </CardTitle>
               <CardDescription>Last month</CardDescription>
             </div>
@@ -117,14 +117,14 @@ function RouteComponent() {
           <CardContent className="grid grid-flow-col gap-5">
             <div className="space-y-1.5">
               <CardTitle className="font-bold">
-                {formatPrice(statistics?.rides.newValue)}
+                {formatMoney(statistics?.rides.newValue)}
               </CardTitle>
               <CardDescription>This month</CardDescription>
             </div>
             <Separator orientation="vertical" />
             <div className="space-y-1.5">
               <CardTitle className="font-bold text-muted-foreground">
-                {formatPrice(statistics?.rides.oldValue)}
+                {formatMoney(statistics?.rides.oldValue)}
               </CardTitle>
               <CardDescription>Last month</CardDescription>
             </div>

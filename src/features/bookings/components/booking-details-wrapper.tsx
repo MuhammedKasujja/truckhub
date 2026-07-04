@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { CreditCard, Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Status } from "@/components/ui/status"
 import {
   Table,
@@ -74,14 +74,14 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-xl font-semibold">
-              {formatPrice(booking.amount)}
+              {formatMoney(booking.amount)}
             </div>
-            <div>{formatPrice(booking.balance)}</div>
+            <div>{formatMoney(booking.balance)}</div>
             <div>{formatDate(booking.created_at)}</div>
           </CardContent>
           <CardFooter className="flex items-center gap-2 space-y-4">
             <Button variant={"outline"}>
-              Partial: {formatPrice(booking.partial)}
+              Partial: {formatMoney(booking.partial)}
             </Button>
             {formatDate(booking.pickup_time)} -{" "}
             {formatDate(booking.return_time)}
@@ -114,7 +114,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                         <TableCell className="font-medium">
                           {payment.number}
                         </TableCell>
-                        <TableCell>{formatPrice(payment.amount)}</TableCell>
+                        <TableCell>{formatMoney(payment.amount)}</TableCell>
                         <TableCell>{payment.status}</TableCell>
                         <TableCell>{payment.payment_mode}</TableCell>
                         <TableCell>{formatDate(payment.date)}</TableCell>

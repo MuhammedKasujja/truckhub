@@ -8,7 +8,7 @@ import {
   StatTrend,
   StatValue,
 } from "@/components/ui/stat";
-import { formatPrice } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { DollarSign } from "lucide-react";
 import { BookingStatistics } from "../types";
 
@@ -40,7 +40,7 @@ export function BookingStatisticsCard({statistics}:Props) {
       </Stat>
       <Stat className="min-h-32 ring-0 md:border-r-2 border-b-2 md:border-b-0 sm:rounded-r-none sm:rounded-l-none">
         <StatLabel>Payments</StatLabel>
-        <StatValue>{formatPrice(statistics?.total_payments)}</StatValue>
+        <StatValue>{formatMoney(statistics?.total_payments)}</StatValue>
         <StatIndicator variant="icon" color="default">
           <DollarSign />
         </StatIndicator>

@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatPrice } from "@/lib/format";
+import { formatMoney } from "@/lib/format";
 import { Status } from "@/components/ui/status";
 import {
   Item,
@@ -66,10 +66,10 @@ function ServiceTable({ services }: BookingServiceListProps) {
               <TableCell className="font-medium">
                 {service.service_name}
               </TableCell>
-              <TableCell>{formatPrice(service.cost_per_item)}</TableCell>
+              <TableCell>{formatMoney(service.cost_per_item)}</TableCell>
               <TableCell>{service.total_items}</TableCell>
               <TableCell>
-                {formatPrice(service.cost_per_item * service.total_items)}
+                {formatMoney(service.cost_per_item * service.total_items)}
               </TableCell>
             </TableRow>
           ))}
@@ -78,7 +78,7 @@ function ServiceTable({ services }: BookingServiceListProps) {
           <TableRow>
             <TableCell colSpan={3}>Total</TableCell>
             <TableCell className="text-right">
-              {formatPrice(
+              {formatMoney(
                 services.reduce(
                   (prev, service) =>
                     service.cost_per_item * service.total_items + prev,
@@ -101,7 +101,7 @@ function ServiceList({ services }: BookingServiceListProps) {
           <ItemContent>
             <ItemTitle>{service.service_name}</ItemTitle>
             <ItemDescription>
-              {formatPrice(service.cost_per_item * service.total_items)}
+              {formatMoney(service.cost_per_item * service.total_items)}
             </ItemDescription>
           </ItemContent>
           <ItemActions>

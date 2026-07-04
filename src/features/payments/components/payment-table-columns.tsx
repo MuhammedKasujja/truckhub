@@ -1,7 +1,7 @@
 import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
 import { Trash2Icon } from "lucide-react"
 import { PaymentViewModal } from "./payment-view-modal"
@@ -28,7 +28,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.amount"),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2">{formatPrice(row.original.amount)}</div>
+          <div className="flex gap-2">{formatMoney(row.original.amount)}</div>
         )
       },
       meta: {

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { formatDateTime, formatPrice } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { Booking } from "@/features/bookings/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
@@ -74,14 +74,14 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
       accessorKey: "amount",
       header: tr('amount'),
       cell: ({ row }) => {
-        return <p>{formatPrice(row.original.amount)}</p>
+        return <p>{formatMoney(row.original.amount)}</p>
       },
     },
     {
       accessorKey: "balance",
       header: tr('balance'),
       cell: ({ row }) => {
-        return <p>{formatPrice(row.original.balance)}</p>
+        return <p>{formatMoney(row.original.balance)}</p>
       },
     },
     {

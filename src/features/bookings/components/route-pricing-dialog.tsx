@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/item"
 import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
 import { TonnagePricing } from "@/features/settings/pricing"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import React, { useEffect, useMemo, useState } from "react"
@@ -165,7 +165,7 @@ export function RoutePricingDialog({
                         onClick={() => handleAppendPricings(pricing, route)}
                       >
                         <ItemContent>
-                          <ItemTitle>{formatPrice(pricing.price)}</ItemTitle>
+                          <ItemTitle>{formatMoney(pricing.price)}</ItemTitle>
                           <ItemDescription>
                             {pricing.min_tons} TONS to {pricing.max_tons} TONS
                           </ItemDescription>
