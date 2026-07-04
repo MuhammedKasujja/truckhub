@@ -17,11 +17,15 @@ export function formatPrice(
 }
 
 export function formatNumber(
-  number: number,
+  value: number | string,
   options?: Intl.NumberFormatOptions
 ) {
+  // return Number(value).toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 2,
+  // });
   const formatter = new Intl.NumberFormat(undefined, options)
-  return formatter.format(number)
+  return formatter.format(Number(value))
 }
 
 export function formatDate(

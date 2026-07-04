@@ -144,6 +144,7 @@ export function TrucksServiceBookingForm({
             />
           )}
           <TaxRatePicker
+            label="Tax"
             value={taxRate}
             onSelected={(taxRate) => {
               setTaxRate(taxRate)

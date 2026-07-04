@@ -28,11 +28,11 @@ export function TaxRatesTable() {
   })
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <DataTableToolbar table={table}>
         <TaxRateForm />
       </DataTableToolbar>
-      <DataTable table={table}></DataTable>
+      <DataTable table={table} showPagination={false}/>
     </div>
   )
 }

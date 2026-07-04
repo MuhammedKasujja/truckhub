@@ -2,6 +2,12 @@ import { TaxRate } from "../types"
 import { useTaxRatesQuery } from "../hooks/use-tax-rates"
 import { EntityPickerProps } from "@/common/types"
 import { AutoComplete } from "@/components/ui/autocomplete-modified"
+import { formatNumber } from "@/lib/format"
+import { FieldValues } from "react-hook-form"
+import {
+  FormAutoComplete,
+  FormAutoCompleteProps,
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
 
 export function TaxRatePicker({
   id,
@@ -15,13 +21,49 @@ export function TaxRatePicker({
       options={data ?? []}
       loading={isLoading}
       value={value}
-      onChange={(user) => {
-        onSelected?.(user)
+      onChange={(taxRate) => {
+        onSelected?.(taxRate)
       }}
-      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(t, q) => t.name.toLowerCase().includes(q.toLowerCase())}
       label="Tax Rate"
-      getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      getOptionValue={(t) => t.id}
+      renderOption={(t) => (
+        <span>
+          {formatNumber(t.rate)}% {t.name}
+        </span>
+      )}
+    />
+  )
+}
+
+export function TaxRatePickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, TaxRate>) {
+  const { data, isLoading } = useTaxRatesQuery()
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={data ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      filterFn={(b, q) => b.name.toLowerCase().includes(q.toLowerCase())}
+      getOptionValue={(b) => b.id}
+      renderOption={(t) => (
+        <span>
+          {formatNumber(t.rate)}% {t.name}
+        </span>
+      )}
+      onSelected={onSelected}
+      {...props}
     />
   )
 }

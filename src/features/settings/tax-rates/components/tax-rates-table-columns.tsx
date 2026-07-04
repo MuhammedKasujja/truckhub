@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { EditIcon, EyeIcon } from "lucide-react";
 import { TaxRateForm } from "./tax-rate-form";
 import { TaxRate } from "../types";
+import { formatNumber } from "@/lib/format";
 
 export function getTaxRateColumns(): ColumnDef<TaxRate>[] {
   return [
@@ -24,7 +25,7 @@ export function getTaxRateColumns(): ColumnDef<TaxRate>[] {
       accessorKey: "rate",
       header: "Rate",
       cell: ({ row }) => {
-        return <p>{row.original.rate}%</p>;
+        return <p>{formatNumber(row.original.rate)}%</p>;
       },
     },
     {
