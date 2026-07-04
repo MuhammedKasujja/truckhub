@@ -61,7 +61,7 @@ export function EditVehicleFeatureForm() {
           <View /> Features
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:min-w-3xl">
+      <DialogContent className="md:min-w-3xl ring-4">
         <DialogHeader>
           <DialogTitle>Vehicle Features</DialogTitle>
         </DialogHeader>
