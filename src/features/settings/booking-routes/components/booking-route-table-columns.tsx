@@ -1,5 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { BookingRoute } from "../schemas"
+import { formatNumber } from "@/lib/format"
 
 export function getBookingRoutesColumns(): ColumnDef<BookingRoute>[] {
   return [
@@ -28,7 +29,7 @@ export function getBookingRoutesColumns(): ColumnDef<BookingRoute>[] {
       accessorKey: "distance_km",
       header: "Distance (km)",
       cell: ({ row }) => {
-        return <p>{row.original.distance_km}</p>
+        return <p>{formatNumber(row.original.distance_km)}</p>
       },
     },
     {
@@ -37,7 +38,7 @@ export function getBookingRoutesColumns(): ColumnDef<BookingRoute>[] {
       cell: ({ row }) => {
         return (
           <p>
-            {row.original.min_hrs}-{row.original.max_hrs}HRS
+            {formatNumber(row.original.min_hrs)} - {formatNumber(row.original.max_hrs)} hrs
           </p>
         )
       },

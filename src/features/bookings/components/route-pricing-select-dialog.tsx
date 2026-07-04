@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/item"
 import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
 import { TonnagePricing } from "@/features/settings/pricing"
-import { formatMoney } from "@/lib/format"
+import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { useMemo, useState } from "react"
@@ -218,7 +218,7 @@ export function RoutePricingSelectDialog({
                         key={item.min_tons}
                         value={item.min_tons.toString()}
                       >
-                        {item.min_tons} – {item.max_tons} TONS
+                        {formatNumber(item.min_tons)} – {formatNumber(item.max_tons)} TONS
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -257,8 +257,8 @@ export function RoutePricingSelectDialog({
                     </div>
 
                     <ItemDescription>
-                      {route.min_hrs}–{route.max_hrs} hrs &nbsp;•&nbsp;{" "}
-                      {route.distance_km} km
+                      {formatNumber(route.min_hrs)} – {formatNumber(route.max_hrs)} hrs &nbsp;•&nbsp;{" "}
+                      {formatNumber(route.distance_km)} km
                     </ItemDescription>
 
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -286,7 +286,7 @@ export function RoutePricingSelectDialog({
                               </ItemTitle>
 
                               <ItemDescription className="text-xs">
-                                {pricing.min_tons}–{pricing.max_tons} tons
+                                {formatNumber(pricing.min_tons)} – {formatNumber(pricing.max_tons)} tons
                               </ItemDescription>
                             </ItemContent>
                           </Item>
@@ -351,7 +351,7 @@ export function RoutePricingSelectDialog({
                           {r.destination}
                         </div>
                         <div className="text-sm text-muted-foreground">
-                          {r.pricing.min_tons}–{r.pricing.max_tons} tons
+                          {formatNumber(r.pricing.min_tons)} – {formatNumber(r.pricing.max_tons)} tons
                           &nbsp;•&nbsp; {formatMoney(r.pricing.price)}
                         </div>
                       </div>

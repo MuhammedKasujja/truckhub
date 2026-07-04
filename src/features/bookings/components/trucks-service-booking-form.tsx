@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Field, FieldError, FieldGroup } from "@/components/ui/field"
+import { FieldGroup } from "@/components/ui/field"
 import {
   NumberField,
   DiscountField,
@@ -15,29 +15,19 @@ import {
 import { useTranslation } from "@/i18n"
 import z from "zod"
 import {
-  TonnagePricingRequest,
   TruckBookingRequest,
   TruckBookingSchema,
 } from "@/features/bookings/schemas"
 import { toast } from "sonner"
-import { Control, Controller, useFieldArray, useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { MapPin, Plus, Trash2 } from "lucide-react"
+import { MapPin, Plus } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { ClientPicker } from "@/features/clients/components/client-picker"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useNavigate, useSearch } from "@tanstack/react-router"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import { Input } from "@/components/ui/input"
-import { formatMoney } from "@/lib/format"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
@@ -239,84 +229,5 @@ export function TrucksServiceBookingForm({
         </Empty>
       )} */}
     </form>
-  )
-}
-
-type Props = {
-  control: Control<TruckBookingRequest>
-  routeIndex: number
-  pricingIndex: number
-  pricing: TonnagePricingRequest
-  handleRemove: (routeIndex: number, pricingIndex: number) => void
-}
-
-function TonnagePricingRow({
-  control,
-  routeIndex,
-  pricingIndex,
-  handleRemove,
-  pricing,
-}: Props) {
-  return (
-    <div
-      className="flex flex-row gap-4"
-      key={`${routeIndex}_${pricingIndex}_pricing`}
-    >
-      <Input defaultValue={pricing.min_tons} readOnly disabled />
-      <Input defaultValue={pricing.max_tons} readOnly disabled />
-      <Input
-        defaultValue={formatMoney(pricing.default_price)}
-        readOnly
-        disabled
-      />
-      <Controller
-        name={`services.${routeIndex}.pricings.${pricingIndex}.price`}
-        control={control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Input
-              {...field}
-              type={"number"}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              autoComplete="off"
-              onChange={(e) => {
-                const number = e.target.valueAsNumber
-                field.onChange(isNaN(number) ? null : number)
-              }}
-            />
-            {fieldState.invalid && (
-              <FieldError className="text-xs" errors={[fieldState.error]} />
-            )}
-          </Field>
-        )}
-      />
-      <Controller
-        name={`services.${routeIndex}.pricings.${pricingIndex}.tons`}
-        control={control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <Input
-              {...field}
-              type={"text"}
-              id={field.name}
-              aria-invalid={fieldState.invalid}
-              autoComplete="off"
-            />
-            {fieldState.invalid && (
-              <FieldError className="text-xs" errors={[fieldState.error]} />
-            )}
-          </Field>
-        )}
-      />
-      <Button
-        type="button"
-        variant="destructive"
-        size={"icon-sm"}
-        onClick={() => handleRemove(routeIndex, pricingIndex)}
-      >
-        <Trash2 />
-      </Button>
-    </div>
   )
 }

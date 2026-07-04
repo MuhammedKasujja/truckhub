@@ -9,6 +9,7 @@ import {
 import { RoutePricingStruct, TruckBookingRequest } from "../../schemas"
 import { Field, FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { formatNumber } from "@/lib/format"
 
 type Props = {
   serviceId: EntityId
@@ -58,7 +59,8 @@ export function PricingsSortable({
         <div>{route.destination}</div>
 
         <div className="text-sm text-muted-foreground">
-          {route.min_hrs} - {route.max_hrs} hrs | {route.distance_km} km
+          {formatNumber(route.min_hrs)} - {formatNumber(route.max_hrs)} hrs |{" "}
+          {formatNumber(route.distance_km)} km
         </div>
       </div>
       <div className="flex items-center gap-2">
