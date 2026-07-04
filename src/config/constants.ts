@@ -30,6 +30,8 @@ export const PaymentStatuses = [
 
 export const VehicleCylinderList = [2, 4, 5, 6, 8];
 
+export const AxlesList = [2, 3, 4, 5, 6];
+
 export const PaymentEntityList = ["ride", "booking"] as const;
 
 export type PaymentType = (typeof PaymentEntityList)[number];

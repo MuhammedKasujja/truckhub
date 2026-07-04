@@ -16,7 +16,7 @@ export const VehicleCreateSchema = z.object({
   // year: z.number().min(2010).max((new Date()).getFullYear()),
   year: z.string(),
   seats: z.number().optional().nullable(),
-  total_axles: z.number().optional().nullable(),
+  total_axles: z.string().optional().nullable(),
   vehicle_type_id: IDSchema,
   car_brand_id: IDSchema,
   car_model_id: IDSchema,

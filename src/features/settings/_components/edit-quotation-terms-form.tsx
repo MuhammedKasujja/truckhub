@@ -60,7 +60,7 @@ export function EditQuotationTermsForm({
           <Edit /> Edit Terms
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] md:min-w-3xl">
+      <DialogContent className="max-w-[90%] md:min-w-3xl ring-4">
         <DialogHeader>
           <DialogTitle>Edit Quotation Terms</DialogTitle>
         </DialogHeader>

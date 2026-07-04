@@ -193,7 +193,8 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               <DriverPicker
                 value={driver}
                 onSelected={(driver) => {
-                  setDriver({ ...driver, name: driver?.fullname })
+                  if (driver) setDriver({ ...driver, name: driver?.fullname })
+                  else setDriver(null)
                 }}
               />
             </CardContent>
@@ -299,7 +300,7 @@ function DriverDetails({
         <Separator />
         <div>
           <p className="text-sm text-muted-foreground">Driver ID</p>
-          <p className="text-xs break-all">{driver.id}</p>
+          <p className="text-xs break-all">{driver.number}</p>
         </div>
         <Button
           type="button"

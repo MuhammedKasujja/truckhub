@@ -11,6 +11,7 @@ export type VehicleDriver = {
   name: string
   email: string
   phone: string
+  number: string
 }
 
 export interface VehicleBase {

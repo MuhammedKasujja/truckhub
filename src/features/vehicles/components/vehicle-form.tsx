@@ -23,7 +23,7 @@ import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
 import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
 import { toast } from "sonner"
 import z from "zod"
-import { VehicleCylinderList } from "@/config/constants"
+import { AxlesList, VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { Separator } from "@/components/ui/separator"
@@ -202,10 +202,16 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     name={"tank_capacity"}
                     control={form.control}
                   />
-                  <NumberField
+                  <SelectField
+                    required={false}
                     label={tr("number_of_axles")}
-                    name={"total_axles"}
                     control={form.control}
+                    name={"total_axles"}
+                    placeholder="Select axel"
+                    options={AxlesList.map((opt) => ({
+                      label: `${opt}`,
+                      value: `${opt}`,
+                    }))}
                   />
                   <NumberField
                     label={"Consumption Rate"}
@@ -315,23 +321,23 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
           </Card>
         </StepperContent>
         <div className="mt-4 flex justify-between">
-            <StepperPrev asChild>
-              <Button variant="outline">Previous</Button>
-            </StepperPrev>
-            <div className="text-muted-foreground text-sm">
-              Step {stepIndex + 1} of {steps.length}
-            </div>
-            {stepIndex === steps.length - 1 ? (
-              <SubmitButton
-                text={tr("common.form.submit")}
-                isSubmitting={form.formState.isSubmitting}
-              />
-            ) : (
-              <StepperNext asChild>
-                <Button>Next</Button>
-              </StepperNext>
-            )}
+          <StepperPrev asChild>
+            <Button variant="outline">Previous</Button>
+          </StepperPrev>
+          <div className="text-sm text-muted-foreground">
+            Step {stepIndex + 1} of {steps.length}
           </div>
+          {stepIndex === steps.length - 1 ? (
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={form.formState.isSubmitting}
+            />
+          ) : (
+            <StepperNext asChild>
+              <Button>Next</Button>
+            </StepperNext>
+          )}
+        </div>
       </Stepper>
     </form>
   )
