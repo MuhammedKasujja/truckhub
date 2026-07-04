@@ -18,9 +18,11 @@ import { Can } from "@/components/has-permission"
 import { Badge } from "@/components/ui/badge"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useTranslation } from "@/i18n"
 
 export function PermissionsWrapper() {
   const { data } = useQuery(createRolesQueryOptions())
+  const tr = useTranslation()
 
   const [_, setPermissionCount] = useState<Map<string, number>>(new Map())
 
@@ -125,16 +127,16 @@ export function PermissionsWrapper() {
         </Select>
         <Can permission="config:roles:assign_permissions">
           <Button type="button" onClick={() => saveRolePermissions()}>
-            Sync Permissions
+            {tr("permissions.apply_permissions")}
           </Button>
         </Can>
       </div>
       {groupedPermissions.map(([module, permissions]) => (
         <Card key={module}>
           <CardHeader>
-            <CardTitle>{module}</CardTitle>
+            <CardTitle>{tr(`permissions.modules.${module}`)}</CardTitle>
           </CardHeader>
-          <CardContent className="flex gap-2 flex-wrap">
+          <CardContent className="flex flex-wrap gap-2">
             {Object.entries(permissions).map(([group, permissionList]) => (
               <Button
                 type="button"

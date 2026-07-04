@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, View } from "lucide-react"
+import { GripVertical, Plus, Trash2, View } from "lucide-react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { TextField } from "@/components/ui/form-fields"
 import {
@@ -19,6 +19,12 @@ import {
 import { makeId } from "../../pricing/utils/distance-tonnage-pricing-utils"
 import { bulkUpertVehicleFeaturesFn } from "../services"
 import { toast } from "sonner"
+import {
+  Sortable,
+  SortableContent,
+  SortableItem,
+  SortableItemHandle,
+} from "@/components/ui/sortable"
 
 const emptyFeature = {
   name: "",
@@ -61,22 +67,49 @@ export function EditVehicleFeatureForm() {
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmitData)}>
           <FieldGroup className="space-y-1">
-            {fields.map((ele, index) => (
-              <Field key={ele.id} orientation={"horizontal"}>
-                <TextField
-                  control={form.control}
-                  name={`features.${index}.name`}
-                />
-                <Button
-                  type="button"
-                  variant={"destructive"}
-                  onClick={() => remove(index)}
-                  size={"icon-sm"}
-                >
-                  <Trash2 />
-                </Button>
-              </Field>
-            ))}
+            <Sortable
+              value={fields}
+              onValueChange={(updated) =>
+                form.setValue("features", updated, {
+                  shouldDirty: true,
+                })
+              }
+              getItemValue={(item) => item.name}
+            >
+              <SortableContent className="flex flex-col gap-4">
+                {fields.map((f, index) => (
+                  <SortableItem
+                    key={f.id}
+                    value={f.name}
+                    className="flex items-center gap-2"
+                  >
+                    <SortableItemHandle asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="mt-1 size-8 shrink-0 cursor-grab text-muted-foreground active:cursor-grabbing"
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </Button>
+                    </SortableItemHandle>
+                    <Field orientation={"horizontal"}>
+                      <TextField
+                        control={form.control}
+                        name={`features.${index}.name`}
+                      />
+                      <Button
+                        type="button"
+                        variant={"destructive"}
+                        onClick={() => remove(index)}
+                        size={"icon-sm"}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </Field>
+                  </SortableItem>
+                ))}
+              </SortableContent>
+            </Sortable>
             <Separator />
             <Button
               type="button"

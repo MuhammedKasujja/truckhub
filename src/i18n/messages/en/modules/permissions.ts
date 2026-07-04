@@ -1,13 +1,18 @@
 export const en = {
+  apply_permissions:"Apply Permissions",
   modules: {
+    dashboard: "Dashboard",
     rides: "Rides",
     bookings: "Bookings",
     services: "Services",
     client: "Clients",
+    customers: "Customers",
     drivers: "Drivers",
     payments: "Payments",
     users: "Users",
     vehicles: "Vehicles",
+    config: "Settings",
+    reports: "Reports",
   },
   "create:booking": "Create Booking",
   "create:ride": "Create Ride",
