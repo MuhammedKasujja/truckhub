@@ -107,7 +107,7 @@ export function UserForm({ initialData }: UserFormProps) {
             )}
           </FieldGroup>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="sm:justify-end">
           <SubmitButton
             text={tr("common.form.submit")}
             isSubmitting={form.formState.isSubmitting}

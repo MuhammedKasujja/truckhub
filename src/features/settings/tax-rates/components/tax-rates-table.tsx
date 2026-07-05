@@ -7,6 +7,7 @@ import { getTaxRateColumns } from "./tax-rates-table-columns"
 import { TaxRateForm } from "./tax-rate-form"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useTaxRatesSuspense } from "../hooks/use-tax-rates"
+import { Can } from "@/components/has-permission"
 
 export function TaxRatesTable() {
   const { data, error } = useTaxRatesSuspense()
@@ -30,9 +31,11 @@ export function TaxRatesTable() {
   return (
     <div className="flex flex-col gap-4">
       <DataTableToolbar table={table}>
-        <TaxRateForm />
+        <Can permission="config:tax_rates:create">
+          <TaxRateForm />
+        </Can>
       </DataTableToolbar>
-      <DataTable table={table} showPagination={false}/>
+      <DataTable table={table} showPagination={false} />
     </div>
   )
 }

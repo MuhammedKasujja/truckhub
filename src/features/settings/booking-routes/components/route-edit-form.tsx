@@ -22,6 +22,7 @@ import { NumberField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createRouteFn, updateRouteFn } from "../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { Can } from "@/components/has-permission"
 
 export function RouteEditForm() {
   const tr = useTranslation()
@@ -49,12 +50,14 @@ export function RouteEditForm() {
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="font-normal">
-          <PlusIcon />
-          Route
-        </Button>
-      </DialogTrigger>
+      <Can permission="config:routes:create">
+        <DialogTrigger asChild>
+          <Button size="sm" className="font-normal">
+            <PlusIcon />
+            Route
+          </Button>
+        </DialogTrigger>
+      </Can>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>

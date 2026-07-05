@@ -26,6 +26,7 @@ import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { DATE_FORMATS } from "@/common/constants"
+import { Can } from "@/components/has-permission"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -90,12 +91,14 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
             />
           </FieldGroup>
         </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={form.formState.isSubmitting}
-          />
-        </CardFooter>
+        <Can permission="config:edit">
+          <CardFooter>
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={form.formState.isSubmitting}
+            />
+          </CardFooter>
+        </Can>
       </form>
     </Card>
   )

@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useAuth } from "@/components/providers/auth-context"
 
 type EntityNumbersWrapperProps = {
   patterns: NumberingPatternType
@@ -24,6 +25,10 @@ type EntityNumbersWrapperProps = {
 
 export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   const queryInvalidator = useQueryInvalidator()
+  const { hasPermission } = useAuth()
+
+  const canEdit = hasPermission!("config:manage_entity_numbers")
+
   const form = useForm<NumberingPatternType>({
     resolver: zodResolver(NumberingPatternSchema),
     defaultValues: { entities: patterns.entities },
@@ -80,12 +85,14 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
           </TabsContent>
         ))}
       </Tabs>
-      <div className="flex justify-end">
-        <SubmitButton
-          isSubmitting={form.formState.isSubmitting}
-          disabled={!!dirtyFields?.entities === false}
-        />
-      </div>
+      {canEdit && (
+        <div className="flex justify-end">
+          <SubmitButton
+            isSubmitting={form.formState.isSubmitting}
+            disabled={!!dirtyFields?.entities === false}
+          />
+        </div>
+      )}
     </form>
   )
 }
