@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
+import { useRecentPagesStore } from "@/store/use-recent-pages-store"
 import { createFileRoute } from "@tanstack/react-router"
 import { BellIcon, MailIcon, PhoneIcon } from "lucide-react"
 
@@ -23,6 +26,8 @@ export const Route = createFileRoute("/_admin/settings/notifications/")({
 })
 
 function RouteComponent() {
+  const history = useRecentPagesStore((state) => state.history)
+  const clearHistory = useRecentPagesStore((state) => state.clear)
   return (
     <Card className="m-4">
       <CardHeader>
@@ -83,6 +88,16 @@ function RouteComponent() {
           </ItemActions>
         </Item>
       </CardContent>
+      <CardFooter>
+        <div>
+          {history.map((entry) => (
+            <div key={entry.timestamp}>{entry.pathname}</div>
+          ))}
+        </div>
+        <Button type="button" onClick={() => clearHistory()}>
+          Clear
+        </Button>
+      </CardFooter>
     </Card>
   )
 }

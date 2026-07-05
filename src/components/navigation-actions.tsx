@@ -67,18 +67,24 @@ function ProfileDropdown() {
 }
 
 export function NavigationButtons() {
-  const { canGoBack, canGoForward, goBack, goForward, historyStack } =
-    useNavigationHistory()
+  const { canGoBack, canGoForward, goBack, goForward } = useNavigationHistory()
 
   return (
     <div className="flex flex-row gap-2">
-      {/* <Button size={"icon-xs"} variant={"secondary"} onClick={goBack}>
-        {historyStack.length}
-      </Button> */}
-      <Button size={"icon-xs"} variant={"secondary"} onClick={goBack}>
+      <Button
+        size={"icon-xs"}
+        variant={"secondary"}
+        disabled={!canGoBack}
+        onClick={goBack}
+      >
         <ArrowLeftIcon className="h-3.5 w-3.5" />
       </Button>
-      <Button size={"icon-xs"} variant={"secondary"} onClick={goForward}>
+      <Button
+        size={"icon-xs"}
+        variant={"secondary"}
+        disabled={!canGoForward}
+        onClick={goForward}
+      >
         <ArrowRightIcon />
       </Button>
     </div>
