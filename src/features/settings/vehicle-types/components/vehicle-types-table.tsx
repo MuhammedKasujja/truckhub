@@ -12,6 +12,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehicleTypesQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
+import { Can } from "@/components/has-permission"
 
 export function VehicleTypeTable() {
   const search = useSearch({
@@ -40,7 +41,9 @@ export function VehicleTypeTable() {
   return (
     <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
-        <VehicleTypeForm />
+        <Can permission="config:vehicle_types:create">
+          <VehicleTypeForm />
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
@@ -48,11 +51,5 @@ export function VehicleTypeTable() {
 }
 
 export function VehicleTypeTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={2}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={2} filterCount={1} shrinkZero />
 }

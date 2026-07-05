@@ -1,7 +1,7 @@
 // +++++++++++++++++++++++++++
 // settings permissions
 export const ConfigModulePermissions = {
-  "config:module": ["settings:module", "company:view"],
+  "config:module": ["settings:module"],
   "config:create": ["settings:create"],
   "config:view": ["settings:view", "settings:read"],
   "config:edit": ["settings:update", "settings:view"],
@@ -13,6 +13,15 @@ export const ConfigModulePermissions = {
     "settings:entity_numbers:update",
     "settings:entity_numbers:read",
   ],
+  "config:car_model:create": ["car_models:create"],
+  "config:car_model:delete": ["car_models:delete"],
+  "config:car_model:edit": ["car_models:update"],
+  "config:car_brand:create": ["car_brands:create"],
+  "config:car_brand:delete": ["car_brands:delete"],
+  "config:car_brand:edit": ["car_brands:update"],
+  "config:vehicle_types:create": ["vehicle_types:create"],
+  "config:vehicle_types:delete": ["vehicle_types:delete"],
+  "config:vehicle_types:edit": ["vehicle_types:update"],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions
