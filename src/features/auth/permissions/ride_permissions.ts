@@ -1,4 +1,5 @@
 export const RideModulePermissions = {
+  "rides:module": ["rides:module", "rides:read"],
   "rides:create": ["rides:create", "tax_rates:read"],
   "rides:view": ["rides:read", "rides:view"],
   "rides:delete": ["rides:delete"],

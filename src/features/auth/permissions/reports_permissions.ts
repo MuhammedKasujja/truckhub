@@ -1,6 +1,7 @@
 // +++++++++++++++++++++++++++
 // Reports permissions
 export const ReportsModulePermissions = {
+  "reports:module": ["reports:module"],
   "reports:create": ["reports:create"],
   "reports:view": ["reports:view", "reports:read"],
   "reports:delete": ["reports:delete"],

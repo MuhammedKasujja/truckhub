@@ -31,7 +31,6 @@ export type UserPermission = keyof typeof KeyNamedPermissions;
 
 export const SystemPermissions = {
   dashboard: DashboardModulePermissions,
-  users: UserModulePermissions,
   bookings: BookingModulePermissions,
   services: ServiceModulePermissions,
   rides: RideModulePermissions,
@@ -39,6 +38,7 @@ export const SystemPermissions = {
   customers: ClientModulePermissions,
   drivers: DriverModulePermissions,
   vehicles: VehicleModulePermissions,
+  users: UserModulePermissions,
   config: ConfigModulePermissions,
   reports: ReportsModulePermissions,
 };

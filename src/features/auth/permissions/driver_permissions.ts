@@ -1,6 +1,7 @@
 // +++++++++++++++++++++++++++
 // drivers permissions
 export const DriverModulePermissions = {
+  "drivers:module": ["drivers:module", "drivers:read"],
   "drivers:create": ["drivers:create"],
   "drivers:view": ["drivers:view", "drivers:read"],
   "drivers:delete": ["drivers:delete"],

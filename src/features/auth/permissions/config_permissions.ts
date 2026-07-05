@@ -1,6 +1,7 @@
 // +++++++++++++++++++++++++++
 // settings permissions
 export const ConfigModulePermissions = {
+  "config:module": ["settings:module", "company:view"],
   "config:create": ["settings:create"],
   "config:view": ["settings:view", "settings:read"],
   "config:edit": ["settings:update", "settings:view"],

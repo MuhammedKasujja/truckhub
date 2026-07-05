@@ -1,4 +1,5 @@
 export const ServiceModulePermissions = {
+  "services:module": ["services:module", "services:read"],
   "services:create": ["services:create", "tax_rates:read"],
   "services:view": ["services:read", "services:view"],
   "services:delete": ["services:delete"],
