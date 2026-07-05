@@ -15,7 +15,7 @@ export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   name: FieldPath<TFieldValues>
   control: Control<TFieldValues>
   description?: string
-  onSelected?: (value: T | null) => void
+  onSelected?: (value: T | null | undefined) => void
   /** Switch to remote API search instead of local filter */
   remote?: boolean
   /** Min chars before triggering remote search */
@@ -35,7 +35,7 @@ interface FormAutoCompleteFieldProps<
   name: FieldPath<TFieldValues>
   control: Control<TFieldValues>
   description?: string
-  onSelected?: (value: T | null) => void
+  onSelected?: (value: T | null | undefined) => void
   /** Switch to remote API search instead of local filter */
   remote?: boolean
   /** Min chars before triggering remote search */

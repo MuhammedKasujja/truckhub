@@ -25,7 +25,7 @@ import { MapPin, Plus } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ClientPicker } from "@/features/clients/components/client-picker"
+import { ClientPickerField } from "@/features/clients/components/client-picker"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { Separator } from "@/components/ui/separator"
@@ -87,7 +87,7 @@ export function TrucksServiceBookingForm({
     }
   }
 
-  function handleClientSelected(client: Client | null) {
+  function handleClientSelected(client: Client | undefined) {
     // navigate({
     //   to: "/bookings/new",
     //   search: (prev) => ({
@@ -124,8 +124,10 @@ export function TrucksServiceBookingForm({
           </CardAction>
         </CardHeader>
         <CardContent className="space-y-4">
-          <ClientPicker
-            value={selectedClient}
+          <ClientPickerField
+            label="Client"
+            control={form.control}
+            name="client_id"
             onSelected={handleClientSelected}
           />
           {selectedClient && (

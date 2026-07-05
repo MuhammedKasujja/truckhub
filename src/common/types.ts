@@ -1,6 +1,6 @@
 export type EntityPickerProps<T> = {
   id?: string
-  value?: T | null
+  value?: T | string | null
   label?: string
   placeholder?: string
   disabled?: boolean

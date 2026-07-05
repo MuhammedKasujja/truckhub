@@ -27,7 +27,7 @@ export const useRecentPagesStore = create<NavHistoryState>()(
           // remove any existing entry for the same route
           const filtered = state.history.filter(
             (e) => !(e.pathname === entry.pathname && e.search === entry.search)
-            // drop `&& e.search === entry.search` if you want to match on pathname only
+            // drop `&& e.search === entry.search` if we want to match on pathname only
           )
 
           return {

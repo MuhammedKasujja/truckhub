@@ -20,7 +20,7 @@ import {
 export interface AutoCompleteProps<T> {
   id?: string
   options: T[]
-  value?: T | null
+  value?: T | string | null // 👈 accept either
   loading?: boolean
 
   onChange: (value: T | null | undefined) => void
@@ -49,12 +49,14 @@ export function AutoComplete<T>({
   options,
   value,
   loading = false,
+
   onChange,
   onSearch,
   filterFn,
   getOptionValue,
   renderOption,
   renderValue,
+
   label,
   placeholder = "Select...",
   disabled,
@@ -76,13 +78,26 @@ export function AutoComplete<T>({
     return options
   }, [options, search, filterFn, onSearch])
 
+  // 👇 normalize `value` into a plain string key for comparisons
+  const currentValueKey = useMemo(() => {
+    if (value == null) return null
+    return typeof value === "string" ? value : getOptionValue(value)
+  }, [value, getOptionValue])
+
+  // 👇 try to resolve the full option object, whether `value` was a string or T
+  const selectedOption = useMemo(() => {
+    if (value == null) return null
+    if (typeof value !== "string") return value
+    return options.find((opt) => getOptionValue(opt) === value) ?? null
+  }, [value, options, getOptionValue])
+
   const isSelected = (option: T) => {
-    if (!value) return false
-    return getOptionValue(option) === getOptionValue(value)
+    if (currentValueKey == null) return false
+    return getOptionValue(option) === currentValueKey
   }
 
   const handleSelect = (option: T) => {
-    if (clearable && value && isSelected(option)) {
+    if (clearable && currentValueKey && isSelected(option)) {
       onChange(null)
     } else {
       onChange(option)
@@ -100,9 +115,11 @@ export function AutoComplete<T>({
           disabled={disabled}
           className="w-full justify-between"
         >
-          {value
-            ? (renderValue?.(value) ?? renderOption(value, true))
-            : placeholder}
+          {selectedOption
+            ? (renderValue?.(selectedOption) ?? renderOption(selectedOption, true))
+            : currentValueKey
+              ? currentValueKey // fallback: options not loaded yet, show raw value [[ Unknown Option ]]
+              : placeholder}
 
           <ChevronsUpDown className="opacity-50" />
         </Button>
