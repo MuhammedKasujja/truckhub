@@ -101,11 +101,12 @@ import {
   toDbRows,
   tonnageLabel,
   TonnageRange,
-} from "../utils/distance-tonnage-pricing-utils"
+} from "../../utils/distance-tonnage-pricing-utils"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Can } from "@/components/has-permission"
 
 const gridColumnHelper = createColumnHelper<GridRow>()
 const listColumnHelper = createColumnHelper<RateEntry>()
@@ -413,18 +414,13 @@ export function DistancePricingScheduleForm({
           </p>
         </div>
         {mode === "view" && (
-          <div className="flex flex-wrap gap-2">
-            {/* <button
-              type="button"
-              onClick={handleExportClick}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <Download className="h-4 w-4" /> Export JSON
-            </button> */}
-            <Button type="button" onClick={handleEditClick}>
-              <Pencil className="h-4 w-4" /> Edit schedule
-            </Button>
-          </div>
+          <Can permission="config:distance_pricing:create">
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" onClick={handleEditClick}>
+                <Pencil className="h-4 w-4" /> Edit schedule
+              </Button>
+            </div>
+          </Can>
         )}
       </header>
 
@@ -607,7 +603,7 @@ function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
         className={`w-full rounded-md border px-2 py-1 text-sm tabular-nums focus:ring-1 focus:outline-none ${
           disabled
             ? "border-slate-200 bg-slate-100 text-slate-400"
-            : "border-slate-300 focus:border-primay focus:ring-primary"
+            : "focus:border-primay border-slate-300 focus:ring-primary"
         }`}
       />
       {error && (
@@ -639,7 +635,7 @@ function BracketCard<T extends { id: string }>({
   renderRow,
 }: BracketCardProps<T>) {
   return (
-    <section className="rounded-xl border  bg-card p-5 shadow-sm">
+    <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
@@ -711,7 +707,7 @@ function PriceGridCard({
   })
 
   return (
-    <section className="rounded-xl border p-5 shadow-sm bg-card">
+    <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-3">
         <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">
           Price grid
@@ -744,7 +740,9 @@ function PriceGridCard({
             {distanceRanges.map((d, dIndex) => (
               <tr
                 key={d.id}
-                className={cn(dIndex % 2 === 0 ? "bg-background/60": "bg-card")}
+                className={cn(
+                  dIndex % 2 === 0 ? "bg-background/60" : "bg-card"
+                )}
               >
                 <td className="sticky left-0 z-10 border-b bg-inherit px-3 py-2 text-xs font-medium whitespace-nowrap text-slate-600">
                   {distanceLabel(d)}
@@ -782,7 +780,7 @@ function PriceGridCard({
                             valueAsNumber: true,
                             min: { value: 0, message: "≥ 0" },
                           })}
-                          className="w-24 rounded-md border px-2 py-1 text-xs tabular-nums focus:border-primary focus:ring-1 focus:ring-primay focus:outline-none"
+                          className="focus:ring-primay w-24 rounded-md border px-2 py-1 text-xs tabular-nums focus:border-primary focus:ring-1 focus:outline-none"
                         />
                         <input
                           type="number"
@@ -871,7 +869,7 @@ function SchedulePanel({
           </div>
 
           {viewMode === "grid" && (
-            <div className="flex flex-wrap items-center gap-1 rounded-lg border p-1 bg-background">
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border bg-background p-1">
               {gridTable
                 .getAllLeafColumns()
                 .filter((col) => col.id !== "distance")
@@ -952,13 +950,15 @@ function GridTable({ table }: { table: Table<GridRow> }) {
             <tr
               key={row.id}
               className={cn(
-                row.original.rowType === "max" ? "bg-amber-50 dark:bg-background/60" : "bg-card"
+                row.original.rowType === "max"
+                  ? "bg-amber-50 dark:bg-background/60"
+                  : "bg-card"
               )}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="border-b  px-3 py-2 tabular-nums text-muted-foreground"
+                  className="border-b px-3 py-2 text-muted-foreground tabular-nums"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -1001,10 +1001,7 @@ function ListTable({ table }: { table: Table<RateEntry> }) {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="odd:bg-card even:bg-background/60">
               {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="border-b px-3 py-2 tabular-nums"
-                >
+                <td key={cell.id} className="border-b px-3 py-2 tabular-nums">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

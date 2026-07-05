@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/components/providers/auth-context"
 
 const emptyPricingList = [
   {
@@ -90,6 +91,11 @@ export function LoadingOffloadingPricingForm({
   initialData,
   onSubmit,
 }: LoadingOffloadingPricingSchemaProp) {
+  const { hasPermission } = useAuth()
+  const canCreateOrEdit =
+    hasPermission!("config:loading_fees:create") ||
+    hasPermission!("config:loading_fees:edit")
+
   const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
@@ -153,18 +159,22 @@ export function LoadingOffloadingPricingForm({
               </Field>
             ))}
             <Separator />
-            <Button
-              type="button"
-              variant={"outline"}
-              className="mb-5"
-              onClick={() => append(emptyPricing)}
-            >
-              <Plus /> Add
-            </Button>
+            {canCreateOrEdit && (
+              <Button
+                type="button"
+                variant={"outline"}
+                className="mb-5"
+                onClick={() => append(emptyPricing)}
+              >
+                <Plus /> Add
+              </Button>
+            )}
           </FieldGroup>
-          <Field className="">
-            <SubmitButton isSubmitting={form.formState.isSubmitting} />
-          </Field>
+          {canCreateOrEdit && (
+            <Field className="">
+              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            </Field>
+          )}
         </form>
       </CardContent>
     </Card>

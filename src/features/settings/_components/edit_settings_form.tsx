@@ -92,7 +92,7 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
           </FieldGroup>
         </CardContent>
         <Can permission="config:edit">
-          <CardFooter>
+          <CardFooter className="justify-end">
             <SubmitButton
               text={tr("common.form.submit")}
               isSubmitting={form.formState.isSubmitting}

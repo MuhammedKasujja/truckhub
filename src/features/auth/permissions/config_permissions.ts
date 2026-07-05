@@ -29,10 +29,22 @@ export const ConfigModulePermissions = {
   "config:tax_rates:create": ["tax_rates:create"],
   "config:tax_rates:delete": ["tax_rates:delete"],
   "config:tax_rates:edit": ["tax_rates:update"],
-  // booking routes
+  // Booking routes
   "config:routes:create": ["routes:create"],
   "config:routes:delete": ["routes:delete"],
   "config:routes:edit": ["routes:update"],
+  // Distance Pricing routes
+  "config:distance_pricing:create": ["distance_pricings:create"],
+  "config:distance_pricing:delete": ["distance_pricings:delete"],
+  "config:distance_pricing:edit": ["distance_pricings:update"],
+  // Loading Fees routes
+  "config:loading_fees:create": ["loading_fees:create"],
+  "config:loading_fees:delete": ["loading_fees:delete"],
+  "config:loading_fees:edit": ["loading_fees:update"],
+  // Island Pricings
+  "config:island_pricing:create": ["island_pricings:create"],
+  "config:island_pricing:delete": ["island_pricings:delete"],
+  "config:island_pricing:edit": ["island_pricings:update"],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions
