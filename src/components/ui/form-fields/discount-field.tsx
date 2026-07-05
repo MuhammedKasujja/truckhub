@@ -55,11 +55,13 @@ export function DiscountField<T extends FieldValues>({
                 field.onChange(isNaN(number) ? null : number)
               }}
             />
-            <InputGroupAddon align="inline-start">
-              <InputGroupButton variant="secondary">
-                {settings?.currency_code ?? CURRENCY_CODE}
-              </InputGroupButton>
-            </InputGroupAddon>
+            {discountType === "fixed" && (
+              <InputGroupAddon align="inline-start">
+                <InputGroupButton variant="secondary">
+                  {settings?.currency_code ?? CURRENCY_CODE}
+                </InputGroupButton>
+              </InputGroupAddon>
+            )}
             <InputGroupAddon align="inline-end">
               <InputGroupButton
                 variant="secondary"

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { FieldGroup } from "@/components/ui/field"
+import { FieldGroup, FieldLabel } from "@/components/ui/field"
 import {
   NumberField,
   DiscountField,
@@ -32,11 +32,11 @@ import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
 import { useState } from "react"
-import { TaxRate } from "@/features/settings/tax-rates/types"
 import { ServicesList } from "./create/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { Badge } from "@/components/ui/badge"
+import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -48,8 +48,9 @@ export function TrucksServiceBookingForm({
   const tr = useTranslation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const defaultTaxRate = useDefaultTaxRate()
 
-  const [taxRate, setTaxRate] = useState<TaxRate>()
+  const [taxRate, setTaxRate] = useState(defaultTaxRate)
   const [selectedClient, setSelectedClient] = useState<Client>()
   const search = useSearch({ from: "/_admin/bookings/new/" })
   const queryInvalidator = useQueryInvalidator()
@@ -133,8 +134,9 @@ export function TrucksServiceBookingForm({
               // onSelected={setContacts}
             />
           )}
+          <FieldLabel htmlFor="tax">Tax</FieldLabel>
           <TaxRatePicker
-            label="Tax"
+            id="tax"
             value={taxRate}
             onSelected={(taxRate) => {
               setTaxRate(taxRate)
