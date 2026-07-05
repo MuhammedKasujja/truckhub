@@ -2,10 +2,9 @@
 // Reports permissions
 export const ReportsModulePermissions = {
   "reports:module": ["reports:module"],
-  "reports:create": ["reports:create"],
   "reports:view": ["reports:view", "reports:read"],
-  "reports:delete": ["reports:delete"],
   "reports:edit": ["reports:update", "reports:view"],
+  "reports:audit_logs:view": ["audit_logs:read"],
 } as const
 
 export type ReportsPermissions = keyof typeof ReportsModulePermissions

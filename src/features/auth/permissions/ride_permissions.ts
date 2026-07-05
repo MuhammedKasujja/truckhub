@@ -4,6 +4,7 @@ export const RideModulePermissions = {
   "rides:view": ["rides:read", "rides:view"],
   "rides:delete": ["rides:delete"],
   "rides:edit": ["rides:update", "tax_rates:read"],
+  "rides:active": ["rides:read", "rides:view"],
 } as const
 
 export type RidePermissions = keyof typeof RideModulePermissions

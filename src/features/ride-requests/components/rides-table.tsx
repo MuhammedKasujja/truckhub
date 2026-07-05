@@ -14,13 +14,15 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createRidesQueryOptions } from "../query-options"
 import { useTranslation } from "@/i18n"
+import { Can } from "@/components/has-permission"
 
 export function RideRequestTable() {
   const search = useSearch({ from: "/_admin/rides/" })
   const tr = useTranslation()
 
   const {
-    data: { data, pagination }, error,
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createRidesQueryOptions(search))
 
   const columns = React.useMemo(() => getRideRequestTableColumns(tr), [tr])
@@ -43,12 +45,14 @@ export function RideRequestTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <Button size={"sm"} asChild>
-          <Link to={"/rides/live"}>
-            <MapIcon />
-            Live
-          </Link>
-        </Button>
+        <Can permission="rides:active">
+          <Button size={"sm"} asChild>
+            <Link to={"/rides/live"}>
+              <MapIcon />
+              Live
+            </Link>
+          </Button>
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
@@ -56,11 +60,5 @@ export function RideRequestTable() {
 }
 
 export function RideRequestTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={8}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={8} filterCount={1} shrinkZero />
 }

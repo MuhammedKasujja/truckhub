@@ -10,7 +10,7 @@ import { createAuditLogsQueryOptions } from "@/features/audit_logs/query-options
 
 export const Route = createFileRoute("/_admin/reports/audits/")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("config:view:audit_logs"),
+  beforeLoad: () => hasPermission("reports:audit_logs:view"),
   pendingComponent: AuditLogTableSkeleton,
   loader: ({ context, location }) => {
     context.queryClient.prefetchQuery(

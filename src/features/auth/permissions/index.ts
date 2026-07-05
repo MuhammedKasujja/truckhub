@@ -2,11 +2,11 @@ import { RideModulePermissions } from "./ride_permissions";
 import { UserModulePermissions } from "./users_permissions";
 import { DriverModulePermissions } from "./driver_permissions";
 import { ConfigModulePermissions } from "./config_permissions";
+import { ClientModulePermissions } from "./client_permissions";
 import { ReportsModulePermissions } from "./reports_permissions";
 import { BookingModulePermissions } from "./booking_permissions";
 import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
-import { ClientModulePermissions } from "./customer_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
 import { DashboardModulePermissions } from "./dashboard_permissions";
 
