@@ -1,4 +1,6 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
+import { TaxRate } from "./tax-rates/types"
 
 export const CompanySchema = z.object({
   name: z.string().min(2, "Required"),
@@ -21,12 +23,13 @@ export const EditInvoiceTermsSchema = z.object({
 })
 
 export const EditSettingsSchema = z.object({
-  search_radius: z.number(),
+  search_radius: z.number().optional(),
   counter_padding: z.number().optional(),
   date_format: z.string().min(2, "Required").optional(),
   currency_code: z.string().min(2, "Required").optional(),
   invoice_terms: z.array(z.string()).optional().nullable(),
   quotation_terms: z.array(z.string()).optional().nullable(),
+  default_tax_rate_id: IDSchema.optional().nullable(),
 })
 
 export type Settings = z.infer<typeof EditSettingsSchema>
@@ -39,4 +42,5 @@ export type Company = z.infer<typeof CompanySchema>
 
 export interface CompanySettings extends Settings {
   company: Company
+  default_tax_rate: TaxRate | null
 }
