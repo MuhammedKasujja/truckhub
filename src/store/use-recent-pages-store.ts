@@ -1,9 +1,6 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
-
-const MAXIMAM_HISTORY_ENTRIES = 50 // maximum number of entries to keep in the navigation history
-
-const IGNORE_PATHS = ["/login", "/logout", "/register"]
+import { IGNORE_PATHS, MAXIMAM_HISTORY_ENTRIES } from "@/common/config"
 
 interface NavEntry {
   pathname: string

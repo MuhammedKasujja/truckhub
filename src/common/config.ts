@@ -1,3 +1,7 @@
+export const MAXIMAM_HISTORY_ENTRIES = 50 // maximum number of entries to keep in the navigation history
+
+export const IGNORE_PATHS = ["/login", "/logout", "/register"]
+
 export const CAR_COLORS = {
   white: {
     name: "White",

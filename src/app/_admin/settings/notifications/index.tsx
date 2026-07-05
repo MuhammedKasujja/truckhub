@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/item"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
-import { useRecentPagesStore } from "@/store/use-recent-pages-store"
+import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { createFileRoute } from "@tanstack/react-router"
 import { BellIcon, MailIcon, PhoneIcon } from "lucide-react"
 
@@ -26,8 +26,7 @@ export const Route = createFileRoute("/_admin/settings/notifications/")({
 })
 
 function RouteComponent() {
-  const history = useRecentPagesStore((state) => state.history)
-  const clearHistory = useRecentPagesStore((state) => state.clear)
+  const { history, clearHistory } = useNavigationHistory()
   return (
     <Card className="m-4">
       <CardHeader>

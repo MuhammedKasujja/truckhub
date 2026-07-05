@@ -1,4 +1,5 @@
 import { useRouter } from "@tanstack/react-router"
+import { useRecentPagesStore } from "@/store/use-recent-pages-store"
 import { useHistoryStore } from "@/store/use-navigation-history-store"
 
 export function useNavigationHistory() {
@@ -7,6 +8,15 @@ export function useNavigationHistory() {
   const forward = useHistoryStore((s) => s.forward)
   const canGoBack = useHistoryStore((s) => s.canGoBack())
   const canGoForward = useHistoryStore((s) => s.canGoForward())
+  const clearHistoryStack = useHistoryStore((s) => s.clear)
+
+  const history = useRecentPagesStore((state) => state.history)
+  const clearPages = useRecentPagesStore((state) => state.clear)
+
+  const clearHistory = () => {
+    clearHistoryStack()
+    clearPages()
+  }
 
   const goBack = () => {
     const target = back()
@@ -22,5 +32,5 @@ export function useNavigationHistory() {
     }
   }
 
-  return { goBack, goForward, canGoBack, canGoForward }
+  return { goBack, goForward, canGoBack, canGoForward, history, clearHistory }
 }
