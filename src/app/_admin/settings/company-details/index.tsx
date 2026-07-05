@@ -1,3 +1,4 @@
+import { Can } from "@/components/has-permission"
 import {
   Card,
   CardAction,
@@ -52,22 +53,26 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
-      <EditInvoiceTermsForm
-        initialData={{
-          invoiceTerms: transformToTerms(settings.invoice_terms),
-          quotationTerms: transformToTerms(settings.quotation_terms),
-        }}
-      />
+      <Can permission="config:payment_terms:edit">
+        <EditInvoiceTermsForm
+          initialData={{
+            invoiceTerms: transformToTerms(settings.invoice_terms),
+            quotationTerms: transformToTerms(settings.quotation_terms),
+          }}
+        />
+      </Can>
       <Card>
         <CardHeader>
           <CardTitle>Quotation Terms</CardTitle>
           <CardAction>
-            <EditQuotationTermsForm
-              initialData={{
-                invoiceTerms: transformToTerms(settings.invoice_terms),
-                quotationTerms: transformToTerms(settings.quotation_terms),
-              }}
-            />
+            <Can permission="config:payment_terms:edit">
+              <EditQuotationTermsForm
+                initialData={{
+                  invoiceTerms: transformToTerms(settings.invoice_terms),
+                  quotationTerms: transformToTerms(settings.quotation_terms),
+                }}
+              />
+            </Can>
           </CardAction>
         </CardHeader>
         <CardContent>
