@@ -58,6 +58,9 @@ export const ConfigModulePermissions = {
   "config:island_pricing:create": ["island_pricings:create"],
   "config:island_pricing:delete": ["island_pricings:delete"],
   "config:island_pricing:edit": ["island_pricings:update"],
+  
+  // Vehicle Features
+  "config:vehicle_features:edit": ["vehicle_features:update"],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions

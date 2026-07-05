@@ -25,6 +25,7 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/ui/sortable"
+import { Can } from "@/components/has-permission"
 
 const emptyFeature = {
   name: "",
@@ -61,7 +62,7 @@ export function EditVehicleFeatureForm() {
           <View /> Features
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:min-w-3xl ring-4">
+      <DialogContent className="ring-4 md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Vehicle Features</DialogTitle>
         </DialogHeader>
@@ -97,32 +98,38 @@ export function EditVehicleFeatureForm() {
                         control={form.control}
                         name={`features.${index}.name`}
                       />
-                      <Button
-                        type="button"
-                        variant={"destructive"}
-                        onClick={() => remove(index)}
-                        size={"icon-sm"}
-                      >
-                        <Trash2 />
-                      </Button>
+                      <Can permission="config:vehicle_features:edit">
+                        <Button
+                          type="button"
+                          variant={"destructive"}
+                          onClick={() => remove(index)}
+                          size={"icon-sm"}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </Can>
                     </Field>
                   </SortableItem>
                 ))}
               </SortableContent>
             </Sortable>
             <Separator />
-            <Button
-              type="button"
-              variant={"secondary"}
-              className="mb-5"
-              onClick={() => append(emptyFeature)}
-            >
-              <Plus /> Add
-            </Button>
+            <Can permission="config:vehicle_features:edit">
+              <Button
+                type="button"
+                variant={"secondary"}
+                className="mb-5"
+                onClick={() => append(emptyFeature)}
+              >
+                <Plus /> Add
+              </Button>
+            </Can>
           </FieldGroup>
-          <Field className="">
-            <SubmitButton isSubmitting={form.formState.isSubmitting} />
-          </Field>
+          <Can permission="config:vehicle_features:edit">
+            <Field className="">
+              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            </Field>
+          </Can>
         </form>
       </DialogContent>
     </Dialog>
