@@ -26,6 +26,7 @@ export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   clearable?: boolean
   required?: boolean
   noResultsMessage?: React.ReactNode
+  createMode?: "dialog" | "page",
 }
 
 interface FormAutoCompleteFieldProps<

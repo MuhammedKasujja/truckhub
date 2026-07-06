@@ -7,7 +7,7 @@ import {
   FormAutoComplete,
   FormAutoCompleteProps,
 } from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
-import { FieldValues } from "react-hook-form"
+import { FieldValues, useController } from "react-hook-form"
 import { EntityPickerProps } from "@/common/types"
 
 export function UserPicker({
@@ -47,6 +47,8 @@ export function UserPickerField<TFieldValues extends FieldValues>({
   const { data, isLoading } = useQuery(
     usersQueryOprions(remote ? { search: query } : {})
   )
+
+  // const { field, fieldState } = useController({ name, control })
   return (
     <FormAutoComplete
       name={name}
@@ -107,7 +109,6 @@ function UserPickerWithFetcher({
     queryFn: () => api.searchUsers(search),
     enabled: search.length > 0,
   })
-
 
   const mergedOptions = useMemo(() => {
     if (!resolvedUser || search.length > 0) return searchResults

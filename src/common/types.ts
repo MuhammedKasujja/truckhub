@@ -9,4 +9,5 @@ export type EntityPickerProps<T> = {
   /** Min chars before triggering remote search */
   minSearchLength?: number
   onSelected?: (value: T | null | undefined) => void
+  createMode: "dialog" | "page",
 }

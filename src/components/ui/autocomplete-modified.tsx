@@ -184,6 +184,7 @@ export function AutoComplete<T>({
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
+                  className="bg-muted/60 flex justify-center items-center"
                   onSelect={() => {
                     onCreateNew(search)
                     setOpen(false)
