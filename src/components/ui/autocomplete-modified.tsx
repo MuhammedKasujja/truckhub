@@ -16,11 +16,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { EntityId } from "@/schemas"
 
 export interface AutoCompleteProps<T> {
   id?: string
   options: T[]
-  value?: T | string | null // 👈 accept either
+  value?: T | EntityId | null // 👈 accept either
   loading?: boolean
 
   onChange: (value: T | null | undefined) => void
@@ -42,6 +43,11 @@ export interface AutoCompleteProps<T> {
   clearable?: boolean
 
   noResultsMessage?: React.ReactNode
+
+  /** Shown as a persistent row at the bottom of the list. Doesn't touch `value`/`onChange` —
+   *  purely a UI hook for the caller to react to (e.g. navigate to a create page). */
+  onCreateNew?: (search: string) => void
+  createNewLabel?: (search: string) => React.ReactNode
 }
 
 export function AutoComplete<T>({
@@ -62,6 +68,9 @@ export function AutoComplete<T>({
   disabled,
   clearable = true,
   noResultsMessage,
+
+  onCreateNew,
+  createNewLabel,
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -116,9 +125,10 @@ export function AutoComplete<T>({
           className="w-full justify-between"
         >
           {selectedOption
-            ? (renderValue?.(selectedOption) ?? renderOption(selectedOption, true))
+            ? (renderValue?.(selectedOption) ??
+              renderOption(selectedOption, true))
             : currentValueKey
-              ? currentValueKey // fallback: options not loaded yet, show raw value [[ Unknown Option ]]
+              ? currentValueKey // string id, not yet resolvable from `options` — caller's job to hydrate [[ Unknown Option ]]
               : placeholder}
 
           <ChevronsUpDown className="opacity-50" />
@@ -171,6 +181,18 @@ export function AutoComplete<T>({
                 )
               })}
             </CommandGroup>
+            {onCreateNew && (
+              <CommandGroup>
+                <CommandItem
+                  onSelect={() => {
+                    onCreateNew(search)
+                    setOpen(false)
+                  }}
+                >
+                  {createNewLabel?.(search) ?? `+ Create "${search || "new"}"`}
+                </CommandItem>
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

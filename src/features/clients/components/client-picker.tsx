@@ -64,6 +64,12 @@ export function ClientPickerField<TFieldValues extends FieldValues>({
 }: FormAutoCompleteProps<TFieldValues, Client>) {
   const [query, setQuery] = useState("")
   const { data, isLoading } = useQuery(clientsSearchQueryOptions(query))
+
+  // useEffect(()=>{
+  //    if(data && data.length >0 ){
+  //     const selectedClient = data.find((client) => client.id === props.value)
+  //    }
+  // }, [data])
   return (
     <FormAutoComplete
       name={name}
