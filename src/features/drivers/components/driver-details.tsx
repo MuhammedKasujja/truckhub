@@ -94,7 +94,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
         <Card className="md:col-span-3">
           <CardHeader>
             <CardTitle className="capitalize">{driver?.fullname}</CardTitle>
-            <CardDescription></CardDescription>
+            <CardDescription>{driver.number}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>{driver?.email}</div>
