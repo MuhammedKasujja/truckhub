@@ -12,7 +12,7 @@ export function checkUserPermission(user: User) {
     const required = KeyNamedPermissions[permission];
     if (!required) return false;
 
-    // return required.every((p) => session.permissions.includes(p));
+    // return required.every((p) => user.permissions.includes(p));
 
     // All required permissions must be present in user's list
     // using set for 0(1) lookups

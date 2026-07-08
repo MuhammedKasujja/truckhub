@@ -1,9 +1,8 @@
-"use client";
+"use client"
 
-import { UserPermission } from "@/features/auth/permissions";
-import { NoPermissionCard } from "./no-permission-card";
-import { useMemo } from "react";
-import { useAuth } from "./providers/auth-context";
+import { UserPermission } from "@/features/auth/permissions"
+import { NoPermissionCard } from "./no-permission-card"
+import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
 export function HasPermission({
   permission,
@@ -11,18 +10,17 @@ export function HasPermission({
   fallbackText,
   children,
 }: {
-  permission: UserPermission;
-  renderFallback?: boolean;
-  fallbackText?: string;
-  children: React.ReactNode;
+  permission: UserPermission
+  renderFallback?: boolean
+  fallbackText?: string
+  children: React.ReactNode
 }) {
-  const { user, hasPermission } = useAuth();
-  const allowed = useMemo(() => hasPermission?.(permission), [permission, user]);
+  const { hasPermission } = usePermissions()
 
-  if (allowed) return children;
-  if (renderFallback)
-    return <NoPermissionCard>{fallbackText}</NoPermissionCard>;
-  return null;
+  if (hasPermission(permission)) return children
+  
+  if (renderFallback) return <NoPermissionCard>{fallbackText}</NoPermissionCard>
+  return null
 }
 
 export const Can = HasPermission

@@ -25,7 +25,7 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
       <Worker workerUrl="/pdf.worker.min.mjs">
         <Viewer
           fileUrl={fileUrl}
-          // plugins={[defaultLayoutPluginInstance]}
+          plugins={[defaultLayoutPluginInstance]}
           theme={theme}
           defaultScale={1} // 1 = 100%
         />

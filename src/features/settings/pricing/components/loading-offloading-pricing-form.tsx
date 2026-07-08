@@ -93,8 +93,8 @@ export function LoadingOffloadingPricingForm({
 }: LoadingOffloadingPricingSchemaProp) {
   const { hasPermission } = useAuth()
   const canCreateOrEdit =
-    hasPermission!("config:loading_fees:create") ||
-    hasPermission!("config:loading_fees:edit")
+    hasPermission("config:loading_fees:create") ||
+    hasPermission("config:loading_fees:edit")
 
   const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
     resolver: zodResolver(LoadingOffloadingPricingSchema),

@@ -27,7 +27,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   const queryInvalidator = useQueryInvalidator()
   const { hasPermission } = useAuth()
 
-  const canEdit = hasPermission!("config:manage_entity_numbers")
+  const canEdit = hasPermission("config:manage_entity_numbers")
 
   const form = useForm<NumberingPatternType>({
     resolver: zodResolver(NumberingPatternSchema),

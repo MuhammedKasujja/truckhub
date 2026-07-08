@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Link, useSearch } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehiclesListQueryOptions } from "../query-options"
 
@@ -40,14 +40,14 @@ export function VehicleTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <HasPermission permission={"vehicles:create"}>
+        <Can permission={"vehicles:create"}>
           <Button asChild>
             <Link to={"/vehicles/new"}>
               <PlusIcon />
               New Vehicle
             </Link>
           </Button>
-        </HasPermission>
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>

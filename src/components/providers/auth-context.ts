@@ -4,7 +4,7 @@ import { UserPermission } from "@/features/auth/permissions"
 
 export const AuthContext = createContext<{
   user: User | null | undefined
-  hasPermission?: (permission: UserPermission) => boolean
+  hasPermission: (permission: UserPermission) => boolean
   refresh: () => void
 } | null>(null)
 
