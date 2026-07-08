@@ -1,10 +1,10 @@
 import { PermissionsWrapper } from "@/features/settings/permissions/components/permissions-wrapper"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/user-management/permissions/")({
-  beforeLoad: () => hasPermission("config:roles:assign_permissions"),
+  beforeLoad: () => requirePermission("config:roles:assign_permissions"),
   component: RouteComponent,
   loader: ({ context }) => {
     context.queryClient.prefetchQuery(createRolesQueryOptions())

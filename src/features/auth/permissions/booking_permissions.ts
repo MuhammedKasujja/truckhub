@@ -8,6 +8,7 @@ export const BookingModulePermissions = {
     "services:read",
     "tax_rates:read",
     "clients:route_pricings:view",
+    "bookings:trucks:create",
   ],
   "bookings:view": ["bookings:view", "bookings:read"],
   "bookings:delete": ["bookings:delete"],

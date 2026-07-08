@@ -17,14 +17,14 @@ import {
   clientRidesQueryOptions,
 } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
   errorComponent: NotFound,
-  beforeLoad: () => hasPermission("clients:view"),
+  beforeLoad: () => requirePermission("clients:view"),
   loader: async ({ context: { queryClient }, params }) => {
     const clientId = params.clientId
     queryClient.ensureQueryData(clientPaymentsQueryOptions(clientId))

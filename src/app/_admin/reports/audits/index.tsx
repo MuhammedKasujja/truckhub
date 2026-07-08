@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import {
   AuditLogTable,
@@ -10,7 +10,7 @@ import { createAuditLogsQueryOptions } from "@/features/audit_logs/query-options
 
 export const Route = createFileRoute("/_admin/reports/audits/")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("reports:audit_logs:view"),
+  beforeLoad: () => requirePermission("reports:audit_logs:view"),
   pendingComponent: AuditLogTableSkeleton,
   loader: ({ context, location }) => {
     context.queryClient.prefetchQuery(

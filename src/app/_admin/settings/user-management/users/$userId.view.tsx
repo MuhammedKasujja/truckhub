@@ -1,12 +1,12 @@
 import { UserDetailsWrapper } from "@/features/users/components/user-details-wrapper"
 import { userDetailsQueryOptions } from "@/features/users/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/user-management/users/$userId/view")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("users:view"),
+  beforeLoad: () => requirePermission("users:view"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(userDetailsQueryOptions(params.userId)),
 })

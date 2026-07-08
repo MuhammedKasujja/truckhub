@@ -10,7 +10,6 @@ export async function requirePermission(permission: UserPermission) {
   const user = await requireAuth({ redirectTo: "/login" })
 
   const func = checkUserPermission(user)
-  console.log("Permission", permission, func(permission))
   if (!func(permission)) {
     throw redirect({ to: "/unauthorized" })
   }
@@ -22,10 +21,6 @@ export async function requireAuth({
   const user = await getCurrentUser()
   if (!user) throw redirect({ to: redirectTo })
   return user
-}
-
-export async function hasPermission(permission: UserPermission) {
-  return await requirePermission(permission)
 }
 
 export const getCurrentUser = createServerFn({ method: "GET" }).handler(

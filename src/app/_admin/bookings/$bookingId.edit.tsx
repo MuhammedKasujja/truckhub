@@ -2,12 +2,12 @@ import { BookingRequestForm } from "@/features/bookings/components/booking-reque
 import { bookingDetailsQueryOptions } from "@/features/bookings/queries-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/bookings/$bookingId/edit")({
   component: RouteComponent,
-  beforeLoad: async () => hasPermission("bookings:edit"),
+  beforeLoad: async () => requirePermission("bookings:edit"),
   loader: async ({ context, params }) => {
     context.queryClient.prefetchQuery(clientsSearchQueryOptions())
     return await Promise.all([
