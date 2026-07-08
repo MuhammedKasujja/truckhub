@@ -17,7 +17,7 @@ export function formatMoney(
 }
 
 export function formatNumber(
-  value: number | string,
+  value: number | string | undefined,
   options?: Intl.NumberFormatOptions
 ) {
   // return Number(value).toLocaleString(undefined, {

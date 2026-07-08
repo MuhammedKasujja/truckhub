@@ -3,12 +3,12 @@ import { IDSchema } from "@/schemas"
 import { TaxRate } from "./tax-rates/types"
 
 export const CompanySchema = z.object({
-  name: z.string().min(2, "Required"),
-  email: z.email(),
-  phone: z.string().min(2, "Required"),
-  website: z.url().optional().nullable(),
-  address: z.string().optional().nullable(),
-  description: z.string().min(3).optional().nullable(),
+  name: z.string().trim().min(2, "Required"),
+  email: z.email().trim(),
+  phone: z.string().trim().min(2, "Required"),
+  website: z.url().trim().optional().nullable(),
+  address: z.string().trim().optional().nullable(),
+  description: z.string().trim().min(3).optional().nullable(),
 })
 
 export const EditInvoiceTermsSchema = z.object({

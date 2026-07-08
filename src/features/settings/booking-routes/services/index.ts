@@ -1,19 +1,31 @@
-import { RouteEditSchema } from "../schemas"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { createRoute, getBookingRoutes } from "./server"
+import { RouteCreateSchema, RouteUpdateSchema } from "../schemas"
+import {
+  createRoute,
+  deleteRoute,
+  updateRoute,
+  getBookingRoutes,
+} from "./server"
 
 export const getBookingRoutesFn = createServerFn().handler(async () => {
   return getBookingRoutes()
 })
 
 export const createRouteFn = createServerFn({ method: "POST" })
-  .inputValidator(RouteEditSchema)
+  .inputValidator(RouteCreateSchema)
   .handler(async ({ data }) => {
     return createRoute(data)
   })
 
 export const updateRouteFn = createServerFn({ method: "POST" })
-  .inputValidator(RouteEditSchema)
+  .inputValidator(RouteUpdateSchema)
   .handler(async ({ data }) => {
-    return createRoute(data)
+    return updateRoute(data)
+  })
+
+export const deleteRouteFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return deleteRoute(data.id)
   })

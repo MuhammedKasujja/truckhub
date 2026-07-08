@@ -1,5 +1,4 @@
 "use client"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -7,33 +6,43 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import { useTranslation } from "@/i18n"
-import { useState } from "react"
-import { RouteEditSchema } from "../schemas"
+import { BookingRoute, RouteCreateSchema, RouteUpdateSchema } from "../schemas"
 import z from "zod"
 import { NumberField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createRouteFn, updateRouteFn } from "../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { Can } from "@/components/has-permission"
 
-export function RouteEditForm() {
+type RouteEditFormProps = {
+  initialData?: BookingRoute
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function RouteEditForm({
+  open,
+  onOpenChange,
+  initialData,
+}: RouteEditFormProps) {
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
-  const [open, setOpen] = useState(false)
 
-  const form = useForm<z.infer<typeof RouteEditSchema>>({
-    resolver: zodResolver(RouteEditSchema),
+  const isEdit = !!initialData
+
+  const formSchema = isEdit ? RouteUpdateSchema : RouteCreateSchema
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { ...initialData },
   })
 
-  async function onSubmit(values: z.infer<typeof RouteEditSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
       "id" in values
         ? updateRouteFn({ data: values })
@@ -49,19 +58,13 @@ export function RouteEditForm() {
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <Can permission="config:routes:create">
-        <DialogTrigger asChild>
-          <Button size="sm" className="font-normal">
-            <PlusIcon />
-            Route
-          </Button>
-        </DialogTrigger>
-      </Can>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Booking Route</DialogTitle>
+            <DialogTitle>
+              {isEdit ? "Edit Booking Route" : "Booking Route"}
+            </DialogTitle>
             <DialogDescription>Create a new booking route</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import z from "zod"
-import { EntityId } from "@/schemas"
+import { IDSchema } from "@/schemas"
 
-export const RouteEditSchema = z
+export const RouteCreateSchema = z
   .object({
     origin: z.string().min(1, "Required"),
     destination: z.string().min(1, "Origin is required"),
@@ -14,6 +14,13 @@ export const RouteEditSchema = z
     path: ["max_hrs"],
   })
 
-export type RouteEditType = z.infer<typeof RouteEditSchema>
+export const RouteUpdateSchema = z.object({
+  id: IDSchema,
+  ...RouteCreateSchema.shape
+})
 
-export type BookingRoute =  { id: EntityId } & RouteEditType
+export type RouteCreateType = z.infer<typeof RouteCreateSchema>
+
+export type RouteUpdateType = z.infer<typeof RouteUpdateSchema>
+
+export type BookingRoute =  RouteUpdateType
