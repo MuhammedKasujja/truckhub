@@ -4,6 +4,7 @@ import { UserProfileView } from "@/features/users/components"
 import { userProfileQueryOptions } from "@/features/users/query-options"
 import { requireAuth } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
+import { ShieldIcon, UserIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/settings/user-profile/")({
   component: RouteComponent,
@@ -20,8 +21,14 @@ function RouteComponent() {
   return (
     <Tabs defaultValue="profile" className="w-full">
       <TabsList>
-        <TabsTrigger value={"profile"}>User Profile</TabsTrigger>
-        <TabsTrigger value={"change-password"}>Change Password</TabsTrigger>
+        <TabsTrigger value={"profile"}>
+          <UserIcon />
+          User Profile
+        </TabsTrigger>
+        <TabsTrigger value={"change-password"}>
+          <ShieldIcon />
+          Change Password
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="profile">
         <UserProfileView user={user} />

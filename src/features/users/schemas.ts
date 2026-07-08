@@ -11,6 +11,7 @@ export const UserCreateSchema = z.object({
   email: z.email().trim(),
   username: z.string().trim().min(4, "Too short. should be at least 4 letters"),
   password: z.string().trim().min(3, "Required"),
+  signature: z.string().trim().optional().nullable(),
 })
 
 export const UserUpdateSchema = z.object({

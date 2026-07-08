@@ -6,7 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { FieldGroup } from "@/components/ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
 import {
   EmailField,
   PasswordField,
@@ -20,11 +25,12 @@ import {
 } from "@/features/users/schemas"
 import { createUserFn, updateUserFn } from "@/features/users/services"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import SignaturePad from "@/components/ui/signature-pad"
 
 type UserFormProps = {
   initialData?: Partial<UserUpdateSchemaType>
@@ -105,6 +111,24 @@ export function UserForm({ initialData }: UserFormProps) {
                 control={form.control}
               />
             )}
+            <Controller
+              control={form.control}
+              name="signature"
+              render={({ field }) => (
+                <Field className="flex flex-col">
+                  <FieldLabel>User Signature</FieldLabel>
+                  <SignaturePad
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={form.formState.isSubmitting}
+                  />
+                  <FieldDescription>
+                    Click the pen button to open the signature pad. Draw your
+                    signature, then hold the confirm button to save.
+                  </FieldDescription>
+                </Field>
+              )}
+            />
           </FieldGroup>
         </CardContent>
         <CardFooter className="sm:justify-end">

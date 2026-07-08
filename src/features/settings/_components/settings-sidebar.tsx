@@ -7,6 +7,7 @@ import {
   FileText,
   ListOrdered,
   LocateFixed,
+  UserIcon,
   Wallet,
   SquareSigma,
   SettingsIcon,
@@ -95,7 +96,7 @@ const data: Navbar = {
     },
     {
       name: "User Profile",
-      icon: ListOrdered,
+      icon: UserIcon,
       route: ProfileRoute.to,
     },
   ],
