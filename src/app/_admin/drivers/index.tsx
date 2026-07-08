@@ -9,11 +9,11 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/drivers/")({
   component: RouteComponent,
-  beforeLoad: ()=> hasPermission('drivers:view'),
+  beforeLoad: ()=> requirePermission('drivers:module'),
   loader: ({ context, location }) =>
     context.queryClient.ensureQueryData(
       createDriverListQueryOptions(location.search)

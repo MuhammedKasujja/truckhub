@@ -10,6 +10,7 @@ export function checkUserPermission(user: User) {
 
     // Lookup the named permissions with the backend corresponding permission names
     const required = KeyNamedPermissions[permission];
+    console.log("PermissionSet", required)
     if (!required) return false;
 
     // return required.every((p) => user.permissions.includes(p));

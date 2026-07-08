@@ -1,4 +1,4 @@
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { Suspense } from "react";
 import {
@@ -13,7 +13,7 @@ import { createRidesQueryOptions } from "@/features/ride-requests/query-options"
 
 export const Route = createFileRoute("/_admin/rides/")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("rides:view"),
+  beforeLoad: () => requirePermission("rides:module"),
   loader: ({ context, location }) =>
     context.queryClient.ensureQueryData(
       createRidesQueryOptions(location.search)

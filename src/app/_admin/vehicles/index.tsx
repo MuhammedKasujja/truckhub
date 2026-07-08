@@ -3,7 +3,7 @@ import {
   VehicleTableSkeleton,
 } from "@/features/vehicles/components/vehicle-table"
 import { Suspense } from "react"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { PageHeader, PageTitle } from "@/components/page-header"
 
 import { createVehiclesListQueryOptions } from "@/features/vehicles/query-options"
@@ -11,7 +11,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("vehicles:view"),
+  beforeLoad: () => requirePermission("vehicles:module"),
   loader: ({ context, location }) => {
     context.queryClient.prefetchQuery(
       createVehiclesListQueryOptions(location.search)

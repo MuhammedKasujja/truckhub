@@ -4,7 +4,7 @@ import {
   BookingTable,
   BookingTableSkeleton,
 } from "@/features/bookings/components/booking-table"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { BookingStatisticsCard } from "@/features/bookings/components"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
@@ -19,7 +19,7 @@ import { BookingSearchParamsSchema } from "@/features/bookings/schemas"
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
   validateSearch: BookingSearchParamsSchema,
-  beforeLoad: async () => hasPermission("bookings:view"),
+  beforeLoad: async () => requirePermission("bookings:module"),
   loader: async ({ context, location }) => {
     context.queryClient.prefetchQuery(
       createBookingQueryOptions(location.search)

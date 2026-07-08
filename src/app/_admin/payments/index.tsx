@@ -28,11 +28,11 @@ import {
   paymentStatisticsQueryOptions,
 } from "@/features/payments/query-options"
 import { useTranslation } from "@/i18n"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/payments/")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("payments:view"),
+  beforeLoad: () => requirePermission("payments:module"),
   loader: async ({ context: { queryClient }, location }) => {
     await queryClient.ensureQueryData(paymentsQueryOptions(location.search))
     return queryClient.ensureQueryData(paymentStatisticsQueryOptions())

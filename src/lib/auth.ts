@@ -6,10 +6,11 @@ import { isExpiringSoon, useAppSession } from "./session"
 import { refreshAuthTokenFn } from "@/features/auth/services"
 import type { UserPermission } from "@/features/auth/permissions"
 
-async function requirePermission(permission: UserPermission) {
+export async function requirePermission(permission: UserPermission) {
   const user = await requireAuth({ redirectTo: "/login" })
 
   const func = checkUserPermission(user)
+  console.log("Permission", permission, func(permission))
   if (!func(permission)) {
     throw redirect({ to: "/unauthorized" })
   }
