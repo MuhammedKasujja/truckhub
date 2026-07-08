@@ -17,6 +17,9 @@ export const ConfigModulePermissions = {
     "settings:entity_numbers:update",
     "settings:entity_numbers:read",
   ],
+  "config:pricing_plans:view": [],
+  "config:vehicle_config:view": [],
+  "config:user:management": ["users:view", "users:read", "roles:read",],
   // car_models routes
   "config:car_model:view": ["car_models:read", "car_models:view"],
   "config:car_model:create": ["car_models:create"],
@@ -68,7 +71,7 @@ export const ConfigModulePermissions = {
   "config:island_pricing:edit": ["island_pricings:update"],
 
   // Vehicle Features
-  "config:vehicle_features:edit": ["settings:update",],
+  "config:vehicle_features:edit": ["settings:update"],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions

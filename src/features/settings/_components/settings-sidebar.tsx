@@ -11,6 +11,7 @@ import {
   SquareSigma,
   SettingsIcon,
   Users,
+  type LucideIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -36,35 +37,52 @@ import { Route as NotificationsRoute } from "@/app/_admin/settings/notifications
 import { Route as ProfileRoute } from "@/app/_admin/settings/user-profile"
 import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
+import { Can } from "@/components/has-permission"
+import { UserPermission } from "@/features/auth/permissions"
+import { GlobalKeys } from "@/i18n"
 
-const data = {
+type SidebarItem = {
+  // name: GlobalKeys
+  name: string
+  route: string
+  icon: LucideIcon
+  permission?: UserPermission
+}
+
+type Navbar = { nav: SidebarItem[] }
+
+const data: Navbar = {
   nav: [
     { name: "Company Details", icon: Home, route: CompanyDetailsRoute.to },
     {
       name: "Pricing Plans",
       icon: Wallet,
       route: PricingConfigRoute.to,
-      permission: "",
+      permission: "config:pricing_plans:view",
     },
     {
       name: "Vehicle Config",
       icon: Globe,
       route: VehicleConfigDefaultRoute.to,
-      permission: "config:edit",
+      permission: "config:vehicle_config:view",
     },
     {
       name: "Routes",
       icon: LocateFixed,
       route: BookingRoutes.to,
-      permission: "",
+      permission: "config:routes:read",
     },
-    { name: "Tax Rates", icon: SquareSigma, route: TaxRatesRoutes.to },
-    // { name: "Privacy & visibility", icon: Lock },
+    {
+      name: "Tax Rates",
+      icon: SquareSigma,
+      route: TaxRatesRoutes.to,
+      permission: "config:tax_rates:view",
+    },
     {
       name: "User Management",
       icon: Users,
       route: UsersRoute.to,
-      permission: "",
+      permission: "config:user:management",
     },
     { name: "Notifications", icon: Bell, route: NotificationsRoute.to },
     { name: "Advanced", icon: Settings, route: AdvancedSettingsRoute.to },
@@ -103,26 +121,36 @@ export function SettingsSidebar() {
             <SidebarMenu>
               {data.nav.map((item) => (
                 <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={item.route == location.pathname}
-                    className={cn(
-                      item.route == location.pathname &&
-                        "border-l-4 border-primary"
-                    )}
-                  >
-                    {item.route ? (
+                  {item.permission ? (
+                    <Can permission={item.permission}>
+                      <Link to={item.route}>
+                        <SidebarMenuButton
+                          isActive={item.route == location.pathname}
+                          className={cn(
+                            item.route == location.pathname &&
+                              "border-l-4 border-primary"
+                          )}
+                        >
+                          <item.icon />
+                          <span>{item.name}</span>
+                        </SidebarMenuButton>
+                      </Link>
+                    </Can>
+                  ) : (
+                    <SidebarMenuButton
+                      asChild
+                      isActive={item.route == location.pathname}
+                      className={cn(
+                        item.route == location.pathname &&
+                          "border-l-4 border-primary"
+                      )}
+                    >
                       <Link to={item.route}>
                         <item.icon />
                         <span>{item.name}</span>
                       </Link>
-                    ) : (
-                      <a href="#">
-                        <item.icon />
-                        <span>{item.name}</span>
-                      </a>
-                    )}
-                  </SidebarMenuButton>
+                    </SidebarMenuButton>
+                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
