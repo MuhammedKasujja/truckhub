@@ -35,14 +35,17 @@ function RouteComponent() {
         <AppSidebar />
         <SidebarInset className="overflow-x-hidden">
           <nav className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
+            {/* <SidebarTrigger className="-ml-1" /> */}
+            <div className="">Dashboard</div>
+            {/* <Separator
               orientation="vertical"
               className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-            />
+            /> */}
             <div className="flex w-full items-center justify-between gap-4">
+              {/* <div></div> */}
+              <NavigationButtons />
               <div className="flex gap-2 items-center">
-                <NavigationButtons />
+                
                 <GlobalSearchDialog />
                 <CreateEntityDialog />
               </div>

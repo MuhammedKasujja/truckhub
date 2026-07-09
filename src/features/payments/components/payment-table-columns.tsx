@@ -67,7 +67,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       },
       meta: {
         label: tr("payments.method"),
-        variant: "select",
+        variant:"multiSelect",
         options: PaymentModeList.map((method) => ({
           label: tr(`payments.methods.${method}`),
           value: `${method}`,

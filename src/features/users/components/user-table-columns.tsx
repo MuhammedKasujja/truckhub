@@ -89,7 +89,11 @@ export function getUserTableColumns({
       accessorKey: "last_login",
       header: tr("common.form.last_login"),
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.last_login)}</p>
+        return (
+          <p className="text-muted-foreground">
+            {formatDateTime(row.original.last_login)}
+          </p>
+        )
       },
     },
     {
@@ -112,7 +116,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EyeIcon />
-                      {tr('form.view')}
+                      {tr("form.view")}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -123,7 +127,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EditIcon />
-                      {tr('form.edit')}
+                      {tr("form.edit")}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -140,7 +144,12 @@ export function getUserTableColumns({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <Can permission={"users:delete"}>
-                      <DropdownMenuItem variant="destructive">
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onSelect={() =>
+                          setRowAction({ row, variant: "delete" })
+                        }
+                      >
                         {/* <ActionButton
                       variant={"destructive"}
                       size={"icon"}
@@ -161,7 +170,7 @@ export function getUserTableColumns({
                       <div className="flex gap-4"> */}
                         {/* <Button type="button" variant={"destructive"}> */}
                         <Trash2Icon />
-                        {tr('form.delete')}
+                        {tr("form.delete")}
                         {/* </Button> */}
                         {/* </div>
                     </ActionButton> */}

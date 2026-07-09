@@ -36,7 +36,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader className="pb-0">
+      {/* <PageHeader className="pb-0">
         <PageTitle>Dashboard</PageTitle>
         <PageAction>
           <CalendarDatePicker
@@ -64,7 +64,7 @@ function RouteComponent() {
             showCompare={false}
           />
         </PageAction>
-      </PageHeader>
+      </PageHeader> */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Stat>
           <StatLabel>Payments</StatLabel>

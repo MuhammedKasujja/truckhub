@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChangePasswordForm } from "@/features/auth/components"
+import { PasswordStrengthChecker } from "@/features/auth/components/password-checker"
 import { UserProfileView } from "@/features/users/components"
 import { userProfileQueryOptions } from "@/features/users/query-options"
 import { requireAuth } from "@/lib/auth"
@@ -35,6 +36,7 @@ function RouteComponent() {
       </TabsContent>
       <TabsContent value="change-password">
         <ChangePasswordForm />
+        <PasswordStrengthChecker/>
       </TabsContent>
     </Tabs>
   )
