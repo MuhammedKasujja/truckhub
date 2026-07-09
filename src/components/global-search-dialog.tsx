@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -50,20 +49,18 @@ export function GlobalSearchDialog({ ...props }: React.ComponentProps<"div">) {
             <Button
               type="button"
               variant={"outline"}
-              className="w-full md:w-52 justify-between text-left font-normal text-muted-foreground"
+              size={'sm'}
+              className="w-full md:w-60 justify-between text-left font-normal text-muted-foreground"
             >
-              <SearchIcon />
+              <SearchIcon/>
               {tr("search")}...
               <Kbd>{formatForDisplay('Mod+K')}</Kbd>
             </Button>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-sm ring-4 md:min-w-lg md:min-h-60">
+        <DialogContent className="sm:max-w-sm ring-4 md:min-w-lg">
           <DialogHeader>
             <DialogTitle>Search Truckhub</DialogTitle>
-            <DialogDescription>
-              Filter and search the entire system in one go
-            </DialogDescription>
           </DialogHeader>
           <FieldGroup>
             <Field>
@@ -71,6 +68,7 @@ export function GlobalSearchDialog({ ...props }: React.ComponentProps<"div">) {
                 id="name-1"
                 name="name"
                 defaultValue=""
+                placeholder="Filter and search the entire system in one go"
                 onChange={(e) => handleSearchLocation(e.target.value)}
               />
             </Field>
