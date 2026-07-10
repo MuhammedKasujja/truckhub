@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select"
 import { SystemPermissions } from "@/features/auth/permissions"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
-import { useCallback, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 import { Can } from "@/components/has-permission"
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/card"
 import { useTranslation } from "@/i18n"
 import { Checkbox } from "@/components/ui/checkbox"
+// import { generatePermissionTranslations } from "../utils/generate-permissions-tr"
 
 export function PermissionsWrapper() {
   const { data } = useQuery(createRolesQueryOptions())
@@ -165,6 +166,11 @@ export function PermissionsWrapper() {
           </Button>
         </Can>
       </div>
+      {/* <pre contentEditable="true">
+        <code>
+          {JSON.stringify(generatePermissionTranslations(tr), null, 2)}
+        </code>
+      </pre> */}
       {groupedPermissions.map(([module, permissions]) => (
         <Card key={module}>
           <CardHeader>
@@ -186,7 +192,7 @@ export function PermissionsWrapper() {
                 key={group}
                 onClick={() => togglePermissions(permissionList)}
               >
-                {group}
+                {tr(`permissions.${group}`)}
               </Button>
             ))}
           </CardContent>
