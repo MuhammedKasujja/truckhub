@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -91,7 +92,11 @@ export function EditInvoiceTermsForm({
               </Field>
             ))}
           </FieldGroup>
-          <SubmitButton isSubmitting={form.formState.isSubmitting} />
+          <DialogFooter>
+            <Field>
+              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            </Field>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

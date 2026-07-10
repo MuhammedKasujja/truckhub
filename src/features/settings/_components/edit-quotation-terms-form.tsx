@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -60,7 +61,7 @@ export function EditQuotationTermsForm({
           <Edit /> Edit Terms
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] md:min-w-3xl ring-4">
+      <DialogContent className="max-w-[90%] ring-4 md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Quotation Terms</DialogTitle>
         </DialogHeader>
@@ -90,7 +91,11 @@ export function EditQuotationTermsForm({
               </Field>
             ))}
           </FieldGroup>
-          <SubmitButton isSubmitting={form.formState.isSubmitting} />
+          <DialogFooter>
+            <Field>
+              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            </Field>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

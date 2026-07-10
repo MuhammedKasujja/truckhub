@@ -127,7 +127,7 @@ export function SettingsSidebar() {
                       <Link to={item.route}>
                         <SidebarMenuButton
                           isActive={item.route == location.pathname}
-                          className={cn(
+                          className={cn("rounded-none",
                             item.route == location.pathname &&
                               "border-l-4 border-primary"
                           )}
@@ -141,7 +141,7 @@ export function SettingsSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={item.route == location.pathname}
-                      className={cn(
+                      className={cn("rounded-none",
                         item.route == location.pathname &&
                           "border-l-4 border-primary"
                       )}

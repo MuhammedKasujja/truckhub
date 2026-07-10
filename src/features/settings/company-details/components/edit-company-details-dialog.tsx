@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -49,7 +50,7 @@ export function EditCompanyDetailsDialog({
           <Edit />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[90%] md:min-w-3xl ring-4">
+      <DialogContent className="max-w-[90%] ring-4 md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Company Details</DialogTitle>
           <DialogDescription>
@@ -57,7 +58,7 @@ export function EditCompanyDetailsDialog({
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FieldGroup>
+          <FieldGroup className="mb-5">
             <TextField
               label="Company Name"
               control={form.control}
@@ -78,10 +79,12 @@ export function EditCompanyDetailsDialog({
               type="url"
               required={false}
             />
+          </FieldGroup>
+          <DialogFooter>
             <Field>
               <SubmitButton isSubmitting={form.formState.isSubmitting} />
             </Field>
-          </FieldGroup>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

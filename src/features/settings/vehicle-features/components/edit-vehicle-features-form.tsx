@@ -12,6 +12,7 @@ import { TextField } from "@/components/ui/form-fields"
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -126,9 +127,11 @@ export function EditVehicleFeatureForm() {
             </Can>
           </FieldGroup>
           <Can permission="config:vehicle_features:edit">
-            <Field className="">
+            <DialogFooter>
+            <Field>
               <SubmitButton isSubmitting={form.formState.isSubmitting} />
             </Field>
+          </DialogFooter>
           </Can>
         </form>
       </DialogContent>
