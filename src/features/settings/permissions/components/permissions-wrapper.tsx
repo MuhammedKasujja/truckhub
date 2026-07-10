@@ -11,14 +11,21 @@ import {
 } from "@/components/ui/select"
 import { SystemPermissions } from "@/features/auth/permissions"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 import { Can } from "@/components/has-permission"
 import { Badge } from "@/components/ui/badge"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { useTranslation } from "@/i18n"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function PermissionsWrapper() {
   const { data } = useQuery(createRolesQueryOptions())
@@ -29,6 +36,30 @@ export function PermissionsWrapper() {
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(
     new Set()
   )
+  const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set())
+
+  function handleModulePermission(
+    permissions: Record<string, readonly string[]>,
+    checked: boolean
+  ) {
+    const modules = Object.keys(permissions)
+    const permissionList = Object.values(permissions).flat()
+    if (checked) {
+      setSelectedModules((prev) => {
+        const next = new Set(prev)
+        modules.forEach((item) => next.add(item))
+        return next
+      })
+    } else {
+      setSelectedModules((prev) => {
+        const next = new Set(prev)
+        modules.forEach((item) => next.delete(item))
+        return next
+      })
+    }
+    togglePermissions(permissionList)
+  }
+
   const [roleId, setRoleId] = useState<string | undefined>()
 
   const groupedPermissions = useMemo(
@@ -38,6 +69,9 @@ export function PermissionsWrapper() {
 
   const isAllSelected = (permissions: string[]) =>
     permissions.every((p) => selectedPermissions.has(p))
+
+  const isModuleSelected = (modules: string[]) =>
+    modules.every((p) => selectedModules.has(p))
 
   const togglePermissions = (permissions: string[]) => {
     setPermissionCount((prev) => {
@@ -135,6 +169,14 @@ export function PermissionsWrapper() {
         <Card key={module}>
           <CardHeader>
             <CardTitle>{tr(`permissions.modules.${module}`)}</CardTitle>
+            <CardAction>
+              <Checkbox
+                checked={isModuleSelected(Object.keys(permissions))}
+                onCheckedChange={(checked: boolean) => {
+                  handleModulePermission(permissions, checked)
+                }}
+              />
+            </CardAction>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {Object.entries(permissions).map(([group, permissionList]) => (
