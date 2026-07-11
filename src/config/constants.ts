@@ -30,6 +30,8 @@ export const PaymentStatuses = [
 
 export const AuditLogSource = ["system", "user"] as const
 
+export const ClientTypeList = ["normal", "premium"] as const
+
 export const VehicleCylinderList = [2, 4, 5, 6, 8]
 
 export const AxlesList = [2, 3, 4, 5, 6]
@@ -37,6 +39,8 @@ export const AxlesList = [2, 3, 4, 5, 6]
 export const PaymentEntityList = ["ride", "booking"] as const
 
 export type PaymentType = (typeof PaymentEntityList)[number]
+
+export type ClientType = (typeof ClientTypeList)[number]
 
 export const MAP_TILE_URL =
   "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png"

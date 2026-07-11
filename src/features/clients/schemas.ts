@@ -1,6 +1,7 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
 import { Client } from "@/features/clients/types"
+import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -27,6 +28,7 @@ export const ClientSearchParamsCache = z.object({
   sort: getSortingStateSchema<Client>().default([
     { id: "created_at", desc: true },
   ]),
+  client_type: z.enum(ClientTypeList).optional(),
   // advanced filter
   filters: getFiltersStateSchema<Client>().optional(),
   ...DefaultSearchParamsSchema.shape,
