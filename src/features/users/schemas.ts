@@ -27,7 +27,7 @@ export const UserSearchParamsCache = z.object({
   sort: getSortingStateSchema<SystemUser>().default([
     { id: "created_at", desc: true },
   ]),
-  filters: getFiltersStateSchema<SystemUser>().default([]),
+  filters: getFiltersStateSchema<SystemUser>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

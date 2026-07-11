@@ -145,7 +145,6 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     React.useState<VisibilityState>(initialState?.columnVisibility ?? {})
 
   // ── Page ────────────────────────────────────────────────────────────────────
-  // nuqs: parseAsInteger.withDefault(1)
   const page =
     typeof search[pageKey] === "number" ? (search[pageKey] as number) : 1
 
@@ -160,7 +159,6 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
   )
 
   // ── Global filter / search ───────────────────────────────────────────────────
-  // nuqs: parseAsString.withDefault("")
   const globalFilter =
     typeof search[searchKey] === "string" ? (search[searchKey] as string) : ""
 

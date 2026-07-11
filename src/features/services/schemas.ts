@@ -34,7 +34,7 @@ export const ServiceSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<Service>().default([]),
+  filters: getFiltersStateSchema<Service>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

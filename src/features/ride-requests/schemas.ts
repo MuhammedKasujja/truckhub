@@ -62,7 +62,7 @@ export const RideRequestSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<RideRequest>().default([]),
+  filters: getFiltersStateSchema<RideRequest>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

@@ -39,7 +39,7 @@ export const BookingSearchParamsSchema = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<Booking>().default([]),
+  filters: getFiltersStateSchema<Booking>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

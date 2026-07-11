@@ -27,7 +27,7 @@ export const DriverSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<Driver>().default([]),
+  filters: getFiltersStateSchema<Driver>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

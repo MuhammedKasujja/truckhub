@@ -1,6 +1,6 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { Customer } from "@/features/clients/types"
+import { Client } from "@/features/clients/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -24,11 +24,11 @@ export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>
 export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>
 
 export const ClientSearchParamsCache = z.object({
-  sort: getSortingStateSchema<Customer>().default([
+  sort: getSortingStateSchema<Client>().default([
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<Customer>().default([]),
+  filters: getFiltersStateSchema<Client>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

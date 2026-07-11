@@ -25,7 +25,7 @@ export const ReviewSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema().default([]),
+  filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

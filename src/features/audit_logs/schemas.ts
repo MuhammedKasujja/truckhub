@@ -11,7 +11,7 @@ export const AuditLogSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<AuditLog>().default([]),
+  filters: getFiltersStateSchema<AuditLog>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 
