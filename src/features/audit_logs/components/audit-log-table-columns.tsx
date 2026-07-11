@@ -4,6 +4,7 @@ import { TFunction } from "@/i18n"
 import { formatDate } from "@/lib/format"
 import { ActionButton } from "@/components/ui/action-button"
 import { Trash2Icon } from "lucide-react"
+import { AuditLogSource } from "@/config/constants"
 
 export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
   return [
@@ -25,11 +26,17 @@ export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
       },
     },
     {
+      id: "source",
       accessorKey: "source",
       header: tr("source"),
       cell: ({ row }) => {
         return <div className="flex gap-2">{row.original.source}</div>
       },
+      meta: {
+        variant: "select",
+        options: AuditLogSource.map((s) => ({ label: s, value: s })),
+      },
+      enableColumnFilter: true,
     },
     {
       accessorKey: "created_at",

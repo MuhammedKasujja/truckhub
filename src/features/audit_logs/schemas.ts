@@ -3,6 +3,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import z from "zod"
 import { AuditLog } from "./types"
 import { IDSchema } from "@/schemas"
+import { AuditLogSource } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 
 export const AuditLogSearchParamsCache = z.object({
@@ -10,6 +11,7 @@ export const AuditLogSearchParamsCache = z.object({
   sort: getSortingStateSchema<AuditLog>().default([
     { id: "created_at", desc: true },
   ]),
+  source: z.array(z.enum(AuditLogSource)).optional(),
   // advanced filter
   filters: getFiltersStateSchema<AuditLog>().optional(),
   ...DefaultSearchParamsSchema.shape,

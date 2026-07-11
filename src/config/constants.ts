@@ -1,15 +1,15 @@
-export const DEFAULT_FITER_QUERY_PER_PAGE = 10;
+export const DEFAULT_FITER_QUERY_PER_PAGE = 10
 
-export const DEFAULT_ROUTE_TABLE_PRICING_ROWS = 10;
+export const DEFAULT_ROUTE_TABLE_PRICING_ROWS = 10
 
-export const CURRENCY_CODE = "UGX";
+export const CURRENCY_CODE = "UGX"
 
 export const RideTypeList = [
   "passenger",
   "scheduled_passenger",
   "cargo",
   "scheduled_cargo",
-] as const;
+] as const
 
 export const PaymentModeList = [
   "cash",
@@ -17,7 +17,7 @@ export const PaymentModeList = [
   "bank_transfer",
   "paypal",
   "credit_card",
-] as const;
+] as const
 
 export const PaymentStatuses = [
   "pending",
@@ -26,20 +26,21 @@ export const PaymentStatuses = [
   "failed",
   "completed",
   "partially_refunded",
-] as const;  // ["pending", "processing", "paid", "failed"]
+] as const // ["pending", "processing", "paid", "failed"]
 
-export const VehicleCylinderList = [2, 4, 5, 6, 8];
+export const AuditLogSource = ["system", "user"] as const
 
-export const AxlesList = [2, 3, 4, 5, 6];
+export const VehicleCylinderList = [2, 4, 5, 6, 8]
 
-export const PaymentEntityList = ["ride", "booking"] as const;
+export const AxlesList = [2, 3, 4, 5, 6]
 
-export type PaymentType = (typeof PaymentEntityList)[number];
+export const PaymentEntityList = ["ride", "booking"] as const
+
+export type PaymentType = (typeof PaymentEntityList)[number]
 
 export const MAP_TILE_URL =
-  "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png";
+  "https://tiles.openfreemap.org/styles/bright/{z}/{x}/{y}.png"
 
-export const MAP_LIGHT_STYLE_URL =
-  "https://tiles.openfreemap.org/styles/bright";
+export const MAP_LIGHT_STYLE_URL = "https://tiles.openfreemap.org/styles/bright"
 
-export const MAP_DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
+export const MAP_DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"

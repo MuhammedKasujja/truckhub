@@ -19,6 +19,7 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
         height: "800px",
         width: "100%",
         border: "1px solid var(--border)",
+        backgroundColor: "var(--bg-card)",
         marginTop: 16,
       }}
     >
