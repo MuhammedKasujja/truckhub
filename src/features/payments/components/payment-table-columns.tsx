@@ -36,6 +36,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       },
     },
     {
+      id: "status",
       accessorKey: "status",
       header: tr("payments.status"),
       cell: ({ row }) => {
@@ -57,6 +58,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       enableColumnFilter: true,
     },
     {
+      id: "payment_mode",
       accessorKey: "payment_mode",
       header: tr("payments.method"),
       cell: ({ row }) => {
@@ -83,6 +85,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       },
     },
     {
+      id: "date",
       accessorKey: "date",
       header: tr("payments.date"),
       cell: ({ row }) => {

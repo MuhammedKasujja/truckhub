@@ -34,6 +34,7 @@ export function NumberField<T extends FieldValues>({
           <Input
             {...field}
             type={"number"}
+            inputMode="numeric"
             id={field.name}
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}

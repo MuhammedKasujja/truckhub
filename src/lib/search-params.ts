@@ -1,4 +1,4 @@
-import qs from "qs";
+import qs from "query-string";
 import type { ParserMap } from "nuqs/server";
 import { getValidFilters } from "@/lib/data-table";
 import { createSearchParamsCache } from "nuqs/server";
@@ -40,10 +40,10 @@ export const generateApiSearchParams = (input: Record<string, unknown>) => {
   }
 
   return qs.stringify(normalized, {
-    arrayFormat: "repeat",
-    skipNulls: true,
+    arrayFormat: "comma",
+    skipNull: true,
     encode: true,
-    allowDots: false, // API prefers dots
+    // allowDots: false, // API prefers dots
   });
 };
 

@@ -321,8 +321,8 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
             delete next[key]
           } else if (Array.isArray(value)) {
             // Select columns — store comma-separated string to keep URLs readable
-            // (same as nuqs parseAsArrayOf with ARRAY_SEPARATOR)
-            next[key] = value.join(ARRAY_SEPARATOR)
+            // next[key] = value.join(ARRAY_SEPARATOR)
+            next[key] = value
           } else {
             next[key] = value
           }
@@ -373,17 +373,28 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
       if (enableAdvancedFilter) return
 
       setColumnFilters((prev) => {
+        console.log("PrevUpdaterOrValue", prev)
+        console.log("filterableColumns", filterableColumns)
         const next =
           typeof updaterOrValue === "function"
             ? updaterOrValue(prev)
             : updaterOrValue
+        console.log("ColumnFiltersState", next)
 
         const filterUpdates = next.reduce<
           Record<string, string | string[] | null>
         >((acc, filter) => {
+          console.log("FilterId", filter)
+          // filter depends on column id name
           if (filterableColumns.find((column) => column.id === filter.id)) {
-            acc[filter.id] = filter.value as string | string[]
+            console.log("ValueType", Array.isArray(filter.value))
+            if (Array.isArray(filter.value)) {
+              acc[filter.id] = filter.value
+            } else {
+              acc[filter.id] = filter.value as string
+            }
           }
+          console.log("Accumulated", acc)
           return acc
         }, {})
 
@@ -392,6 +403,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
             filterUpdates[prevFilter.id] = null
           }
         }
+        console.log("filterUpdates", filterUpdates)
 
         debouncedSetFilterValues(filterUpdates)
         return next

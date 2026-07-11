@@ -48,7 +48,8 @@ export type PaymentEditSchemaType = z.infer<
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),
-  sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
+  // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
+  sort: getSortingStateSchema<Payment>().optional(),
   date: z.number().optional().nullable(),
   // advanced filter
   filters: getFiltersStateSchema().optional(),

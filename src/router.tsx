@@ -1,9 +1,14 @@
 import { QueryClient } from "@tanstack/react-query"
-import { createRouter } from "@tanstack/react-router"
+import {
+  createRouter,
+  // parseSearchWith,
+  // stringifySearchWith,
+} from "@tanstack/react-router"
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
 import { routeTree } from "./routeTree.gen"
 import { ApiError } from "./types"
 import { onNavigationResolved } from "./lib/navigation-listeners"
+// import qs from "query-string"
 
 export function getRouter() {
   const queryClient = new QueryClient({
@@ -21,6 +26,12 @@ export function getRouter() {
     routeTree,
     context: { queryClient }, // expose QueryClient via router context
     defaultPreload: "intent",
+    // parseSearch: parseSearchWith((value) =>
+    //   qs.parse(value,)
+    // ),
+    // stringifySearch: stringifySearchWith((value) =>
+    //   qs.stringify(value, { arrayFormat: "comma" })
+    // ),
   })
   setupRouterSsrQueryIntegration({
     router,
