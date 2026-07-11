@@ -33,6 +33,7 @@ export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
         return <div className="flex gap-2">{row.original.source}</div>
       },
       meta: {
+        label: "Source",
         variant: "select",
         options: AuditLogSource.map((s) => ({ label: s, value: s })),
       },

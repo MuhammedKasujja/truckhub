@@ -2,8 +2,8 @@ import z from "zod"
 import { IDSchema } from "@/schemas"
 import { formatMoney } from "@/lib/format"
 import { Payment } from "@/features/payments/types"
-import { PaymentStatuses } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { PaymentModeList, PaymentStatuses } from "@/config/constants"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const EditPaymentBaseSchema = z.object({
@@ -48,6 +48,7 @@ export type PaymentEditSchemaType = z.infer<
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),
+  payment_method: z.array(z.enum(PaymentModeList)).optional(),
   // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
   sort: getSortingStateSchema<Payment>().optional(),
   date: z.number().optional().nullable(),

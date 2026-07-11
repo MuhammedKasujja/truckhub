@@ -58,7 +58,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       enableColumnFilter: true,
     },
     {
-      id: "payment_mode",
+      id: "payment_method",
       accessorKey: "payment_mode",
       header: tr("payments.method"),
       cell: ({ row }) => {

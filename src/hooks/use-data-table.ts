@@ -374,7 +374,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
 
       setColumnFilters((prev) => {
         console.log("PrevUpdaterOrValue", prev)
-        console.log("filterableColumns", filterableColumns)
+        // console.log("filterableColumns", filterableColumns)
         const next =
           typeof updaterOrValue === "function"
             ? updaterOrValue(prev)
