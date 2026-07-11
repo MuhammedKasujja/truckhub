@@ -19,11 +19,10 @@ import { BookingSearchParamsSchema } from "@/features/bookings/schemas"
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
   validateSearch: BookingSearchParamsSchema,
+  loaderDeps: ({ search }) => ({ search }),
   beforeLoad: async () => requirePermission("bookings:module"),
-  loader: async ({ context, location }) => {
-    context.queryClient.prefetchQuery(
-      createBookingQueryOptions(location.search)
-    )
+  loader: async ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(createBookingQueryOptions(search))
     return context.queryClient.ensureQueryData(
       createBookingStatisticsQueryOptions()
     )

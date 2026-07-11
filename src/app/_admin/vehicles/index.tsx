@@ -8,14 +8,15 @@ import { PageHeader, PageTitle } from "@/components/page-header"
 
 import { createVehiclesListQueryOptions } from "@/features/vehicles/query-options"
 import { createFileRoute } from "@tanstack/react-router"
+import { VehicleSearchParamsCache } from "@/features/vehicles/schemas"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
+  validateSearch: VehicleSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("vehicles:module"),
-  loader: ({ context, location }) => {
-    context.queryClient.prefetchQuery(
-      createVehiclesListQueryOptions(location.search)
-    )
+  loader: ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(createVehiclesListQueryOptions(search))
   },
 })
 

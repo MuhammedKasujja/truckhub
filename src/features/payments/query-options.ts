@@ -10,11 +10,12 @@ export const paymentsQueryKeys = {
   detail: (id: string) => [...paymentsQueryKeys.details(), id],
 }
 
-export const paymentsQueryOptions = (search: PaymentListSearchParams) =>
-  queryOptions({
+export const paymentsQueryOptions = (search: PaymentListSearchParams) =>{
+  
+ return queryOptions({
     queryKey: [...paymentsQueryKeys.list(), search],
     queryFn: () => getPaymentsFn({ data: search }),
-  })
+  })}
 
 export const paymentStatisticsQueryOptions = () =>
   queryOptions({

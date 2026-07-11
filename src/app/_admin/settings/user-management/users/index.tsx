@@ -4,16 +4,21 @@ import {
   UserTableSkeleton,
 } from "@/features/users/components/user-table"
 import { usersQueryOprions } from "@/features/users/query-options"
+import { UserSearchParamsCache } from "@/features/users/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 import { Suspense } from "react"
 
-export const Route = createFileRoute("/_admin/settings/user-management/users/")({
-  component: RouteComponent,
-  loader: ({ context, location }) => {
-    // prefetch data on the server and stream to client
-    context.queryClient.prefetchQuery(usersQueryOprions(location.search))
-  },
-})
+export const Route = createFileRoute("/_admin/settings/user-management/users/")(
+  {
+    validateSearch: UserSearchParamsCache,
+    loaderDeps: ({ search }) => ({ search }),
+    component: RouteComponent,
+    loader: ({ context, deps: { search } }) => {
+      // prefetch data on the server and stream to client
+      context.queryClient.prefetchQuery(usersQueryOprions(search))
+    },
+  }
+)
 
 function RouteComponent() {
   return (

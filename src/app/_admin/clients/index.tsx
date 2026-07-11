@@ -15,13 +15,16 @@ import { Can } from "@/components/has-permission"
 import { PlusIcon } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { clientsQueryOptions } from "@/features/clients/query-options"
+import { ClientSearchParamsCache } from "@/features/clients/schemas"
 
 export const Route = createFileRoute("/_admin/clients/")({
+  validateSearch: ClientSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("clients:module"),
   pendingComponent: CustomerTableSkeleton,
-  loader: ({ context, location }) =>
-    context.queryClient.ensureQueryData(clientsQueryOptions(location.search)),
+  loader: ({ context, deps: { search } }) =>
+    context.queryClient.ensureQueryData(clientsQueryOptions(search)),
 })
 
 function RouteComponent() {

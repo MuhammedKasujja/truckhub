@@ -6,7 +6,7 @@ export const en = {
     bookings: "Bookings",
     services: "Services",
     client: "Clients",
-    customers: "Customers",
+    customers: "Clients",
     drivers: "Drivers",
     payments: "Payments",
     users: "Users",

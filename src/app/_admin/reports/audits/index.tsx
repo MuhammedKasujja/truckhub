@@ -7,15 +7,16 @@ import {
 } from "@/features/audit_logs/components/audit-log-table"
 import { PageBackButton } from "@/components/page-header"
 import { createAuditLogsQueryOptions } from "@/features/audit_logs/query-options"
+import { AuditLogSearchParamsCache } from "@/features/audit_logs/schemas"
 
 export const Route = createFileRoute("/_admin/reports/audits/")({
+  validateSearch: AuditLogSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("reports:audit_logs:view"),
   pendingComponent: AuditLogTableSkeleton,
-  loader: ({ context, location }) => {
-    context.queryClient.prefetchQuery(
-      createAuditLogsQueryOptions(location.search)
-    )
+  loader: ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(createAuditLogsQueryOptions(search))
   },
 })
 

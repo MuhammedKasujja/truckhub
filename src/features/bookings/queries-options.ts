@@ -1,15 +1,11 @@
+import { BookingListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { BookingSearchParamsSchema } from "./schemas"
 import {
   getBookingsFn,
   getBookingDetailsFn,
   getBookingsByQueryFn,
   getBookingStatisticsFn,
 } from "./services"
-import {
-  generateApiSearchParams,
-  generatePageSearchParams,
-} from "@/lib/search-params"
 import { SearchQuery } from "@/types"
 
 export const bookingsQueryKeys = {
@@ -21,17 +17,10 @@ export const bookingsQueryKeys = {
   detail: (id: string) => [...bookingsQueryKeys.details(), id],
 }
 
-export const createBookingQueryOptions = (
-  search: Record<string, string | string[] | undefined> = {}
-) => {
-  const searchParams = generatePageSearchParams(
-    search,
-    BookingSearchParamsSchema
-  )
-  const params = generateApiSearchParams(searchParams)
+export const createBookingQueryOptions = (search: BookingListSearchParams) => {
   return queryOptions({
-    queryKey: [...bookingsQueryKeys.list(), params],
-    queryFn: () => getBookingsFn({ data: searchParams }),
+    queryKey: [...bookingsQueryKeys.list(), search],
+    queryFn: () => getBookingsFn({ data: search }),
   })
 }
 

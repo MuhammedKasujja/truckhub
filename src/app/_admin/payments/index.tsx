@@ -29,12 +29,15 @@ import {
 } from "@/features/payments/query-options"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { PaymentSearchParamsCache } from "@/features/payments/schemas"
 
 export const Route = createFileRoute("/_admin/payments/")({
+  validateSearch: PaymentSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("payments:module"),
-  loader: async ({ context: { queryClient }, location }) => {
-    await queryClient.ensureQueryData(paymentsQueryOptions(location.search))
+  loader: async ({ context: { queryClient }, deps: { search } }) => {
+    await queryClient.ensureQueryData(paymentsQueryOptions(search))
     return queryClient.ensureQueryData(paymentStatisticsQueryOptions())
   },
 })

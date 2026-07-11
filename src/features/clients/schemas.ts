@@ -23,7 +23,7 @@ export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>
 
 export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>
 
-export const CustomerSearchParamsCache = z.object({
+export const ClientSearchParamsCache = z.object({
   sort: getSortingStateSchema<Customer>().default([
     { id: "created_at", desc: true },
   ]),
@@ -32,7 +32,7 @@ export const CustomerSearchParamsCache = z.object({
   ...DefaultSearchParamsSchema.shape,
 })
 
-export type CustomerListSearchParams = z.infer<typeof CustomerSearchParamsCache>
+export type ClientListSearchParams = z.infer<typeof ClientSearchParamsCache>
 
 export const TonnagePricingSchema = z.object({
   tonnage_min: z.number(),

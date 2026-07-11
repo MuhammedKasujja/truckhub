@@ -5,9 +5,9 @@ import { Client } from "@/features/clients/types"
 import { Booking } from "@/features/bookings/types"
 import { RideRequest } from "@/features/ride-requests/types"
 import {
+  ClientListSearchParams,
   CustomerCreateSchemaType,
   CustomerUpdateSchemaType,
-  CustomerListSearchParams,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
@@ -24,7 +24,7 @@ import { RoutePricingResponse } from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
 
-export async function getCustomers(input: CustomerListSearchParams) {
+export async function getCustomers(input: ClientListSearchParams) {
   const params = generateApiSearchParams(input)
 
   const response = await apiClient.getPaginatedFn<Client[]>(

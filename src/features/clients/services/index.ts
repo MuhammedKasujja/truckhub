@@ -1,7 +1,7 @@
 import {
   CustomerUpdateSchema,
   CustomerCreateSchema,
-  CustomerSearchParamsCache,
+  ClientSearchParamsCache,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -28,7 +28,7 @@ import {
 } from "@/features/settings/pricing/schemas"
 
 export const getCustomersFn = createServerFn()
-  .inputValidator(CustomerSearchParamsCache)
+  .inputValidator(ClientSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getCustomers(data)
     if (response.error) {

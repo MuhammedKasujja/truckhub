@@ -1,4 +1,3 @@
-"use client"
 import {
   Card,
   CardContent,
@@ -214,7 +213,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     }))}
                   />
                   <NumberField
-                    label={"Consumption Rate"}
+                    label={"Consumption Rate (km/l)"}
                     name={"consumption_rate"}
                     control={form.control}
                   />

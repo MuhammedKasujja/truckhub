@@ -1,5 +1,5 @@
 import { EntityId } from "@/schemas"
-import { CustomerListSearchParams } from "./schemas"
+import { ClientListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import {
   getCustomersFn,
@@ -42,7 +42,7 @@ export const clientQueryKeys = {
   refreshSingle: (id: EntityId) => [...clientQueryKeys.profile(id)],
 } as const
 
-export const clientsQueryOptions = (input: CustomerListSearchParams) =>
+export const clientsQueryOptions = (input: ClientListSearchParams) =>
   queryOptions({
     queryKey: [...clientQueryKeys.list(), input],
     queryFn: () => getCustomersFn({ data: input }),
