@@ -128,6 +128,8 @@ const en = {
     rides: "Rides",
     payments: "Payments",
   },
+  users: "Users",
+  roles: "Roles",
   ...vehiclesEn,
   services: { ...serviceEn },
   trips: { ...tripModuleTranslations },
