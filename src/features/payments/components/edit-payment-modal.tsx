@@ -25,7 +25,6 @@ import {
   AutoCompleteField,
   TextareaField,
   NumberField,
-  TextField,
 } from "@/components/ui/form-fields"
 import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
@@ -33,6 +32,8 @@ import React from "react"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { BookingPickerField } from "@/features/bookings/components/booking-picker"
+import { RidePickerField } from "@/features/ride-requests/components"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -102,12 +103,20 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
             id="form-payment"
           >
             <FieldGroup className="grid grid-flow-row grid-cols-1">
-              <TextField
-                label={initialData?.type === "ride" ? "Ride" : "Booking"}
-                name={"entity_id"}
-                readOnly
-                control={form.control}
-              />
+              {initialData?.type === "booking" && (
+                <BookingPickerField
+                  label="Booking"
+                  control={form.control}
+                  name={"entity_id"}
+                />
+              )}
+              {initialData?.type === "ride" && (
+                <RidePickerField
+                  label={"Ride"}
+                  name={"entity_id"}
+                  control={form.control}
+                />
+              )}
               <NumberField
                 label={"Amount"}
                 name={"amount"}
