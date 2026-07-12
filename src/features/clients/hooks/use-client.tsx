@@ -14,11 +14,12 @@ export function useChangeClientType() {
     mutationFn: changeClientTypeFn,
     onSuccess: (data) => {
       invalidator.clients.list.invalidate()
-      if (data.data?.id)
-        queryClient.setQueryData(
-          queryKeys.clients.detail(data.data?.id),
-          data.data
-        )
+    //   if (data.data?.id)
+        // console.log(data.data)
+        // queryClient.setQueryData(
+        //   queryKeys.clients.profile(data.data?.id),
+        //   data.data
+        // )
     },
   })
 

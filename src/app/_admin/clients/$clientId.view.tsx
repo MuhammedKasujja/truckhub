@@ -8,7 +8,10 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
-import { ClientLoadingFeesModal, ClientRouteTonnagePricingModal } from "@/features/clients/components"
+import {
+  ClientLoadingFeesModal,
+  ClientRouteTonnagePricingModal,
+} from "@/features/clients/components"
 import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
   clientBookingsQueryOptions,
@@ -18,6 +21,7 @@ import {
 } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requirePermission } from "@/lib/auth"
+import { IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 
@@ -41,7 +45,12 @@ function RouteComponent() {
   return (
     <div>
       <PageHeader>
-        <PageTitle className="capitalize">{data?.name}</PageTitle>
+        <PageTitle className="capitalize">
+          {data?.name}{" "}
+          {data?.client_type === "premium" && (
+            <IconShieldStar stroke={2} className="text-amber-400 size-5" />
+          )}
+        </PageTitle>
         <PageAction className="flex gap-2">
           <PageBackButton />
           <ButtonGroup>
@@ -74,7 +83,10 @@ function RouteComponent() {
               </Link>
             </Button>
             <ClientRouteTonnagePricingModal clientId={clientId} />
-            <ClientLoadingFeesModal clientId={clientId} clientName={data?.name}/>
+            <ClientLoadingFeesModal
+              clientId={clientId}
+              clientName={data?.name}
+            />
           </ButtonGroup>
         </PageAction>
       </PageHeader>

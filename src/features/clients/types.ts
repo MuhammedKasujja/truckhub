@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas"
+import { ClientType } from "@/config/constants"
 import { DataTableRowAction } from "@/types/data-table"
 
 export type ClientContact = {
@@ -22,6 +23,7 @@ export type Client = {
   updated_at: Date
   has_pricing: boolean
   contacts: ClientContact[]
+  client_type: ClientType
 }
 
 export type Customer = Client

@@ -92,10 +92,10 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
               </Link>
             </DropdownMenuItem>
           </Can>
-          <Can permission={"clients:delete"}>
+          <Can permission={"clients:change_type"}>
             <DropdownMenuItem onClick={() => changeClientType(client.id)}>
               <TypeIcon />
-              Make Premium
+               {client.client_type}
             </DropdownMenuItem>
           </Can>
           <Can permission={"clients:delete"}>
