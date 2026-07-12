@@ -10,16 +10,14 @@ export const Route = createFileRoute("/_admin/settings")({
 
 function RouteComponent() {
   return (
-    <div>
       <SidebarProvider className="items-start">
         <SettingsSidebar />
-        <main className="flex flex-1 flex-col overflow-hidden">
+        <main className="flex flex-1 flex-col">
           {/* <SettingsNavBar /> */}
-          <div className="flex flex-1 flex-col gap-4 overflow-y-auto pl-4">
+          <div className="flex flex-1 flex-col gap-4 pl-4">
             <Outlet />
           </div>
         </main>
       </SidebarProvider>
-    </div>
   )
 }
