@@ -5,6 +5,7 @@ import {
   MoreVertical,
   PlusIcon,
   Trash2Icon,
+  TypeIcon,
 } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
@@ -17,6 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Client, ClientsDataTableRowAction } from "../types"
+import { useChangeClientType } from "../hooks/use-client"
+import { toast } from "sonner"
 
 interface ClientTableActionsProps {
   client: Client
@@ -26,10 +29,15 @@ interface ClientTableActionsProps {
 }
 
 export function ClientTableActions({ client }: ClientTableActionsProps) {
+  const { changeClientType, isSuccess } = useChangeClientType()
+
+  if (isSuccess) {
+    toast.success("Client type change successfully")
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size={'icon-sm'}>
+        <Button variant="ghost" size={"icon-sm"}>
           <MoreVertical />
         </Button>
       </DropdownMenuTrigger>
@@ -61,7 +69,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
             <DropdownMenuItem asChild>
               <Link to={"/bookings/new"} search={{ clientId: client.id }}>
                 <PlusIcon />
-                 Booking
+                Booking
               </Link>
             </DropdownMenuItem>
           </Can>
@@ -75,10 +83,19 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           </Can>
           <Can permission={"rides:create"}>
             <DropdownMenuItem asChild>
-              <Link to={"/clients/data/$clientId"} params={{ clientId: client.id }}>
+              <Link
+                to={"/clients/data/$clientId"}
+                params={{ clientId: client.id }}
+              >
                 <EyeIcon />
                 Pricing
               </Link>
+            </DropdownMenuItem>
+          </Can>
+          <Can permission={"clients:delete"}>
+            <DropdownMenuItem onClick={() => changeClientType(client.id)}>
+              <TypeIcon />
+              Make Premium
             </DropdownMenuItem>
           </Can>
           <Can permission={"clients:delete"}>

@@ -11,6 +11,7 @@ import {
   updateClient,
   getClientRides,
   getCustomerById,
+  changeClientType,
   getClientBookings,
   getClientPayments,
   deleteCustomerById,
@@ -119,4 +120,10 @@ export const createClientLoadingOffloadingPricingFn = createServerFn()
   .inputValidator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
     return createClientLoadingOffloadingPricing(data)
+  })
+
+export const changeClientTypeFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return changeClientType(data.id)
   })

@@ -111,3 +111,8 @@ export async function createClientLoadingOffloadingPricing(
     data.pricings
   )
 }
+
+export async function changeClientType(clientId: EntityId) {
+  const url = `${endpoint}/${clientId}/change-type`
+  return await apiClient.patchFn<Client>(url)
+}
