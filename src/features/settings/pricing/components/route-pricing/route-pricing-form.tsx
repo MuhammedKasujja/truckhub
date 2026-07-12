@@ -8,7 +8,7 @@ import { Plus, Upload, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-import { batchPricingSchema, type BatchPricingInput } from "../schemas"
+import { batchPricingSchema, type BatchPricingInput } from "../../schemas"
 import { RoutePricingCard } from "./route-pricing-card"
 import {
   TonnageBandBuilder,

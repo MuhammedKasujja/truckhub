@@ -15,7 +15,7 @@ import { getFilterFn } from "@/lib/data-grid-filters"
 
 import type { TonnageBand } from "./tonnage-band-builder"
 import { bandsAreValid } from "./tonnage-band-builder"
-import { BookingRoute } from "../../booking-routes/schemas"
+import { BookingRoute } from "../../../booking-routes/schemas"
 
 // ---------------------------------------------------------------------------
 // Types

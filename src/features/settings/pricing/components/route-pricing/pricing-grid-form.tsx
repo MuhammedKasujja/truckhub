@@ -20,9 +20,9 @@ import {
   type RoutePricingRow,
 } from "./route-pricing-datagrid"
 import { DatePicker } from "@/components/ui/form-fields"
-import { BatchPayload } from "../schemas"
+import { BatchPayload } from "../../schemas"
 import { DEFAULT_ROUTE_TABLE_PRICING_ROWS } from "@/config/constants"
-import { useBookingRoutes } from "../../booking-routes/query-options"
+import { useBookingRoutes } from "../../../booking-routes/query-options"
 
 // ---------------------------------------------------------------------------
 // Helpers

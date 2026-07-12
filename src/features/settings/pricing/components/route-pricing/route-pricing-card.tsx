@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { TonnageRangeFields } from "./tonnage-range-fields";
-import type { BatchPricingInput } from "../schemas";
+import type { BatchPricingInput } from "../../schemas";
 
 interface RouteCardProps {
   routeIndex: number;
