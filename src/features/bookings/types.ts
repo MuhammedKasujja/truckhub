@@ -1,75 +1,83 @@
-import { EntityId } from "@/schemas";
-import { Payment } from "@/features/payments/types";
+import { EntityId } from "@/schemas"
+import { Payment } from "@/features/payments/types"
 
 export type BookingCustomer = {
-  id: EntityId;
-  fullname: string;
-  phone: string;
-  email: string;
-};
+  id: EntityId
+  fullname: string
+  phone: string
+  email: string
+}
 
 export type BookingServiceItem = {
-  service_id: EntityId;
-  service_name: string;
-  cost_per_item: number;
-  total_items: number;
-  discount: number;
-};
+  service_id: EntityId
+  service_name: string
+  cost_per_item: number
+  total_items: number
+  discount: number
+}
 
 export type Booking = {
-  id: EntityId;
-  number: string;
-  created_at: Date;
-  request_start_time: Date;
-  pickup_time: Date;
-  return_time: Date;
-  estimated_pickup_time: Date;
-  estimated_return_time: Date;
-  status: BookingStatus;
-  partial: number | null;
-  balance: number;
-  discount: number;
-  amount: number;
-  services: BookingServiceItem[];
-  client: BookingCustomer;
-};
+  id: EntityId
+  number: string
+  created_at: Date
+  request_start_time: Date
+  pickup_time: Date
+  return_time: Date
+  estimated_pickup_time: Date
+  estimated_return_time: Date
+  status: BookingStatus
+  partial: number | null
+  balance: number
+  discount: number
+  amount: number
+  services: BookingServiceItem[]
+  client: BookingCustomer
+}
 
 export type BookingDetails = {
-  id: EntityId;
-  number: string;
-  created_at: Date;
-  pickup_time: Date;
-  return_time: Date;
-  is_paid: boolean;
-  status: BookingStatus;
-  partial: number | undefined;
-  balance: number;
-  discount: number;
-  amount: number;
-  services: BookingServiceItem[];
-  client: BookingCustomer;
-  payments: Payment[];
-};
+  id: EntityId
+  number: string
+  created_at: Date
+  pickup_time: Date
+  return_time: Date
+  is_paid: boolean
+  status: BookingStatus
+  partial: number | undefined
+  balance: number
+  discount: number
+  amount: number
+  services: BookingServiceItem[]
+  client: BookingCustomer
+  payments: Payment[]
+}
+
+export const BookingStatusList = [
+  "pending",
+  "accepted",
+  "rejected",
+  "cancelled",
+  "completed",
+] as const
 
 export type BookingStatus =
   | "pending"
   | "accepted"
   | "rejected"
   | "cancelled"
-  | "completed";
+  | "completed"
 
 export interface LocationPoint {
-  lat: number;
-  lng: number;
+  lat: number
+  lng: number
 }
 
 export interface LocationData extends LocationPoint {
-  name: string;
+  name: string
 }
 
 export type BookingStatistics = {
-  total: number;
-  confirmed: number;
-  canceled: number;
-  total_payments: number | string;
-};
+  total: number
+  confirmed: number
+  canceled: number
+  total_payments: number | string
+}

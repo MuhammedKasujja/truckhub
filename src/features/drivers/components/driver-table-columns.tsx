@@ -14,7 +14,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
   return [
     {
       accessorKey: "name",
-      header: tr('form.name'),
+      header: tr('common.form.name'),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -30,21 +30,21 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
     },
     {
       accessorKey: "email",
-      header: tr('form.name'),
+      header: tr('common.form.name'),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: tr('form.phone'),
+      header: tr('common.form.phone'),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
     },
     {
       accessorKey: "created_at",
-      header: tr('form.date'),
+      header: tr('common.form.date'),
       cell: ({ row }) => {
         return <p>{formatDateTime(row.original.created_at)}</p>
       },

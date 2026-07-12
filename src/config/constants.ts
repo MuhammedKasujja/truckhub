@@ -20,12 +20,12 @@ export const PaymentModeList = [
 ] as const
 
 export const PaymentStatuses = [
+  "completed",
   "pending",
   "cancelled",
+  "partially_refunded",
   "refunded",
   "failed",
-  "completed",
-  "partially_refunded",
 ] as const // ["pending", "processing", "paid", "failed"]
 
 export const AuditLogSource = ["system", "user"] as const

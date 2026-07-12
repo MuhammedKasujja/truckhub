@@ -1,7 +1,7 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { Booking } from "@/features/bookings/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { Booking, BookingStatusList } from "@/features/bookings/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ServiceItem = z.object({
@@ -38,6 +38,7 @@ export const BookingSearchParamsSchema = z.object({
   sort: getSortingStateSchema<Booking>().default([
     { id: "created_at", desc: true },
   ]),
+  status: z.array(z.enum(BookingStatusList)).optional(),
   // advanced filter
   filters: getFiltersStateSchema<Booking>().optional(),
   ...DefaultSearchParamsSchema.shape,

@@ -116,7 +116,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EyeIcon />
-                      {tr("form.view")}
+                      {tr("common.form.view")}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -127,7 +127,7 @@ export function getUserTableColumns({
                       params={{ userId: user.id }}
                     >
                       <EditIcon />
-                      {tr("form.edit")}
+                      {tr("common.form.edit")}
                     </Link>
                   </DropdownMenuItem>
                 </Can>
@@ -170,7 +170,7 @@ export function getUserTableColumns({
                       <div className="flex gap-4"> */}
                         {/* <Button type="button" variant={"destructive"}> */}
                         <Trash2Icon />
-                        {tr("form.delete")}
+                        {tr("common.form.delete")}
                         {/* </Button> */}
                         {/* </div>
                     </ActionButton> */}

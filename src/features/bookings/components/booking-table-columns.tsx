@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { formatDateTime, formatMoney } from "@/lib/format"
-import { Booking } from "@/features/bookings/types"
+import { Booking, BookingStatusList } from "@/features/bookings/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
@@ -32,7 +32,7 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
     {
       accessorKey: "customer",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} label={tr('client')} />
+        <DataTableColumnHeader column={column} label={tr("client")} />
       ),
       cell: ({ row }) => {
         return (
@@ -50,18 +50,28 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
     },
     {
       id: "services",
-      header: tr('services'),
+      header: tr("services"),
       cell: ({ row }) => {
         return <p className="text-center">{row.original.services.length}</p>
       },
       size: 80,
     },
     {
+      id:"status",
       accessorKey: "status",
-      header: tr('status'),
+      header: tr("status"),
       cell: ({ row }) => {
         return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: BookingStatusList.map((status) => ({
+          label: `${status}`,
+          value: `${status}`,
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
       accessorKey: "pickup_time",
@@ -72,14 +82,14 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
     },
     {
       accessorKey: "amount",
-      header: tr('amount'),
+      header: tr("amount"),
       cell: ({ row }) => {
         return <p>{formatMoney(row.original.amount)}</p>
       },
     },
     {
       accessorKey: "balance",
-      header: tr('balance'),
+      header: tr("balance"),
       cell: ({ row }) => {
         return <p>{formatMoney(row.original.balance)}</p>
       },
