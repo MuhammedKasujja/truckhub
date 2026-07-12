@@ -607,7 +607,7 @@ function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
         }`}
       />
       {error && (
-        <p className="mt-0.5 text-[10px] text-rose-600">{error.message}</p>
+        <p className="mt-0.5 text-[10px] text-destructive-foreground">{error.message}</p>
       )}
     </div>
   )

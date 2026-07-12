@@ -7,7 +7,7 @@ import z from "zod"
 import {
   LoadingOffloadingPricingRequest,
   LoadingOffloadingPricingSchema,
-} from "../schemas"
+} from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
