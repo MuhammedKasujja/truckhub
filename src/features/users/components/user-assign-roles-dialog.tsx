@@ -73,7 +73,10 @@ export function UserAssignRolesDialog({ open, onOpenChange, user }: Props) {
           className="space-y-4"
         >
           <DialogHeader>
-            <DialogTitle>{`Edit roles for * ${user?.name}`}</DialogTitle>
+            <DialogTitle>
+              <span className="text-muted-foreground">Edit roles for *</span>
+              {user?.name}
+            </DialogTitle>
             <DialogDescription>
               Change user's curent roles with new ones for system access
             </DialogDescription>
