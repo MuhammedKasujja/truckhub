@@ -108,6 +108,9 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
                   label="Booking"
                   control={form.control}
                   name={"entity_id"}
+                  onSelected={(booking) => {
+                    form.setValue("amount", booking?.balance ?? 0)
+                  }}
                 />
               )}
               {initialData?.type === "ride" && (
@@ -115,6 +118,9 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
                   label={"Ride"}
                   name={"entity_id"}
                   control={form.control}
+                  onSelected={(ride) => {
+                    form.setValue("amount", ride?.balance ?? 0)
+                  }}
                 />
               )}
               <NumberField
