@@ -36,7 +36,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-5">
-      {/* <PageHeader className="pb-0">
+      <PageHeader className="pb-0">
         <PageTitle>Dashboard</PageTitle>
         <PageAction>
           <CalendarDatePicker
@@ -56,7 +56,7 @@ function RouteComponent() {
             }
           />
           <DateRangePicker
-            // onUpdate={(values) => console.log(values)}
+            onUpdate={(values) => console.log(values)}
             initialDateFrom="2026-01-01"
             initialDateTo="2026-12-31"
             align="start"
@@ -64,7 +64,7 @@ function RouteComponent() {
             showCompare={false}
           />
         </PageAction>
-      </PageHeader> */}
+      </PageHeader>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Stat>
           <StatLabel>Payments</StatLabel>
