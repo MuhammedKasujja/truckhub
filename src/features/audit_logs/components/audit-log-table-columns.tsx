@@ -1,12 +1,26 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import type { AuditLog } from "@/features/audit_logs/types"
+import type {
+  AuditLog,
+  AuditLogTableRowAction,
+} from "@/features/audit_logs/types"
 import { TFunction } from "@/i18n"
 import { formatDate } from "@/lib/format"
 import { ActionButton } from "@/components/ui/action-button"
-import { Trash2Icon } from "lucide-react"
+import { EyeIcon, Trash2Icon } from "lucide-react"
 import { AuditLogSource } from "@/config/constants"
+import { Button } from "@/components/ui/button"
 
-export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
+type Props = {
+  tr: TFunction
+  setRowAction: React.Dispatch<
+    React.SetStateAction<AuditLogTableRowAction | null>
+  >
+}
+
+export function getAuditLogTableColumns({
+  tr,
+  setRowAction,
+}: Props): ColumnDef<AuditLog>[] {
   return [
     {
       accessorKey: "actor_name",
@@ -53,9 +67,16 @@ export function getAuditLogTableColumns(tr: TFunction): ColumnDef<AuditLog>[] {
     },
     {
       id: "actions",
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <div className="flex gap-2">
+            <Button
+              size={"icon"}
+              variant={"outline"}
+              onClick={() => setRowAction({ row, variant: "view" })}
+            >
+              <EyeIcon />
+            </Button>
             <ActionButton
               variant={"destructive"}
               size={"icon"}
