@@ -37,74 +37,80 @@ export function AuditLogViewDialog({
         <DialogHeader>
           <DialogTitle>Audit Details</DialogTitle>
         </DialogHeader>
-        {isLoading && <SkeletonAuditLogDetails />}
-        {data?.data && (
-          <div>
-            <Item>
-              <ItemContent>
-                <ItemTitle>{data?.data.actor_name}</ItemTitle>
-                <ItemDescription>Actor</ItemDescription>
-              </ItemContent>
-            </Item>
-            <Item>
-              <ItemContent>
-                <ItemTitle>{data?.data.resource_type}</ItemTitle>
-                <ItemDescription>Type</ItemDescription>
-              </ItemContent>
-            </Item>
-            <Item>
-              <ItemContent>
-                <ItemTitle>{data?.data.source}</ItemTitle>
-                <ItemDescription>Source</ItemDescription>
-              </ItemContent>
-            </Item>
-            <Item>
-              <ItemContent>
-                <ItemTitle>{data?.data.action}</ItemTitle>
-                <ItemDescription>Action</ItemDescription>
-              </ItemContent>
-            </Item>
-          </div>
-        )}
-        <Separator />
-        <div className="text-muted-foreground">After</div>
+        <div className="-mx-4 max-h-[90vh] overflow-y-auto px-4 space-y-4">
+          {isLoading && <SkeletonAuditLogDetails />}
+          {data?.data && (
+            <div className="grid grid-cols-1 md:grid-cols-2">
+              <Item>
+                <ItemContent>
+                  <ItemDescription>Actor</ItemDescription>
+                  <ItemTitle>{data?.data.actor_name}</ItemTitle>
+                </ItemContent>
+              </Item>
+              <Item>
+                <ItemContent>
+                  <ItemDescription>Type</ItemDescription>
+                  <ItemTitle>{data?.data.resource_type}</ItemTitle>
+                </ItemContent>
+              </Item>
+              <Item>
+                <ItemContent>
+                  <ItemDescription>Source</ItemDescription>
+                  <ItemTitle>{data?.data.source}</ItemTitle>
+                </ItemContent>
+              </Item>
+              <Item>
+                <ItemContent>
+                  <ItemDescription>Action</ItemDescription>
+                  <ItemTitle>{data?.data.action}</ItemTitle>
+                </ItemContent>
+              </Item>
+            </div>
+          )}
+          <Separator />
+          <div className="text-muted-foreground">After</div>
 
-        <table>
-          <tbody className="space-y-2">
-            {data?.data?.after &&
-              Object.entries(data.data.after).map(([key, value]) => (
-                <tr key={key}>
-                  <td>
-                    <strong>{key}</strong>
-                  </td>
-                  <td>
-                    {typeof value === "object" && value !== null
-                      ? JSON.stringify(value)
-                      : String(value)}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-        <Separator />
-        <div className="text-muted-foreground">Before</div>
-        <table>
-          <tbody className="space-y-2">
-            {data?.data?.before &&
-              Object.entries(data.data.before).map(([key, value]) => (
-                <tr key={key}>
-                  <td>
-                    <strong>{key}</strong>
-                  </td>
-                  <td>
-                    {typeof value === "object" && value !== null
-                      ? JSON.stringify(value)
-                      : String(value)}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+          <table>
+            <tbody className="space-y-2">
+              {data?.data?.after &&
+                Object.entries(data.data.after).map(([key, value]) => (
+                  <tr key={key} className="mb-2">
+                    <td className="font-light text-muted-foreground">
+                      <strong>{key}</strong>
+                    </td>
+                    <td>
+                      {typeof value === "object" && value !== null
+                        ? JSON.stringify(value)
+                        : value
+                          ? String(value)
+                          : "-"}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+          <Separator />
+          <div className="text-muted-foreground">Before</div>
+          <table>
+            <tbody className="space-y-2">
+              {data?.data?.before &&
+                Object.entries(data.data.before).map(([key, value]) => (
+                  <tr key={key} className="mb-2">
+                    <td className="font-light text-muted-foreground">
+                      <strong>{key}</strong>
+                    </td>
+                    <td>
+                      {typeof value === "object" && value !== null
+                        ? JSON.stringify(value)
+                        : value
+                          ? String(value)
+                          : "-"}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </DialogContent>
     </Dialog>
   )
