@@ -16,7 +16,7 @@ export function AuditLogTableActions({
 
   return (
     <AuditLogViewDialog
-      data={rowAction?.row.original ?? {}}
+      audit={rowAction?.row.original}
       open={rowAction?.variant === "view"}
       onOpenChange={handleClose}
     />

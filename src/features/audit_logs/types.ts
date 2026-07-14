@@ -8,6 +8,8 @@ export type AuditLog = {
   source: string
   action: string
   created_at: string
+  before: Record<string, any> | null
+  after: Record<string, any> | null
   actor_name: string | null
 }
 
