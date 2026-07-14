@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.bluepearls.com",
   "build": {
-    "frontendDist": "../build",
+    "frontendDist": "../.output/public",
     "devUrl": "http://localhost:3000",
     "beforeDevCommand": "pnpm run dev",
     "beforeBuildCommand": "pnpm run build"

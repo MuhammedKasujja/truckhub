@@ -96,7 +96,7 @@ export function NotificationSettingsForm({
           ))}
         </div>
         <Button type="button" onClick={() => clearHistory()}>
-          Clear
+          Clear ({history.length})
         </Button>
       </CardFooter>
     </Card>
