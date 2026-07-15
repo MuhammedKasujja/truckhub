@@ -82,7 +82,7 @@ export function EditVehicleFeatureForm() {
                 {fields.map((f, index) => (
                   <SortableItem
                     key={f.id}
-                    value={f.name}
+                    value={f.id}
                     className="flex items-center gap-2"
                   >
                     <SortableItemHandle asChild>
