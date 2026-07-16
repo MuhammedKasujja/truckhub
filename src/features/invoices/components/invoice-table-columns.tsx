@@ -17,7 +17,7 @@ export function getInvoiceTableColumns({ tr }: Props): ColumnDef<Invoice>[] {
       },
     },
     {
-      accessorKey: "amount",
+      accessorKey: "number",
       header: () => <p className="uppercase">{tr("invoice_number")}</p>,
       cell: ({ row }) => {
         return <p>{row.original.number}</p>

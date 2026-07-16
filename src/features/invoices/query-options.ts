@@ -1,3 +1,4 @@
+import { InvoiceListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 
 export const invoiceQueryKeys = {
@@ -7,7 +8,7 @@ export const invoiceQueryKeys = {
   detail: (id: string) => [...invoiceQueryKeys.all(), "detail", id],
 }
 
-export const invoiceQueryOptions = (search) =>
+export const invoiceQueryOptions = (search: InvoiceListSearchParams) =>
   queryOptions({
     queryKey: [...invoiceQueryKeys.list(), search],
     queryFn: () => [],

@@ -17,8 +17,8 @@ export function getQuotationTableColumns({ tr }: Props): ColumnDef<Quotation>[] 
       },
     },
     {
-      accessorKey: "amount",
-      header: tr("invoice_number"),
+      accessorKey: "number",
+      header: tr("quotation_number"),
       cell: ({ row }) => {
         return <p>{row.original.number}</p>
       },

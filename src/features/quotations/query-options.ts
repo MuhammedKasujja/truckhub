@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query"
+import { QuotationListSearchParams } from "./schemas"
 
 export const quotationQueryKeys = {
   all: () => ["quotation"],
@@ -7,7 +8,7 @@ export const quotationQueryKeys = {
   detail: (id: string) => [...quotationQueryKeys.all(), "detail", id],
 }
 
-export const quotationQueryOptions = (search) =>
+export const quotationQueryOptions = (search: QuotationListSearchParams) =>
   queryOptions({
     queryKey: [...quotationQueryKeys.list(), search],
     queryFn: () => [],

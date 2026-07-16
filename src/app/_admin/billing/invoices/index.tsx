@@ -3,9 +3,12 @@ import {
   InvoiceTable,
   InvoiceTableFilter,
 } from "@/features/invoices/components"
+import { InvoiceSearchParams } from "@/features/invoices/schemas"
 
 export const Route = createFileRoute("/_admin/billing/invoices/")({
   component: RouteComponent,
+  validateSearch: InvoiceSearchParams,
+  loaderDeps: ({ search }) => search,
 })
 
 function RouteComponent() {
