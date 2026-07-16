@@ -28,7 +28,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.amount"),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2">{formatMoney(row.original.amount)}</div>
+          <div className="flex gap-2 font-semibold">{formatMoney(row.original.amount)}</div>
         )
       },
       meta: {

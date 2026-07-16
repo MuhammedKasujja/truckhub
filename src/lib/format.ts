@@ -9,7 +9,7 @@ export function formatMoney(
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: CURRENCY_CODE,
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+    minimumFractionDigits: 0//Number.isInteger(amount) ? 0 : 2,
   })
 
   if (amount === 0 && !showZeroAsNumber) return "Free"

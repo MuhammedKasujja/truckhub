@@ -7,6 +7,7 @@ import { ReportsModulePermissions } from "./reports_permissions";
 import { BookingModulePermissions } from "./booking_permissions";
 import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
+import { BillingModulePermissions } from "./billing_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
 import { DashboardModulePermissions } from "./dashboard_permissions";
 
@@ -21,6 +22,7 @@ export const KeyNamedPermissions = {
   ...RideModulePermissions,
   ...PaymentModulePermissions,
   ...ClientModulePermissions,
+  ...BillingModulePermissions,
   ...DriverModulePermissions,
   ...VehicleModulePermissions,
   ...ConfigModulePermissions,
@@ -35,6 +37,7 @@ export const SystemPermissions = {
   services: ServiceModulePermissions,
   rides: RideModulePermissions,
   payments: PaymentModulePermissions,
+  billing: BillingModulePermissions,
   customers: ClientModulePermissions,
   drivers: DriverModulePermissions,
   vehicles: VehicleModulePermissions,

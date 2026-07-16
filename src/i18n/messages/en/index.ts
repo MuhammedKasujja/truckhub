@@ -125,6 +125,7 @@ const en = {
     reports: "Reports",
     users: "Users",
     bookings: "Bookings",
+    billing: "Billing",
     rides: "Rides",
     payments: "Payments",
   },

@@ -1,3 +1,4 @@
+import { IconReportMoney } from "@tabler/icons-react"
 import type { LucideIcon } from "lucide-react"
 import {
   DatabaseSearch,
@@ -26,6 +27,7 @@ type Module =
   | "Rides"
   | "Services"
   | "Payments"
+  | "Billing"
   | "Settings"
   | "Reports"
 
@@ -37,6 +39,7 @@ export function getModuleIcon(module: Module) {
     Rides: DatabaseSearch,
     Bookings: CalendarCheck,
     Payments: CreditCard,
+    Billing: IconReportMoney,
     Services: MonitorCog,
     Clients: Users,
     Drivers: ShieldUser,

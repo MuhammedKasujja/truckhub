@@ -76,7 +76,7 @@ export function EditVehicleFeatureForm() {
                   shouldDirty: true,
                 })
               }
-              getItemValue={(item) => item.name}
+              getItemValue={(item) => item.id}
             >
               <SortableContent className="flex flex-col gap-4">
                 {fields.map((f, index) => (

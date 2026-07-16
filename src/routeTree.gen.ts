@@ -16,6 +16,7 @@ import { Route as AuthUnauthorizedRouteImport } from './app/_auth/unauthorized'
 import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
 import { Route as AuthLoginRouteImport } from './app/_auth/login'
 import { Route as AdminSettingsRouteRouteImport } from './app/_admin/settings/route'
+import { Route as AdminBillingRouteRouteImport } from './app/_admin/billing/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
 import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/index'
 import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
@@ -47,6 +48,9 @@ import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
+import { Route as AdminBillingQuotationsIndexRouteImport } from './app/_admin/billing/quotations/index'
+import { Route as AdminBillingOverviewIndexRouteImport } from './app/_admin/billing/overview/index'
+import { Route as AdminBillingInvoicesIndexRouteImport } from './app/_admin/billing/invoices/index'
 import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/vehicles/$vehicleId.view'
 import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
 import { Route as AdminSettingsPricingConfigRouteTonnagePricingRouteImport } from './app/_admin/settings/pricing-config/route-tonnage-pricing'
@@ -109,6 +113,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 const AdminSettingsRouteRoute = AdminSettingsRouteRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminBillingRouteRoute = AdminBillingRouteRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminVehiclesIndexRoute = AdminVehiclesIndexRouteImport.update({
@@ -278,6 +287,24 @@ const AdminBookingsNewIndexRoute = AdminBookingsNewIndexRouteImport.update({
   path: '/bookings/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminBillingQuotationsIndexRoute =
+  AdminBillingQuotationsIndexRouteImport.update({
+    id: '/quotations/',
+    path: '/quotations/',
+    getParentRoute: () => AdminBillingRouteRoute,
+  } as any)
+const AdminBillingOverviewIndexRoute =
+  AdminBillingOverviewIndexRouteImport.update({
+    id: '/overview/',
+    path: '/overview/',
+    getParentRoute: () => AdminBillingRouteRoute,
+  } as any)
+const AdminBillingInvoicesIndexRoute =
+  AdminBillingInvoicesIndexRouteImport.update({
+    id: '/invoices/',
+    path: '/invoices/',
+    getParentRoute: () => AdminBillingRouteRoute,
+  } as any)
 const AdminVehiclesVehicleIdViewRoute =
   AdminVehiclesVehicleIdViewRouteImport.update({
     id: '/vehicles/$vehicleId/view',
@@ -452,6 +479,7 @@ const AdminSettingsUserManagementUsersUserIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/billing': typeof AdminBillingRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
@@ -493,6 +521,9 @@ export interface FileRoutesByFullPath {
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
+  '/billing/invoices/': typeof AdminBillingInvoicesIndexRoute
+  '/billing/overview/': typeof AdminBillingOverviewIndexRoute
+  '/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
@@ -520,6 +551,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/billing': typeof AdminBillingRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
@@ -561,6 +593,9 @@ export interface FileRoutesByTo {
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
+  '/billing/invoices': typeof AdminBillingInvoicesIndexRoute
+  '/billing/overview': typeof AdminBillingOverviewIndexRoute
+  '/billing/quotations': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
@@ -590,6 +625,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteRouteWithChildren
+  '/_admin/billing': typeof AdminBillingRouteRouteWithChildren
   '/_admin/settings': typeof AdminSettingsRouteRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
@@ -631,6 +667,9 @@ export interface FileRoutesById {
   '/_admin/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/_admin/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
+  '/_admin/billing/invoices/': typeof AdminBillingInvoicesIndexRoute
+  '/_admin/billing/overview/': typeof AdminBillingOverviewIndexRoute
+  '/_admin/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
@@ -660,6 +699,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/billing'
     | '/settings'
     | '/login'
     | '/logout'
@@ -701,6 +741,9 @@ export interface FileRouteTypes {
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
+    | '/billing/invoices/'
+    | '/billing/overview/'
+    | '/billing/quotations/'
     | '/bookings/new/'
     | '/clients/new/'
     | '/reports/audits/'
@@ -728,6 +771,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/billing'
     | '/settings'
     | '/login'
     | '/logout'
@@ -769,6 +813,9 @@ export interface FileRouteTypes {
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
+    | '/billing/invoices'
+    | '/billing/overview'
+    | '/billing/quotations'
     | '/bookings/new'
     | '/clients/new'
     | '/reports/audits'
@@ -797,6 +844,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_admin'
+    | '/_admin/billing'
     | '/_admin/settings'
     | '/_auth/login'
     | '/_auth/logout'
@@ -838,6 +886,9 @@ export interface FileRouteTypes {
     | '/_admin/settings/pricing-config/route-tonnage-pricing'
     | '/_admin/vehicles/$vehicleId/edit'
     | '/_admin/vehicles/$vehicleId/view'
+    | '/_admin/billing/invoices/'
+    | '/_admin/billing/overview/'
+    | '/_admin/billing/quotations/'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
     | '/_admin/reports/audits/'
@@ -922,6 +973,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AdminSettingsRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/billing': {
+      id: '/_admin/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof AdminBillingRouteRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/vehicles/': {
@@ -1141,6 +1199,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/billing/quotations/': {
+      id: '/_admin/billing/quotations/'
+      path: '/quotations'
+      fullPath: '/billing/quotations/'
+      preLoaderRoute: typeof AdminBillingQuotationsIndexRouteImport
+      parentRoute: typeof AdminBillingRouteRoute
+    }
+    '/_admin/billing/overview/': {
+      id: '/_admin/billing/overview/'
+      path: '/overview'
+      fullPath: '/billing/overview/'
+      preLoaderRoute: typeof AdminBillingOverviewIndexRouteImport
+      parentRoute: typeof AdminBillingRouteRoute
+    }
+    '/_admin/billing/invoices/': {
+      id: '/_admin/billing/invoices/'
+      path: '/invoices'
+      fullPath: '/billing/invoices/'
+      preLoaderRoute: typeof AdminBillingInvoicesIndexRouteImport
+      parentRoute: typeof AdminBillingRouteRoute
+    }
     '/_admin/vehicles/$vehicleId/view': {
       id: '/_admin/vehicles/$vehicleId/view'
       path: '/vehicles/$vehicleId/view'
@@ -1347,6 +1426,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminBillingRouteRouteChildren {
+  AdminBillingInvoicesIndexRoute: typeof AdminBillingInvoicesIndexRoute
+  AdminBillingOverviewIndexRoute: typeof AdminBillingOverviewIndexRoute
+  AdminBillingQuotationsIndexRoute: typeof AdminBillingQuotationsIndexRoute
+}
+
+const AdminBillingRouteRouteChildren: AdminBillingRouteRouteChildren = {
+  AdminBillingInvoicesIndexRoute: AdminBillingInvoicesIndexRoute,
+  AdminBillingOverviewIndexRoute: AdminBillingOverviewIndexRoute,
+  AdminBillingQuotationsIndexRoute: AdminBillingQuotationsIndexRoute,
+}
+
+const AdminBillingRouteRouteWithChildren =
+  AdminBillingRouteRoute._addFileChildren(AdminBillingRouteRouteChildren)
+
 interface AdminSettingsPricingConfigRouteRouteChildren {
   AdminSettingsPricingConfigDistancePricingRoute: typeof AdminSettingsPricingConfigDistancePricingRoute
   AdminSettingsPricingConfigIslandsPricingRoute: typeof AdminSettingsPricingConfigIslandsPricingRoute
@@ -1464,6 +1558,7 @@ const AdminSettingsRouteRouteWithChildren =
   AdminSettingsRouteRoute._addFileChildren(AdminSettingsRouteRouteChildren)
 
 interface AdminRouteRouteChildren {
+  AdminBillingRouteRoute: typeof AdminBillingRouteRouteWithChildren
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
   AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
@@ -1502,6 +1597,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminBillingRouteRoute: AdminBillingRouteRouteWithChildren,
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
   AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
