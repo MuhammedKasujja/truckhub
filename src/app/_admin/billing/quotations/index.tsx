@@ -1,3 +1,4 @@
+import { QuotationTable } from '@/features/quotations/components'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_admin/billing/quotations/')({
@@ -5,5 +6,5 @@ export const Route = createFileRoute('/_admin/billing/quotations/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/billing/quotations/"!</div>
+  return <QuotationTable/>
 }

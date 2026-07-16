@@ -8,6 +8,8 @@ import { Route as OverviewRoute } from "@/app/_admin/billing/overview"
 import { Route as QuotationsRoute } from "@/app/_admin/billing/quotations"
 import { Route as InvoicesRoute } from "@/app/_admin/billing/invoices"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PageHeader, PageTitle } from "@/components/page-header"
+import { useTranslation } from "@/i18n"
 
 const biilingTabs = [
   {
@@ -15,11 +17,11 @@ const biilingTabs = [
     route: OverviewRoute.to,
   },
   {
-    name: "quotations",
+    name: "quotation",
     route: QuotationsRoute.to,
   },
   {
-    name: "invoices",
+    name: "invoice",
     route: InvoicesRoute.to,
   },
 ] as const
@@ -31,10 +33,14 @@ export const Route = createFileRoute("/_admin/billing")({
 function RouteComponent() {
   const location = useLocation()
   const router = useRouter()
+  const tr = useTranslation()
 
   const activeTab = location.pathname ?? biilingTabs[0].route
   return (
     <>
+      <PageHeader>
+        <PageTitle>Billing</PageTitle>
+      </PageHeader>
       <Tabs
         value={activeTab}
         className="w-full"
@@ -43,7 +49,7 @@ function RouteComponent() {
         <TabsList>
           {biilingTabs.map((section) => (
             <TabsTrigger key={section.name} value={section.route}>
-              {section.name}
+              {tr(`common.${section.name}`)}
             </TabsTrigger>
           ))}
         </TabsList>
