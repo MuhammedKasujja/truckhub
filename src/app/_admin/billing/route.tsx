@@ -10,6 +10,7 @@ import { Route as InvoicesRoute } from "@/app/_admin/billing/invoices"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
+import { requirePermission } from "@/lib/auth"
 
 const biilingTabs = [
   {
@@ -28,6 +29,7 @@ const biilingTabs = [
 
 export const Route = createFileRoute("/_admin/billing")({
   component: RouteComponent,
+  beforeLoad: ()=> requirePermission("billing:module")
 })
 
 function RouteComponent() {

@@ -1,4 +1,4 @@
-import * as React from "react"
+import React from "react"
 
 import { VersionSwitcher } from "@/components/version-switcher"
 import {
@@ -28,7 +28,7 @@ import { Route as ClientsRoute } from "@/app/_admin/clients"
 import { Route as DriversRoute } from "@/app/_admin/drivers"
 import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
-import { Route as BillingModuleRoute } from "@/app/_admin/billing/route"
+import { Route as BillingModuleRoute } from "@/app/_admin/billing/overview"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { getModuleIcon } from "@/components/icons"
 
