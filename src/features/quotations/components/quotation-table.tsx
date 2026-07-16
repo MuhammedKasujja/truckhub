@@ -17,9 +17,9 @@ export function QuotationTable() {
   const { data, error } = useQuery(quotationQueryOptions(search))
 
   const { table } = useDataTable({
-    data: data ?? [],
+    data: data?.data ?? [],
     columns,
-    pageCount: 3,
+    pageCount: data?.pagination.totalPages??1,
     initialState: {
       sorting: [{ id: "id", desc: true }],
       //   columnPinning: { right: ["actions"] },

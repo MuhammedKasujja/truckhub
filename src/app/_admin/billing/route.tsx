@@ -36,6 +36,7 @@ function RouteComponent() {
   const tr = useTranslation()
 
   const activeTab = location.pathname ?? biilingTabs[0].route
+  console.log("location", location, "activeTab", activeTab)
   return (
     <>
       <PageHeader>

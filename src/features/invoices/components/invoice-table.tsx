@@ -17,9 +17,9 @@ export function InvoiceTable() {
   const { data, error } = useQuery(invoiceQueryOptions(search))
 
   const { table } = useDataTable({
-    data: data?? [],
+    data: data?.data ?? [],
     columns,
-    pageCount: 3,
+    pageCount: data?.pagination.totalPages ?? 1,
     initialState: {
       sorting: [{ id: "id", desc: true }],
       //   columnPinning: { right: ["actions"] },
@@ -31,7 +31,7 @@ export function InvoiceTable() {
   return (
     <DataTable table={table}>
       {/* <DataTableToolbar table={table}> */}
-        {/* <DataTableSortList table={table} align="end" /> */}
+      {/* <DataTableSortList table={table} align="end" /> */}
       {/* </DataTableToolbar> */}
     </DataTable>
   )

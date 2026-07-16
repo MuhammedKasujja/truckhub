@@ -1,3 +1,4 @@
+import { getQuotationsFn } from "./services"
 import { queryOptions } from "@tanstack/react-query"
 import { QuotationListSearchParams } from "./schemas"
 
@@ -11,5 +12,5 @@ export const quotationQueryKeys = {
 export const quotationQueryOptions = (search: QuotationListSearchParams) =>
   queryOptions({
     queryKey: [...quotationQueryKeys.list(), search],
-    queryFn: () => [],
+    queryFn: () => getQuotationsFn({ data: search }),
   })
