@@ -14,6 +14,8 @@ export const ServiceCreateSchema = z.object({
   booking_fee: z.number().optional(),
   // tax_fee: z.number().optional(),
   vehicle_type_id: IDSchema,
+  car_brand_id: IDSchema.optional().nullable(),
+  car_model_id: IDSchema.optional().nullable(),
   minimum_hire_fee: z.number(),
   start_year: z.string().optional(),
   end_year: z.string().optional(),

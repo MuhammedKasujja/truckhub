@@ -158,7 +158,6 @@ export const CAR_COLOR_OPTIONS = Object.entries(CAR_COLORS).map(
   })
 )
 
-
 export const COMMON_CAR_COLORS = {
   white: {
     name: "White",
@@ -200,4 +199,8 @@ export const COMMON_CAR_COLORS = {
     name: "Yellow / Gold",
     hex: "#FFD600",
   },
-} as const;
+} as const
+
+export const ENGINE_MODES = ["dry", "wet"] as const
+
+export const LINE_ITEM_TYPES = ["truck", "small"] as const
