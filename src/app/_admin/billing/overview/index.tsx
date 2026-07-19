@@ -10,9 +10,9 @@ function RouteComponent() {
   return (
     <div className="space-y-5">
       <ChartLineInteractive />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-      <ChartPieLegend/>
-      <InvoicePieChart/>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <ChartPieLegend />
+        <InvoicePieChart />
       </div>
     </div>
   )

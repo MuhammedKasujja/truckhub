@@ -108,73 +108,75 @@ export function TrucksServiceBookingForm({
       })}
       className="space-y-4"
     >
-      <Card>
-        <CardHeader className="gap-1">
-          {selectedClient && (
-            <CardTitle className="text-lg">{selectedClient.name}</CardTitle>
-          )}
-          {selectedClient && (
-            <CardDescription>{selectedClient.phone}</CardDescription>
-          )}
-          <CardAction>
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
+      <div className="grid grid-flow-row md:grid-cols-2 gap-5">
+        <Card>
+          <CardHeader className="gap-1">
+            {selectedClient && (
+              <CardTitle className="text-lg">{selectedClient.name}</CardTitle>
+            )}
+            {selectedClient && (
+              <CardDescription>{selectedClient.phone}</CardDescription>
+            )}
+            <CardAction>
+              <SubmitButton
+                text={tr("common.form.submit")}
+                isSubmitting={form.formState.isSubmitting}
+              />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ClientPickerField
+              label="Client"
+              control={form.control}
+              name="client_id"
+              onSelected={handleClientSelected}
             />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ClientPickerField
-            label="Client"
-            control={form.control}
-            name="client_id"
-            onSelected={handleClientSelected}
-          />
-          {selectedClient && (
-            <ClientContactsList
-              contacts={selectedClient?.contacts}
-              // onSelected={setContacts}
+            {selectedClient && (
+              <ClientContactsList
+                contacts={selectedClient?.contacts}
+                // onSelected={setContacts}
+              />
+            )}
+            <FieldLabel htmlFor="tax">Tax</FieldLabel>
+            <TaxRatePicker
+              id="tax"
+              value={taxRate}
+              onSelected={(taxRate) => {
+                setTaxRate(taxRate)
+              }}
             />
-          )}
-          <FieldLabel htmlFor="tax">Tax</FieldLabel>
-          <TaxRatePicker
-            id="tax"
-            value={taxRate}
-            onSelected={(taxRate) => {
-              setTaxRate(taxRate)
-            }}
-          />
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardContent>
-          <FieldGroup className="grid gap-4 md:grid-flow-col md:grid-cols-4">
-            <DateTimePickerField
-              label={"Pickup Date"}
-              name={"pickup_time"}
-              control={control}
-            />
-            <DateTimePickerField
-              label={"Return Date"}
-              name={"return_time"}
-              control={control}
-            />
-            <NumberField
-              label={"Initial Payment"}
-              name={"partial"}
-              control={control}
-              required={false}
-            />
-            <DiscountField
-              label={"Discount"}
-              name={"discount"}
-              control={control}
-              required={false}
-            />
-          </FieldGroup>
-        </CardContent>
-      </Card>
+        <Card>
+          <CardContent>
+            <FieldGroup className="grid grid-flow-row gap-4">
+              <DateTimePickerField
+                label={"Pickup Date"}
+                name={"pickup_time"}
+                control={control}
+              />
+              <DateTimePickerField
+                label={"Return Date"}
+                name={"return_time"}
+                control={control}
+              />
+              <NumberField
+                label={"Initial Payment"}
+                name={"partial"}
+                control={control}
+                required={false}
+              />
+              <DiscountField
+                label={"Discount"}
+                name={"discount"}
+                control={control}
+                required={false}
+              />
+            </FieldGroup>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader className="flex-row items-center justify-between">
