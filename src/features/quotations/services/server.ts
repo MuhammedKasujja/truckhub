@@ -1,4 +1,5 @@
 import { Quotation } from "../types"
+import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { CreateQuotationRequest, QuotationListSearchParams } from "../schemas"
@@ -24,4 +25,22 @@ export async function createQuotation(data: CreateQuotationRequest) {
 
 export async function updateQuotation(data: CreateQuotationRequest) {
   return await apiClient.patchFn<Quotation>(endpoint, data)
+}
+
+export async function markQuotationAccepted(quotationId: EntityId) {
+  return await apiClient.patchFn<Quotation>(
+    `${endpoint}/${quotationId}/accepted`
+  )
+}
+
+export async function markQuotationRejected(quotationId: EntityId) {
+  return await apiClient.patchFn<Quotation>(
+    `${endpoint}/${quotationId}/rejected`
+  )
+}
+
+export async function markQuotationExpired(quotationId: EntityId) {
+  return await apiClient.patchFn<Quotation>(
+    `${endpoint}/${quotationId}/expired`
+  )
 }

@@ -1,7 +1,15 @@
 import { ApiError } from "@/types"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { createQuotationSchema, QuotationSearchParams } from "../schemas"
-import { createQuotation, getQuotations, updateQuotation } from "./server"
+import {
+  getQuotations,
+  createQuotation,
+  updateQuotation,
+  markQuotationExpired,
+  markQuotationAccepted,
+  markQuotationRejected,
+} from "./server"
 
 export const getQuotationsFn = createServerFn()
   .inputValidator(QuotationSearchParams)
@@ -24,4 +32,22 @@ export const updateQuotationFn = createServerFn({ method: "POST" })
   .inputValidator(createQuotationSchema)
   .handler(async ({ data }) => {
     return updateQuotation(data)
+  })
+
+export const markQuotationAcceptedFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return markQuotationAccepted(data.id)
+  })
+
+export const markQuotationRejectedFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return markQuotationRejected(data.id)
+  })
+
+export const markQuotationExpiredFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return markQuotationExpired(data.id)
   })
