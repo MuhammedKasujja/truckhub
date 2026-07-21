@@ -15,4 +15,6 @@ export const en = {
   service_updated_successfully: "Service updated successfully",
   year_of_manufacture: "Year of Manufacture",
   seats: "Seating Capacity",
+  car_brand: "Car Brand",
+  car_model: "Car Model",
 } as const;

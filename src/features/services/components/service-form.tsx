@@ -27,6 +27,8 @@ import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
+import { CarBrandPickerField } from "@/features/settings/car-brand/components"
+import { CarModelPickerField } from "@/features/settings/car-model/components"
 
 type ServiceFormProps = {
   initialData?: z.infer<typeof ServiceUpdateSchema>
@@ -150,6 +152,16 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               name={"booking_fee"}
               control={form.control}
               required={false}
+            />
+            <CarBrandPickerField
+              label={tr("services.car_brand")}
+              name={"car_brand_id"}
+              control={form.control}
+            />
+            <CarModelPickerField
+              label={tr("services.car_model")}
+              name={"car_model_id"}
+              control={form.control}
             />
             {/* <NumberField
               label={tr("services.tax_fee")}
