@@ -15,3 +15,4 @@ export * from './discount-field'
 export * from './date-time-picker-field'
 export * from './multi-select-field'
 export * from "./color-picker-field"
+export * from "./counter-field"

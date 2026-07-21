@@ -37,6 +37,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
+import {
+  NumberInput,
+  NumberInputDecrement,
+  NumberInputGroup,
+  NumberInputIncrement,
+  NumberInputInput,
+} from "@/components/ui/number-input"
 
 type TrucksBookingFormProps = {
   initialData?: TruckBookingRequest
@@ -108,7 +115,7 @@ export function TrucksServiceBookingForm({
       })}
       className="space-y-4"
     >
-      <div className="grid grid-flow-row md:grid-cols-2 gap-5">
+      <div className="grid grid-flow-row gap-5 md:grid-cols-2">
         <Card>
           <CardHeader className="gap-1">
             {selectedClient && (
@@ -145,6 +152,13 @@ export function TrucksServiceBookingForm({
                 setTaxRate(taxRate)
               }}
             />
+            <NumberInput className="w-full" defaultValue="1">
+              <NumberInputGroup>
+                <NumberInputDecrement />
+                <NumberInputInput />
+                <NumberInputIncrement />
+              </NumberInputGroup>
+            </NumberInput>
           </CardContent>
         </Card>
 
