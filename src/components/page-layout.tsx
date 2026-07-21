@@ -8,6 +8,7 @@ import {
   Check,
   Bell,
 } from "lucide-react"
+import { Button } from "./ui/button"
 
 /* ------------------------------------------------------------------ */
 /*  Reusable Page layout primitives                                    */
@@ -186,28 +187,6 @@ export function IconButton({ children, ...props }) {
   )
 }
 
-export function Button({
-  children,
-  variant = "primary",
-  className = "",
-  ...props
-}) {
-  const styles =
-    variant === "primary"
-      ? "bg-gray-900 text-white hover:bg-gray-700"
-      : variant === "danger"
-        ? "bg-red-50 text-red-600 hover:bg-red-100"
-        : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-  return (
-    <button
-      {...props}
-      className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${styles} ${className}`}
-    >
-      {children}
-    </button>
-  )
-}
-
 /* ------------------------------------------------------------------ */
 /*  Demo: shows the layout in action with a scrollable list            */
 /* ------------------------------------------------------------------ */
@@ -306,7 +285,7 @@ export default function Demo() {
 
         <PageBottomActions>
           <Button variant="secondary">Cancel</Button>
-          <Button variant="primary">Save changes</Button>
+          <Button variant="default">Save changes</Button>
         </PageBottomActions>
       </Page>
     </AppShell>

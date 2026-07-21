@@ -30,6 +30,7 @@ import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as BillingModuleRoute } from "@/app/_admin/billing/overview"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
+import { Route as QuotationsRoute } from "@/app/_admin/quotations"
 import { getModuleIcon } from "@/components/icons"
 
 export const sibebarModules: SidebarItem[] = [
@@ -38,6 +39,12 @@ export const sibebarModules: SidebarItem[] = [
     url: DashboardRoute.to,
     icon: getModuleIcon("Dashboard"),
     permission: "dashboard:view",
+  },
+  {
+    title: "routes.quotations",
+    url: QuotationsRoute.to,
+    icon: getModuleIcon("Quotations"),
+    permission: "rides:module",
   },
   {
     title: "routes.rides",

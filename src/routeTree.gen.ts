@@ -22,6 +22,7 @@ import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/in
 import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
 import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/index'
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
+import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
@@ -46,6 +47,7 @@ import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admi
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
+import { Route as AdminQuotationsNewIndexRouteImport } from './app/_admin/quotations/new/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminBillingQuotationsIndexRouteImport } from './app/_admin/billing/quotations/index'
@@ -143,6 +145,11 @@ const AdminReviewsIndexRoute = AdminReviewsIndexRouteImport.update({
 const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
   id: '/reports/',
   path: '/reports/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
+  id: '/quotations/',
+  path: '/quotations/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
@@ -275,6 +282,11 @@ const AdminServicesNewIndexRoute = AdminServicesNewIndexRouteImport.update({
 const AdminReportsAuditsIndexRoute = AdminReportsAuditsIndexRouteImport.update({
   id: '/reports/audits/',
   path: '/reports/audits/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminQuotationsNewIndexRoute = AdminQuotationsNewIndexRouteImport.update({
+  id: '/quotations/new/',
+  path: '/quotations/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminClientsNewIndexRoute = AdminClientsNewIndexRouteImport.update({
@@ -498,6 +510,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof AdminDashboardIndexRoute
   '/drivers/': typeof AdminDriversIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
+  '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
   '/reviews/': typeof AdminReviewsIndexRoute
   '/rides/': typeof AdminRidesIndexRoute
@@ -526,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
+  '/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
@@ -570,6 +584,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AdminDashboardIndexRoute
   '/drivers': typeof AdminDriversIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
+  '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
   '/reviews': typeof AdminReviewsIndexRoute
   '/rides': typeof AdminRidesIndexRoute
@@ -598,6 +613,7 @@ export interface FileRoutesByTo {
   '/billing/quotations': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
+  '/quotations/new': typeof AdminQuotationsNewIndexRoute
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
@@ -644,6 +660,7 @@ export interface FileRoutesById {
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
   '/_admin/drivers/': typeof AdminDriversIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
+  '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
   '/_admin/reviews/': typeof AdminReviewsIndexRoute
   '/_admin/rides/': typeof AdminRidesIndexRoute
@@ -672,6 +689,7 @@ export interface FileRoutesById {
   '/_admin/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
+  '/_admin/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
@@ -718,6 +736,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/drivers/'
     | '/payments/'
+    | '/quotations/'
     | '/reports/'
     | '/reviews/'
     | '/rides/'
@@ -746,6 +765,7 @@ export interface FileRouteTypes {
     | '/billing/quotations/'
     | '/bookings/new/'
     | '/clients/new/'
+    | '/quotations/new/'
     | '/reports/audits/'
     | '/services/new/'
     | '/settings/advanced/'
@@ -790,6 +810,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/drivers'
     | '/payments'
+    | '/quotations'
     | '/reports'
     | '/reviews'
     | '/rides'
@@ -818,6 +839,7 @@ export interface FileRouteTypes {
     | '/billing/quotations'
     | '/bookings/new'
     | '/clients/new'
+    | '/quotations/new'
     | '/reports/audits'
     | '/services/new'
     | '/settings/advanced'
@@ -863,6 +885,7 @@ export interface FileRouteTypes {
     | '/_admin/dashboard/'
     | '/_admin/drivers/'
     | '/_admin/payments/'
+    | '/_admin/quotations/'
     | '/_admin/reports/'
     | '/_admin/reviews/'
     | '/_admin/rides/'
@@ -891,6 +914,7 @@ export interface FileRouteTypes {
     | '/_admin/billing/quotations/'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
+    | '/_admin/quotations/new/'
     | '/_admin/reports/audits/'
     | '/_admin/services/new/'
     | '/_admin/settings/advanced/'
@@ -1015,6 +1039,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports/'
       preLoaderRoute: typeof AdminReportsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/quotations/': {
+      id: '/_admin/quotations/'
+      path: '/quotations'
+      fullPath: '/quotations/'
+      preLoaderRoute: typeof AdminQuotationsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/payments/': {
@@ -1183,6 +1214,13 @@ declare module '@tanstack/react-router' {
       path: '/reports/audits'
       fullPath: '/reports/audits/'
       preLoaderRoute: typeof AdminReportsAuditsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/quotations/new/': {
+      id: '/_admin/quotations/new/'
+      path: '/quotations/new'
+      fullPath: '/quotations/new/'
+      preLoaderRoute: typeof AdminQuotationsNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/clients/new/': {
@@ -1570,6 +1608,7 @@ interface AdminRouteRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminDriversIndexRoute: typeof AdminDriversIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
+  AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminRidesIndexRoute: typeof AdminRidesIndexRoute
@@ -1591,6 +1630,7 @@ interface AdminRouteRouteChildren {
   AdminVehiclesVehicleIdViewRoute: typeof AdminVehiclesVehicleIdViewRoute
   AdminBookingsNewIndexRoute: typeof AdminBookingsNewIndexRoute
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
+  AdminQuotationsNewIndexRoute: typeof AdminQuotationsNewIndexRoute
   AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
   AdminServicesNewIndexRoute: typeof AdminServicesNewIndexRoute
   AdminVehiclesNewIndexRoute: typeof AdminVehiclesNewIndexRoute
@@ -1609,6 +1649,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminDriversIndexRoute: AdminDriversIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
+  AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminRidesIndexRoute: AdminRidesIndexRoute,
@@ -1630,6 +1671,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminVehiclesVehicleIdViewRoute: AdminVehiclesVehicleIdViewRoute,
   AdminBookingsNewIndexRoute: AdminBookingsNewIndexRoute,
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
+  AdminQuotationsNewIndexRoute: AdminQuotationsNewIndexRoute,
   AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,
   AdminServicesNewIndexRoute: AdminServicesNewIndexRoute,
   AdminVehiclesNewIndexRoute: AdminVehiclesNewIndexRoute,

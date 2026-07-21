@@ -15,6 +15,7 @@ import {
   PlusIcon,
   Trash2Icon,
   ArchiveRestore,
+  ListCheckIcon,
 } from "lucide-react"
 
 type Module =
@@ -30,6 +31,8 @@ type Module =
   | "Billing"
   | "Settings"
   | "Reports"
+  | "Quotations"
+  | "Invoices"
 
 type Actions = "Create" | "Edit" | "Delete" | "Restore" | "Pay"
 
@@ -47,6 +50,8 @@ export function getModuleIcon(module: Module) {
     Users: Users,
     Reports: ChartLine,
     Settings: SettingsIcon,
+    Quotations: ListCheckIcon,
+    Invoices: ListCheckIcon,
   }
   return moduleIcons[module]
 }

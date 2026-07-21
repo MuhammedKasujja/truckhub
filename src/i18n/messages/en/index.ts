@@ -135,6 +135,8 @@ const en = {
     billing: "Billing",
     rides: "Rides",
     payments: "Payments",
+    quotations: "Quotations",
+    invoices: "Invoices",
   },
   users: "Users",
   roles: "Roles",
