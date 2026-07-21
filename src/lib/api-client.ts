@@ -1,5 +1,3 @@
-"use server"
-
 import { api } from "@/lib/api"
 import { AxiosError } from "axios"
 import { logoutFn } from "@/features/auth/services"
@@ -16,10 +14,11 @@ export async function getFn<T>(url: string): Promise<Prettify<ApiResponse<T>>> {
     const response = await api.get(url)
     return {
       isSuccess: true,
-      data: response.data.data,
-      message: response.data.message,
+      data: response.data?.data,
+      message: response.data?.message,
     }
   } catch (error) {
+    await logoutOnServerActions(error)
     return _handleApiException(error)
   }
 }
@@ -30,13 +29,23 @@ export async function getPaginatedFn<T>(
   try {
     const response = await api.get(url)
     return {
-      isSuccess: true,
+      success: true,
       data: response.data.data,
       message: response.data.message,
       pagination: response.data.meta,
     }
   } catch (error) {
-    return _handleApiException(error)
+    await logoutOnServerActions(error)
+    const errorCode = handleErrorCodes(error)
+    return {
+      success: false,
+      error: {
+        message: (error as any).response.data.error.message,
+        code: (error as any).response.data.error.code,
+        statusCode: 400,
+        erroCode: errorCode,
+      },
+    }
   }
 }
 
@@ -110,8 +119,8 @@ function _handleApiException<T>(error: unknown): ApiResponse<T> {
   return {
     isSuccess: false,
     error: {
-      message: (error as any).response.data.error.message,
-      code: (error as any).response.data.error.code,
+      message: (error as any).response.data.error?.message,
+      code: (error as any).response.data.error?.code,
       status: statusCode,
     },
   }
@@ -130,5 +139,11 @@ async function logoutOnServerActions(error: unknown) {
   logger.info(
     `API Error with status code ${statusCode} and message: ${(error as any)?.message}`
   )
-  if (statusCode === "NOT_AUTHENTICATED") return logoutFn()
+  // const navigate = useNavigate()
+  if (statusCode === "NOT_AUTHENTICATED") {
+    try {
+      await logoutFn()
+    } catch {}
+    // navigate({ to: "/login" })
+  }
 }

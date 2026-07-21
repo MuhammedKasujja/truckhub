@@ -14,7 +14,7 @@ import {
 import { EntityIdSchema } from "@/schemas"
 
 export const getReviewsFn = createServerFn()
-  .inputValidator((data) => ReviewSearchParamsCache.parse(data))
+  .inputValidator(ReviewSearchParamsCache)
   .handler(async ({ data }) => getReviews(data))
 
 export const getReviewByIdFn = createServerFn()

@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_auth/unauthorized")({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const router = useRouter()
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
       <div className="max-w-md text-center">
@@ -19,7 +20,7 @@ function RouteComponent() {
 
         <div className="mt-6 flex justify-center gap-4">
           {/* <button
-            onClick={() => window.history.back()}
+            onClick={() => router.history.back()}
             className="rounded-lg bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
           >
             Go Back

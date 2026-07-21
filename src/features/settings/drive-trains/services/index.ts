@@ -14,7 +14,7 @@ import {
 } from "./server"
 
 export const getDriveTrainsFn = createServerFn()
-  .inputValidator((data) => DriveTrainSearchParamsCache.parse(data))
+  .inputValidator(DriveTrainSearchParamsCache)
   .handler(async ({ data }) => {
     return await getDriveTrains(data)
   })

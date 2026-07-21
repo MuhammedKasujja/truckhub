@@ -8,6 +8,7 @@ import {
   BookingStatistics,
 } from "@/features/bookings/types"
 import {
+  TruckBookingRequest,
   BookingUpdateSchemaType,
   BookingCreateSchemaType,
   BookingListSearchParams,
@@ -19,18 +20,16 @@ import { LocationDistanceTime } from "@/server/actions/schemas"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export async function getBookings(input: BookingListSearchParams) {
-  const { page, perPage } = input
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Booking[]>(`/v1/bookings/?${params}`)
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
+  const response = await apiClient.getPaginatedFn<Booking[]>(
+    `/v1/bookings/?${params}`
+  )
+  if (response.success) {
+    return{ data: response.data, pagination: response.pagination }
+  }
 
-  return { data: isSuccess ? data! : [], error, pagination }
+  return { error: response.error }
 }
 
 export async function getBookingsByQuery({ search }: SearchQuery) {
@@ -66,6 +65,10 @@ export async function updateBooking(data: BookingUpdateSchemaType) {
 
 export async function createBooking(data: BookingCreateSchemaType) {
   return await apiClient.postFn<Booking>("/v1/bookings", data)
+}
+
+export async function createTruckBooking(data: TruckBookingRequest) {
+  return await apiClient.postFn<Booking>("/v1/bookings/trucks", data)
 }
 
 export const getBookingStatistics = createServerFn().handler(async () => {

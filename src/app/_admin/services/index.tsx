@@ -1,11 +1,16 @@
 import { ServiceListWrapper } from "@/features/services/components/service-list-wrapper"
 import { serviceQueryOptions } from "@/features/services/query-options"
+import { ServiceSearchParamsCache } from "@/features/services/schemas"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/services/")({
+  validateSearch: ServiceSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
-  loader: ({ context, location }) =>
-    context.queryClient.ensureQueryData(serviceQueryOptions(location.search)),
+  beforeLoad: () => requirePermission("services:module"),
+  loader: ({ context, deps: { search } }) =>
+    context.queryClient.ensureQueryData(serviceQueryOptions(search)),
 })
 
 function RouteComponent() {

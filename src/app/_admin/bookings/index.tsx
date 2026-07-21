@@ -4,7 +4,7 @@ import {
   BookingTable,
   BookingTableSkeleton,
 } from "@/features/bookings/components/booking-table"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { BookingStatisticsCard } from "@/features/bookings/components"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
@@ -14,16 +14,15 @@ import {
   createBookingQueryOptions,
   createBookingStatisticsQueryOptions,
 } from "@/features/bookings/queries-options"
-import { createBookingSearchParams } from "@/features/bookings/schemas"
+import { BookingSearchParamsSchema } from "@/features/bookings/schemas"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
-  validateSearch: createBookingSearchParams(),
-  beforeLoad: async () => hasPermission("bookings:view"),
-  loader: async ({ context, location }) => {
-    context.queryClient.prefetchQuery(
-      createBookingQueryOptions(location.search)
-    )
+  validateSearch: BookingSearchParamsSchema,
+  loaderDeps: ({ search }) => ({ search }),
+  beforeLoad: async () => requirePermission("bookings:module"),
+  loader: async ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(createBookingQueryOptions(search))
     return context.queryClient.ensureQueryData(
       createBookingStatisticsQueryOptions()
     )
@@ -32,8 +31,6 @@ export const Route = createFileRoute("/_admin/bookings/")({
 
 function RouteComponent() {
   const { data: statistics } = Route.useLoaderData()
-  const search = Route.useSearch()
-  console.log("Search params:", search)
   return (
     <>
       <PageHeader>

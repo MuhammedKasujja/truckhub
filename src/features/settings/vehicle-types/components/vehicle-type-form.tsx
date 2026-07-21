@@ -28,6 +28,7 @@ import { SwitchField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type Props = {
   trigger?: React.ReactNode
@@ -36,6 +37,7 @@ type Props = {
 
 export function VehicleTypeForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
   const [open, setOpen] = React.useState(false)
   console.table(initialData)
 
@@ -57,6 +59,8 @@ export function VehicleTypeForm({ trigger, initialData }: Props) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      form.reset()
+      queryInvalidator.settings.vehiclesTypes.list()
     } else {
       toast.error(error?.message)
     }

@@ -16,7 +16,7 @@ import {
   formatDate,
   formatDistance,
   formatDuration,
-  formatPrice,
+  formatMoney,
 } from "@/lib/format"
 import { Status } from "@/components/ui/status"
 import { Can } from "@/components/has-permission"
@@ -90,7 +90,7 @@ export function RideRequestDetailsWrapper({
               )}
               <Status>{ride?.status}</Status>
               <Button asChild>
-                <Link to={`/rides/${ride?.id}/edit`}>
+                <Link to={`/rides/$rideId/edit`} params={{ rideId: ride?.id }}>
                   <Edit2Icon />
                 </Link>
               </Button>
@@ -125,15 +125,15 @@ export function RideRequestDetailsWrapper({
             </Timeline>
           </CardContent>
           <CardFooter className="flex items-center gap-2 space-y-4">
-            <Button>{formatPrice(ride?.amount)}</Button>
-            <Button>{formatPrice(ride?.balance)}</Button>
+            <Button>{formatMoney(ride?.amount)}</Button>
+            <Button>{formatMoney(ride?.balance)}</Button>
             <Button variant={"outline"}>
-              Partial: {formatPrice(ride?.partial)}
+              Partial: {formatMoney(ride?.partial)}
             </Button>
           </CardFooter>
         </Card>
-        <RidePassenger passenger={ride!.customer} />
-        <RideDriver driver={ride!.customer} />
+        <RidePassenger passenger={ride!.client} />
+        <RideDriver driver={ride!.client} />
       </div>
       <div className="grid grid-cols-3 gap-4">
         <Card>
@@ -143,7 +143,7 @@ export function RideRequestDetailsWrapper({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <CardTitle>{formatPrice(ride!.amount)}</CardTitle>
+            <CardTitle>{formatMoney(ride!.amount)}</CardTitle>
           </CardContent>
         </Card>
         <Card>

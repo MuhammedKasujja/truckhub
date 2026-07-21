@@ -2,7 +2,6 @@ import { cache } from "react"
 import { SignJWT, jwtVerify } from "jose"
 import { systemDateTime } from "@/lib/utils"
 import { redirect } from "@tanstack/react-router"
-import { createServerFn } from "@tanstack/react-start"
 import { useSession } from "@tanstack/react-start/server"
 import { UserSession, AuthResponse } from "@/features/auth/types"
 
@@ -20,13 +19,14 @@ export function useAppSession() {
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
       sameSite: "lax",
       httpOnly: true,
+      // maxAge: 60 * 60 * 24 * 30, // 30 days — refresh token lifetime
     },
   })
 }
 
 export async function createSessionToken(payload: UserSession) {
   const sessionDuration = systemDateTime
-    .plus({ minutes: payload.expires_in })
+    .plus({ milliseconds: payload.accessTokenExpiresAtMs })
     .toJSDate()
 
   return new SignJWT({
@@ -53,8 +53,9 @@ export async function verifySessionToken(session: string | undefined = "") {
 
 export async function createSession(payload: AuthResponse) {
   const userSessionData: UserSession = {
-    access_token: payload.access_token,
-    expires_in: payload.expires_in,
+    accessToken: payload.access_token,
+    refreshToken: payload.refresh_token,
+    accessTokenExpiresAtMs: Date.now() + payload.expires_in * 1_000,
     user: {
       ...payload.user,
       permissions: payload.permissions,
@@ -64,15 +65,10 @@ export async function createSession(payload: AuthResponse) {
   const session = await useAppSession()
 
   const sessionDuration = systemDateTime
-    .plus({ minutes: userSessionData.expires_in })
+    .plus({ milliseconds: userSessionData.accessTokenExpiresAtMs })
     .toJSDate()
 
   await session.update(userSessionData)
-}
-
-export async function deleteUserSession() {
-  const session = await useAppSession()
-  await session.clear()
 }
 
 /**
@@ -92,24 +88,24 @@ export const verifySession = cache(async () => {
 })
 
 export async function getAuthSession() {
-  const session = await useAppSession() 
+  const session = await useAppSession()
   return !session
     ? undefined
     : {
-        access_token: session.data.access_token,
+        access_token: session.data.accessToken,
         user: session.data.user,
       }
 }
 
 export async function getAccessToken(): Promise<string | undefined> {
   const session = await useAppSession()
-  return session.data.access_token
+  return session.data.accessToken
 }
 
-export const getCurrentUser = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const session = await useAppSession()
-
-    return session?.data.user
-  }
-)
+export function isExpiringSoon(
+  expiresAt: number | undefined,
+  bufferMs = 60_000
+): boolean {
+  if (!expiresAt) return false
+  return Date.now() > (expiresAt - bufferMs)
+}

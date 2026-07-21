@@ -1,5 +1,7 @@
+import { EntityId } from "@/schemas";
+
 export type DriveTrain = {
-  id: number;
+  id: EntityId;
   name: string;
   is_truck: false
 };

@@ -54,7 +54,7 @@ export function SelectField<T extends FieldValues>({
             {required && <RequiredLabelIcon />}
           </FieldLabel>
           <Select {...field} onValueChange={field.onChange}>
-            <SelectTrigger aria-invalid={fieldState.invalid}>
+            <SelectTrigger id={field.name} aria-invalid={fieldState.invalid}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

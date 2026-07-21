@@ -1,44 +1,41 @@
-import z from "zod";
-import { SystemUser } from "@/features/users/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
+import z from "zod"
+import { IDSchema } from "@/schemas"
+import { SystemUser } from "@/features/users/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const UserCreateSchema = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
+  first_name: z.string().trim().min(3, "Required"),
+  last_name: z.string().trim().min(3, "Required"),
   phone: z.string().optional().nullable(),
-  email: z.string(),
-  password: z.string(),
-});
+  email: z.email().trim(),
+  username: z.string().trim().min(4, "Too short. should be at least 4 letters"),
+  password: z.string().trim().min(3, "Required"),
+  signature: z.string().trim().optional().nullable(),
+})
 
 export const UserUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...UserCreateSchema.partial().shape,
-});
+})
 
-export type UserCreateSchemaType = z.infer<typeof UserCreateSchema>;
+export type UserCreateSchemaType = z.infer<typeof UserCreateSchema>
 
-export type UserUpdateSchemaType = z.infer<typeof UserUpdateSchema>;
+export type UserUpdateSchemaType = z.infer<typeof UserUpdateSchema>
 
-export const UserSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<SystemUser>().withDefault([
+export const UserSearchParamsCache = z.object({
+  sort: getSortingStateSchema<SystemUser>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
-  // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<SystemUser>().optional(),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type UserListSearchParams = Awaited<
-  ReturnType<typeof UserSearchParamsCache.parse>
->;
+export type UserListSearchParams = z.infer<typeof UserSearchParamsCache>
+
+export const UserAssignRolesSchema = z.object({
+  user_id: IDSchema,
+  roles: z.array(IDSchema).min(1, "Required"),
+})
+
+export type UserAssignRolesType = z.infer<typeof UserAssignRolesSchema>

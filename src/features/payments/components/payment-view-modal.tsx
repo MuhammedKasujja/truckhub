@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Drawer,
   DrawerClose,
@@ -9,17 +9,17 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Label } from "@/components/ui/label";
-import { Payment } from "@/features/payments/types";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useTranslation } from "@/i18n";
-import { formatDate, formatPrice } from "@/lib/format";
-import { EyeIcon } from "lucide-react";
+} from "@/components/ui/drawer"
+import { Label } from "@/components/ui/label"
+import { Payment } from "@/features/payments/types"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { useTranslation } from "@/i18n"
+import { formatDate, formatMoney } from "@/lib/format"
+import { EyeIcon } from "lucide-react"
 
 export function PaymentViewModal({ payment }: { payment: Payment }) {
-  const isMobile = useIsMobile();
-  const tr = useTranslation();
+  const isMobile = useIsMobile()
+  const tr = useTranslation()
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
@@ -34,13 +34,15 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
           </DrawerTitle>
           <DrawerDescription>{formatDate(payment.date)}</DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <Card>
             <CardHeader>
               <CardTitle>{tr("payments.customer")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {payment.customer.fullname}
+              <div>{payment.client.fullname}</div>
+              <div>{payment.client.email}</div>
+              <div>{payment.client.phone}</div>
             </CardContent>
           </Card>
           <Card>
@@ -51,19 +53,19 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {formatPrice(payment.entity.amount)}
+              {formatMoney(payment.entity.amount)}
             </CardContent>
           </Card>
           <Card>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
                 <Label htmlFor="header">{tr("payments.amount")}</Label>
-                {formatPrice(payment.amount)}
+                {formatMoney(payment.amount)}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="type">{tr("payments.applied")}</Label>
-                  {formatPrice(payment.applied)}
+                  {formatMoney(payment.applied)}
                 </div>
                 <div className="flex flex-col gap-3">
                   <Label htmlFor="status">{tr("payments.status")}</Label>
@@ -82,5 +84,5 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  );
+  )
 }

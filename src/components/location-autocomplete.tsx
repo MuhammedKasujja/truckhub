@@ -29,6 +29,7 @@ export function LocationAutoComplete({
     <Field>
       <FieldLabel htmlFor={label}>{label}</FieldLabel>
       <AutoComplete<LocationSuggestion>
+        id={label}
         fetcher={async (query) => {
           if (!query || query.length < 3) return []
           const { data } = await searchLocationSuggestionsFn({

@@ -1,30 +1,30 @@
 import {
+  PaymentType,
   PaymentModeList,
   PaymentStatuses,
-  PaymentEntityList,
 } from "@/config/constants";
+import { EntityId } from "@/schemas";
 
 export type PaymentMode = (typeof PaymentModeList)[number];
 
 export type PaymentStatus = (typeof PaymentStatuses)[number];
 
-export type PaymentType = (typeof PaymentEntityList)[number];
 
 export type PaymentableEntity = {
-  id: number;
+  id: EntityId;
   number: string;
   amount: string;
   balance: string;
 };
 export type PaymentCustomer = {
-  id: number;
+  id: EntityId;
   fullname: string;
   phone: string;
   email: string;
 };
 
 export type Payment = {
-  id: number;
+  id: EntityId;
   amount: number;
   number: string;
   payment_mode: PaymentMode;
@@ -36,7 +36,7 @@ export type Payment = {
   date: Date;
   transaction_ref: string | null;
   entity: PaymentableEntity;
-  customer: PaymentCustomer;
+  client: PaymentCustomer;
 };
 
 type PaymentStat = {

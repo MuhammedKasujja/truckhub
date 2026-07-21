@@ -1,22 +1,33 @@
 import { UserListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { getUserProfileFn, getUsersFn } from "./services"
+import {
+  getUsersFn,
+  getUserDetailsFn,
+  getUserProfileDetailsFn,
+} from "./services"
 
-export const usersKeys = {
+export const usersQueryKeys = {
   all: () => ["users"] as const,
-  list: () => [...usersKeys.all(), "list"] as const,
-  details: () => [...usersKeys.all(), "detail"] as const,
-  detail: (id: string) => [...usersKeys.details(), id] as const,
+  list: () => [...usersQueryKeys.all(), "list"] as const,
+  details: () => [...usersQueryKeys.all(), "detail"] as const,
+  detail: (id: string) => [...usersQueryKeys.details(), id] as const,
+  authProfile: () => [...usersQueryKeys.details(), "profile"] as const,
 } as const
 
 export const usersQueryOprions = (search: UserListSearchParams) =>
   queryOptions({
-    queryKey: [...usersKeys.list(), search],
+    queryKey: [...usersQueryKeys.list(), search],
     queryFn: () => getUsersFn({ data: search }),
   })
 
-export const userProfileQueryOptions = (userId: string) =>
+export const userDetailsQueryOptions = (userId: string) =>
   queryOptions({
-    queryKey: usersKeys.detail(userId),
-    queryFn: () => getUserProfileFn({ data: {id: userId} }),
+    queryKey: usersQueryKeys.detail(userId),
+    queryFn: () => getUserDetailsFn({ data: { id: userId } }),
+  })
+
+export const userProfileQueryOptions = () =>
+  queryOptions({
+    queryKey: usersQueryKeys.authProfile(),
+    queryFn: () => getUserProfileDetailsFn(),
   })

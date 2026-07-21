@@ -1,12 +1,12 @@
 import { RideRequestDetailsWrapper } from "@/features/ride-requests/components"
 import { rideDetailsQueryOptions } from "@/features/ride-requests/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/rides/$rideId/view")({
   component: RouteComponent,
-  beforeLoad: () => hasPermission("rides:view"),
+  beforeLoad: () => requirePermission("rides:view"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(rideDetailsQueryOptions(params.rideId)),
 })

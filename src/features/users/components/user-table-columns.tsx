@@ -1,23 +1,49 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
-import { deleteUserFn } from "@/features/users/services"
-import { SystemUser } from "@/features/users/types"
+import { SystemUser, UserDataTableRowAction } from "@/features/users/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
+import {
+  EditIcon,
+  EyeIcon,
+  MoreVertical,
+  SettingsIcon,
+  Trash2Icon,
+} from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner"
-import { HasPermission } from "@/components/has-permission"
+import { Can } from "@/components/has-permission"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+import { TFunction } from "@/i18n"
 
-export function getUserTableColumns(): ColumnDef<SystemUser>[] {
+interface GetUserTableColumnsProps {
+  setRowAction: React.Dispatch<
+    React.SetStateAction<UserDataTableRowAction | null>
+  >
+  tr: TFunction
+}
+
+export function getUserTableColumns({
+  setRowAction,
+  tr,
+}: GetUserTableColumnsProps): ColumnDef<SystemUser>[] {
   return [
     {
       accessorKey: "name",
-      header: "Name",
+      header: tr("common.form.name"),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/users/${row.original.id}/view`}>
+            <Link
+              to={`/settings/user-management/users/$userId/view`}
+              params={{ userId: row.original.id }}
+            >
               {row.original.name}
             </Link>
           </Button>
@@ -26,65 +52,135 @@ export function getUserTableColumns(): ColumnDef<SystemUser>[] {
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: tr("common.form.email"),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: "Phone",
+      header: tr("common.form.phone"),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
     },
     {
-      accessorKey: "created_at",
-      header: "Date",
+      id: "roles",
+      header: "Roles",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
+        const roles = row.original.roles
+        return (
+          <p className="flex gap-1">
+            {roles.slice(0, 3).map((role) => (
+              <Badge key={role.id} variant={"outline"}>
+                {role.name}
+              </Badge>
+            ))}
+            {roles.length > 3 && (
+              <Badge variant={"outline"} className="flex gap-0.5">
+                +{roles.slice(3).length}
+              </Badge>
+            )}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: "last_login",
+      header: tr("common.form.last_login"),
+      cell: ({ row }) => {
+        return (
+          <p className="text-muted-foreground">
+            {formatDateTime(row.original.last_login)}
+          </p>
+        )
       },
     },
     {
       id: "actions",
       cell: ({ row }) => {
+        const user = row.original
         return (
-          <div className="flex gap-2">
-            <HasPermission permission={"users:view"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/users/${row.original.id}/view`}>
-                  <EyeIcon />
-                </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size={"sm"}>
+                <MoreVertical />
               </Button>
-            </HasPermission>
-            <HasPermission permission={"users:edit"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/users/${row.original.id}/edit`}>
-                  <EditIcon />
-                </Link>
-              </Button>
-            </HasPermission>
-            <HasPermission permission={"users:delete"}>
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  const { isSuccess, error, message } = await deleteUserFn({
-                    data: { id: row.original.id },
-                  })
-                  if (isSuccess) {
-                    toast.success(message)
-                    return { error: false }
-                  } else {
-                    return { error: true, message: error?.message }
-                  }
-                }}
-              >
-                <Trash2Icon />
-              </ActionButton>
-            </HasPermission>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <Can permission={"users:view"}>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to={`/settings/user-management/users/$userId/view`}
+                      params={{ userId: user.id }}
+                    >
+                      <EyeIcon />
+                      {tr("common.form.view")}
+                    </Link>
+                  </DropdownMenuItem>
+                </Can>
+                <Can permission={"users:edit"}>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to={`/settings/user-management/users/$userId/edit`}
+                      params={{ userId: user.id }}
+                    >
+                      <EditIcon />
+                      {tr("common.form.edit")}
+                    </Link>
+                  </DropdownMenuItem>
+                </Can>
+                {!user.is_admin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onSelect={() =>
+                        setRowAction({ row, variant: "assign-permissions" })
+                      }
+                    >
+                      <SettingsIcon />
+                      Assign Roles
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <Can permission={"users:delete"}>
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onSelect={() =>
+                          setRowAction({ row, variant: "delete" })
+                        }
+                      >
+                        {/* <ActionButton
+                      variant={"destructive"}
+                      size={"icon"}
+                      requireAreYouSure
+                      action={async () => {
+                        const { isSuccess, error, message } =
+                          await deleteUserFn({
+                            data: { id: row.original.id },
+                          })
+                        if (isSuccess) {
+                          toast.success(message)
+                          return { error: false }
+                        } else {
+                          return { error: true, message: error?.message }
+                        }
+                      }}
+                    >
+                      <div className="flex gap-4"> */}
+                        {/* <Button type="button" variant={"destructive"}> */}
+                        <Trash2Icon />
+                        {tr("common.form.delete")}
+                        {/* </Button> */}
+                        {/* </div>
+                    </ActionButton> */}
+                      </DropdownMenuItem>
+                    </Can>
+                  </>
+                )}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )
       },
     },

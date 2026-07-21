@@ -1,43 +1,32 @@
-import z from "zod";
-import { Review } from "@/features/reviews/types";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
+import z from "zod"
+import { IDSchema } from "@/schemas"
+import { Review } from "@/features/reviews/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ReviewCreateSchema = z.object({
-  passenger_id: z.string(),
-  request_id: z.string(),
+  passenger_id: IDSchema,
+  request_id: IDSchema,
   rating: z.number(),
   comment: z.string().optional(),
-});
+})
 
 export const ReviewUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...ReviewCreateSchema.partial().shape,
-});
+})
 
-export type ReviewCreateSchemaType = z.infer<typeof ReviewCreateSchema>;
+export type ReviewCreateSchemaType = z.infer<typeof ReviewCreateSchema>
 
-export type ReviewUpdateSchemaType = z.infer<typeof ReviewUpdateSchema>;
+export type ReviewUpdateSchemaType = z.infer<typeof ReviewUpdateSchema>
 
-export const ReviewSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Review>().withDefault([
+export const ReviewSearchParamsCache = z.object({
+  sort: getSortingStateSchema<Review>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema().optional(),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type ReviewListSearchParams = Awaited<
-  ReturnType<typeof ReviewSearchParamsCache.parse>
->;
+export type ReviewListSearchParams = z.infer<typeof ReviewSearchParamsCache>

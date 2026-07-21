@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -9,9 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { CreditCard, Edit2Icon, CalendarDays, MapPin } from "lucide-react"
+import { CreditCard, CalendarDays, MapPin } from "lucide-react"
+import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
 import {
   Table,
   TableBody,
@@ -31,14 +30,14 @@ import { Can } from "@/components/has-permission"
 import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import {
   clientBookingsQueryOptions,
   clientPaymentsQueryOptions,
   clientProfileQueryOptions,
   clientRidesQueryOptions,
 } from "../query-options"
-import { ClientRoutePricingForm } from "./client-route-pricing-form"
+import { useTranslation } from "@/i18n"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -64,6 +63,8 @@ export function CustomerDetailsWrapper({
     ],
   })
 
+  const tr = useTranslation()
+
   const payments = paymentsResponse?.data
   const bookings = bookingsResponse?.data
   const rides = ridesResponse?.data
@@ -76,9 +77,8 @@ export function CustomerDetailsWrapper({
     <div className="grid gap-5">
       <Card>
         <CardHeader>
-          <CardTitle>{customer?.fullname}</CardTitle>
+          <CardTitle className="capitalize">{customer?.name}</CardTitle>
           <CardAction className="flex gap-4">
-            <ClientRoutePricingForm/>
             <Can permission={"payments:create"}>
               <EditPaymentModal
                 initialData={{
@@ -91,16 +91,21 @@ export function CustomerDetailsWrapper({
                 to={"/clients/$clientId/edit"}
                 params={{ clientId: customer?.id }}
               >
-                <Edit2Icon />
+                <IconEdit />
               </Link>
             </Button>
           </CardAction>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>{customer?.email}</div>
-          <div>{customer?.phone}</div>
-          <div>Balance: {formatPrice(customer?.balance)}</div>
-          <div>Paid to Date: {formatPrice(customer?.paid_to_date)}</div>
+        <CardContent className="flex flex-row gap-5 space-y-4">
+          <div className="w-40 bg-muted dark:bg-background/70 rounded-lg flex items-center justify-center text-2xl font-extrabold uppercase">
+            {generateAvatorFallback(customer?.name)}
+          </div>
+          <div className="space-y-4">
+            <div>{customer?.email}</div>
+            <div>{customer?.phone}</div>
+            <div>Balance: {formatMoney(customer?.balance)}</div>
+            <div>Paid to Date: {formatMoney(customer?.paid_to_date)}</div>
+          </div>
         </CardContent>
       </Card>
 
@@ -116,7 +121,7 @@ export function CustomerDetailsWrapper({
                   {formatDate(latestPayment.date)}
                 </div>
                 <div className="text-lg font-semibold">
-                  {formatPrice(latestPayment.amount)}
+                  {formatMoney(latestPayment.amount)}
                 </div>
                 <div className="text-sm">{latestPayment.status}</div>
                 <div className="text-sm text-muted-foreground">
@@ -149,10 +154,13 @@ export function CustomerDetailsWrapper({
                 </div>
                 <div className="text-sm">{latestBooking.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {formatPrice(latestBooking.amount)}
+                  {formatMoney(latestBooking.amount)}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`/bookings/${latestBooking.id}/view`}>
+                  <Link
+                    to={`/bookings/$bookingId/view`}
+                    params={{ bookingId: latestBooking.id }}
+                  >
                     View booking
                   </Link>
                 </Button>
@@ -184,7 +192,12 @@ export function CustomerDetailsWrapper({
                   {latestRide.origin} → {latestRide.destination}
                 </div>
                 <Button asChild size="sm" variant="outline">
-                  <Link to={`/rides/${latestRide.id}/view`}>View ride</Link>
+                  <Link
+                    to={`/rides/$rideId/view`}
+                    params={{ rideId: latestRide.id }}
+                  >
+                    View ride
+                  </Link>
                 </Button>
               </div>
             ) : (
@@ -230,9 +243,13 @@ export function CustomerDetailsWrapper({
                           <TableCell className="font-medium">
                             {payment.number}
                           </TableCell>
-                          <TableCell>{formatPrice(payment.amount)}</TableCell>
-                          <TableCell>{payment.status}</TableCell>
-                          <TableCell>{payment.payment_mode}</TableCell>
+                          <TableCell>{formatMoney(payment.amount)}</TableCell>
+                          <TableCell>
+                            {tr(`payments.statuses.${payment.status}`)}
+                          </TableCell>
+                          <TableCell>
+                            {tr(`payments.methods.${payment.payment_mode}`)}
+                          </TableCell>
                           <TableCell>{formatDate(payment.date)}</TableCell>
                         </TableRow>
                       ))
@@ -291,7 +308,7 @@ export function CustomerDetailsWrapper({
                           <TableCell>
                             {formatDate(booking.pickup_time)}
                           </TableCell>
-                          <TableCell>{formatPrice(booking.amount)}</TableCell>
+                          <TableCell>{formatMoney(booking.amount)}</TableCell>
                         </TableRow>
                       ))
                     ) : (

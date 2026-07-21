@@ -1,4 +1,7 @@
 export * from "./client-form"
 export * from "./customer-table"
 export * from "./customer-details-wrapper"
-export * from "./client-route-pricing-form"
+export * from "./client-route-pricing-modal"
+export { ClientContactsList } from "./client-contacts-list"
+export { ClientPicker, ClientPickerField } from "./client-pickers"
+export { ClientLoadingFeesModal } from "./client-loading-fees-modal"

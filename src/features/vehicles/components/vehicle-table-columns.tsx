@@ -18,7 +18,10 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
         return (
           <Can permission={"vehicles:view"}>
             <Button variant={"link"} asChild>
-              <Link to={`/vehicles/${row.original.id}/view`}>
+              <Link
+                to={`/vehicles/$vehicleId/view`}
+                params={{ vehicleId: row.original.id }}
+              >
                 {row.original.number}
               </Link>
             </Button>
@@ -72,7 +75,12 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
         ) : (
           <Can permission="drivers:view">
             <Button variant={"link"} asChild>
-              <Link to={`/drivers/${row.original.id}/view`}>{driver.name}</Link>
+              <Link
+                to={`/drivers/$driverId/view`}
+                params={{ driverId: driver.id }}
+              >
+                {driver.name}
+              </Link>
             </Button>
           </Can>
         )
@@ -88,18 +96,25 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
     {
       id: "actions",
       cell: ({ row }) => {
+        const vehicle = row.original
         return (
           <div className="flex gap-2">
             <Can permission={"vehicles:view"}>
               <Button variant={"outline"} size={"icon"}>
-                <Link to={`/vehicles/${row.original.id}/view`}>
+                <Link
+                  to={`/vehicles/$vehicleId/view`}
+                  params={{ vehicleId: vehicle.id }}
+                >
                   <EyeIcon />
                 </Link>
               </Button>
             </Can>
             <Can permission={"vehicles:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/vehicles/${row.original.id}/edit`}>
+                <Link
+                  to={`/vehicles/$vehicleId/edit`}
+                  params={{ vehicleId: vehicle.id }}
+                >
                   <EditIcon />
                 </Link>
               </Button>
@@ -111,7 +126,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
                 requireAreYouSure
                 action={async () => {
                   const { isSuccess, error, message } = await deleteVehicleFn({
-                    data: { id: row.original.id },
+                    data: { id: vehicle.id },
                   })
                   if (isSuccess) {
                     toast.success(message)

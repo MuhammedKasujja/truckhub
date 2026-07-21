@@ -28,6 +28,8 @@ export interface Option {
 }
 
 export interface AutoCompleteProps<T> {
+  /** ID of the field to use in Form labels */
+  id?: string
   /** Async function to fetch options */
   fetcher: (query?: string) => Promise<T[]>;
   /** Preload all data ahead of time */
@@ -65,6 +67,7 @@ export interface AutoCompleteProps<T> {
 }
 
 export function AutoComplete<T>({
+  id,
   fetcher,
   preload,
   filterFn,
@@ -185,6 +188,7 @@ export function AutoComplete<T>({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
           variant="outline"
           role="combobox"
           aria-expanded={open}

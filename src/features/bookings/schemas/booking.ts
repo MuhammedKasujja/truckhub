@@ -1,18 +1,11 @@
 import z from "zod"
-import { Booking } from "@/features/bookings/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  type inferParserType,
-  createStandardSchemaV1,
-  createSearchParamsCache,
-} from "nuqs/server"
+import { IDSchema } from "@/schemas"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { Booking, BookingStatusList } from "@/features/bookings/types"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ServiceItem = z.object({
-  service_id: z.number().min(1),
+  service_id: IDSchema,
   service_name: z.string().min(1),
   cost_per_item: z.string().min(1),
   total_items: z.number().min(1),
@@ -20,11 +13,12 @@ export const ServiceItem = z.object({
 })
 
 export const BookingCreateSchema = z.object({
-  customer_id: z.number(),
+  client_id: IDSchema,
   partial: z.number().optional().nullable(),
   discount: z.number().optional().nullable(),
   pickup_time: z.date(),
   return_time: z.date(),
+  contacts: z.array(IDSchema).optional().nullable(),
   services: z
     .array(ServiceItem)
     .min(1, "Add at least one service")
@@ -32,7 +26,7 @@ export const BookingCreateSchema = z.object({
 })
 
 export const BookingUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...BookingCreateSchema.partial().shape,
 })
 
@@ -40,42 +34,74 @@ export type BookingCreateSchemaType = z.infer<typeof BookingCreateSchema>
 
 export type BookingUpdateSchemaType = z.infer<typeof BookingUpdateSchema>
 
-export const BookingSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Booking>().withDefault([
+export const BookingSearchParamsSchema = z.object({
+  sort: getSortingStateSchema<Booking>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
+  status: z.array(z.enum(BookingStatusList)).optional(),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema<Booking>().optional(),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type BookingListSearchParams = Awaited<
-  ReturnType<typeof BookingSearchParamsCache.parse>
->
+export type BookingListSearchParams = z.infer<typeof BookingSearchParamsSchema>
 
-export const BookingSearchParams = {
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Booking>().withDefault([
-    { id: "created_at", desc: true },
-  ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
-  // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-}
-
-export type BookingSearchParamsType = inferParserType<
-  typeof BookingSearchParams
->
-
-export const createBookingSearchParams = () =>
-  createStandardSchemaV1(BookingSearchParams, {
-    partialOutput: false,
+export const tonnagePricingSchema = z
+  .object({
+    id: IDSchema,
+    min_tons: z.union([z.string(), z.number()]),
+    max_tons: z.union([z.string(), z.number()]),
+    tons: z.string().min(1, "Required"),
+    price: z.union([z.string(), z.number()]).optional(),
+    default_price: z.union([z.string(), z.number()]),
+  })
+  .superRefine(({ tons, min_tons, max_tons }, ctx) => {
+    if (tons < min_tons || tons > max_tons) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tons"],
+        message: `Tons must be between ${min_tons} and ${max_tons}`,
+      })
+    }
   })
 
+export const routePricingsSchema = z.object({
+  tempId: IDSchema,
+  route_id: IDSchema,
+  origin: z.string(),
+  destination: z.string(),
+  distance_km: z.union([z.string(), z.number()]),
+  min_hrs: z.union([z.string(), z.number()]),
+  max_hrs: z.union([z.string(), z.number()]),
+  pricing: tonnagePricingSchema
+})
+
+export const bookingRoutesSchema = z.object({
+  tempId: IDSchema,
+  is_round_trip: z.boolean().default(false).optional(),
+  routes: z
+    .array(routePricingsSchema)
+    .min(1, "Add at least one destination")
+    .max(20, "Maximum 20 items per order"),
+})
+
+export const TruckBookingSchema = z.object({
+  client_id: IDSchema,
+  partial: z.number().optional().nullable(),
+  discount: z.number().optional().nullable(),
+  pickup_time: z.date("Required"),
+  return_time: z.date("Required"),
+  contacts: z.array(IDSchema).optional().nullable(),
+  services: z
+    .array(bookingRoutesSchema)
+    .min(1, "Add at least one service")
+    .max(20, "Maximum 20 items per order"),
+})
+
+export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
+
+export type TruckBookingRequest = z.infer<typeof TruckBookingSchema>
+
+export type TonnagePricingRequest = z.infer<typeof tonnagePricingSchema>
+
+export type BookingRouteRequest = z.infer<typeof bookingRoutesSchema>

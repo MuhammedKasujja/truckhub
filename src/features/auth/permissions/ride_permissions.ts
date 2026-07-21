@@ -1,10 +1,12 @@
 export const RideModulePermissions = {
-  "rides:create": ["rides:create"],
-  "rides:view": ["rides:list", "rides:single"],
+  "rides:module": ["rides:module", "rides:read"],
+  "rides:create": ["rides:create", "tax_rates:read"],
+  "rides:view": ["rides:read", "rides:view"],
   "rides:delete": ["rides:delete"],
-  "rides:edit": ["rides:update"],
-} as const;
+  "rides:edit": ["rides:update", "tax_rates:read"],
+  "rides:active": ["rides:read", "rides:view"],
+} as const
 
-export type RidePermissions = keyof typeof RideModulePermissions;
+export type RidePermissions = keyof typeof RideModulePermissions
 
 // export type RidePermissions = `rides@${RidePermissionsType}`;

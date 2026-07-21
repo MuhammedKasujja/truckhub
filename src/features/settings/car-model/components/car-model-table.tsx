@@ -12,6 +12,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createCarModelsListQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
+import { Can } from "@/components/has-permission"
 
 export function CarModelTable() {
   const search = useSearch({
@@ -32,6 +33,9 @@ export function CarModelTable() {
     initialState: {
       sorting: [{ id: "id", desc: true }],
       //   columnPinning: { right: ["actions"] },
+      columnVisibility: {
+        id: false,
+      },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
@@ -41,7 +45,9 @@ export function CarModelTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <CarModelForm />
+        <Can permission="config:car_model:create">
+          <CarModelForm />
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>

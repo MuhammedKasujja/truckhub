@@ -1,14 +1,8 @@
 import z from "zod"
-import { RideRequest } from "@/features/ride-requests/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server"
 import { IDSchema } from "@/schemas"
+import { RideRequest } from "@/features/ride-requests/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const LocationPointSchema = z.object({
   lat: z.number(),
@@ -33,9 +27,9 @@ export const CheckpointSchema = z.object({
 })
 
 export const RideRequestCreateSchema = z.object({
-  service_id: z.number(),
-  customer_id: z.number(),
-  driver_id: z.string().optional(),
+  service_id: IDSchema,
+  client_id: IDSchema,
+  driver_id: IDSchema.optional().nullable(),
   pickup_location: LocationSchema,
   destination_location: LocationSchema,
   requires_fuel: z.boolean().default(false).optional(),
@@ -51,7 +45,7 @@ export const RideRequestCreateSchema = z.object({
 })
 
 export const RideRequestUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...RideRequestCreateSchema.partial().shape,
 })
 
@@ -63,21 +57,17 @@ export type RideRequestUpdateSchemaType = z.infer<
   typeof RideRequestUpdateSchema
 >
 
-export const RideRequestSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<RideRequest>().withDefault([
+export const RideRequestSearchParamsCache = z.object({
+  sort: getSortingStateSchema<RideRequest>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema<RideRequest>().optional(),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type RideRequestListSearchParams = Awaited<
-  ReturnType<typeof RideRequestSearchParamsCache.parse>
+export type RideRequestListSearchParams = z.infer<
+  typeof RideRequestSearchParamsCache
 >
 
 export type LocationPoint = z.infer<typeof LocationPointSchema>

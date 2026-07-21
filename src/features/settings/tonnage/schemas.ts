@@ -1,4 +1,5 @@
 import z from "zod";
+import { IDSchema } from "@/schemas";
 
 export const TonnageCreateSchema = z.object({
   tonnage: z.string(),
@@ -7,7 +8,7 @@ export const TonnageCreateSchema = z.object({
 });
 
 export const TonnageUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...TonnageCreateSchema.partial().shape,
 });
 

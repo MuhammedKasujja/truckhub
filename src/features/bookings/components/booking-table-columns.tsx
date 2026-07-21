@@ -1,16 +1,16 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { formatDateTime, formatPrice } from "@/lib/format";
-import { Booking } from "@/features/bookings/types";
-import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button"
+import { formatDateTime, formatMoney } from "@/lib/format"
+import { Booking, BookingStatusList } from "@/features/bookings/types"
+import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
-import { HasPermission } from "@/components/has-permission";
-import { EditIcon, EyeIcon } from "lucide-react";
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal";
-import { Badge } from "@/components/ui/badge";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { Can } from "@/components/has-permission"
+import { EditIcon, EyeIcon } from "lucide-react"
+import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
+import { Badge } from "@/components/ui/badge"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { TFunction } from "@/i18n"
 
-export function getBookingTableColumns(): ColumnDef<Booking>[] {
+export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
   return [
     {
       accessorKey: "id",
@@ -18,83 +18,112 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/bookings/${row.original.id}/view`}>
+            <Link
+              to={"/bookings/$bookingId/view"}
+              params={{ bookingId: row.original.id }}
+            >
               {row.original.number}
             </Link>
           </Button>
-        );
+        )
       },
       size: 80,
     },
     {
       accessorKey: "customer",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} label="Customer" />
+        <DataTableColumnHeader column={column} label={tr("client")} />
       ),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
-            <Link to={`/clients/${row.original.customer.id}/view`}>
-              {row.original.customer.fullname}
+            <Link
+              to={`/clients/$clientId/view`}
+              params={{ clientId: row.original.client.id }}
+            >
+              {row.original.client.fullname}
             </Link>
           </Button>
-        );
+        )
       },
       enableHiding: false,
     },
     {
       id: "services",
-      header: "Services",
+      header: tr("services"),
       cell: ({ row }) => {
-        return <p className="text-center">{row.original.services.length}</p>;
+        return <p className="text-center">{row.original.services.length}</p>
       },
       size: 80,
     },
     {
+      id:"status",
       accessorKey: "status",
-      header: "Status",
+      header: tr("status"),
       cell: ({ row }) => {
-        return <Badge variant={"outline"}>{row.original.status}</Badge>;
+        return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: BookingStatusList.map((status) => ({
+          label: `${status}`,
+          value: `${status}`,
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
       accessorKey: "pickup_time",
       header: "Pickup Date",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.estimated_pickup_time)}</p>;
+        return <p>{formatDateTime(row.original.estimated_pickup_time)}</p>
       },
     },
     {
       accessorKey: "amount",
-      header: "Amount",
+      header: tr("amount"),
       cell: ({ row }) => {
-        return <p>{formatPrice(row.original.amount)}</p>;
+        return <p>{formatMoney(row.original.amount)}</p>
+      },
+    },
+    {
+      accessorKey: "balance",
+      header: tr("balance"),
+      cell: ({ row }) => {
+        return <p>{formatMoney(row.original.balance)}</p>
       },
     },
     {
       id: "actions",
       cell: ({ row }) => {
-        const booking = row.original;
+        const booking = row.original
         return (
           <div className="flex gap-2">
             {booking.status !== "completed" && (
-              <HasPermission permission={"bookings:view"}>
+              <Can permission={"bookings:view"}>
                 <Button variant={"outline"} size={"icon"} asChild>
-                  <Link to={`/bookings/${booking.id}/view`}>
+                  <Link
+                    to={"/bookings/$bookingId/view"}
+                    params={{ bookingId: row.original.id }}
+                  >
                     <EyeIcon />
                   </Link>
                 </Button>
-              </HasPermission>
+              </Can>
             )}
-            <HasPermission permission={"bookings:edit"}>
+            <Can permission={"bookings:edit"}>
               <Button variant={"outline"} size={"icon"} asChild>
-                <Link to={`/bookings/${booking.id}/edit`}>
+                <Link
+                  to={"/bookings/$bookingId/edit"}
+                  params={{ bookingId: row.original.id }}
+                >
                   <EditIcon />
                 </Link>
               </Button>
-            </HasPermission>
+            </Can>
             {booking.balance > 0 && (
-              <HasPermission permission={"payments:create"}>
+              <Can permission={"payments:create"}>
                 <EditPaymentModal
                   initialData={{
                     entity_id: booking.id,
@@ -102,11 +131,11 @@ export function getBookingTableColumns(): ColumnDef<Booking>[] {
                     amount: booking.balance,
                   }}
                 />
-              </HasPermission>
+              </Can>
             )}
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useAuth } from "@/components/providers/auth-provider";
+import { useAuth } from "@/components/providers/auth-context";
 
 type PermissionMap = Record<string, string[]>;
 

@@ -2,9 +2,9 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Truckhub",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.bluepearls.com",
   "build": {
-    "frontendDist": "../build",
+    "frontendDist": "../.output/public",
     "devUrl": "http://localhost:3000",
     "beforeDevCommand": "pnpm run dev",
     "beforeBuildCommand": "pnpm run build"

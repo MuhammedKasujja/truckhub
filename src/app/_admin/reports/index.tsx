@@ -9,8 +9,10 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Cloud } from "lucide-react";
+import { requirePermission } from '@/lib/auth';
 
 export const Route = createFileRoute('/_admin/reports/')({
+  beforeLoad: () => requirePermission("reports:module"),
   component: RouteComponent,
 })
 

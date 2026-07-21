@@ -32,6 +32,9 @@ export function DriveTrainTable() {
     initialState: {
       sorting: [{ id: "id", desc: true }],
       //   columnPinning: { right: ["actions"] },
+      columnVisibility:{
+        id: false,
+      }
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
@@ -39,7 +42,7 @@ export function DriveTrainTable() {
   })
 
   return (
-    <DataTable table={table}>
+    <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <DriveTrainForm />
         <DataTableSortList table={table} align="end" />

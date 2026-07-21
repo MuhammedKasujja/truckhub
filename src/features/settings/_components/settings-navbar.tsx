@@ -7,10 +7,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
 
 export function SettingsNavBar() {
-  const pathname = usePathname();
+  const location = useLocation();
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex items-start gap-2 px-4">
@@ -21,7 +21,7 @@ export function SettingsNavBar() {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />
             <BreadcrumbItem>
-              <BreadcrumbPage>{pathname}</BreadcrumbPage>
+              <BreadcrumbPage>{location.pathname}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

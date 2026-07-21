@@ -1,4 +1,4 @@
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 
 export type Setting = {
   key: string
@@ -23,7 +23,7 @@ export type CarModel = {
 }
 
 export type VehicleFeature = {
-  id: number
+  id: EntityId
   name: string
   position: number
 }
@@ -60,5 +60,5 @@ export type VehicleConfigurations = {
     },
   ]
   drive_trains: DriveTrain[]
-  features: VehicleFeature
+  features: VehicleFeature[]
 }

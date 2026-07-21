@@ -1,8 +1,9 @@
 import { LocationPoint } from "@/features/bookings/types"
 import {
+  TruckBookingSchema,
   BookingUpdateSchema,
   BookingCreateSchema,
-  BookingSearchParamsCache,
+  BookingSearchParamsSchema,
 } from "@/features/bookings/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityId, EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -13,15 +14,22 @@ import {
   getBookingById,
   deleteBookingById,
   getBookingsByQuery,
+  createTruckBooking,
   getBookingStatistics,
   getBookingDetailsById,
   computeBookingEsimatedFare,
 } from "./server"
+import { ApiError } from "@/types"
 
 export const getBookingsFn = createServerFn({ method: "POST" })
-  .inputValidator((data) => BookingSearchParamsCache.parse(data))
+  .inputValidator(BookingSearchParamsSchema)
   .handler(async ({ data }) => {
-    return getBookings(data)
+    const response = await getBookings(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getBookingsByQueryFn = createServerFn()
@@ -58,6 +66,12 @@ export const createBookingFn = createServerFn()
   .inputValidator(BookingCreateSchema)
   .handler(async ({ data }) => {
     return createBooking(data)
+  })
+
+export const createTruckBookingFn = createServerFn()
+  .inputValidator(TruckBookingSchema)
+  .handler(async ({ data }) => {
+    return createTruckBooking(data)
   })
 
 export const getBookingStatisticsFn = createServerFn().handler(async () => {

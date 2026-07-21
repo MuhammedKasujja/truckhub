@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useState } from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -9,17 +9,29 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useTranslation } from "@/i18n"
 import { getAuditLogTableColumns } from "./audit-log-table-columns"
-import { useSearch } from "@tanstack/react-router"
+import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createAuditLogsQueryOptions } from "../query-options"
+import { UserPicker } from "@/features/users/components/user-picker"
+import { Label } from "@/components/ui/label"
+import { AuditLogTableRowAction } from "../types"
+import { AuditLogTableActions } from "./audit-log-table-actions"
 
 export function AuditLogTable() {
   const search = useSearch({ from: "/_admin/reports/audits/" })
+  const navigate = useNavigate({ from: "/reports/audits/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createAuditLogsQueryOptions(search))
   const tr = useTranslation()
-  const columns = React.useMemo(() => getAuditLogTableColumns(tr), [tr])
+  const [rowAction, setRowAction] = useState<AuditLogTableRowAction | null>(
+    null
+  )
+  const columns = React.useMemo(
+    () => getAuditLogTableColumns({ tr, setRowAction }),
+    [tr]
+  )
 
   useFetchEror(error)
 
@@ -36,14 +48,51 @@ export function AuditLogTable() {
   })
 
   return (
-    <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <DataTableSortList table={table} align="end" />
-      </DataTableToolbar>
-    </DataTable>
+    <div className="space-y-4">
+      <div className="max-w-72 space-y-4">
+        <Label htmlFor="user">User</Label>
+        <UserPicker
+          id="user"
+          placeholder="filter by user"
+          value={search.user_ids?.at(0)}
+          onSelected={(user) =>
+            navigate({
+              search: (prev) => ({
+                ...prev,
+                user_ids: user?.id ? [user?.id] : undefined,
+                page: 1,
+              }),
+            })
+          }
+        />
+      </div>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar>
+      </DataTable>
+      <AuditLogTableActions
+        key={rowAction?.row.original.id}
+        rowAction={rowAction}
+        setRowAction={setRowAction}
+      />
+      {/* <AuditLogViewDialog
+        key={rowAction?.row.original.id}
+        data={rowAction?.row.original ?? {}}
+        open={rowAction?.variant === "view"}
+        onOpenChange={() => setRowAction(null)}
+      /> */}
+    </div>
   )
 }
 
 export function AuditLogTableSkeleton() {
-  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />
+  return (
+    <DataTableSkeleton
+      columnCount={6}
+      filterCount={1}
+      shrinkZero
+      rowCount={25}
+    />
+  )
 }

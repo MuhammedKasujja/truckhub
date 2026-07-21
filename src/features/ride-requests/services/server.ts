@@ -14,20 +14,16 @@ import { LocationDistanceTime } from "@/server/actions/schemas"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export async function getRideRequests(input: RideRequestListSearchParams) {
-  const { page, perPage } = input
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<RideRequest[]>(
+  const response = await apiClient.getPaginatedFn<RideRequest[]>(
     `/v1/ride_requests/?${params}`
   )
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
 
-  return { data: isSuccess ? data! : [], error, pagination }
+  return { error: response.error }
 }
 
 export async function getRideRequestsByQuery({ search }: SearchQuery) {

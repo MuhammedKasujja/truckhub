@@ -1,10 +1,12 @@
+import { EntityId } from "@/schemas";
+
 export type Review = {
-  id: number;
+  id: EntityId;
   rating: number;
   comment: string | null;
-  passenger_id: number;
-  driver_id: number;
-  request_id: number;
+  passenger_id: EntityId;
+  driver_id: EntityId;
+  request_id: EntityId;
   created_at: Date;
   updated_at: Date;
 };

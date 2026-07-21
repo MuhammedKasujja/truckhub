@@ -4,7 +4,7 @@ import { RideRequest } from "@/features/ride-requests/types";
 
 export type DashboardStatistics = {
   statistics: {
-    customers: {
+    clients: {
       total: number;
     };
     drivers: {

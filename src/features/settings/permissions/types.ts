@@ -1,4 +1,4 @@
-import { EntityId } from "@/types";
+import { EntityId } from "@/schemas";
 
 export type Role = {
   id: EntityId;

@@ -480,7 +480,7 @@ function Toast({ toast }) {
 }
 
 // ── Main Table ────────────────────────────────────────────────────────────────
-export default function EditableTable() {
+function EditableTable() {
   const [colDefs, setColDefs] = useState(initialColumns)
   const [data, setData] = useState(initialData)
   const [showAddCol, setShowAddCol] = useState(false)

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO: convert this file back to index.ts
 
-import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
-import type { DataTableConfig } from "@/config/data-table";
 import type { FilterItemSchema } from "@/lib/parsers";
+import type { DataTableConfig } from "@/config/data-table";
+import type { ColumnSort, Row, RowData } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -49,7 +49,7 @@ export interface ExtendedColumnFilter<TData> extends FilterItemSchema {
   id: Extract<keyof TData, string>;
 }
 
-export interface DataTableRowAction<TData> {
+export interface DataTableRowAction<TData, TVariant extends string = "update" | "delete"> {
   row: Row<TData>;
-  variant: "update" | "delete";
+  variant: TVariant;
 }

@@ -1,4 +1,6 @@
+import { EntityId } from "@/schemas";
+
 export type CarBrand = {
-  id: number;
+  id: EntityId;
   name: string;
 };

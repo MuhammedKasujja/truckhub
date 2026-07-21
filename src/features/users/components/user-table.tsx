@@ -14,15 +14,26 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { usersQueryOprions } from "../query-options"
+import { UserDataTableRowAction } from "../types"
+import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
+import { useTranslation } from "@/i18n"
 
 export function UserTable() {
-  const search = useSearch({ from: "/_admin/users/" })
+  const search = useSearch({ from: "/_admin/settings/user-management/users/" })
   const {
     data: { data, pagination },
     error,
   } = useSuspenseQuery(usersQueryOprions(search))
 
-  const columns = React.useMemo(() => getUserTableColumns(), [])
+  const tr = useTranslation()
+
+  const [rowAction, setRowAction] =
+    React.useState<UserDataTableRowAction | null>(null)
+
+  const columns = React.useMemo(
+    () => getUserTableColumns({ setRowAction, tr }),
+    [tr]
+  )
 
   useFetchEror(error)
 
@@ -40,28 +51,30 @@ export function UserTable() {
   })
 
   return (
-    <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <Can permission="users:create">
-          <Button asChild>
-            <Link to={"/users/new"}>
-              <PlusIcon />
-              Add User
-            </Link>
-          </Button>
-        </Can>
-        <DataTableSortList table={table} align="end" />
-      </DataTableToolbar>
-    </DataTable>
+    <>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <Can permission="users:create">
+            <Button asChild>
+              <Link to={"/settings/user-management/users/new"}>
+                <PlusIcon />
+                Add User
+              </Link>
+            </Button>
+          </Can>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar>
+      </DataTable>
+      {/* Assign User roles  Dialog */}
+      <UserAssignRolesDialog
+        user={rowAction?.row.original}
+        open={rowAction?.variant === "assign-permissions"}
+        onOpenChange={() => setRowAction(null)}
+      />
+    </>
   )
 }
 
 export function UserTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getUserTableColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={5} filterCount={1} shrinkZero />
 }

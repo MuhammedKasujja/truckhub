@@ -1,15 +1,13 @@
 import React from "react"
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import {
   VehicleCreateSchema,
   VehicleUpdateSchema,
 } from "@/features/vehicles/schemas"
 import z from "zod"
-import { toast } from "sonner"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CarModel, DriveTrain, VehicleConfigurations } from "@/types/setting"
-import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
 
 export function useVehicleForm(
   vehicleCofig: VehicleConfigurations | undefined,
@@ -38,7 +36,8 @@ export function useVehicleForm(
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: { ...initialData, features: initialData?.features ?? [] },
+    reValidateMode: "onChange"
   })
 
   const selectedCarBrandId = form.watch("car_brand_id")
@@ -49,7 +48,7 @@ export function useVehicleForm(
     const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
       carModels.find((model) => model.vehicle_type_id === ele.id)
     )
-    form.setValue("vehicle_type_id", Number(vehicleType?.id))
+    form.setValue("vehicle_type_id", vehicleType?.id)
     setVehicleType(vehicleType)
     setDriveTrains(
       vehicleCofig?.drive_trains.filter(
@@ -71,34 +70,28 @@ export function useVehicleForm(
     )
   }, [selectedCarBrandId, vehicleCofig])
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateVehicleFn({ data: values })
-        : createVehicleFn({ data: values })
+  const features = form.watch("features")
 
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-    } else {
-      toast.error(error?.message)
-    }
-  }
-
-  function handleSubmit() {
-    form.handleSubmit(onSubmit, (errors) => {
-      console.log(errors)
-    })
+  const toggleFeatures = (featureId: string, checked: boolean) => {
+    const activeFeatures = features ?? []
+    form.setValue(
+      "features",
+      checked
+        ? [...activeFeatures, featureId]
+        : activeFeatures.filter((f) => f !== featureId)
+    )
   }
 
   return {
-    onSubmit,
     form,
     isEdit,
+    formSchema,
+    selectedFeatures:features,
     truckTonnages: vehicleCofig?.truck_tonnages ?? [],
     driveTrains,
     carModels,
     carBrands: vehicleCofig?.car_brands,
     vehicleType,
+    toggleFeatures,
   }
 }

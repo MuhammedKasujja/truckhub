@@ -1,15 +1,14 @@
-import { usePlatform } from "./use-platform"
-import { useHotkeys } from "react-hotkeys-hook"
+// import { usePlatform } from "./use-platform"
 import { useRouter } from "@tanstack/react-router"
+import { useHotkey } from '@tanstack/react-hotkeys'
 
 export function useGlobalShortcuts() {
-
-  const mainKey = "meta"//usePlatform() === "macos" ? "meta" : "ctrl"
   const router = useRouter()
-  useHotkeys(`${mainKey}+shift+c`, () => router.navigate({ to: "/clients/new" }))
-  useHotkeys(`${mainKey}+shift+b`, () => router.navigate({ to: "/bookings/new" }))
-  useHotkeys(`${mainKey}+shift+r`, () => router.navigate({ to: "/rides/new" }))
-  useHotkeys(`${mainKey}+shift+d`, () => router.navigate({ to: "/drivers/new" }))
-  useHotkeys(`${mainKey}+shift+v`, () => router.navigate({ to: "/vehicles/new" }))
-  useHotkeys(`${mainKey}+shift+s`, () => router.navigate({ to: "/settings" }))
+  useHotkey({ mod: true, shift: true, key: 'c'}, () => router.navigate({ to: "/clients/new" }))
+  useHotkey({ mod: true, shift: true, key: 'b' }, () => router.navigate({ to: "/bookings/new" }))
+  useHotkey({ mod: true, shift: true, key: 'r' }, () => router.navigate({ to: "/rides/new" }))
+  useHotkey({ mod: true, shift: true, key: 'd' }, () => router.navigate({ to: "/drivers/new" }))
+  useHotkey({ mod: true, shift: true, key: 'v' }, () => router.navigate({ to: "/vehicles/new" }))
+  useHotkey({ mod: true, shift: true, key: 's' }, () => router.navigate({ to: "/settings/company-details" }))
+  useHotkey({ mod: true, shift: true, key: "n" }, () => router.navigate({ to: "/services/new" }))
 }

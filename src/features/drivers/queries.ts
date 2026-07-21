@@ -1,4 +1,4 @@
-import { EntityId } from "@/types"
+import { EntityId } from "@/schemas"
 import { DriverListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import {
@@ -18,7 +18,7 @@ export const driverQueryKeys = {
 
 export function createDriverListQueryOptions(input: DriverListSearchParams) {
   return queryOptions({
-    queryKey: [...driverQueryKeys.all(), input],
+    queryKey: [...driverQueryKeys.list(), input],
     queryFn: () => getDriversFn({ data: input }),
   })
 }

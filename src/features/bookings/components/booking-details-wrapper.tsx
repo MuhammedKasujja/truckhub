@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 import { CreditCard, Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatPrice } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Status } from "@/components/ui/status"
 import {
   Table,
@@ -36,7 +36,7 @@ import { BookingServiceList } from "./booking-serive-list"
 import { BookingDetails } from "../types"
 
 type BookingDetailsWrapperProps = {
-  booking: BookingDetails | undefined
+  booking: BookingDetails
 }
 
 export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
@@ -45,9 +45,9 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>{booking?.number}</CardTitle>
+            <CardTitle>{booking.number}</CardTitle>
             <CardAction className="flex gap-4">
-              {!booking?.is_paid && (
+              {!booking.is_paid && (
                 <Can permission={"payments:create"}>
                   <EditPaymentModal
                     initialData={{
@@ -58,10 +58,13 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                   />
                 </Can>
               )}
-              <Status>{booking?.status}</Status>
+              <Status>{booking.status}</Status>
               <Can permission={"bookings:edit"}>
                 <Button asChild>
-                  <Link to={`/bookings/${booking?.id}/edit`}>
+                  <Link
+                    to={`/bookings/$bookingId/edit`}
+                    params={{ bookingId: booking.id }}
+                  >
                     <Edit2Icon />
                   </Link>
                 </Button>
@@ -71,23 +74,23 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-xl font-semibold">
-              {formatPrice(booking?.amount)}
+              {formatMoney(booking.amount)}
             </div>
-            <div>{formatPrice(booking?.balance)}</div>
-            <div>{formatDate(booking?.created_at)}</div>
+            <div>{formatMoney(booking.balance)}</div>
+            <div>{formatDate(booking.created_at)}</div>
           </CardContent>
           <CardFooter className="flex items-center gap-2 space-y-4">
             <Button variant={"outline"}>
-              Partial: {formatPrice(booking?.partial)}
+              Partial: {formatMoney(booking.partial)}
             </Button>
-            {formatDate(booking?.pickup_time)} -{" "}
-            {formatDate(booking?.return_time)}
+            {formatDate(booking.pickup_time)} -{" "}
+            {formatDate(booking.return_time)}
           </CardFooter>
         </Card>
-        <BookingClientWidget client={booking!.customer} />
+        <BookingClientWidget client={booking.client} />
       </div>
       <div className="grid gap-4 md:grid-flow-col">
-        <BookingServiceList services={booking?.services ?? []} />
+        <BookingServiceList services={booking.services ?? []} />
         <Card>
           <CardHeader>
             <CardTitle>Payments</CardTitle>
@@ -105,13 +108,13 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {booking?.payments.length ? (
+                  {booking.payments.length ? (
                     booking?.payments.map((payment) => (
                       <TableRow key={payment.id.toString()}>
                         <TableCell className="font-medium">
                           {payment.number}
                         </TableCell>
-                        <TableCell>{formatPrice(payment.amount)}</TableCell>
+                        <TableCell>{formatMoney(payment.amount)}</TableCell>
                         <TableCell>{payment.status}</TableCell>
                         <TableCell>{payment.payment_mode}</TableCell>
                         <TableCell>{formatDate(payment.date)}</TableCell>
@@ -128,7 +131,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                             <EmptyTitle>No Payments Found</EmptyTitle>
                           </EmptyHeader>
                           <EmptyContent>
-                            {!booking?.is_paid && (
+                            {!booking.is_paid && (
                               <Can permission={"payments:create"}>
                                 <EditPaymentModal
                                   initialData={{

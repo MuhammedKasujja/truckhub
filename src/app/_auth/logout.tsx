@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { logoutFn } from "@/features/auth/services"
+import { requireAuth } from "@/lib/auth"
 
 export const Route = createFileRoute("/_auth/logout")({
   preload: false,
-  loader: () => logoutFn(),
+  loader: () => requireAuth({ redirectTo: "login" }),
 })

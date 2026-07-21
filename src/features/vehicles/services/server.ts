@@ -15,18 +15,17 @@ import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 const endpoint = "/v1/vehicles"
 
 export async function getVehicles(input: VehicleListSearchParams) {
-  const { page, perPage } = input
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Vehicle[]>(`${endpoint}/?${params}`)
+  const response = await apiClient.getPaginatedFn<Vehicle[]>(
+    `${endpoint}/?${params}`
+  )
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-  return { data: isSuccess ? data! : [], error, pagination }
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getVehiclesByQuery({ search }: SearchQuery) {
@@ -66,4 +65,11 @@ export async function vehicleAssignDriver(data: AssignDriverVehicleType) {
   return await apiClient.postFn<null>(`${endpoint}/${data.vehicleId}/driver`, {
     driver_id: data.driverId,
   })
+}
+
+export async function vehicleUnAssignDriver(vehicleId: EntityId) {
+  return await apiClient.postFn<null>(
+    `${endpoint}/${vehicleId}/assignments/unassign`,
+    {}
+  )
 }

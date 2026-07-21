@@ -1,35 +1,41 @@
 "use server"
 
 import * as apiClient from "@/lib/api-client"
+import { Client } from "@/features/clients/types"
 import { Booking } from "@/features/bookings/types"
-import { Customer } from "@/features/clients/types"
 import { RideRequest } from "@/features/ride-requests/types"
 import {
+  ClientListSearchParams,
   CustomerCreateSchemaType,
   CustomerUpdateSchemaType,
-  CustomerListSearchParams,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
+import {
+  BatchPayload,
+  BatchPricingPayload,
+  DistancePricingRequest,
+  LoadingOffloadingPricing,
+  LoadingOffloadingPricingRequest,
+} from "@/features/settings/pricing/schemas"
+import { RoutePricingResponse } from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
 
-export async function getCustomers(input: CustomerListSearchParams) {
-  const { page, perPage } = input
-
+export async function getCustomers(input: ClientListSearchParams) {
   const params = generateApiSearchParams(input)
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Customer[]>(`${endpoint}?${params}`)
+  const response = await apiClient.getPaginatedFn<Client[]>(
+    `${endpoint}?${params}`
+  )
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-  return { data: isSuccess ? data! : [], error, pagination }
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getCustomersByQuery({ search }: SearchQuery) {
@@ -44,35 +50,69 @@ export async function getCustomersByQuery({ search }: SearchQuery) {
   })
 }
 
-export async function getCustomerById(passengerId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${passengerId}`)
+export async function getCustomerById(clientId: EntityId) {
+  return await apiClient.getFn<Client>(`${endpoint}/${clientId}`)
 }
 
 export async function getCustomerDetailsById(customerId: EntityId) {
-  return await apiClient.getFn<Customer>(`${endpoint}/${customerId}`)
+  return await apiClient.getFn<Client>(`${endpoint}/${customerId}`)
 }
 
-export async function deleteCustomerById(passengerId: EntityId) {
-  return await apiClient.deleteFn(`${endpoint}/${passengerId}`)
+export async function deleteCustomerById(clientId: EntityId) {
+  return await apiClient.deleteFn(`${endpoint}/${clientId}`)
 }
 
 export async function updateClient(data: CustomerUpdateSchemaType) {
-  const { id: passengerId, ...rest } = data
-  return await apiClient.putFn<Customer>(`${endpoint}/${passengerId}`, rest)
+  const { id: clientId, ...rest } = data
+  return await apiClient.putFn<Client>(`${endpoint}/${clientId}`, rest)
 }
 
 export async function createClient(data: CustomerCreateSchemaType) {
-  return await apiClient.postFn<Customer>(endpoint, data)
+  return await apiClient.postFn<Client>(endpoint, data)
 }
 
-export async function getClientPayments(customerId: EntityId) {
-  return await apiClient.getFn<Payment[]>(`${endpoint}/${customerId}/payments`)
+export async function getClientPayments(clientId: EntityId) {
+  return await apiClient.getFn<Payment[]>(`${endpoint}/${clientId}/payments`)
 }
 
-export async function getClientBookings(customerId: EntityId) {
-  return await apiClient.getFn<Booking[]>(`${endpoint}/${customerId}/bookings`)
+export async function getClientBookings(clientId: EntityId) {
+  return await apiClient.getFn<Booking[]>(`${endpoint}/${clientId}/bookings`)
 }
 
-export async function getClientRides(customerId: EntityId) {
-  return await apiClient.getFn<RideRequest[]>(`${endpoint}/${customerId}/rides`)
+export async function getClientRides(clientId: EntityId) {
+  return await apiClient.getFn<RideRequest[]>(`${endpoint}/${clientId}/rides`)
+}
+
+export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
+  const { client_id, ...rest } = data
+  return await apiClient.postFn<BatchPayload>(
+    `${endpoint}/${client_id}/routes/pricing`,
+    rest
+  )
+}
+
+export async function getClientRoutePricing(clientId: EntityId) {
+  // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
+  const url = `${endpoint}/${clientId}/routes/pricing`
+  return await apiClient.getFn<RoutePricingResponse>(url)
+}
+
+export async function getClientLoadingOffloadingFrees(clientId: EntityId) {
+  return await apiClient.getFn<LoadingOffloadingPricing[]>(
+    `${endpoint}/${clientId}/loading-offloading/pricing`
+  )
+}
+
+export async function createClientLoadingOffloadingPricing(
+  data: LoadingOffloadingPricingRequest
+) {
+  return await apiClient.postFn<DistancePricingRequest[]>(
+    `${endpoint}/${data.client_id}/loading-offloading/pricing`,
+    data.pricings
+  )
+}
+
+export async function changeClientType(clientId: EntityId) {
+  const url = `${endpoint}/${clientId}/change-type`
+  return await apiClient.patchFn<Client>(url)
 }

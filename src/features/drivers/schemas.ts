@@ -1,45 +1,34 @@
-import z from "zod";
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
-import { Driver } from "@/features/drivers/types";
+import z from "zod"
+import { IDSchema } from "@/schemas"
+import { Driver } from "@/features/drivers/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const DriverCreateSchema = z.object({
-  first_name: z.string(),
-  last_name: z.string(),
+  first_name: z.string().trim().min(3, "Required"),
+  last_name: z.string().trim().min(3, "Required"),
   user_name: z.string().optional().nullable(),
-  phone: z.string(),
-  email: z.string(),
-  password: z.string(),
-});
+  phone: z.string().trim().min(3, "Required"),
+  email: z.email().trim(),
+  password: z.string().trim().min(3, "Required"),
+})
 
 export const DriverUpdateSchema = z.object({
-  id: z.number(),
+  id: IDSchema,
   ...DriverCreateSchema.partial().shape,
-});
+})
 
-export type DriverCreateSchemaType = z.infer<typeof DriverCreateSchema>;
+export type DriverCreateSchemaType = z.infer<typeof DriverCreateSchema>
 
-export type DriverUpdateSchemaType = z.infer<typeof DriverUpdateSchema>;
+export type DriverUpdateSchemaType = z.infer<typeof DriverUpdateSchema>
 
-export const DriverSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  sort: getSortingStateParser<Driver>().withDefault([
+export const DriverSearchParamsCache = z.object({
+  sort: getSortingStateSchema<Driver>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<Driver>().optional(),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type DriverListSearchParams = Awaited<
-  ReturnType<typeof DriverSearchParamsCache.parse>
->;
+export type DriverListSearchParams = z.infer<typeof DriverSearchParamsCache>

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
 import {
-  AutoCompleteField,
   HiddenField,
   NumberField,
   TextField,
@@ -20,7 +19,7 @@ import {
   DateTimePickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import { Activity, useMemo, useState } from "react"
+import { Activity, useEffect, useMemo, useState } from "react"
 import z from "zod"
 import {
   BookingCreateSchema,
@@ -34,12 +33,17 @@ import { ListIcon, Trash2Icon } from "lucide-react"
 import { createBookingFn } from "@/features/bookings/services"
 import { AutoComplete } from "@/components/ui/autocomplete"
 import { Service } from "@/features/services/types"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { servicesSearchQueryOptions } from "@/features/services/query-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { ClientPicker } from "@/features/clients/components"
+import { Client } from "@/features/clients/types"
+import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
+import { useSearch } from "@tanstack/react-router"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -47,17 +51,23 @@ type BookingRequestFormProps = {
 
 export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   const tr = useTranslation()
+  const search = useSearch({ from: "/_admin/bookings/new/" })
+  const queryInvalidator = useQueryInvalidator()
+  const [client, setClient] = useState<Client | null>(null)
+
   const [activeServiceTab, setActiveServiceTab] = useState<string | undefined>()
   const [serviceView, setServiceView] = useState<"list" | "single">("list")
 
   const isEdit = !!initialData
 
-  const { control, handleSubmit, formState, watch } = useForm<
+  const { control, handleSubmit, formState, watch, setValue } = useForm<
     z.infer<typeof BookingCreateSchema>
   >({
     resolver: zodResolver(BookingCreateSchema),
     defaultValues: {
+      client_id: search.clientId,
       services: [],
+      contacts: [],
     },
     mode: "onChange",
   })
@@ -71,12 +81,13 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     data: { data: services },
   } = useSuspenseQuery(servicesSearchQueryOptions())
 
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const { data: clients } = useQuery(clientsSearchQueryOptions())
 
   async function onSubmit(values: z.infer<typeof BookingCreateSchema>) {
     const { isSuccess, error } = await createBookingFn({ data: values })
     if (isSuccess) {
-      toast.success(`${tr("trips.trip_created_successfully")}`)
+      toast.success(`${tr("bookings.booking_created_successfully")}`)
+      queryInvalidator.bookings.list.invalidate()
     } else {
       toast.error(error!.message)
     }
@@ -115,45 +126,84 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
     )
   }, [calculatedServicesTotals])
 
+  useEffect(() => {
+    setValue("client_id", search.clientId ?? "")
+    if (clients) {
+      const client = clients.find((c) => c.id === search.clientId)
+      setClient(client ?? null)
+    }
+  }, [search, clients])
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{isEdit ? tr("edit_booking") : tr("new_booking")}</CardTitle>
-        <CardDescription>{tr("create_booking_help")}</CardDescription>
-        <CardAction>
-          <CardTitle>
-            {formatPrice(grandTotal, { showZeroAsNumber: true })}
-          </CardTitle>
-        </CardAction>
-      </CardHeader>
-      <form
-        onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log(errors)
-        })}
-      >
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.log(errors)
+      })}
+      className="space-y-4"
+    >
+      <Card>
+        <CardHeader>
+          {client && <CardTitle>{client.name}</CardTitle>}
+          {client && <CardDescription>{client.phone}</CardDescription>}
+          <CardAction>
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={formState.isSubmitting}
+              disabled={fields.length === 0}
+            />
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <ClientPicker
+            onSelected={(client) => {
+              setValue("client_id", client?.id ?? "")
+              setClient(client)
+            }}
+            clients={clients ?? []}
+          />
+          {client && (
+            <ClientContactsList
+              contacts={client?.contacts}
+              onSelected={(contacts) => {
+                setValue("contacts", contacts)
+              }}
+            />
+          )}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent>
+          <FieldGroup className="grid grid-flow-col md:grid-cols-4">
+            <DateTimePickerField
+              label={"Pickup Date"}
+              name={"pickup_time"}
+              control={control}
+            />
+            <DateTimePickerField
+              label={"Return Date"}
+              name={"return_time"}
+              control={control}
+            />
+            <NumberField
+              label={"Initial Payment"}
+              name={"partial"}
+              control={control}
+              required={false}
+            />
+            <DiscountField
+              label={"Discount"}
+              name={"discount"}
+              control={control}
+              required={false}
+            />
+          </FieldGroup>
+        </CardContent>
+      </Card>
+      <Card>
         <CardContent className="grid grid-cols-1 gap-5 pb-5 md:grid-cols-2">
           <Card>
             <CardContent>
               <FieldGroup className="pb-5">
-                <AutoCompleteField
-                  label={tr("client")}
-                  name={"customer_id"}
-                  control={control}
-                  options={(clientsResponse?.data ?? [])?.map((ele) => ({
-                    label: ele.fullname,
-                    value: ele.id,
-                  }))}
-                />
-                <DateTimePickerField
-                  label={"Pickup Date"}
-                  name={"pickup_time"}
-                  control={control}
-                />
-                <DateTimePickerField
-                  label={"Return Date"}
-                  name={"return_time"}
-                  control={control}
-                />
                 <NumberField
                   label={"Initial Payment"}
                   name={"partial"}
@@ -306,7 +356,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                             </CardContent>
                             <CardFooter>
                               Total:{" "}
-                              {formatPrice(serviceWithTotal?.lineTotal, {
+                              {formatMoney(serviceWithTotal?.lineTotal, {
                                 showZeroAsNumber: true,
                               })}
                             </CardFooter>
@@ -355,7 +405,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                         </CardContent>
                         <CardFooter>
                           Total:{" "}
-                          {formatPrice(serviceWithTotal?.lineTotal, {
+                          {formatMoney(serviceWithTotal?.lineTotal, {
                             showZeroAsNumber: true,
                           })}
                         </CardFooter>
@@ -367,14 +417,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
             </CardContent>
           </Card>
         </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={formState.isSubmitting}
-            disabled={fields.length === 0}
-          />
-        </CardFooter>
-      </form>
-    </Card>
+      </Card>
+    </form>
   )
 }

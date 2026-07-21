@@ -4,15 +4,16 @@ import {
   KeyNamedPermissions,
 } from "@/features/auth/permissions";
 
-export function hasPermission(user: User) {
+export function checkUserPermission(user: User) {
   return (permission: UserPermission) => {
     if (user.is_admin) return true;
 
     // Lookup the named permissions with the backend corresponding permission names
     const required = KeyNamedPermissions[permission];
+    // console.log("PermissionSet", required)
     if (!required) return false;
 
-    // return required.every((p) => session.permissions.includes(p));
+    // return required.every((p) => user.permissions.includes(p));
 
     // All required permissions must be present in user's list
     // using set for 0(1) lookups

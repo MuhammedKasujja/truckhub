@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, ErrorComponent } from "@tanstack/react-router"
 import {
   Stat,
   StatIndicator,
@@ -6,21 +6,27 @@ import {
   StatTrend,
   StatValue,
 } from "@/components/ui/stat"
-import { RecentPaymentsTable } from "@/features/dashboard/components/recent-payments-table"
-import { RecentBookingTable } from "@/features/dashboard/components/recent-booking-table"
-import { RecentRideTable } from "@/features/dashboard/components/recent-ride-table"
+import {
+  RecentPaymentsTable,
+  RecentBookingTable,
+  RecentRidesTable,
+} from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
-import { formatPrice } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-picker"
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
 import { dashboardQueryOptions } from "@/features/dashboard/query-options"
+import { CalendarDatePicker } from "@/components/calendar-date-picker"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
+  // errorComponent: ErrorComponent,
   loader: async ({ context }) =>
     context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })
+
+
 
 function RouteComponent() {
   const { data } = Route.useLoaderData()
@@ -33,6 +39,16 @@ function RouteComponent() {
       <PageHeader className="pb-0">
         <PageTitle>Dashboard</PageTitle>
         <PageAction>
+          <CalendarDatePicker
+            date={{
+              from: new Date(),
+              // to: dates.to,
+            }}
+            onDateSelect={({}) => {}}
+            // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
+            className={`w-fit cursor-pointer`}
+            variant="outline"
+          />
           <DateRangePicker2
             initialDateFrom={new Date()}
             initialDateTo={
@@ -40,7 +56,7 @@ function RouteComponent() {
             }
           />
           <DateRangePicker
-            // onUpdate={(values) => console.log(values)}
+            onUpdate={(values) => console.log(values)}
             initialDateFrom="2026-01-01"
             initialDateTo="2026-12-31"
             align="start"
@@ -53,7 +69,7 @@ function RouteComponent() {
         <Stat>
           <StatLabel>Payments</StatLabel>
           <StatValue>
-            {formatPrice(data.statistics.payments.total_amount)}
+            {formatMoney(data.statistics.payments.total_amount)}
           </StatValue>
           <StatIndicator variant="icon" color="success">
             <DollarSign />
@@ -69,7 +85,7 @@ function RouteComponent() {
 
         <Stat>
           <StatLabel>Customers</StatLabel>
-          <StatValue>{data.statistics.customers.total}</StatValue>
+          <StatValue>{data.statistics.clients.total}</StatValue>
           <StatIndicator variant="badge" color="info">
             +24
           </StatIndicator>
@@ -86,7 +102,7 @@ function RouteComponent() {
       </div>
       <RecentPaymentsTable payments={data.recent_payments} />
       <RecentBookingTable bookings={data.recent_bookings} />
-      <RecentRideTable rides={data.recent_rides} />
+      <RecentRidesTable rides={data.recent_rides} />
     </div>
   )
 }

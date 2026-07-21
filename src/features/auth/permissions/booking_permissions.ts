@@ -1,17 +1,28 @@
 // +++++++++++++++++++++++++++
 // bookings permissions
 export const BookingModulePermissions = {
-  "bookings:create": ["bookings:create", "passengers:view_list", "services:view_list"],
-  "bookings:view": ["bookings:view_single", "bookings:view_list"],
+  "bookings:module": ["bookings:module", "bookings:read"],
+  "bookings:create": [
+    "bookings:create",
+    "clients:read",
+    "services:read",
+    "tax_rates:read",
+    "clients:route_pricings:view",
+    "bookings:trucks:create",
+  ],
+  "bookings:view": ["bookings:view", "bookings:read"],
   "bookings:delete": ["bookings:delete"],
-  "bookings:edit": ["bookings:update", "bookings:view_single"],
-  // TODO: separate this into its own module permissions
-  "rides:create": ["bookings:create", "passengers:view_list", "services:view_list"],
-  "rides:view": ["bookings:view_single", "bookings:view_list"],
-  "rides:delete": ["bookings:delete"],
-  "rides:edit": ["bookings:update", "bookings:view_single"],
-} as const;
+  "bookings:edit": [
+    "bookings:update",
+    "bookings:view",
+    "clients:read",
+    "services:read",
+    "tax_rates:read",
+    "clients:route_pricings:view",
+  ],
+  "bookings:cancel": ["bookings:cancel"],
+} as const
 
-export type BookingPermissions = keyof typeof BookingModulePermissions;
+export type BookingPermissions = keyof typeof BookingModulePermissions
 
 // export type BookingPermissions = `bookings@${BookingPermissionsType}`;

@@ -1,34 +1,38 @@
-import { CURRENCY_CODE } from "@/config/constants";
+import { CURRENCY_CODE } from "@/config/constants"
 
-export function formatPrice(
+export function formatMoney(
   amount?: number | string,
-  { showZeroAsNumber = false } = {},
+  { showZeroAsNumber = false } = {}
 ) {
-  if (amount === undefined || amount === null) return "";
+  if (amount === undefined || amount === null) return ""
 
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: CURRENCY_CODE,
-    minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
-  });
+    minimumFractionDigits: 0//Number.isInteger(amount) ? 0 : 2,
+  })
 
-  if (amount === 0 && !showZeroAsNumber) return "Free";
-  return formatter.format(Number(amount));
+  if (amount === 0 && !showZeroAsNumber) return "Free"
+  return formatter.format(Number(amount))
 }
 
 export function formatNumber(
-  number: number,
-  options?: Intl.NumberFormatOptions,
+  value: number | string | undefined,
+  options?: Intl.NumberFormatOptions
 ) {
-  const formatter = new Intl.NumberFormat(undefined, options);
-  return formatter.format(number);
+  // return Number(value).toLocaleString(undefined, {
+  //   minimumFractionDigits: 0,
+  //   maximumFractionDigits: 2,
+  // });
+  const formatter = new Intl.NumberFormat(undefined, options)
+  return formatter.format(Number(value))
 }
 
 export function formatDate(
-  date: Date | string | number | undefined,
-  opts: Intl.DateTimeFormatOptions = {},
+  date: Date | string | number | null | undefined,
+  opts: Intl.DateTimeFormatOptions = {}
 ) {
-  if (!date) return "";
+  if (!date) return ""
   try {
     return new Intl.DateTimeFormat(undefined, {
       // month: opts.month ?? "long",
@@ -37,28 +41,28 @@ export function formatDate(
       dateStyle: "medium",
       timeStyle: "short",
       ...opts,
-    }).format(new Date(date));
+    }).format(new Date(date))
   } catch (_) {
     // eslint-disable-line @typescript-eslint/no-unused-vars
-    return "";
+    return ""
   }
 }
 
 export function formatPlural(
   count: number,
   { singular, plural }: { singular: string; plural: string },
-  { includeCount = true } = {},
+  { includeCount = true } = {}
 ) {
-  const word = count === 1 ? singular : plural;
+  const word = count === 1 ? singular : plural
 
-  return includeCount ? `${count} ${word}` : word;
+  return includeCount ? `${count} ${word}` : word
 }
 
 export const formatDateTime = (
   datetime: Date | string | number | undefined | null,
-  options?: Intl.DateTimeFormatOptions,
+  options?: Intl.DateTimeFormatOptions
 ) => {
-  if (!datetime) return "";
+  if (!datetime) return ""
   try {
     return new Date(datetime).toLocaleTimeString("en-US", {
       month: "short",
@@ -68,22 +72,29 @@ export const formatDateTime = (
       minute: "numeric",
       hour12: true,
       ...options,
-    });
+    })
   } catch (_) {
     // eslint-disable-line @typescript-eslint/no-unused-vars
-    return "";
+    return ""
   }
-};
+}
 
 export function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
+  if (meters < 1000) return `${Math.round(meters)} m`
+  return `${(meters / 1000).toFixed(1)} km`
 }
 
 export function formatDuration(seconds: number): string {
-  const mins = Math.round(seconds / 60);
-  if (mins < 60) return `${mins} min`;
-  const hours = Math.floor(mins / 60);
-  const remainingMins = mins % 60;
-  return `${hours}h ${remainingMins}m`;
+  const mins = Math.round(seconds / 60)
+  if (mins < 60) return `${mins} min`
+  const hours = Math.floor(mins / 60)
+  const remainingMins = mins % 60
+  return `${hours}h ${remainingMins}m`
+}
+
+export const generateAvatorFallback = (fullname: string | undefined) => {
+  if (!fullname) return ""
+  const [firstName, lastName] = fullname.split(" ")
+  if (lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
+  return firstName[0]
 }

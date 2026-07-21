@@ -8,7 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
-import { NumberField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  SelectField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
   EditSettingsSchema,
@@ -20,6 +24,9 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { DATE_FORMATS } from "@/common/constants"
+import { Can } from "@/components/has-permission"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -27,6 +34,7 @@ type EditSettingsFormProps = {
 
 export function EditSettingsForm({ settings }: EditSettingsFormProps) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
 
   const formSchema = EditSettingsSchema
 
@@ -41,6 +49,7 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
     })
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.settings.refresh()
     } else {
       toast.error(error?.message)
     }
@@ -69,14 +78,27 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
               name={"counter_padding"}
               control={form.control}
             />
+            <SelectField
+              label={"Date Format"}
+              name={"date_format"}
+              control={form.control}
+              options={DATE_FORMATS.map((f) => ({ label: f, value: f }))}
+            />
+            <TextField
+              label={"Currency Code"}
+              name={"currency_code"}
+              control={form.control}
+            />
           </FieldGroup>
         </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={form.formState.isSubmitting}
-          />
-        </CardFooter>
+        <Can permission="config:edit">
+          <CardFooter className="justify-end">
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={form.formState.isSubmitting}
+            />
+          </CardFooter>
+        </Can>
       </form>
     </Card>
   )

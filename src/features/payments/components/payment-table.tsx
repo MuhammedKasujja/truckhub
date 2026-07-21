@@ -16,7 +16,8 @@ import { useSearch } from "@tanstack/react-router"
 export function PaymentTable() {
   const search = useSearch({ from: "/_admin/payments/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(paymentsQueryOptions(search))
 
   const tr = useTranslation()

@@ -29,7 +29,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     <Button
       onClick={toggleTheme}
       variant="outline"
-      size="icon"
+      size="icon-sm"
       className={cn("rounded-full", className)}
     >
       <SunIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />

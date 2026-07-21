@@ -1,7 +1,7 @@
 import {
   CustomerUpdateSchema,
   CustomerCreateSchema,
-  CustomerSearchParamsCache,
+  ClientSearchParamsCache,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -11,23 +11,43 @@ import {
   updateClient,
   getClientRides,
   getCustomerById,
+  changeClientType,
   getClientBookings,
   getClientPayments,
   deleteCustomerById,
   getCustomersByQuery,
+  getClientRoutePricing,
   getCustomerDetailsById,
+  createClientBatchRoutePricing,
+  getClientLoadingOffloadingFrees,
+  createClientLoadingOffloadingPricing,
 } from "./server"
+import { ApiError } from "@/types"
+import {
+  LoadingOffloadingPricingSchema,
+  BatchPricingPayloadUpdateSchema,
+} from "@/features/settings/pricing/schemas"
 
 export const getCustomersFn = createServerFn()
-  .inputValidator((data) => CustomerSearchParamsCache.parse(data))
+  .inputValidator(ClientSearchParamsCache)
   .handler(async ({ data }) => {
-    return await getCustomers(data)
+    const response = await getCustomers(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getClientsByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
   .handler(async ({ data }) => {
-    return getCustomersByQuery(data)
+    const response = await getCustomersByQuery(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return response.data
   })
 
 export const getClientByIdFn = createServerFn()
@@ -76,4 +96,34 @@ export const getClientRidesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientRides(data.id)
+  })
+
+export const createClientBatchRoutePricingFn = createServerFn()
+  .inputValidator(BatchPricingPayloadUpdateSchema)
+  .handler(async ({ data }) => {
+    return createClientBatchRoutePricing(data)
+  })
+
+export const getClientRoutePricingFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientRoutePricing(data.id)
+  })
+
+export const getClientLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientLoadingOffloadingFrees(data.id)
+  })
+
+export const createClientLoadingOffloadingPricingFn = createServerFn()
+  .inputValidator(LoadingOffloadingPricingSchema)
+  .handler(async ({ data }) => {
+    return createClientLoadingOffloadingPricing(data)
+  })
+
+export const changeClientTypeFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return changeClientType(data.id)
   })

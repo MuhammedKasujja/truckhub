@@ -1,26 +1,26 @@
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  createSearchParamsCache,
-} from "nuqs/server";
-import { AuditLog } from "./types";
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
-export const AuditLogSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(25),
-  sort: getSortingStateParser<AuditLog>().withDefault([
+import z from "zod"
+import { AuditLog } from "./types"
+import { IDSchema } from "@/schemas"
+import { AuditLogSource } from "@/config/constants"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+
+export const AuditLogSearchParamsCache = z.object({
+  user_ids: z.array(IDSchema).default([]).optional(),
+  sort: getSortingStateSchema<AuditLog>().default([
     { id: "created_at", desc: true },
   ]),
-  search: parseAsString.withDefault(""),
-  created_at: parseAsArrayOf(parseAsInteger).withDefault([]),
+  source: z.array(z.enum(AuditLogSource)).optional(),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-});
+  filters: getFiltersStateSchema<AuditLog>().optional(),
+  ...DefaultSearchParamsSchema.shape,
+})
 
-export type AuditLogSearchParams = Awaited<
-  ReturnType<typeof AuditLogSearchParamsCache.parse>
->;
+export const deleteLogsSchema = z.object({
+  log_ids: z.array(IDSchema).default([]),
+})
+
+export type AuditLogSearchParams = z.infer<typeof AuditLogSearchParamsCache>
+
+export type DeleteLogsRequest = z.infer<typeof deleteLogsSchema>

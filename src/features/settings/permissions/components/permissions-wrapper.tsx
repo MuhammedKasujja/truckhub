@@ -9,26 +9,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SystemPermissions } from "@/features/auth/permissions"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { EditRoleDialog } from "./edit-role-modal"
-import { Can } from "@/components/has-permission"
 import { useQuery } from "@tanstack/react-query"
-import { createRolesListQueryOptions } from "../query-options"
-
-const modules = Object.keys(SystemPermissions)
+import { Can } from "@/components/has-permission"
+import { Badge } from "@/components/ui/badge"
+import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { useTranslation } from "@/i18n"
+import { Checkbox } from "@/components/ui/checkbox"
+// import { generatePermissionTranslations } from "../utils/generate-permissions-tr"
 
 export function PermissionsWrapper() {
-  const { data } = useQuery(createRolesListQueryOptions())
+  const { data } = useQuery(createRolesQueryOptions())
+  const tr = useTranslation()
 
   const [_, setPermissionCount] = useState<Map<string, number>>(new Map())
 
   const [selectedPermissions, setSelectedPermissions] = useState<Set<string>>(
     new Set()
   )
+  const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set())
+
+  function handleModulePermission(
+    permissions: Record<string, readonly string[]>,
+    checked: boolean
+  ) {
+    const modules = Object.keys(permissions)
+    const permissionList = Object.values(permissions).flat()
+    if (checked) {
+      setSelectedModules((prev) => {
+        const next = new Set(prev)
+        modules.forEach((item) => next.add(item))
+        return next
+      })
+    } else {
+      setSelectedModules((prev) => {
+        const next = new Set(prev)
+        modules.forEach((item) => next.delete(item))
+        return next
+      })
+    }
+    togglePermissions(permissionList)
+  }
+
   const [roleId, setRoleId] = useState<string | undefined>()
 
   const groupedPermissions = useMemo(
@@ -38,6 +70,9 @@ export function PermissionsWrapper() {
 
   const isAllSelected = (permissions: string[]) =>
     permissions.every((p) => selectedPermissions.has(p))
+
+  const isModuleSelected = (modules: string[]) =>
+    modules.every((p) => selectedModules.has(p))
 
   const togglePermissions = (permissions: string[]) => {
     setPermissionCount((prev) => {
@@ -100,59 +135,74 @@ export function PermissionsWrapper() {
     }
   }
 
+  function handleRoleChanged(roleId: string) {
+    setRoleId(roleId)
+    const selectedRole = (data ?? []).find((role) => role.id === roleId)
+    if (selectedRole) {
+      setSelectedPermissions(new Set<string>(selectedRole.permissions))
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap justify-between gap-5">
-        <Select
-          value={roleId}
-          onValueChange={(role) => {
-            setRoleId(role)
-          }}
-        >
-          <SelectTrigger>
+        <Select value={roleId} onValueChange={handleRoleChanged}>
+          <SelectTrigger className="w-52">
             <SelectValue placeholder="Select Role" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {(data?.data ?? []).map((opt) => (
-                <SelectItem key={opt.id} value={opt.id.toString()}>
+              {(data ?? []).map((opt) => (
+                <SelectItem key={opt.id} value={opt.id}>
                   {opt.name}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Can permission={"config:create:role"}>
-          <EditRoleDialog />
+        <Can permission="config:roles:assign_permissions">
+          <Button type="button" onClick={() => saveRolePermissions()}>
+            {tr("permissions.apply_permissions")}
+          </Button>
         </Can>
-        <Button type="button" onClick={() => saveRolePermissions()}>
-          Sync Permissions
-        </Button>
       </div>
-      <Tabs defaultValue={modules[0]} className="w-full">
-        <TabsList>
-          {modules.map((module) => (
-            <TabsTrigger key={module} value={module}>
-              {module}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {groupedPermissions.map(([module, permissions]) => (
-          <TabsContent value={module} key={module}>
+      {/* <pre contentEditable="true">
+        <code>
+          {JSON.stringify(generatePermissionTranslations(tr), null, 2)}
+        </code>
+      </pre> */}
+      {groupedPermissions.map(([module, permissions]) => (
+        <Card key={module}>
+          <CardHeader>
+            <CardTitle>{tr(`permissions.modules.${module}`)}</CardTitle>
+            <CardAction>
+              <Checkbox
+                checked={isModuleSelected(Object.keys(permissions))}
+                onCheckedChange={(checked: boolean) => {
+                  handleModulePermission(permissions, checked)
+                }}
+              />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
             {Object.entries(permissions).map(([group, permissionList]) => (
               <Button
                 type="button"
-                variant={isAllSelected(permissionList) ? "default" : "ghost"}
+                variant={isAllSelected(permissionList) ? "outline" : "ghost"}
                 key={group}
                 onClick={() => togglePermissions(permissionList)}
               >
-                {group}
+                {tr(`permissions.${group}`)}
               </Button>
             ))}
-          </TabsContent>
-        ))}
-      </Tabs>
-      {selectedPermissions}
+          </CardContent>
+        </Card>
+      ))}
+      {[...selectedPermissions].map((perm) => (
+        <Badge key={perm} variant={"outline"} className="mr-1">
+          {perm}
+        </Badge>
+      ))}
     </div>
   )
 }

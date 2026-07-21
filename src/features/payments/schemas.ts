@@ -1,30 +1,23 @@
 import z from "zod"
+import { IDSchema } from "@/schemas"
+import { formatMoney } from "@/lib/format"
 import { Payment } from "@/features/payments/types"
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
-import {
-  parseAsString,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsStringEnum,
-  parseAsStringLiteral,
-  createSearchParamsCache,
-} from "nuqs/server"
-import { formatPrice } from "@/lib/format"
-import { PaymentStatuses } from "@/config/constants"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { PaymentModeList, PaymentStatuses } from "@/config/constants"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const EditPaymentBaseSchema = z.object({
-  id: z.number().optional().nullable(),
-  entity_id: z.number(),
+  id: IDSchema.optional().nullable(),
+  entity_id: IDSchema,
   payment_mode: z.string(),
   transaction_ref: z.string().optional().nullable(),
   type: z.enum(["booking", "ride"]),
 })
 
 export const EditPaymentSchema = z.object({
-  amount:z.number().min(1),
+  amount: z.number().min(1),
   ...EditPaymentBaseSchema.shape,
 })
-
 
 /**
  *
@@ -43,9 +36,9 @@ export const createEditPaymentSchema = (maxAmount: number = 0) => {
       .number()
       .min(minAmount)
       .max(maxAmount, {
-        error: `Payment amount cannot exceed ${formatPrice(maxAmount, { showZeroAsNumber: true })}`,
+        error: `Payment amount cannot exceed ${formatMoney(maxAmount, { showZeroAsNumber: true })}`,
       }),
-    ...EditPaymentBaseSchema.shape
+    ...EditPaymentBaseSchema.shape,
   })
 }
 
@@ -53,20 +46,15 @@ export type PaymentEditSchemaType = z.infer<
   ReturnType<typeof createEditPaymentSchema>
 >
 
-export const PaymentSearchParamsCache = createSearchParamsCache({
-  page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(10),
-  status: parseAsArrayOf(parseAsStringLiteral(PaymentStatuses)).withDefault([]),
-  sort: getSortingStateParser<Payment>().withDefault([
-    { id: "date", desc: true },
-  ]),
-  search: parseAsString.withDefault(""),
-  date: parseAsInteger.withDefault(0),
+export const PaymentSearchParamsCache = z.object({
+  status: z.array(z.enum(PaymentStatuses)).optional(),
+  payment_method: z.array(z.enum(PaymentModeList)).optional(),
+  // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
+  sort: getSortingStateSchema<Payment>().optional(),
+  date: z.number().optional().nullable(),
   // advanced filter
-  filters: getFiltersStateParser().withDefault([]),
-  joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
+  filters: getFiltersStateSchema().optional(),
+  ...DefaultSearchParamsSchema.shape,
 })
 
-export type PaymentListSearchParams = Awaited<
-  ReturnType<typeof PaymentSearchParamsCache.parse>
->
+export type PaymentListSearchParams = z.infer<typeof PaymentSearchParamsCache>

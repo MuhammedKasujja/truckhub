@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 
 type DriverFormProps = {
   initialData?: z.infer<typeof DriverUpdateSchema>
@@ -31,6 +32,7 @@ type DriverFormProps = {
 
 export function DriverForm({ initialData }: DriverFormProps) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
   const isEdit = !!initialData
 
   const formSchema = isEdit ? DriverUpdateSchema : DriverCreateSchema
@@ -49,6 +51,7 @@ export function DriverForm({ initialData }: DriverFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.drivers.list.invalidate()
     } else {
       toast.error(error?.message)
     }

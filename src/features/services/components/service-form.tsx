@@ -25,8 +25,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQuery } from "@tanstack/react-query"
-import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
 
 type ServiceFormProps = {
   initialData?: z.infer<typeof ServiceUpdateSchema>
@@ -34,7 +34,8 @@ type ServiceFormProps = {
 
 export function ServiceForm({ initialData }: ServiceFormProps) {
   const tr = useTranslation()
-  const { data } = useQuery(createVehicleConfigurationsQueryOptions())
+  const { data } = useVehicleConfigurations()
+  const queryInvalidator = useQueryInvalidator()
 
   const isEdit = !!initialData
 
@@ -54,6 +55,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.services.list.invalidate()
     } else {
       toast.error(error?.message)
     }
@@ -81,7 +83,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               placeholder="Select Vehicle"
               emptyPlaceholder="No vehicles found"
               options={
-                data?.data?.vehicle_types.map((opt) => ({
+                data?.vehicle_types.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []
@@ -149,12 +151,12 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
               required={false}
             />
-            <NumberField
+            {/* <NumberField
               label={tr("services.tax_fee")}
               name={"tax_fee"}
               control={form.control}
               required={false}
-            />
+            /> */}
             <TextareaField
               label={tr("common.form.description")}
               name={"description"}

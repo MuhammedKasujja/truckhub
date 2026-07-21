@@ -29,8 +29,8 @@ import React from "react"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQuery } from "@tanstack/react-query"
-import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
 
 type CarModelFormProps = {
   trigger?: React.ReactNode
@@ -38,7 +38,9 @@ type CarModelFormProps = {
 }
 
 export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
-  const { data } = useQuery(createVehicleConfigurationsQueryOptions())
+  const { data } = useVehicleConfigurations()
+
+  const queryInvalidator = useQueryInvalidator()
   const tr = useTranslation()
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
@@ -59,6 +61,8 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      form.reset()
+      queryInvalidator.settings.carModels.list()
     } else {
       toast.error(error?.message)
     }
@@ -86,7 +90,6 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            <TextField label="Name" control={form.control} name={"name"} />
             <AutoCompleteField
               label={tr("common.car_brand")}
               control={form.control}
@@ -94,12 +97,13 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
               placeholder="Select Car Brand"
               emptyPlaceholder="No Car Brand found"
               options={
-                data?.data?.car_brands.map((opt) => ({
+                data?.car_brands.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []
               }
             />
+            <TextField label="Model" control={form.control} name={"name"} />
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
@@ -107,7 +111,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
               placeholder="Select Vehicle type"
               emptyPlaceholder="No Vehicle type found"
               options={
-                data?.data?.vehicle_types.map((opt) => ({
+                data?.vehicle_types.map((opt) => ({
                   label: opt.name,
                   value: opt.id,
                 })) ?? []

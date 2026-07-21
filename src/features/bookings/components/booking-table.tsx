@@ -1,5 +1,3 @@
-"use client"
-
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -11,14 +9,18 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createBookingQueryOptions } from "../queries-options"
+import { useTranslation } from "@/i18n"
 
 export function BookingTable() {
   const search = useSearch({ from: "/_admin/bookings/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createBookingQueryOptions(search))
 
-  const columns = React.useMemo(() => getBookingTableColumns(), [])
+  const tr = useTranslation()
+
+  const columns = React.useMemo(() => getBookingTableColumns(tr), [tr])
 
   useFetchEror(error)
 
@@ -45,11 +47,5 @@ export function BookingTable() {
 }
 
 export function BookingTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getBookingTableColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={8} filterCount={1} shrinkZero />
 }

@@ -1,7 +1,8 @@
+import { EntityId } from "@/schemas";
 import { LocationData } from "../bookings/types";
 
 export type Passenger = {
-  id: number;
+  id: EntityId;
   fullname: string;
   phone: string;
   email: string;
@@ -9,7 +10,7 @@ export type Passenger = {
 };
 
 export type Driver = {
-  id: number;
+  id: EntityId;
   fullname: string;
   phone: string;
   email: string;
@@ -17,7 +18,7 @@ export type Driver = {
 };
 
 export type RideRequest = {
-  id: number;
+  id: EntityId;
   number: string;
   origin: string;
   destination: string;
@@ -28,13 +29,13 @@ export type RideRequest = {
   balance: number;
   discount: number;
   amount: number;
-  customer: Passenger;
+  client: Passenger;
   driver: Driver | undefined;
   type: RideType;
 };
 
 export type RideRequestDetails = {
-  id: number;
+  id: EntityId;
   number: string;
   origin: LocationData;
   destination: LocationData;
@@ -49,7 +50,7 @@ export type RideRequestDetails = {
   duration: number;
   amount: number;
   is_paid: number;
-  customer: Passenger;
+  client: Passenger;
   driver: Driver | undefined;
   type: RideType;
   checkpoints: LocationData[];

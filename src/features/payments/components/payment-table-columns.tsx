@@ -1,13 +1,14 @@
-import { ActionButton } from "@/components/ui/action-button";
-import { Button } from "@/components/ui/button";
-import { Payment } from "@/features/payments/types";
-import { formatDate, formatPrice } from "@/lib/format";
-import { ColumnDef } from "@tanstack/react-table";
-import { Trash2Icon } from "lucide-react";
-import { PaymentViewModal } from "./payment-view-modal";
-import { PaymentStatuses, PaymentModeList } from "@/config/constants";
-import { Badge } from "@/components/ui/badge";
-import { TFunction } from "@/i18n";
+import { ActionButton } from "@/components/ui/action-button"
+import { Button } from "@/components/ui/button"
+import { Payment } from "@/features/payments/types"
+import { formatDate, formatMoney } from "@/lib/format"
+import { ColumnDef } from "@tanstack/react-table"
+import { Trash2Icon } from "lucide-react"
+import { PaymentViewModal } from "./payment-view-modal"
+import { PaymentStatuses, PaymentModeList } from "@/config/constants"
+import { Badge } from "@/components/ui/badge"
+import { TFunction } from "@/i18n"
+import { Can } from "@/components/has-permission"
 
 export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
   return [
@@ -15,26 +16,27 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       accessorKey: "number",
       header: tr("payments.number"),
       cell: ({ row }) => {
-        return <Button variant={"link"}>{row.original.number}</Button>;
+        return <Button variant={"link"}>{row.original.number}</Button>
       },
       size: 100,
-      meta:{
-        label: tr("payments.number")
-      }
+      meta: {
+        label: tr("payments.number"),
+      },
     },
     {
       accessorKey: "amount",
       header: tr("payments.amount"),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2">{formatPrice(row.original.amount)}</div>
-        );
+          <div className="flex gap-2 font-semibold">{formatMoney(row.original.amount)}</div>
+        )
       },
-      meta:{
-        label: tr("payments.amount")
-      }
+      meta: {
+        label: tr("payments.amount"),
+      },
     },
     {
+      id: "status",
       accessorKey: "status",
       header: tr("payments.status"),
       cell: ({ row }) => {
@@ -43,7 +45,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
           <Badge variant="outline" className="capitalize">
             {tr(`payments.statuses.${status}`)}
           </Badge>
-        );
+        )
       },
       meta: {
         label: tr("payments.status"),
@@ -56,17 +58,18 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       enableColumnFilter: true,
     },
     {
+      id: "payment_method",
       accessorKey: "payment_mode",
       header: tr("payments.method"),
       cell: ({ row }) => {
-        const method = row.original.payment_mode;
+        const method = row.original.payment_mode
         return (
           <Badge variant="outline">{tr(`payments.methods.${method}`)}</Badge>
-        );
+        )
       },
       meta: {
         label: tr("payments.method"),
-        variant: "select",
+        variant:"multiSelect",
         options: PaymentModeList.map((method) => ({
           label: tr(`payments.methods.${method}`),
           value: `${method}`,
@@ -78,18 +81,19 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       id: "customer",
       header: tr("client"),
       cell: ({ row }) => {
-        return <p>{row.original.customer.fullname}</p>;
+        return <p>{row.original.client.fullname}</p>
       },
     },
     {
+      id: "date",
       accessorKey: "date",
       header: tr("payments.date"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.date)}</p>;
+        return <p>{formatDate(row.original.date)}</p>
       },
-      meta:{
+      meta: {
         label: tr("payments.date"),
-        variant: 'dateRange'
+        variant: "dateRange",
       },
       enableColumnFilter: true,
     },
@@ -99,20 +103,22 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
         return (
           <div className="flex gap-2">
             <PaymentViewModal payment={row.original} />
-            <ActionButton
-              variant={"destructive"}
-              size={"icon"}
-              requireAreYouSure
-              action={async () => {
-                return { error: true, message: "Not implemented yet...." };
-              }}
-            >
-              <Trash2Icon />
-            </ActionButton>
+            <Can permission="payments:delete">
+              <ActionButton
+                variant={"destructive"}
+                size={"icon"}
+                requireAreYouSure
+                action={async () => {
+                  return { error: true, message: "Not implemented yet...." }
+                }}
+              >
+                <Trash2Icon />
+              </ActionButton>
+            </Can>
           </div>
-        );
+        )
       },
       size: 100,
     },
-  ];
+  ]
 }

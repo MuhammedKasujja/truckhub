@@ -12,18 +12,15 @@ import { generateApiSearchParams } from "@/lib/search-params";
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants";
 
 export async function getDrivers(input: DriverListSearchParams) {
-  const { page, perPage } = input;
   const params = generateApiSearchParams(input);
 
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Driver[]>(`/v1/drivers/?${params}`);
+  const response = await apiClient.getPaginatedFn<Driver[]>(`/v1/drivers/?${params}`);
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 };
-  return { data: isSuccess ? data! : [], error, pagination };
+  if (response.success) {
+    return  { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getDriversByQuery({ search }: SearchQuery) {

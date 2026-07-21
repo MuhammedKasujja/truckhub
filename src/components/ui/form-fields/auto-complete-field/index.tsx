@@ -64,6 +64,7 @@ export function AutoCompleteField<T extends FieldValues>({
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
+                  id={field.name}
                   variant="outline"
                   role="combobox"
                   aria-expanded={undefined} // you can manage open state if you want

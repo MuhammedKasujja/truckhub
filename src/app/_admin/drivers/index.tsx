@@ -9,15 +9,16 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
-import { hasPermission } from "@/lib/auth"
+import { requirePermission } from "@/lib/auth"
+import { DriverSearchParamsCache } from "@/features/drivers/schemas"
 
 export const Route = createFileRoute("/_admin/drivers/")({
+  validateSearch: DriverSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
-  beforeLoad: ()=> hasPermission('drivers:view'),
-  loader: ({ context, location }) =>
-    context.queryClient.ensureQueryData(
-      createDriverListQueryOptions(location.search)
-    ),
+  beforeLoad: () => requirePermission("drivers:module"),
+  loader: ({ context, deps: { search } }) =>
+    context.queryClient.ensureQueryData(createDriverListQueryOptions(search)),
 })
 
 function RouteComponent() {

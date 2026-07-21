@@ -14,17 +14,28 @@ import {
   getDriversByQuery,
   getDriverDetailsById,
 } from "./server"
+import { ApiError } from "@/types"
 
 export const getDriversFn = createServerFn()
-  .inputValidator((data) => DriverSearchParamsCache.parse(data))
-  .handler(({ data }) => {
-    return getDrivers(data)
+  .inputValidator(DriverSearchParamsCache)
+  .handler(async ({ data }) => {
+    const response = await getDrivers(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getDriversByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
   .handler(async ({ data }) => {
-    return getDriversByQuery(data)
+    const response = await getDriversByQuery(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return response.data
   })
 
 export const getDriverByIdFn = createServerFn()

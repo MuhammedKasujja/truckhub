@@ -1,15 +1,15 @@
-import { ActionButton } from "@/components/ui/action-button";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Service, ServiceGroup } from "@/features/services/types";
-import { formatPrice } from "@/lib/format";
-import { ColumnDef } from "@tanstack/react-table";
-import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react";
+import { ActionButton } from "@/components/ui/action-button"
+import { Button } from "@/components/ui/button"
+import { Service, ServiceGroup } from "@/features/services/types"
+import { formatMoney } from "@/lib/format"
+import { ColumnDef } from "@tanstack/react-table"
+import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
   return [
@@ -17,7 +17,7 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
       accessorKey: "category",
       header: "Category",
       cell: ({ row }) => {
-        return <Button variant={"link"}>{row.original.category}</Button>;
+        return <Button variant={"link"}>{row.original.category}</Button>
       },
       size: 120,
     },
@@ -31,20 +31,20 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
               <ServiceListItem key={service.id} service={service} />
             ))}
           </div>
-        );
+        )
       },
     },
     {
       accessorKey: "is_truck",
       header: "Vehicle",
       cell: ({ row }) => {
-        return <p>{row.original.is_truck ? "Truck" : "Normal"}</p>;
+        return <p>{row.original.is_truck ? "Truck" : "Normal"}</p>
       },
       size: 80,
     },
     {
       id: "actions",
-      cell: ({ row }) => {
+      cell: () => {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
@@ -67,39 +67,44 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
                 //   toast.success(message);
                 //   return { error: false };
                 // } else {
-                return { error: true, message: "Not implemented yet...." };
+                return { error: true, message: "Not implemented yet...." }
                 // }
               }}
             >
               <Trash2Icon />
             </ActionButton>
           </div>
-        );
+        )
       },
       size: 120,
     },
-  ];
+  ]
 }
 
 function ServiceListItem({ service }: { service: Service }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <HoverCard openDelay={10} closeDelay={100}>
+      <HoverCardTrigger asChild>
         <Button asChild variant={"outline"}>
-          <Link to={`/services/${service.id}/edit`}>{service.name}</Link>
+          <Link
+            to={`/services/$serviceId/edit`}
+            params={{ serviceId: service.id }}
+          >
+            {service.name}
+          </Link>
         </Button>
-      </TooltipTrigger>
-      <TooltipContent side="right" align="center">
-        <div className="grid grid-cols-1 gap-2">
+      </HoverCardTrigger>
+      <HoverCardContent className="flex w-64 flex-col gap-0.5">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             {service.category} - {service.name}
           </div>
-          <div>Base fee: {formatPrice(service.base_fare)}</div>
-          <div>Booking fee: {formatPrice(service.booking_fee)}</div>
-          <div>Tax fee: {formatPrice(service.tax_fee)}</div>
+          <div>Base fee: {formatMoney(service.base_fare)}</div>
+          <div>Booking fee: {formatMoney(service.booking_fee)}</div>
+          {/* <div>Tax fee: {formatMoney(service.tax_fee)}</div> */}
           {!service.is_truck && <div>Seats: {service.seats}</div>}
         </div>
-      </TooltipContent>
-    </Tooltip>
-  );
+      </HoverCardContent>
+    </HoverCard>
+  )
 }

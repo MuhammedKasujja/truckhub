@@ -11,7 +11,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { CreditCard, Loader2 } from "lucide-react"
+import { CreditCard } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -30,6 +30,10 @@ import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
 import React from "react"
 import { PaymentModeList } from "@/config/constants"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { BookingPickerField } from "@/features/bookings/components/booking-picker"
+import { RidePickerField } from "@/features/ride-requests/components"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -41,8 +45,9 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
 
-  const isEdit = !!initialData && "id" in initialData
+  // const isEdit = !!initialData && "id" in initialData
 
   const formSchema = createEditPaymentSchema(initialData?.amount)
 
@@ -61,6 +66,10 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.payments.invalidate({
+        entityId: initialData?.entity_id ?? "",
+        type: initialData?.type ?? "booking",
+      })
       form.reset()
       setIsOpen(false)
     } else {
@@ -86,7 +95,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
           <DrawerTitle>Enter Payment</DrawerTitle>
           <DrawerDescription>Create a new payment</DrawerDescription>
         </DrawerHeader>
-        <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+        <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
               console.log(errors)
@@ -94,11 +103,26 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
             id="form-payment"
           >
             <FieldGroup className="grid grid-flow-row grid-cols-1">
-              <NumberField
-                label={initialData?.type === "ride" ? "Ride" : "Booking"}
-                name={"entity_id"}
-                control={form.control}
-              />
+              {initialData?.type === "booking" && (
+                <BookingPickerField
+                  label="Booking"
+                  control={form.control}
+                  name={"entity_id"}
+                  onSelected={(booking) => {
+                    form.setValue("amount", Number(booking?.balance))
+                  }}
+                />
+              )}
+              {initialData?.type === "ride" && (
+                <RidePickerField
+                  label={"Ride"}
+                  name={"entity_id"}
+                  control={form.control}
+                  onSelected={(ride) => {
+                    form.setValue("amount", Number(ride?.balance))
+                  }}
+                />
+              )}
               <NumberField
                 label={"Amount"}
                 name={"amount"}
@@ -127,14 +151,11 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
           </form>
         </div>
         <DrawerFooter>
-          <Button type="submit" form="form-payment">
-            {form.formState.isSubmitting && (
-              <Loader2 className="size-4 animate-spin" />
-            )}
-            {form.formState.isSubmitting
-              ? "Submitting..."
-              : `${tr("common.form.submit")}`}
-          </Button>
+          <SubmitButton
+            type="submit"
+            form="form-payment"
+            isSubmitting={form.formState.isSubmitting}
+          />
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
           </DrawerClose>

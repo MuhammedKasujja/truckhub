@@ -18,7 +18,7 @@ import {
 import { useTranslation } from "@/i18n"
 import React from "react"
 import { LocationAutoComplete } from "@/components/location-autocomplete"
-import { formatDistance, formatDuration, formatPrice } from "@/lib/format"
+import { formatDistance, formatDuration, formatMoney } from "@/lib/format"
 import {
   Map,
   MapMarker,
@@ -51,7 +51,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
     data: { data: serviceList },
   } = useSuspenseQuery(servicesSearchQueryOptions())
 
-  const { data: clientsResponse } = useQuery(clientsSearchQueryOptions())
+  const { data: clients } = useQuery(clientsSearchQueryOptions())
   const mapRef = React.useRef<MapRef>(null)
 
   const tr = useTranslation()
@@ -83,10 +83,10 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
             <FieldGroup className="pb-6">
               <AutoCompleteField
                 label={tr("common.passenger")}
-                name={"customer_id"}
+                name={"client_id"}
                 control={form.control}
-                options={(clientsResponse?.data ?? []).map((ele) => ({
-                  label: ele.fullname,
+                options={(clients ?? []).map((ele) => ({
+                  label: ele.name,
                   value: ele.id,
                 }))}
               />
@@ -96,7 +96,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
               >
                 control={form.control}
                 label={tr("common.passenger")}
-                name={"customer_id"}
+                name={"client_id"}
                 fetcher={async (_) => {
                   return passengers;
                 }}
@@ -219,7 +219,7 @@ export function RideRequestForm({ initialData }: RideRequestFormProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-lg font-semibold">
-                      {formatPrice(
+                      {formatMoney(
                         parseFloat(locationDistanceTime.estimated_cost)
                       )}
                     </CardContent>

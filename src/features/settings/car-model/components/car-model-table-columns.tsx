@@ -3,6 +3,7 @@ import { CarModel } from "@/features/settings/car-model/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon } from "lucide-react"
 import { CarModelForm } from "./car-brand-form"
+import { Can } from "@/components/has-permission"
 
 export function getCarModelColumns(): ColumnDef<CarModel>[] {
   return [
@@ -28,14 +29,16 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
             <Button variant={"outline"} size={"icon"}>
               <EyeIcon />
             </Button>
-            <CarModelForm
-              initialData={{ ...row.original }}
-              trigger={
-                <Button variant={"outline"} size={"icon"}>
-                  <EditIcon />
-                </Button>
-              }
-            />
+            <Can permission="config:car_model:edit">
+              <CarModelForm
+                initialData={{ ...row.original }}
+                trigger={
+                  <Button variant={"outline"} size={"icon"}>
+                    <EditIcon />
+                  </Button>
+                }
+              />
+            </Can>
           </div>
         )
       },

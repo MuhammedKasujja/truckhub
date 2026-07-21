@@ -1,4 +1,3 @@
-"use client"
 import {
   Card,
   CardContent,
@@ -24,6 +23,8 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { UserPickerField } from "@/features/users/components/user-picker"
 
 type ClientFormProps = {
   initialData?: z.infer<typeof CustomerUpdateSchema>
@@ -31,6 +32,8 @@ type ClientFormProps = {
 
 export function ClientForm({ initialData }: ClientFormProps) {
   const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
+
   const isEdit = !!initialData
 
   const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema
@@ -49,6 +52,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
+      queryInvalidator.clients.list.invalidate()
     } else {
       toast.error(error?.message)
     }
@@ -67,24 +71,27 @@ export function ClientForm({ initialData }: ClientFormProps) {
       >
         <CardContent className="pb-6">
           <FieldGroup>
-            <Field orientation={'horizontal'} className="gap-4">
+            <Field orientation={"horizontal"} className="gap-4">
               <TextField
-                label={tr("common.form.first_name")}
-                name={"first_name"}
+                label={tr("common.form.name")}
+                name={"name"}
                 control={form.control}
               />
               <TextField
-                label={tr("common.form.last_name")}
-                name={"last_name"}
+                required={false}
+                label={tr("common.form.short_name")}
+                name={"short_name"}
                 control={form.control}
               />
             </Field>
-            <TextField
-              label={tr("common.form.phone")}
-              name={"phone"}
-              control={form.control}
-              required={false}
-            />
+            <Field orientation={"horizontal"} className="gap-4">
+              <TextField
+                label={tr("common.form.phone")}
+                name={"phone"}
+                control={form.control}
+                required={false}
+              />
+            </Field>
             <TextField
               label={"Tin Number"}
               name={"tin_number"}
@@ -97,11 +104,10 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               placeholder="user@mail.com"
             />
-            <TextField
+            <UserPickerField
               label={tr("common.form.assigned")}
-              name={"asssigned_user_id"}
               control={form.control}
-              required={false}
+              name={"asssigned_user_id"}
             />
             {!isEdit && (
               <PasswordField

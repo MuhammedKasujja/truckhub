@@ -10,17 +10,16 @@ import {
 } from "@/features/payments/schemas"
 
 export async function getPayments(input: PaymentListSearchParams) {
-  const { page, perPage } = input
   const params = generateApiSearchParams(input)
-  const {
-    data,
-    isSuccess,
-    error,
-    pagination: paginator,
-  } = await apiClient.getPaginatedFn<Payment[]>(`/v1/payments?${params}`)
+  const response = await apiClient.getPaginatedFn<Payment[]>(
+    `/v1/payments?${params}`
+  )
 
-  const pagination = paginator ?? { page, perPage, totalPages: 0, total: 0 }
-  return { data: isSuccess ? data! : [], error, pagination }
+  if (response.success) {
+    return  { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
 export async function getPaymentsByQuery(query: SearchQuery) {
