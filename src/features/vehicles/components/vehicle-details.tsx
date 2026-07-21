@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { DriverPicker } from "@/features/drivers/components/driver-search-filter"
+import { DriverPicker } from "@/features/drivers/components"
 import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"

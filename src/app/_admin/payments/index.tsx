@@ -7,7 +7,6 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { PlusIcon } from "lucide-react"
 import { Suspense } from "react"
 import {
@@ -21,6 +20,7 @@ import {
   PaymentStatisticsCard,
   PaymentTable,
   PaymentTableSkeleton,
+  EditPaymentModal,
 } from "@/features/payments/components"
 
 export const Route = createFileRoute("/_admin/payments/")({
