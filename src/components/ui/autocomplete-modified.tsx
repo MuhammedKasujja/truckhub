@@ -39,6 +39,7 @@ export interface AutoCompleteProps<T> {
 
   label: string
   placeholder?: string
+  className?: string
   disabled?: boolean
   clearable?: boolean
 
@@ -71,6 +72,7 @@ export function AutoComplete<T>({
 
   onCreateNew,
   createNewLabel,
+  className,
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -122,7 +124,7 @@ export function AutoComplete<T>({
           variant="outline"
           role="combobox"
           disabled={disabled}
-          className="w-full justify-between"
+          className={cn("w-full justify-between font-normal", className)}
         >
           {selectedOption
             ? (renderValue?.(selectedOption) ??
@@ -184,7 +186,7 @@ export function AutoComplete<T>({
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
-                  className="bg-muted/60 flex justify-center items-center"
+                  className="flex items-center justify-center bg-muted/60"
                   onSelect={() => {
                     onCreateNew(search)
                     setOpen(false)

@@ -159,6 +159,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
             />
             <CarModelPickerField
+              disabled={form.watch("car_brand_id") == undefined}
               label={tr("services.car_model")}
               name={"car_model_id"}
               control={form.control}
