@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
+import { cn } from "@/lib/utils"
 
 const notifications = [
   {
@@ -83,9 +84,10 @@ export function NotificationDropdown() {
             {notifications.map((n) => (
               <button
                 key={n.id}
-                className={`px-3 py-2 text-left transition hover:bg-muted ${
+                className={cn(
+                  "px-3 py-2 text-left transition hover:bg-muted border-b",
                   n.unread ? "bg-muted/40" : ""
-                }`}
+                )}
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{n.title}</p>
