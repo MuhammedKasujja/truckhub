@@ -49,7 +49,7 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
   const [selectedClient, setSelectedClient] = useState<Client>()
-  const search = useSearch({ from: "/_admin/bookings/new/" })
+  const search = useSearch({ from: "/_admin/quotations/new/" })
   const queryInvalidator = useQueryInvalidator()
   const form = useForm<TruckBookingRequest>({
     resolver: zodResolver(TruckBookingSchema),
@@ -123,6 +123,7 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <ClientPickerField
+              required
               label="Client"
               control={form.control}
               name="client_id"
@@ -149,13 +150,8 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
           <CardContent>
             <FieldGroup className="grid grid-flow-row gap-4">
               <DateTimePickerField
-                label={"Pickup Date"}
+                label={"Expiry Date"}
                 name={"pickup_time"}
-                control={control}
-              />
-              <DateTimePickerField
-                label={"Return Date"}
-                name={"return_time"}
                 control={control}
               />
               <NumberField
@@ -213,11 +209,11 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
       <Separator />
 
       {/* {locations.length > 0 ? ( */}
-      <RouteServicesList
+      {/* <RouteServicesList
         control={control}
         getValues={getValues}
         setValue={setValue}
-      />
+      /> */}
       {/* ) : (
         <Empty className="border border-dashed">
           <EmptyHeader>

@@ -67,6 +67,14 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           </Can>
           <Can permission={"bookings:create"}>
             <DropdownMenuItem asChild>
+              <Link to={"/quotations/new"} search={{ clientId: client.id }}>
+                <PlusIcon />
+                Quotation
+              </Link>
+            </DropdownMenuItem>
+          </Can>
+          <Can permission={"bookings:create"}>
+            <DropdownMenuItem asChild>
               <Link to={"/bookings/new"} search={{ clientId: client.id }}>
                 <PlusIcon />
                 Booking
@@ -95,7 +103,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           <Can permission={"clients:change_type"}>
             <DropdownMenuItem onClick={() => changeClientType(client.id)}>
               <TypeIcon />
-               {client.client_type}
+              {client.client_type}
             </DropdownMenuItem>
           </Can>
           <Can permission={"clients:delete"}>

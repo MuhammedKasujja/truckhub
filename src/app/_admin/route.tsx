@@ -45,7 +45,6 @@ function RouteComponent() {
               {/* <div></div> */}
               <NavigationButtons />
               <div className="flex gap-2 items-center">
-                
                 <GlobalSearchDialog />
                 <CreateEntityDialog />
               </div>
