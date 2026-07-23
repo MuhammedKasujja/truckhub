@@ -45,7 +45,8 @@ import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 import { UserPickerField } from "@/features/users/components"
 
 type QuotationFormProps = {
-  initialData?: TruckBookingRequest
+  initialData?: TruckBookingRequest,
+  onSubmit: (data)=> void
 }
 
 export function QuotationForm({ initialData }: QuotationFormProps) {

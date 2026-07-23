@@ -10,7 +10,6 @@ export const CustomerCreateSchema = z.object({
   short_name: z.string().optional().nullable(),
   phone: z.string().trim().min(3, "Required"),
   email: z.email().trim().min(3, "Required"),
-  password: z.string(),
   tin_number: z.string().trim().min(3, "Required"),
   asssigned_user_id: IDSchema.optional().nullable(),
 })

@@ -1,14 +1,9 @@
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { QuotationForm } from "@/features/quotations/components"
-import { IDSchema } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
-import z from "zod"
 
-export const Route = createFileRoute("/_admin/quotations/new/")({
-  validateSearch: z.object({
-    clientId: IDSchema.optional(),
-  }),
+export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
 })
 
@@ -16,7 +11,7 @@ function RouteComponent() {
   return (
     <div>
       <PageHeader>
-        <PageTitle>New Quotation</PageTitle>
+        <PageTitle>Edit Quotation</PageTitle>
         <PageAction className="flex gap-2">
           <Button variant={"outline"}>Cancel</Button>
           <Button>Submit</Button>
