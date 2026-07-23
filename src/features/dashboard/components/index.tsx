@@ -1,3 +1,5 @@
 export { RecentBookingTable } from "./recent-booking-table"
 export { RecentPaymentsTable } from "./recent-payments-table"
 export { RecentRidesTable } from "./recent-rides-table"
+export { WeeklyQuotationStatistics } from "./weekly-quotation-statistics"
+export {AnalyticsCard} from "./analytics-card"

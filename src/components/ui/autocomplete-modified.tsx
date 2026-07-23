@@ -37,7 +37,8 @@ export interface AutoCompleteProps<T> {
   renderOption: (option: T, selected: boolean) => React.ReactNode
   renderValue?: (option: T) => React.ReactNode
 
-  label: string
+  label?: string
+  searchPlaceholder?: string
   placeholder?: string
   className?: string
   disabled?: boolean
@@ -73,6 +74,7 @@ export function AutoComplete<T>({
   onCreateNew,
   createNewLabel,
   className,
+  searchPlaceholder
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -140,7 +142,7 @@ export function AutoComplete<T>({
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={`Search ${label.toLowerCase()}...`}
+            placeholder={ searchPlaceholder??`Search...`}
             value={search}
             onValueChange={(val) => {
               setSearch(val)
@@ -157,7 +159,7 @@ export function AutoComplete<T>({
 
             {!loading && filteredOptions.length === 0 && (
               <CommandEmpty className="text-muted-foreground">
-                {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
+                {noResultsMessage ?? `No data found.`}
               </CommandEmpty>
             )}
 

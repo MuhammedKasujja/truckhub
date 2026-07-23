@@ -11,6 +11,8 @@ import {
   NumberField,
   DiscountField,
   DateTimePickerField,
+  TextField,
+  TextareaField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import z from "zod"
@@ -25,7 +27,10 @@ import { MapPin, Plus } from "lucide-react"
 import { createTruckBookingFn } from "@/features/bookings/services"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ClientPickerField, ClientContactsList } from "@/features/clients/components"
+import {
+  ClientPickerField,
+  ClientContactsList,
+} from "@/features/clients/components"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
@@ -36,6 +41,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
+import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
+import { UserPickerField } from "@/features/users/components"
 
 type QuotationFormProps = {
   initialData?: TruckBookingRequest
@@ -105,26 +112,13 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
       })}
       className="space-y-4"
     >
-      <div className="grid grid-flow-row gap-5 md:grid-cols-2">
+      <div className="grid grid-flow-row gap-5 md:grid-cols-3">
         <Card>
-          <CardHeader className="gap-1">
-            {selectedClient && (
-              <CardTitle className="text-lg">{selectedClient.name}</CardTitle>
-            )}
-            {selectedClient && (
-              <CardDescription>{selectedClient.phone}</CardDescription>
-            )}
-            <CardAction>
-              <SubmitButton
-                text={tr("common.form.submit")}
-                isSubmitting={form.formState.isSubmitting}
-              />
-            </CardAction>
-          </CardHeader>
           <CardContent className="space-y-4">
             <ClientPickerField
               required
-              label="Client"
+              // label="Client"
+              placeholder="Select client"
               control={form.control}
               name="client_id"
               onSelected={handleClientSelected}
@@ -135,17 +129,21 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
                 // onSelected={setContacts}
               />
             )}
-            <FieldLabel htmlFor="tax">Tax</FieldLabel>
-            <TaxRatePicker
-              id="tax"
-              value={taxRate}
-              onSelected={(taxRate) => {
-                setTaxRate(taxRate)
-              }}
-            />
+            <CardHeader className="gap-2 p-0">
+              {selectedClient && (
+                <CardTitle className="text-lg">
+                  {selectedClient.name} - {selectedClient.short_name}
+                </CardTitle>
+              )}
+              {selectedClient && (
+                <CardDescription className="space-y-3">
+                  <div>{selectedClient.phone}</div>
+                  <div>{selectedClient.email}</div>
+                </CardDescription>
+              )}
+            </CardHeader>
           </CardContent>
         </Card>
-
         <Card>
           <CardContent>
             <FieldGroup className="grid grid-flow-row gap-4">
@@ -155,13 +153,38 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
                 control={control}
               />
               <NumberField
-                label={"Initial Payment"}
+                label={"Partial Amount"}
                 name={"partial"}
                 control={control}
                 required={false}
               />
+              <UserPickerField
+                label={"Assigned User"}
+                name={"discount"}
+                control={control}
+                required={false}
+              />
+            </FieldGroup>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <FieldGroup className="grid grid-flow-row gap-4">
+              <TextField
+                required={false}
+                readOnly
+                label={"Quotation No."}
+                name={"pickup_time"}
+                control={control}
+              />
               <DiscountField
                 label={"Discount"}
+                name={"discount"}
+                control={control}
+                required={false}
+              />
+              <TextareaField
+                label={"Purpose"}
                 name={"discount"}
                 control={control}
                 required={false}
@@ -207,26 +230,38 @@ export function QuotationForm({ initialData }: QuotationFormProps) {
       </Card>
 
       <Separator />
+      {/* <QrCode value="c59167b3-07b7-491b-aac0-2443c3504ac1" className="[--qr-code-size:8rem]">
+        <QrCodeFrame className="rounded-md border" />
+      </QrCode> */}
 
-      {/* {locations.length > 0 ? ( */}
-      {/* <RouteServicesList
-        control={control}
-        getValues={getValues}
-        setValue={setValue}
-      /> */}
-      {/* ) : (
-        <Empty className="border border-dashed">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Plus />
-            </EmptyMedia>
-            <EmptyTitle>Destination List Empty</EmptyTitle>
-            <EmptyDescription>
-              Click Locations to add destinations for the client.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      )} */}
+      <div className="grid gap-4 md:grid-cols-6">
+        <Card className="md:col-span-4"></Card>
+        <Card className="md:col-span-2">
+          <CardContent className="space-y-4">
+            <TaxRatePicker
+              id="tax"
+              value={taxRate}
+              onSelected={(taxRate) => {
+                setTaxRate(taxRate)
+              }}
+            />
+            <TaxRatePicker
+              id="tax"
+              value={taxRate}
+              onSelected={(taxRate) => {
+                setTaxRate(taxRate)
+              }}
+            />
+            <TaxRatePicker
+              id="tax"
+              value={taxRate}
+              onSelected={(taxRate) => {
+                setTaxRate(taxRate)
+              }}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </form>
   )
 }
