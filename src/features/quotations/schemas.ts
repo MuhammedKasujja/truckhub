@@ -57,7 +57,7 @@ export const createQuotationLineItemSchema = z.object({
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
   assigned_user_id: IDSchema.optional().nullable(),
-  expiry_date: z.date(),
+  expiry_date: z.string(),
   purpose: z.string().optional(),
   discount: z.number().positive().optional(),
   partial: z.number().positive().optional(),

@@ -15,6 +15,7 @@ import { NumberField, TextField } from "@/components/ui/form-fields"
 import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
+import { useEffect } from "react"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -33,6 +34,16 @@ export function ServicesDialog({
     resolver: zodResolver(createQuotationLineItemSchema),
     defaultValues: { ...generateEmptyLineItem("small") },
   })
+
+  const unitPrice = form.watch("unit_price")
+  const quantity = form.watch("quantity")
+
+  useEffect(() => {
+    const price = unitPrice ?? 0
+    const qty = quantity ?? 1
+    form.setValue("line_total", price * qty)
+    form.setValue("subtotal", price * qty)
+  }, [unitPrice, quantity])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

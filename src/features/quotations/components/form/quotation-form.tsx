@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { MapPin, Plus } from "lucide-react"
+import { MapPin, Plus, Trash2Icon } from "lucide-react"
 import {
   ClientPickerField,
   ClientContactsList,
@@ -261,7 +261,25 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       </QrCode> */}
 
       <div className="grid gap-4 md:grid-cols-6">
-        <Card className="md:col-span-4"></Card>
+        <Card className="md:col-span-4">
+          <CardContent>
+            {lineItemsFields.fields.map((item, index) => (
+              <div key={item.tempId} className="flex gap-4 space-y-2">
+                <div>{item.subtotal}</div>
+                <div>{item.quantity}</div>
+                <div>{item.unit_price}</div>
+                <Button
+                  size={"sm"}
+                  variant={"destructive"}
+                  type="button"
+                  onClick={() => lineItemsFields.remove(index)}
+                >
+                  <Trash2Icon />
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
         <Card className="md:col-span-2">
           <CardContent className="space-y-4">
             <TaxRatePicker

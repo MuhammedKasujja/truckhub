@@ -84,7 +84,7 @@ export function DatePickerField<T extends FieldValues>({
                 captionLayout="dropdown"
                 selected={field.value}
                 onSelect={(selectedDate) => {
-                  field.onChange(selectedDate)
+                  field.onChange(selectedDate?.toLocaleDateString("en-CA"))
                 }}
                 onDayClick={() => setIsOpen(false)}
                 startMonth={newStartDate}

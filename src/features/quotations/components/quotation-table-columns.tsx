@@ -2,20 +2,16 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Quotation } from "../types"
 import { TFunction } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
+import { Badge } from "@/components/ui/badge"
 
 type Props = {
   tr: TFunction
 }
 
-export function getQuotationTableColumns({ tr }: Props): ColumnDef<Quotation>[] {
+export function getQuotationTableColumns({
+  tr,
+}: Props): ColumnDef<Quotation>[] {
   return [
-    {
-      accessorKey: "amount",
-      header: tr("common.form.amount"),
-      cell: ({ row }) => {
-        return <p>{formatMoney(row.original.amount)}</p>
-      },
-    },
     {
       accessorKey: "number",
       header: tr("quotation_number"),
@@ -28,6 +24,20 @@ export function getQuotationTableColumns({ tr }: Props): ColumnDef<Quotation>[] 
       header: tr("client"),
       cell: ({ row }) => {
         return <p>{row.original.client.name}</p>
+      },
+    },
+    {
+      accessorKey: "amount",
+      header: tr("common.form.amount"),
+      cell: ({ row }) => {
+        return <p>{formatMoney(row.original.amount)}</p>
+      },
+    },
+    {
+      accessorKey: "status",
+      header: tr("status"),
+      cell: ({ row }) => {
+        return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
     },
     {
