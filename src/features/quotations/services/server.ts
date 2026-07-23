@@ -27,6 +27,10 @@ export async function updateQuotation(data: CreateQuotationRequest) {
   return await apiClient.patchFn<Quotation>(endpoint, data)
 }
 
+export async function getQuotationDetails(quotationId: EntityId) {
+  return await apiClient.getFn<Quotation>(`${endpoint}/${quotationId}`)
+}
+
 export async function markQuotationAccepted(quotationId: EntityId) {
   return await apiClient.patchFn<Quotation>(
     `${endpoint}/${quotationId}/accepted`

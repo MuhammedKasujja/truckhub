@@ -3,6 +3,7 @@ import { Quotation } from "../types"
 import { TFunction } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
+import { Link } from "@tanstack/react-router"
 
 type Props = {
   tr: TFunction
@@ -16,7 +17,14 @@ export function getQuotationTableColumns({
       accessorKey: "number",
       header: tr("quotation_number"),
       cell: ({ row }) => {
-        return <p>{row.original.number}</p>
+        return (
+          <Link
+            to="/quotations/$quotationId/view"
+            params={{ quotationId: row.original.id }}
+          >
+            {row.original.number}
+          </Link>
+        )
       },
     },
     {
@@ -41,10 +49,10 @@ export function getQuotationTableColumns({
       },
     },
     {
-      accessorKey: "last_updated_at",
-      header: "Last Updated",
+      id: "revesions",
+      header: "Revisions",
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.last_updated_at)}</p>
+        return <p>{row.original.versions.length}</p>
       },
     },
     {

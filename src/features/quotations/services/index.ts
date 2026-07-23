@@ -6,6 +6,7 @@ import {
   getQuotations,
   createQuotation,
   updateQuotation,
+  getQuotationDetails,
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
@@ -50,4 +51,10 @@ export const markQuotationExpiredFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return markQuotationExpired(data.id)
+  })
+
+export const getQuotationDetailsFn = createServerFn({ method: "GET" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getQuotationDetails(data.id)
   })

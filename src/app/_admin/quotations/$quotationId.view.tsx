@@ -1,9 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
+import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute('/_admin/quotations/$quotationId/view')({
+export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
   component: RouteComponent,
+  loader: ({ context, params }) => {
+    return context.queryClient.ensureQueryData(
+      quotationDetailsQueryOptions(params.quotationId)
+    )
+  },
 })
 
 function RouteComponent() {
-  return <div>Hello "/_admin/quotations/$quotationId/view"!</div>
+  const { data } = Route.useLoaderData()
+  return <div>{data?.number}</div>
 }
