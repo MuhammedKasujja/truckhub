@@ -46,7 +46,14 @@ export function CounterField<T extends FieldValues>({
               autoCorrect="off"
             >
               <NumberInputDecrement />
-              <NumberInputInput />
+              <NumberInputInput
+                // {...field}
+                id={field.name}
+                // onChange={(e) => {
+                //   const number = e.target.valueAsNumber
+                //   field.onChange(isNaN(number) ? null : number)
+                // }}
+              />
               <NumberInputIncrement />
             </NumberInputGroup>
           </NumberInput>

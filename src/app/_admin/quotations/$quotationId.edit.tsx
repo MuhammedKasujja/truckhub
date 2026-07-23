@@ -14,7 +14,9 @@ function RouteComponent() {
         <PageTitle>Edit Quotation</PageTitle>
         <PageAction className="flex gap-2">
           <Button variant={"outline"}>Cancel</Button>
-          <Button>Submit</Button>
+          <Button type="submit" form="form-quotation">
+            Submit
+          </Button>
         </PageAction>
       </PageHeader>
       <QuotationForm onSubmit={(data) => {}} />

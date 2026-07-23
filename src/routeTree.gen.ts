@@ -63,6 +63,7 @@ import { Route as AdminServicesServiceIdViewRouteImport } from './app/_admin/ser
 import { Route as AdminServicesServiceIdEditRouteImport } from './app/_admin/services/$serviceId.edit'
 import { Route as AdminRidesRideIdViewRouteImport } from './app/_admin/rides/$rideId.view'
 import { Route as AdminRidesRideIdEditRouteImport } from './app/_admin/rides/$rideId.edit'
+import { Route as AdminQuotationsQuotationIdViewRouteImport } from './app/_admin/quotations/$quotationId.view'
 import { Route as AdminQuotationsQuotationIdEditRouteImport } from './app/_admin/quotations/$quotationId.edit'
 import { Route as AdminDriversDriverIdViewRouteImport } from './app/_admin/drivers/$driverId.view'
 import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drivers/$driverId.edit'
@@ -376,6 +377,12 @@ const AdminRidesRideIdEditRoute = AdminRidesRideIdEditRouteImport.update({
   path: '/rides/$rideId/edit',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminQuotationsQuotationIdViewRoute =
+  AdminQuotationsQuotationIdViewRouteImport.update({
+    id: '/quotations/$quotationId/view',
+    path: '/quotations/$quotationId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminQuotationsQuotationIdEditRoute =
   AdminQuotationsQuotationIdEditRouteImport.update({
     id: '/quotations/$quotationId/edit',
@@ -532,6 +539,7 @@ export interface FileRoutesByFullPath {
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
+  '/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
   '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
@@ -607,6 +615,7 @@ export interface FileRoutesByTo {
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
+  '/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
   '/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
   '/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
@@ -684,6 +693,7 @@ export interface FileRoutesById {
   '/_admin/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/_admin/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
   '/_admin/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
+  '/_admin/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
   '/_admin/rides/$rideId/edit': typeof AdminRidesRideIdEditRoute
   '/_admin/rides/$rideId/view': typeof AdminRidesRideIdViewRoute
   '/_admin/services/$serviceId/edit': typeof AdminServicesServiceIdEditRoute
@@ -761,6 +771,7 @@ export interface FileRouteTypes {
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
     | '/quotations/$quotationId/edit'
+    | '/quotations/$quotationId/view'
     | '/rides/$rideId/edit'
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
@@ -836,6 +847,7 @@ export interface FileRouteTypes {
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
     | '/quotations/$quotationId/edit'
+    | '/quotations/$quotationId/view'
     | '/rides/$rideId/edit'
     | '/rides/$rideId/view'
     | '/services/$serviceId/edit'
@@ -912,6 +924,7 @@ export interface FileRouteTypes {
     | '/_admin/drivers/$driverId/edit'
     | '/_admin/drivers/$driverId/view'
     | '/_admin/quotations/$quotationId/edit'
+    | '/_admin/quotations/$quotationId/view'
     | '/_admin/rides/$rideId/edit'
     | '/_admin/rides/$rideId/view'
     | '/_admin/services/$serviceId/edit'
@@ -1341,6 +1354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRidesRideIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/quotations/$quotationId/view': {
+      id: '/_admin/quotations/$quotationId/view'
+      path: '/quotations/$quotationId/view'
+      fullPath: '/quotations/$quotationId/view'
+      preLoaderRoute: typeof AdminQuotationsQuotationIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/quotations/$quotationId/edit': {
       id: '/_admin/quotations/$quotationId/edit'
       path: '/quotations/$quotationId/edit'
@@ -1643,6 +1663,7 @@ interface AdminRouteRouteChildren {
   AdminDriversDriverIdEditRoute: typeof AdminDriversDriverIdEditRoute
   AdminDriversDriverIdViewRoute: typeof AdminDriversDriverIdViewRoute
   AdminQuotationsQuotationIdEditRoute: typeof AdminQuotationsQuotationIdEditRoute
+  AdminQuotationsQuotationIdViewRoute: typeof AdminQuotationsQuotationIdViewRoute
   AdminRidesRideIdEditRoute: typeof AdminRidesRideIdEditRoute
   AdminRidesRideIdViewRoute: typeof AdminRidesRideIdViewRoute
   AdminServicesServiceIdEditRoute: typeof AdminServicesServiceIdEditRoute
@@ -1685,6 +1706,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDriversDriverIdEditRoute: AdminDriversDriverIdEditRoute,
   AdminDriversDriverIdViewRoute: AdminDriversDriverIdViewRoute,
   AdminQuotationsQuotationIdEditRoute: AdminQuotationsQuotationIdEditRoute,
+  AdminQuotationsQuotationIdViewRoute: AdminQuotationsQuotationIdViewRoute,
   AdminRidesRideIdEditRoute: AdminRidesRideIdEditRoute,
   AdminRidesRideIdViewRoute: AdminRidesRideIdViewRoute,
   AdminServicesServiceIdEditRoute: AdminServicesServiceIdEditRoute,

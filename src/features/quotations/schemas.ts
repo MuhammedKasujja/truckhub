@@ -34,7 +34,8 @@ const createServiceRouteSchema = z.object({
   max_tons: z.number().positive(),
 })
 
-const createQuotationLineItemSchema = z.object({
+export const createQuotationLineItemSchema = z.object({
+  tempId: z.string(),
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
@@ -42,24 +43,70 @@ const createQuotationLineItemSchema = z.object({
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.enum(LINE_ITEM_TYPES),
   quantity: z.number().positive(),
-  discount: z.number().positive(),
+  discount: z.number().optional(),
   vehicle_year: z.string().optional(),
-  car_brand_id: IDSchema,
-  car_model_id: IDSchema,
-  with_loaders: z.boolean().default(false),
+  car_brand_id: IDSchema.optional().nullable(),
+  car_model_id: IDSchema.optional().nullable(),
+  with_loaders: z.boolean(),
   with_driver: z.boolean(),
-  estimated_consumption_rate_km: z.number().positive(),
-  engine_mode: z.enum(ENGINE_MODES).default("wet"),
-  tonnage: z.number().positive(),
+  estimated_consumption_rate_km: z.number().optional(),
+  engine_mode: z.enum(ENGINE_MODES),
+  tonnage: z.number().optional(),
 })
 
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
+  assigned_user_id: IDSchema.optional().nullable(),
   expiry_date: z.date(),
   purpose: z.string().optional(),
-  discount: z.number().positive(),
+  discount: z.number().positive().optional(),
+  partial: z.number().positive().optional(),
+  number: z.string().optional(),
   tax_rates: z.array(createTaxRateSchema).default([]),
   line_items: z.array(createQuotationLineItemSchema),
 })
 
+export const tonnagePricingSchema = z
+  .object({
+    id: IDSchema,
+    min_tons: z.union([z.string(), z.number()]),
+    max_tons: z.union([z.string(), z.number()]),
+    tons: z.string().min(1, "Required"),
+    price: z.union([z.string(), z.number()]).optional(),
+    default_price: z.union([z.string(), z.number()]),
+  })
+  .superRefine(({ tons, min_tons, max_tons }, ctx) => {
+    if (tons < min_tons || tons > max_tons) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tons"],
+        message: `Tons must be between ${min_tons} and ${max_tons}`,
+      })
+    }
+  })
+
+export const routePricingsSchema = z.object({
+  tempId: IDSchema,
+  route_id: IDSchema,
+  origin: z.string(),
+  destination: z.string(),
+  distance_km: z.union([z.string(), z.number()]),
+  min_hrs: z.union([z.string(), z.number()]),
+  max_hrs: z.union([z.string(), z.number()]),
+  pricing: tonnagePricingSchema,
+})
+
+const bookingRoutesSchema = z.object({
+  tempId: IDSchema,
+  is_round_trip: z.boolean().default(false).optional(),
+  routes: z
+    .array(routePricingsSchema)
+    .min(1, "Add at least one destination")
+    .max(20, "Maximum 20 items per order"),
+})
+
 export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
+
+export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
+
+export type LineItemRequest = z.infer<typeof createQuotationLineItemSchema>
