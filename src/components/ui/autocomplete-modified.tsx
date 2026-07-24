@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import { Check, ChevronDown, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -135,7 +135,7 @@ export function AutoComplete<T>({
               ? currentValueKey // string id, not yet resolvable from `options` — caller's job to hydrate [[ Unknown Option ]]
               : placeholder}
 
-          <ChevronsUpDown className="opacity-50" />
+          <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 

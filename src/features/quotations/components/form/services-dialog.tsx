@@ -16,6 +16,7 @@ import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { useEffect } from "react"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -47,8 +48,8 @@ export function ServicesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <form>
-        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
+      <DialogContent className="max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
+        <form className="flex flex-col">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Service Pricing
@@ -74,7 +75,7 @@ export function ServicesDialog({
               </Button>
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 px-4">
+          <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4">
             <Field
               orientation={"horizontal"}
               className="grid gap-4 md:grid-cols-2"
@@ -88,6 +89,7 @@ export function ServicesDialog({
               <CarModelPickerField
                 label={"Carr Model"}
                 name={"car_model_id"}
+                carBrandId={form.watch("car_brand_id")}
                 control={form.control}
                 required={false}
               />
@@ -131,8 +133,8 @@ export function ServicesDialog({
               control={form.control}
             />
           </div>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   )
 }
