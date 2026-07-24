@@ -2,6 +2,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Invoice } from "../types"
 import { TFunction } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
+import { InvoiceTableActions } from "./invoice-table-actions"
 
 type Props = {
   tr: TFunction
@@ -9,6 +10,12 @@ type Props = {
 
 export function getInvoiceTableColumns({ tr }: Props): ColumnDef<Invoice>[] {
   return [
+    {
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => <InvoiceTableActions invoice={row.original} />,
+    },
     {
       accessorKey: "number",
       header: () => <p className="uppercase">{tr("invoice_number")}</p>,

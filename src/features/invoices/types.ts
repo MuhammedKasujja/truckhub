@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas"
+import { DataTableRowAction } from "@/types/data-table"
 
 export type Invoice = {
   id: EntityId
@@ -18,3 +19,9 @@ export type Invoice = {
     name: string
   }
 }
+
+
+export interface InvoiceTableRowAction extends DataTableRowAction<
+  Invoice,
+  "update" | "view" | "makePayment" | "email"
+> {}
