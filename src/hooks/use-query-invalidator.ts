@@ -4,7 +4,7 @@ import { queryKeys } from "@/lib/query-keys"
 import { PaymentType } from "@/config/constants"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 
-class QueryInvalidator {
+export class QueryInvalidator {
   constructor(private queryClient: QueryClient) {}
 
   /** Refreshes all App-wide visted queries */
