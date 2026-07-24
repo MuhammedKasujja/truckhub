@@ -30,6 +30,7 @@ import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { BookingPickerField } from "@/features/bookings/components/booking-picker"
 import { RidePickerField } from "@/features/ride-requests/components"
+import { InvoicePickerField } from "@/features/invoices/components/invoice-picker"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -112,6 +113,16 @@ export function EnterPaymentModal({
                   control={form.control}
                   onSelected={(ride) => {
                     form.setValue("amount", Number(ride?.balance))
+                  }}
+                />
+              )}
+              {initialData?.type === "invoice" && (
+                <InvoicePickerField
+                  label={"Invoice"}
+                  name={"entity_id"}
+                  control={form.control}
+                  onSelected={(invoice) => {
+                    form.setValue("amount", Number(invoice?.balance_due))
                   }}
                 />
               )}

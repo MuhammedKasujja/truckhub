@@ -43,6 +43,7 @@ export function InvoiceTable() {
         {/* </DataTableToolbar> */}
       </DataTable>
       <EnterPaymentModal
+        key={rowAction?.row.id}
         open={rowAction?.variant == "makePayment"}
         onOpenChange={() => setRowAction(null)}
         initialData={{
