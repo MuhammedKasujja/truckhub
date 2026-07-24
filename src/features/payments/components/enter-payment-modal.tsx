@@ -37,7 +37,7 @@ type PaymentFormProps = {
   onOpenChange: (open: boolean) => void
 }
 
-export function CreatePaymentModal({
+export function EnterPaymentModal({
   initialData,
   open,
   onOpenChange,

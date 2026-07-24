@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query"
 import { invoiceQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { InvoiceTableRowAction } from "../types"
-import { CreatePaymentModal } from "@/features/payments/components"
+import { EnterPaymentModal } from "@/features/payments/components"
 
 export function InvoiceTable() {
   const tr = useTranslation()
@@ -42,7 +42,7 @@ export function InvoiceTable() {
         {/* <DataTableSortList table={table} align="end" /> */}
         {/* </DataTableToolbar> */}
       </DataTable>
-      <CreatePaymentModal
+      <EnterPaymentModal
         open={rowAction?.variant == "makePayment"}
         onOpenChange={() => setRowAction(null)}
         initialData={{
