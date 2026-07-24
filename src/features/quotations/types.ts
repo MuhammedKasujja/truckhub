@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { QuotationStatus } from "./enums"
+import { DataTableRowAction } from "@/types/data-table"
 
 export type Quotation = {
   id: EntityId
@@ -45,3 +46,8 @@ export type Quotation = {
     name: string
   }
 }
+
+export interface QuotationTableRowAction extends DataTableRowAction<
+  Quotation,
+  "update" | "view"
+> {}

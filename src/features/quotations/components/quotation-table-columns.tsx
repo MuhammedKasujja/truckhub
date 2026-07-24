@@ -4,6 +4,7 @@ import { TFunction } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
+import { QuotationTableActions } from "./quotation-table-actions"
 
 type Props = {
   tr: TFunction
@@ -13,6 +14,12 @@ export function getQuotationTableColumns({
   tr,
 }: Props): ColumnDef<Quotation>[] {
   return [
+    {
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => <QuotationTableActions quotation={row.original} />,
+    },
     {
       accessorKey: "number",
       header: tr("quotation_number"),
