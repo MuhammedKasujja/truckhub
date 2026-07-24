@@ -2,19 +2,28 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Invoice } from "../types"
 import { TFunction } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
-import { InvoiceTableActions } from "./invoice-table-actions"
+import {
+  InvoiceTableActions,
+  SetInvoiceTableAction,
+} from "./invoice-table-actions"
 
 type Props = {
   tr: TFunction
+  setRowAction: SetInvoiceTableAction
 }
 
-export function getInvoiceTableColumns({ tr }: Props): ColumnDef<Invoice>[] {
+export function getInvoiceTableColumns({
+  tr,
+  setRowAction,
+}: Props): ColumnDef<Invoice>[] {
   return [
     {
       id: "left-actions",
       size: 20,
       maxSize: 16,
-      cell: ({ row }) => <InvoiceTableActions invoice={row.original} />,
+      cell: ({ row }) => (
+        <InvoiceTableActions invoiceRow={{ row }} setRowAction={setRowAction} />
+      ),
     },
     {
       accessorKey: "number",

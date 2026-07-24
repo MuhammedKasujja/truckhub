@@ -16,17 +16,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Invoice, InvoiceTableRowAction } from "../types"
+import { InvoiceTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 
+export type SetInvoiceTableAction = React.Dispatch<
+  React.SetStateAction<InvoiceTableRowAction | null>
+>
+type Row = Pick<InvoiceTableRowAction, "row">
+
 interface TableActionsProps {
-  invoice: Invoice
-  setRowAction?: React.Dispatch<
-    React.SetStateAction<InvoiceTableRowAction | null>
-  >
+  invoiceRow: Row
+  setRowAction: SetInvoiceTableAction
 }
 
-export function InvoiceTableActions({ invoice }: TableActionsProps) {
+export function InvoiceTableActions({
+  invoiceRow,
+  setRowAction,
+}: TableActionsProps) {
+  const invoice = invoiceRow.row.original
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -60,7 +67,11 @@ export function InvoiceTableActions({ invoice }: TableActionsProps) {
           </Can>
           <Can permission={"payments:create"}>
             {isNotInEnum(invoice.status, ["paid"]) && (
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  setRowAction({ row: invoiceRow.row, variant: "makePayment" })
+                }
+              >
                 <CreditCard />
                 Payment
               </DropdownMenuItem>

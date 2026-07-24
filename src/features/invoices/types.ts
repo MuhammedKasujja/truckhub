@@ -7,7 +7,7 @@ export type Invoice = {
   total: string | number
   status: string
   amount_paid: string | number | null
-  balance_due: string | number
+  balance_due: number
   discount: string | number
   due_date: Date
   purpose: string | null
@@ -19,7 +19,6 @@ export type Invoice = {
     name: string
   }
 }
-
 
 export interface InvoiceTableRowAction extends DataTableRowAction<
   Invoice,
