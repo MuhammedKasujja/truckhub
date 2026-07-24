@@ -39,6 +39,7 @@ import {
 } from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
+import { TaxRate } from "@/features/settings/tax-rates/types"
 
 type QuotationFormProps = {
   initialData?: CreateQuotationRequest
@@ -104,6 +105,22 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     form.reset()
     setSelectedClient(client)
     setValue("client_id", client?.id ?? "")
+  }
+
+  function handleUpdateTaxRates(taxRate?: TaxRate | null) {
+    setTaxRate(taxRate)
+    form.setValue(
+      "tax_rates",
+      taxRate
+        ? [
+            {
+              tax_name: taxRate.name,
+              rate: Number(taxRate.rate),
+              id: taxRate.id,
+            },
+          ]
+        : []
+    )
   }
 
   return (
@@ -285,23 +302,17 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             <TaxRatePicker
               id="tax"
               value={taxRate}
-              onSelected={(taxRate) => {
-                setTaxRate(taxRate)
-              }}
+              onSelected={handleUpdateTaxRates}
             />
             <TaxRatePicker
               id="tax"
               value={taxRate}
-              onSelected={(taxRate) => {
-                setTaxRate(taxRate)
-              }}
+              onSelected={handleUpdateTaxRates}
             />
             <TaxRatePicker
               id="tax"
               value={taxRate}
-              onSelected={(taxRate) => {
-                setTaxRate(taxRate)
-              }}
+              onSelected={handleUpdateTaxRates}
             />
           </CardContent>
         </Card>

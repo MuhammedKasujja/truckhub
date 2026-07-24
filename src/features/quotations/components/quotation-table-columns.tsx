@@ -31,7 +31,14 @@ export function getQuotationTableColumns({
       accessorKey: "client",
       header: tr("client"),
       cell: ({ row }) => {
-        return <p>{row.original.client.name}</p>
+        return (
+          <Link
+            to="/clients/$clientId/view"
+            params={{ clientId: row.original.client.id }}
+          >
+            {row.original.client.name}
+          </Link>
+        )
       },
     },
     {

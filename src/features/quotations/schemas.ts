@@ -16,6 +16,7 @@ export const QuotationSearchParams = z.object({
 export type QuotationListSearchParams = z.infer<typeof QuotationSearchParams>
 
 const createTaxRateSchema = z.object({
+  id: IDSchema,
   tax_name: z.string(),
   rate: z.number().positive(),
 })

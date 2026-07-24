@@ -162,14 +162,9 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               disabled={form.watch("car_brand_id") == undefined}
               label={tr("services.car_model")}
               name={"car_model_id"}
+              carBrandId={form.watch("car_brand_id")}
               control={form.control}
             />
-            {/* <NumberField
-              label={tr("services.tax_fee")}
-              name={"tax_fee"}
-              control={form.control}
-              required={false}
-            /> */}
             <TextareaField
               label={tr("common.form.description")}
               name={"description"}
