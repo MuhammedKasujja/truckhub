@@ -5,6 +5,7 @@ export const en = {
   revenue: "Revenue",
   booking: "Booking",
   ride: "Ride",
+  invoice: "Invoice",
   search: "Search",
   this_month: "This month",
   last_month: "Last month",
