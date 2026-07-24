@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { EditIcon, EyeIcon, MoreVertical } from "lucide-react"
+import { EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -69,7 +69,9 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
             )}
           </Can>
           <Can permission={"quotations:email"}>
-            <DropdownMenuItem>Email</DropdownMenuItem>
+            <DropdownMenuItem>
+              <MailIcon/>
+              Email</DropdownMenuItem>
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>

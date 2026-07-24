@@ -33,13 +33,13 @@ export async function getQuotationDetails(quotationId: EntityId) {
 
 export async function markQuotationAccepted(quotationId: EntityId) {
   return await apiClient.patchFn<Quotation>(
-    `${endpoint}/${quotationId}/accepted`
+    `${endpoint}/${quotationId}/accept`
   )
 }
 
 export async function markQuotationRejected(quotationId: EntityId) {
   return await apiClient.patchFn<Quotation>(
-    `${endpoint}/${quotationId}/rejected`
+    `${endpoint}/${quotationId}/reject`
   )
 }
 

@@ -10,13 +10,6 @@ type Props = {
 export function getInvoiceTableColumns({ tr }: Props): ColumnDef<Invoice>[] {
   return [
     {
-      accessorKey: "amount",
-      header: () => <p className="uppercase">{tr("common.form.amount")}</p>,
-      cell: ({ row }) => {
-        return <p>{formatMoney(row.original.amount)}</p>
-      },
-    },
-    {
       accessorKey: "number",
       header: () => <p className="uppercase">{tr("invoice_number")}</p>,
       cell: ({ row }) => {
@@ -31,10 +24,24 @@ export function getInvoiceTableColumns({ tr }: Props): ColumnDef<Invoice>[] {
       },
     },
     {
-      accessorKey: "last_updated_at",
-      header: () => <p className="uppercase">Last Updated</p>,
+      accessorKey: "total",
+      header: () => <p className="uppercase">{tr("common.form.amount")}</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.last_updated_at)}</p>
+        return <p>{formatMoney(row.original.total)}</p>
+      },
+    },
+    {
+      accessorKey: "status",
+      header: () => <p className="uppercase">{tr("status")}</p>,
+      cell: ({ row }) => {
+        return <p>{row.original.status}</p>
+      },
+    },
+    {
+      accessorKey: "due_date",
+      header: () => <p className="uppercase">Due Date</p>,
+      cell: ({ row }) => {
+        return <p>{formatDate(row.original.due_date)}</p>
       },
     },
     {
