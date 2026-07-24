@@ -10,6 +10,7 @@ import { dashboardQueryKeys } from "@/features/dashboard/query-options"
 import { bookingsQueryKeys } from "@/features/bookings/queries-options"
 import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
+import { quotationQueryKeys } from "@/features/quotations/query-options"
 import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
 import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
@@ -49,4 +50,5 @@ export const queryKeys = {
   users: usersQueryKeys,
   vehicles: vehicleQueryKeys,
   auditLogs: auditLogsQueryKeys,
+  quotations: quotationQueryKeys,
 }

@@ -38,19 +38,31 @@ export const updateQuotationFn = createServerFn({ method: "POST" })
 export const markQuotationAcceptedFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return markQuotationAccepted(data.id)
+    const result = await markQuotationAccepted(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const markQuotationRejectedFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return markQuotationRejected(data.id)
+    const result = await markQuotationRejected(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const markQuotationExpiredFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return markQuotationExpired(data.id)
+    const result = await markQuotationExpired(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const getQuotationDetailsFn = createServerFn({ method: "GET" })

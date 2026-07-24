@@ -37,7 +37,7 @@ function RouteComponent() {
           })
           if (isSuccess) {
             toast.success("Quotation has been created successfully")
-            queryInvalidator.bookings.list.invalidate()
+            queryInvalidator.quotations.list.invalidate()
             if (data) {
               navigate({
                 from: "/quotations/$quotationId/view",

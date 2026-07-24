@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Quotation, QuotationTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
+import {
+  useMarkQuotationAccepted,
+  useMarkQuotationRejected,
+} from "../hooks/use-quotation-actions"
 
 interface TableActionsProps {
   quotation: Quotation
@@ -21,6 +25,8 @@ interface TableActionsProps {
 }
 
 export function QuotationTableActions({ quotation }: TableActionsProps) {
+  const { markQuotationAccepted } = useMarkQuotationAccepted()
+  const { markQuotationRejected } = useMarkQuotationRejected()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -55,7 +61,9 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           <DropdownMenuSeparator />
           <Can permission={"quotations:accept"}>
             {isNotInEnum(quotation.status, ["accepted"]) && (
-              <DropdownMenuItem onClick={() => {}}>
+              <DropdownMenuItem
+                onClick={() => markQuotationAccepted(quotation.id)}
+              >
                 Mark Accepted
               </DropdownMenuItem>
             )}
@@ -70,7 +78,10 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
               "accepted",
               "rejected",
             ]) && (
-              <DropdownMenuItem variant="destructive" onClick={() => {}}>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => markQuotationRejected(quotation.id)}
+              >
                 Mark Rejected
               </DropdownMenuItem>
             )}

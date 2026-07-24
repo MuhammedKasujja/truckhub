@@ -4,7 +4,7 @@ import { QuotationListSearchParams } from "./schemas"
 import { getQuotationDetailsFn, getQuotationsFn } from "./services"
 
 export const quotationQueryKeys = {
-  all: () => ["quotation"],
+  all: () => ["quotations"],
   list: () => [...quotationQueryKeys.all(), "list"],
   search: (search?: string) => [...quotationQueryKeys.all(), "search", search],
   detail: (id: EntityId) => [...quotationQueryKeys.all(), "detail", id],

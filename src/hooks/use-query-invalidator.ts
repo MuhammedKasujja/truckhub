@@ -41,6 +41,19 @@ class QueryInvalidator {
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
+  quotations = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.quotations.list(),
+        }),
+    },
+    details: (id: EntityId) =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.quotations.detail(id),
+      }),
+  }
+
   bookings = {
     list: {
       invalidate: () => {
