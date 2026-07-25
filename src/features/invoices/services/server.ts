@@ -1,9 +1,9 @@
 import { Invoice } from "../types"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
-import { InvoiceListSearchParams } from "../schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
+import { InvoiceCreateInput, InvoiceListSearchParams } from "../schemas"
 
 const endpoint = "/v1/invoices"
 
@@ -34,4 +34,8 @@ export async function getInvoicesByQuery({ search }: SearchQuery) {
 
 export async function getInvoiceDetails(invoiceId: EntityId) {
   return await apiClient.getFn<Invoice>(`${endpoint}/${invoiceId}`)
+}
+
+export async function createInvoice(data: InvoiceCreateInput) {
+  return await apiClient.postFn<Invoice>(endpoint, data)
 }

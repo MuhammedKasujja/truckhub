@@ -85,5 +85,5 @@ export type BookingStatistics = {
 
 export interface BookingTableRowAction extends DataTableRowAction<
   Booking,
-  "edit" | "view" | "makePayment" | "email"
+  "edit" | "view" | "email" | "invoice" | "start" | "markCompleted"
 > {}

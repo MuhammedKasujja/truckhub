@@ -68,6 +68,21 @@ export class QueryInvalidator {
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
+  
+  invoices = {
+    list: {
+      invalidate: () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.list(),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.statistics(),
+        })
+      },
+    },
+    details: (id: string) =>
+      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+  }
 
   services = {
     list: {

@@ -3,6 +3,7 @@ import { usersQueryKeys } from "@/features/users/query-options"
 import { clientQueryKeys } from "@/features/clients/query-options"
 import { vehicleQueryKeys } from "@/features/vehicles/query-options"
 import { serviceQueryKeys } from "@/features/services/query-options"
+import { invoiceQueryKeys } from "@/features/invoices/query-options"
 import { paymentsQueryKeys } from "@/features/payments/query-options"
 import { settingsQueryKeys } from "@/features/settings/query-options"
 import { rideQueryKeys } from "@/features/ride-requests/query-options"
@@ -23,6 +24,7 @@ export const queryKeys = {
   dashboard: dashboardQueryKeys,
   rides: rideQueryKeys,
   bookings: bookingsQueryKeys,
+  invoices: invoiceQueryKeys,
   payments: paymentsQueryKeys,
   routes: bookingRoutesQueryKeys,
   taxRates: taxRateQueryKeys,
