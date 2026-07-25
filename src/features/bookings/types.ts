@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { Payment } from "@/features/payments/types"
+import { DataTableRowAction } from "@/types/data-table"
 
 export type BookingCustomer = {
   id: EntityId
@@ -30,7 +31,7 @@ export type Booking = {
   balance: number
   discount: number
   amount: number
-  services: BookingServiceItem[]
+  line_items: BookingServiceItem[]
   client: BookingCustomer
 }
 
@@ -46,7 +47,7 @@ export type BookingDetails = {
   balance: number
   discount: number
   amount: number
-  services: BookingServiceItem[]
+  line_items: BookingServiceItem[]
   client: BookingCustomer
   payments: Payment[]
 }
@@ -81,3 +82,8 @@ export type BookingStatistics = {
   canceled: number
   total_payments: number | string
 }
+
+export interface BookingTableRowAction extends DataTableRowAction<
+  Booking,
+  "edit" | "view" | "makePayment" | "email"
+> {}

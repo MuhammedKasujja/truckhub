@@ -69,8 +69,8 @@ export async function createRideRequest(data: RideRequestCreateSchemaType) {
  * Get the estimated trip fare between the trip origin and destination
  * basing on the provided service
  * @param serviceId service selected
- * @param origin booking origin
- * @param destination booking destination
+ * @param origin ride origin
+ * @param destination ride destination
  * @returns
  */
 export async function computeRideEsimatedFare({

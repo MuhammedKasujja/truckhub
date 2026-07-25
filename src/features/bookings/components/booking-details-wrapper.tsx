@@ -90,7 +90,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
         <BookingClientWidget client={booking.client} />
       </div>
       <div className="grid gap-4 md:grid-flow-col">
-        <BookingServiceList services={booking.services ?? []} />
+        <BookingServiceList services={booking.line_items} />
         <Card>
           <CardHeader>
             <CardTitle>Payments</CardTitle>
