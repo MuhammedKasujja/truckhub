@@ -47,6 +47,13 @@ export function getInvoiceTableColumns({
       },
     },
     {
+      accessorKey: "balance_due",
+      header: () => <p className="uppercase">{tr("common.form.balance")}</p>,
+      cell: ({ row }) => {
+        return <p>{formatMoney(row.original.balance_due)}</p>
+      },
+    },
+    {
       accessorKey: "status",
       header: () => <p className="uppercase">{tr("status")}</p>,
       cell: ({ row }) => {

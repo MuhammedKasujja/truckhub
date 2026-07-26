@@ -68,7 +68,7 @@ export class QueryInvalidator {
     details: (id: string) =>
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
-  
+
   invoices = {
     list: {
       invalidate: () => {
@@ -127,6 +127,14 @@ export class QueryInvalidator {
       if (type === "ride") {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.rides.detail(entityId),
+        })
+      }
+      if (type === "invoice") {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.detail(entityId),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.list(),
         })
       }
     },

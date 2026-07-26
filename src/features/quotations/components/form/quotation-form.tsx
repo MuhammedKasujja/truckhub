@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { MapPin, Plus, Trash2Icon } from "lucide-react"
+import { EditIcon, MapPin, Plus, Trash2Icon } from "lucide-react"
 import {
   ClientPickerField,
   ClientContactsList,
@@ -67,7 +67,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     name: "line_items",
   })
 
-  function handleClientSelected(client: Client | undefined) {
+  function handleClientSelected(client?: Client) {
     // navigate({
     //   to: "/quotations/new",
     //   search: (prev) => ({
@@ -108,33 +108,36 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       <div className="grid grid-flow-row gap-5 md:grid-cols-3">
         <Card>
           <CardContent className="space-y-4">
-            <ClientPickerField
-              required
-              // label="Client"
-              placeholder="Select client"
-              control={form.control}
-              name="client_id"
-              onSelected={handleClientSelected}
-            />
+            {!selectedClient && (
+              <ClientPickerField
+                required
+                // label="Client"
+                placeholder="Select client"
+                control={form.control}
+                name="client_id"
+                onSelected={handleClientSelected}
+              />
+            )}
             {selectedClient && (
               <ClientContactsList
                 contacts={selectedClient?.contacts}
                 // onSelected={setContacts}
               />
             )}
-            <CardHeader className="gap-2 p-0">
-              {selectedClient && (
+            {selectedClient && (
+              <CardHeader className="gap-2 p-0">
                 <CardTitle className="text-lg">
                   {selectedClient.name} - {selectedClient.short_name}
                 </CardTitle>
-              )}
-              {selectedClient && (
                 <CardDescription className="space-y-3">
                   <div>{selectedClient.phone}</div>
                   <div>{selectedClient.email}</div>
                 </CardDescription>
-              )}
-            </CardHeader>
+                <CardAction onClick={() => handleClientSelected()}>
+                  <EditIcon />
+                </CardAction>
+              </CardHeader>
+            )}
           </CardContent>
         </Card>
         <Card>

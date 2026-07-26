@@ -115,6 +115,7 @@ const en = {
       last_login: "Last Login",
       username: "Username",
       amount: "Amount",
+      balance: "Balance",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",
