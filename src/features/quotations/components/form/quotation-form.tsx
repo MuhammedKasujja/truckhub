@@ -39,7 +39,7 @@ import { generateTruckEmptyLineItem } from "@/features/quotations/utils"
 import { formatMoney } from "@/lib/format"
 
 type QuotationFormProps = {
-  initialData?: CreateQuotationRequest
+  initialData?: Partial<CreateQuotationRequest>
   onSubmit: (data: CreateQuotationRequest) => void
 }
 
@@ -51,10 +51,16 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
   const [selectedClient, setSelectedClient] = useState<Client>()
-  const search = useSearch({ from: "/_admin/quotations/new/" })
+  const isEdit = !!initialData
+
+  const search = useSearch({
+    from: isEdit
+      ? "/_admin/quotations/$quotationId/edit"
+      : "/_admin/quotations/new/",
+  })
   const form = useForm<CreateQuotationRequest>({
     resolver: zodResolver(createQuotationSchema),
-    defaultValues: {
+    defaultValues: initialData ?? {
       client_id: search.clientId,
       line_items: [],
       tax_rates: [],
@@ -103,7 +109,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   }
 
   const subtotal = useMemo(
-    () => lineItems.reduce((curr, item) => curr + item.line_total, 0),
+    () => lineItems.reduce((curr, item) => curr + Number(item.line_total), 0),
     [lineItems]
   )
 

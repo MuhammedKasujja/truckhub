@@ -1,3 +1,4 @@
+import { Quotation } from "../types"
 import { SmallLineItemRequest, TruckLineItemRequest } from "../schemas"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 
@@ -40,4 +41,16 @@ export function generateTruckEmptyLineItem() {
     tonnage: 0,
   }
   return emptyLineItem
+}
+
+export function getEditableQuotation(quotation: Quotation) {
+  return {
+    client_id: quotation.client.id,
+    line_items: quotation.versions[0].line_items,
+    tax_rates: quotation.versions[0].tax_rates,
+    expiry_date: quotation.versions[0].valid_until,
+    number: quotation.number,
+    discount: quotation.versions[0].discount,
+    purpose: quotation.versions[0].purpose,
+  }
 }
