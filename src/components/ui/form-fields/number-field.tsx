@@ -18,6 +18,7 @@ export function NumberField<T extends FieldValues>({
   placeholder,
   required = true,
   description,
+  readOnly
 }: Readonly<NumberFieldProps<T>>) {
   return (
     <Controller
@@ -36,6 +37,7 @@ export function NumberField<T extends FieldValues>({
             type={"number"}
             inputMode="numeric"
             id={field.name}
+            readOnly={readOnly}
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}
             autoComplete="off"

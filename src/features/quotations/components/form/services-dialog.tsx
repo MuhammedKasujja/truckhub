@@ -43,14 +43,16 @@ export function ServicesDialog({
   const unitPrice = form.watch("unit_price")
   const quantity = form.watch("quantity")
   const isRoundTrip = form.watch("is_round_trip")
+  const discount = form.watch("discount")
 
   useEffect(() => {
     const price = unitPrice ?? 0
     const qty = quantity ?? 1
     const subtotal = price * qty * (isRoundTrip === true ? 2 : 1)
+    const lineTotal = subtotal - (discount ?? 0)
     form.setValue("subtotal", subtotal)
-    form.setValue("line_total", subtotal)
-  }, [unitPrice, quantity, isRoundTrip])
+    form.setValue("line_total", lineTotal)
+  }, [unitPrice, quantity, isRoundTrip, discount])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,42 +133,56 @@ export function ServicesDialog({
                 required={false}
               />
             </Field>
-            <TextField
-              required={false}
-              label={"Year"}
-              name={"vehicle_year"}
-              control={form.control}
-            />
             <Field
               orientation={"horizontal"}
               className="grid gap-4 md:grid-cols-2"
             >
+              <TextField
+                required={false}
+                label={"Year Make"}
+                name={"vehicle_year"}
+                control={form.control}
+              />
+              <NumberField
+                required={false}
+                label={"Vehicle Consumption (km/l)"}
+                name={"estimated_consumption_rate_km"}
+                control={form.control}
+              />
+            </Field>
+            <Field
+              orientation={"horizontal"}
+              className="grid gap-4 md:grid-cols-3"
+            >
+              <NumberField
+                label={"Quantity"}
+                name={"quantity"}
+                control={form.control}
+              />
               <NumberField
                 label={"Unit Price"}
                 name={"unit_price"}
                 control={form.control}
               />
               <NumberField
-                label={"Quantity"}
-                name={"quantity"}
+                required={false}
+                label={"Discount"}
+                name={"discount"}
                 control={form.control}
               />
             </Field>
             <NumberField
-              label={"Line Total"}
-              name={"line_total"}
-              control={form.control}
-            />
-            <NumberField
+              readOnly
               required={false}
               label={"Sub total"}
               name={"subtotal"}
               control={form.control}
             />
             <NumberField
+              readOnly
               required={false}
-              label={"Total"}
-              name={"subtotal"}
+              label={"Line Total"}
+              name={"line_total"}
               control={form.control}
             />
           </div>
