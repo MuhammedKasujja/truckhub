@@ -8,7 +8,10 @@ import {
 import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { createQuotationLineItemSchema, LineItemRequest } from "../../schemas"
+import {
+  createCarQuotationLineItemSchema,
+  SmallLineItemRequest,
+} from "@/features/quotations/schemas"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import { NumberField, TextField } from "@/components/ui/form-fields"
@@ -22,7 +25,7 @@ type ServiceSelectDialogProps = {
   clientId: EntityId
   open: boolean
   onOpenChange: (v: boolean) => void
-  onLineItemAdded: (lineItem: LineItemRequest) => void
+  onLineItemAdded: (lineItem: SmallLineItemRequest) => void
 }
 
 export function ServicesDialog({
@@ -31,9 +34,9 @@ export function ServicesDialog({
   onOpenChange,
   onLineItemAdded,
 }: ServiceSelectDialogProps) {
-  const form = useForm<LineItemRequest>({
-    resolver: zodResolver(createQuotationLineItemSchema),
-    defaultValues: { ...generateEmptyLineItem("small") },
+  const form = useForm<SmallLineItemRequest>({
+    resolver: zodResolver(createCarQuotationLineItemSchema),
+    defaultValues: { ...generateEmptyLineItem() },
   })
 
   const unitPrice = form.watch("unit_price")

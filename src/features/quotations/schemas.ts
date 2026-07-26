@@ -1,8 +1,8 @@
 import z from "zod"
 import { Quotation } from "./types"
 import { IDSchema } from "@/schemas"
+import { ENGINE_MODES } from "@/common/config"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
-import { ENGINE_MODES, LINE_ITEM_TYPES } from "@/common/config"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const QuotationSearchParams = z.object({
@@ -42,8 +42,8 @@ export const createCarQuotationLineItemSchema = z.object({
   line_total: z.number().positive(),
   services: z.array(createServiceRouteSchema),
   vehicle_addons: z.array(createVehicleAddonSchema),
-  item_type: z.enum(LINE_ITEM_TYPES),
-  quantity: z.number().positive(),
+  item_type: z.literal("small"),
+  quantity: z.int().positive(),
   discount: z.number().optional(),
   vehicle_year: z.string().optional(),
   service_id: IDSchema.optional().nullable(),
@@ -60,35 +60,20 @@ export const createTruckQuotationLineItemSchema = z.object({
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
   services: z.array(createServiceRouteSchema),
-  item_type: z.enum(LINE_ITEM_TYPES),
-  quantity: z.number().positive(),
+  item_type: z.literal("truck"),
+  quantity: z.int().positive(),
   discount: z.number().optional(),
   with_loaders: z.boolean(),
   with_driver: z.boolean(),
   estimated_consumption_rate_km: z.number().optional(),
   engine_mode: z.enum(ENGINE_MODES),
-  tonnage: z.number().optional(),
+  tonnage: z.number(),
 })
 
-export const createQuotationLineItemSchema = z.object({
-  tempId: z.string(),
-  unit_price: z.number().positive(),
-  subtotal: z.number().positive(),
-  line_total: z.number().positive(),
-  services: z.array(createServiceRouteSchema),
-  vehicle_addons: z.array(createVehicleAddonSchema),
-  item_type: z.enum(LINE_ITEM_TYPES),
-  quantity: z.number().positive(),
-  discount: z.number().optional(),
-  vehicle_year: z.string().optional(),
-  car_brand_id: IDSchema.optional().nullable(),
-  car_model_id: IDSchema.optional().nullable(),
-  with_loaders: z.boolean(),
-  with_driver: z.boolean(),
-  estimated_consumption_rate_km: z.number().optional(),
-  engine_mode: z.enum(ENGINE_MODES),
-  tonnage: z.number().optional(),
-})
+const createLineItemSchema = z.discriminatedUnion("item_type", [
+  createCarQuotationLineItemSchema,
+  createTruckQuotationLineItemSchema,
+])
 
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
@@ -98,8 +83,8 @@ export const createQuotationSchema = z.object({
   discount: z.number().positive().optional(),
   partial: z.number().positive().optional(),
   number: z.string().optional(),
-  tax_rates: z.array(createTaxRateSchema).default([]),
-  line_items: z.array(createQuotationLineItemSchema),
+  tax_rates: z.array(createTaxRateSchema),
+  line_items: z.array(createLineItemSchema),
 })
 
 export const tonnagePricingSchema = z
@@ -145,4 +130,11 @@ export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
 
 export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 
-export type LineItemRequest = z.infer<typeof createQuotationLineItemSchema>
+export type LineItemRequest = z.infer<typeof createLineItemSchema>
+
+export type SmallLineItemRequest = z.infer<
+  typeof createCarQuotationLineItemSchema
+>
+export type TruckLineItemRequest = z.infer<
+  typeof createTruckQuotationLineItemSchema
+>

@@ -28,44 +28,18 @@ import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
 import { UserPickerField } from "@/features/users/components"
-import {
-  CreateQuotationRequest,
-  createQuotationSchema,
-  LineItemRequest,
-} from "../../schemas"
+import { CreateQuotationRequest, createQuotationSchema } from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
+import { generateTruckEmptyLineItem } from "@/features/quotations/utils"
 
 type QuotationFormProps = {
   initialData?: CreateQuotationRequest
   onSubmit: (data: CreateQuotationRequest) => void
-}
-
-function generateEmptyLineItem(itemType: "truck" | "small") {
-  const emptyLineItem: LineItemRequest = {
-    tempId: makeId("__line_item__"),
-    unit_price: 0,
-    subtotal: 0,
-    line_total: 0,
-    services: [],
-    vehicle_addons: [],
-    item_type: itemType,
-    quantity: 0,
-    discount: 0,
-    car_brand_id: "",
-    car_model_id: "",
-    with_loaders: false,
-    with_driver: false,
-    estimated_consumption_rate_km: 0,
-    engine_mode: "wet",
-    tonnage: 0,
-  }
-  return emptyLineItem
 }
 
 export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
@@ -248,7 +222,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               type="button"
               variant={"outline"}
               onClick={() => {
-                lineItemsFields.prepend(generateEmptyLineItem("truck"))
+                lineItemsFields.prepend(generateTruckEmptyLineItem())
                 setOpen(true)
               }}
             >
