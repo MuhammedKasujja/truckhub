@@ -37,6 +37,7 @@ const createServiceRouteSchema = z.object({
 
 export const createCarQuotationLineItemSchema = z.object({
   tempId: z.string(),
+  is_round_trip: z.boolean().nullable(),
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
@@ -56,6 +57,7 @@ export const createCarQuotationLineItemSchema = z.object({
 
 export const createTruckQuotationLineItemSchema = z.object({
   tempId: z.string(),
+  is_round_trip: z.boolean().nullable(),
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),

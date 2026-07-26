@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog"
 import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import {
   createCarQuotationLineItemSchema,
   SmallLineItemRequest,
@@ -17,9 +17,10 @@ import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import { NumberField, TextField } from "@/components/ui/form-fields"
 import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Checkbox } from "@/components/ui/checkbox"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -61,21 +62,52 @@ export function ServicesDialog({
               <span className="text-sm text-muted-foreground">
                 Select a service
               </span>
-              <Button
-                type="button"
-                className="shrink-0"
-                onClick={form.handleSubmit(
-                  (data) => {
-                    onLineItemAdded(data)
-                    onOpenChange(false)
-                  },
-                  (error) => {
-                    console.log("error", error)
-                  }
-                )}
-              >
-                Done
-              </Button>
+              <div className="flex gap-4">
+                <Controller
+                  name={`is_round_trip`}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      orientation={"horizontal"}
+                      className="gap-2"
+                    >
+                      <FieldLabel htmlFor={field.name} className="text-sm">
+                        Round Trip
+                      </FieldLabel>
+                      <Checkbox
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        checked={field.value ?? false}
+                        onCheckedChange={(state: boolean) =>
+                          field.onChange(state)
+                        }
+                      />
+                      {fieldState.invalid && (
+                        <FieldError
+                          className="text-xs"
+                          errors={[fieldState.error]}
+                        />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Button
+                  type="button"
+                  className="shrink-0"
+                  onClick={form.handleSubmit(
+                    (data) => {
+                      onLineItemAdded(data)
+                      onOpenChange(false)
+                    },
+                    (error) => {
+                      console.log("error", error)
+                    }
+                  )}
+                >
+                  Done
+                </Button>
+              </div>
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4">

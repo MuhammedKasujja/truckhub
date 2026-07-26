@@ -4,6 +4,7 @@ import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-prici
 export function generateEmptyLineItem() {
   const emptyLineItem: SmallLineItemRequest = {
     tempId: makeId("__car_line_item__"),
+    is_round_trip: false,
     unit_price: 0,
     subtotal: 0,
     line_total: 0,
@@ -24,6 +25,7 @@ export function generateEmptyLineItem() {
 export function generateTruckEmptyLineItem() {
   const emptyLineItem: TruckLineItemRequest = {
     tempId: makeId("__truck_line_item__"),
+    is_round_trip: false,
     unit_price: 0,
     subtotal: 0,
     line_total: 0,
