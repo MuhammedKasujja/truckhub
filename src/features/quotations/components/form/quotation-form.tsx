@@ -26,7 +26,7 @@ import { useSearch } from "@tanstack/react-router"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
@@ -36,6 +36,7 @@ import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
 import { generateTruckEmptyLineItem } from "@/features/quotations/utils"
+import { formatMoney } from "@/lib/format"
 
 type QuotationFormProps = {
   initialData?: CreateQuotationRequest
@@ -67,6 +68,10 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     name: "line_items",
   })
 
+  const lineItems = form.watch("line_items")
+
+  const taxRates = form.watch("tax_rates")
+
   function handleClientSelected(client?: Client) {
     // navigate({
     //   to: "/quotations/new",
@@ -96,6 +101,20 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
         : []
     )
   }
+
+  const subtotal = useMemo(
+    () => lineItems.reduce((curr, item) => curr + item.line_total, 0),
+    [lineItems]
+  )
+
+  const grandTotal = useMemo(() => {
+    let total = subtotal
+    if (taxRates.length > 0) {
+      const rates = taxRates.reduce((curr, tax) => curr + tax.rate, 0)
+      total += total * (rates / 100)
+    }
+    return total
+  }, [subtotal, taxRates])
 
   return (
     <form
@@ -259,6 +278,9 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
           <CardContent>
             {lineItemsFields.fields.map((item, index) => (
               <div key={item.tempId} className="flex gap-4 space-y-2">
+                <div className="text-muted-foreground">
+                  {item.is_round_trip && <>Round</>}
+                </div>
                 <div>{item.subtotal}</div>
                 <div>{item.quantity}</div>
                 <div>{item.unit_price}</div>
@@ -276,21 +298,23 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
         </Card>
         <Card className="md:col-span-2">
           <CardContent className="space-y-4">
+            <div className="flex justify-between">
+              <div className="text-muted-foreground">Subtotal</div>
+              <div className="font-semibold">
+                {formatMoney(subtotal, { showZeroAsNumber: true })}
+              </div>
+            </div>
             <TaxRatePicker
               id="tax"
               value={taxRate}
               onSelected={handleUpdateTaxRates}
             />
-            <TaxRatePicker
-              id="tax"
-              value={taxRate}
-              onSelected={handleUpdateTaxRates}
-            />
-            <TaxRatePicker
-              id="tax"
-              value={taxRate}
-              onSelected={handleUpdateTaxRates}
-            />
+            <div className="flex justify-between">
+              <div className="text-muted-foreground">Grand total</div>
+              <div className="font-semibold">
+                {formatMoney(grandTotal, { showZeroAsNumber: true })}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

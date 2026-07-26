@@ -42,13 +42,15 @@ export function ServicesDialog({
 
   const unitPrice = form.watch("unit_price")
   const quantity = form.watch("quantity")
+  const isRoundTrip = form.watch("is_round_trip")
 
   useEffect(() => {
     const price = unitPrice ?? 0
     const qty = quantity ?? 1
-    form.setValue("line_total", price * qty)
-    form.setValue("subtotal", price * qty)
-  }, [unitPrice, quantity])
+    const subtotal = price * qty * (isRoundTrip === true ? 2 : 1)
+    form.setValue("subtotal", subtotal)
+    form.setValue("line_total", subtotal)
+  }, [unitPrice, quantity, isRoundTrip])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
