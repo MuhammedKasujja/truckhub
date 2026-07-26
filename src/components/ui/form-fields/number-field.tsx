@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { TextFieldProps } from "./text-field"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
 
-type NumberFieldProps<F extends FieldValues> = Omit<TextFieldProps<F>, "type">
+type NumberFieldProps<F extends FieldValues> = Omit<TextFieldProps<F>, "type"> &{className?: string}
 
 export function NumberField<T extends FieldValues>({
   control,
@@ -18,14 +18,15 @@ export function NumberField<T extends FieldValues>({
   placeholder,
   required = true,
   description,
-  readOnly
+  readOnly,
+  className
 }: Readonly<NumberFieldProps<T>>) {
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
+        <Field data-invalid={fieldState.invalid} className={className}>
           {label && (
             <FieldLabel htmlFor={field.name}>
               {label}

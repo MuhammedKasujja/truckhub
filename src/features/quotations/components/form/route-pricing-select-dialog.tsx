@@ -19,8 +19,10 @@ import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { useMemo, useState } from "react"
 import {
+  createTruckQuotationLineItemSchema,
   routePricingsSchema,
   RoutePricingStruct,
+  TruckLineItemRequest,
 } from "@/features/quotations/schemas"
 import {
   Sortable,
@@ -41,9 +43,13 @@ import {
 import z from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Field, FieldError } from "@/components/ui/field"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import { generateTruckEmptyLineItem } from "../../utils"
+import { Checkbox } from "@/components/ui/checkbox"
+import { NumberField } from "@/components/ui/form-fields"
 
 const formSchema = z.object({
+  ...createTruckQuotationLineItemSchema.shape,
   routes: z.array(routePricingsSchema).min(1, "At least one route required"),
 })
 
@@ -54,8 +60,8 @@ type RoutePricingDialogProps = {
   open: boolean
   selectedPricings: RoutePricingStruct[]
   onOpenChange: (v: boolean) => void
-  onSelectedPricings: (pricings: RoutePricingStruct[]) => void
   onLiveChange?: (route: RoutePricingStruct) => void
+  onLineItemAdded: (lineItem: TruckLineItemRequest) => void
 }
 
 type RouteDetails = {
@@ -71,14 +77,15 @@ export function RoutePricingSelectDialog({
   open,
   selectedPricings,
   onOpenChange,
-  onSelectedPricings,
   onLiveChange,
+  onLineItemAdded,
 }: RoutePricingDialogProps) {
   const { data, isLoading } = useClientRoutingPricing(clientId)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      ...generateTruckEmptyLineItem(),
       routes: selectedPricings ?? [],
     },
     mode: "onChange",
@@ -172,25 +179,57 @@ export function RoutePricingSelectDialog({
             <span className="text-sm text-muted-foreground">
               Select one pricing per route
             </span>
-
-            <Button
-              type="button"
-              className="shrink-0"
-              onClick={form.handleSubmit((data) => {
-                onSelectedPricings(data.routes)
-                onOpenChange(false)
-              })}
-            >
-              Accept
-              <span
-                className={cn(
-                  "ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-medium",
-                  "bg-primary-foreground/20"
+            <div className="flex gap-4">
+              <Controller
+                name={`is_round_trip`}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field
+                    data-invalid={fieldState.invalid}
+                    orientation={"horizontal"}
+                    className="gap-2"
+                  >
+                    <FieldLabel htmlFor={field.name} className="text-sm">
+                      Round Trip
+                    </FieldLabel>
+                    <Checkbox
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      checked={field.value ?? false}
+                      onCheckedChange={(state: boolean) =>
+                        field.onChange(state)
+                      }
+                    />
+                    {fieldState.invalid && (
+                      <FieldError
+                        className="text-xs"
+                        errors={[fieldState.error]}
+                      />
+                    )}
+                  </Field>
                 )}
+              />
+
+              <Button
+                type="button"
+                className="shrink-0"
+                onClick={form.handleSubmit((data) => {
+                  const { routes: _, ...rest } = data
+                  onLineItemAdded(rest)
+                  onOpenChange(false)
+                })}
               >
-                {totalSelected}
-              </span>
-            </Button>
+                Accept
+                <span
+                  className={cn(
+                    "ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-medium",
+                    "bg-primary-foreground/20"
+                  )}
+                >
+                  {totalSelected}
+                </span>
+              </Button>
+            </div>
           </DialogDescription>
         </DialogHeader>
 
@@ -208,7 +247,6 @@ export function RoutePricingSelectDialog({
                   className="pl-9"
                 />
               </div>
-
               <Select items={data?.tonnages ?? []}>
                 <SelectTrigger className="sm:w-48">
                   <SelectValue placeholder="Filter by tonnage" />
@@ -227,6 +265,11 @@ export function RoutePricingSelectDialog({
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              <NumberField
+                className="w-32"
+                control={form.control}
+                name={"tonnage"}
+              />
             </div>
 
             {isLoading && (
@@ -422,6 +465,41 @@ export function RoutePricingSelectDialog({
                 ))}
               </SortableContent>
             </Sortable>
+            <NumberField
+              label="Consumption Rate (km/l)"
+              control={form.control}
+              name="estimated_consumption_rate_km"
+            />
+            <NumberField
+              label="quantity"
+              control={form.control}
+              name="quantity"
+            />
+            <NumberField
+              label="Unit Price"
+              control={form.control}
+              name="unit_price"
+            />
+            <NumberField
+              required={false}
+              label="Discount"
+              control={form.control}
+              name="discount"
+            />
+            <NumberField
+              // readOnly
+              required={false}
+              label="Subtotal"
+              control={form.control}
+              name="subtotal"
+            />
+            <NumberField
+              // readOnly
+              required={false}
+              label="Line total"
+              control={form.control}
+              name="line_total"
+            />
           </div>
         </div>
       </DialogContent>

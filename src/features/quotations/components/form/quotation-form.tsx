@@ -35,7 +35,6 @@ import { CreateQuotationRequest, createQuotationSchema } from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
-import { generateTruckEmptyLineItem } from "@/features/quotations/utils"
 import { formatMoney } from "@/lib/format"
 
 type QuotationFormProps = {
@@ -250,7 +249,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               type="button"
               variant={"outline"}
               onClick={() => {
-                lineItemsFields.prepend(generateTruckEmptyLineItem())
+                // lineItemsFields.prepend(generateTruckEmptyLineItem())
                 setOpen(true)
               }}
             >
@@ -262,7 +261,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               open={open}
               selectedPricings={[]}
               onOpenChange={setOpen}
-              onSelectedPricings={(pricings) => {}}
+              onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
             <ServicesDialog
               clientId={selectedClient?.id ?? ""}

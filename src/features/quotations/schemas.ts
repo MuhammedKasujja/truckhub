@@ -28,7 +28,7 @@ const createVehicleAddonSchema = z.object({
 
 const createServiceRouteSchema = z.object({
   route_id: IDSchema,
-  origin: z.date(),
+  origin: z.string(),
   destination: z.string().optional(),
   price: z.number().positive(),
   min_tons: z.number().positive(),
@@ -69,7 +69,7 @@ export const createTruckQuotationLineItemSchema = z.object({
   with_driver: z.boolean(),
   estimated_consumption_rate_km: z.number().optional(),
   engine_mode: z.enum(ENGINE_MODES),
-  tonnage: z.number(),
+  tonnage: z.number("Required"),
 })
 
 const createLineItemSchema = z.discriminatedUnion("item_type", [
