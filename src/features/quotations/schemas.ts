@@ -35,6 +35,41 @@ const createServiceRouteSchema = z.object({
   max_tons: z.number().positive(),
 })
 
+export const createCarQuotationLineItemSchema = z.object({
+  tempId: z.string(),
+  unit_price: z.number().positive(),
+  subtotal: z.number().positive(),
+  line_total: z.number().positive(),
+  services: z.array(createServiceRouteSchema),
+  vehicle_addons: z.array(createVehicleAddonSchema),
+  item_type: z.enum(LINE_ITEM_TYPES),
+  quantity: z.number().positive(),
+  discount: z.number().optional(),
+  vehicle_year: z.string().optional(),
+  service_id: IDSchema.optional().nullable(),
+  car_brand_id: IDSchema.optional().nullable(),
+  car_model_id: IDSchema.optional().nullable(),
+  with_driver: z.boolean(),
+  estimated_consumption_rate_km: z.number().optional(),
+  engine_mode: z.enum(ENGINE_MODES),
+})
+
+export const createTruckQuotationLineItemSchema = z.object({
+  tempId: z.string(),
+  unit_price: z.number().positive(),
+  subtotal: z.number().positive(),
+  line_total: z.number().positive(),
+  services: z.array(createServiceRouteSchema),
+  item_type: z.enum(LINE_ITEM_TYPES),
+  quantity: z.number().positive(),
+  discount: z.number().optional(),
+  with_loaders: z.boolean(),
+  with_driver: z.boolean(),
+  estimated_consumption_rate_km: z.number().optional(),
+  engine_mode: z.enum(ENGINE_MODES),
+  tonnage: z.number().optional(),
+})
+
 export const createQuotationLineItemSchema = z.object({
   tempId: z.string(),
   unit_price: z.number().positive(),
