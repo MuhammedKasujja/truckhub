@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { QuotationStatus } from "./enums"
+import { LineItemResponse } from "./schemas"
 import { DataTableRowAction } from "@/types/data-table"
 
 export type Quotation = {
@@ -18,26 +19,7 @@ export type Quotation = {
       valid_until: string
       purpose: string | null
       is_active: boolean
-      line_items: [
-        {
-          unit_price: number
-          subtotal: number
-          line_total: number
-          quantity: number
-          discount: number | null
-          item_type: string | null
-          vehicle_year: string | null
-          car_brand_id: EntityId | null
-          car_model_id: EntityId | null
-          tonnage: number | null
-          engine_mode: string | null
-          with_loaders: boolean
-          with_driver: boolean
-          estimated_consumption_rate_km: number | null
-          vehicle_addons: [{ id: EntityId; name: string }]
-          services: []
-        },
-      ]
+      line_items: LineItemResponse[]
     },
   ]
   client: {

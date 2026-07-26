@@ -1,20 +1,13 @@
 import { EntityId } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { DataTableRowAction } from "@/types/data-table"
+import { LineItemResponse } from "@/features/quotations/schemas"
 
 export type BookingCustomer = {
   id: EntityId
   fullname: string
   phone: string
   email: string
-}
-
-export type BookingServiceItem = {
-  service_id: EntityId
-  service_name: string
-  cost_per_item: number
-  total_items: number
-  discount: number
 }
 
 export type Booking = {
@@ -31,7 +24,7 @@ export type Booking = {
   balance: number
   discount: number
   amount: number
-  line_items: BookingServiceItem[]
+  line_items: LineItemResponse[]
   client: BookingCustomer
 }
 
@@ -47,7 +40,7 @@ export type BookingDetails = {
   balance: number
   discount: number
   amount: number
-  line_items: BookingServiceItem[]
+  line_items: LineItemResponse[]
   client: BookingCustomer
   payments: Payment[]
 }

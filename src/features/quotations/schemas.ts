@@ -131,6 +131,7 @@ export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
 export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 
 export type LineItemRequest = z.infer<typeof createLineItemSchema>
+export type LineItemResponse = LineItemRequest
 
 export type SmallLineItemRequest = z.infer<
   typeof createCarQuotationLineItemSchema

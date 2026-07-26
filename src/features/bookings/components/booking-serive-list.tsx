@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { BookingServiceItem } from "../types";
 import {
   Table,
   TableBody,
@@ -26,29 +25,29 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Button } from "@/components/ui/button";
+import { LineItemResponse } from "@/features/quotations/schemas";
 
 type BookingServiceListProps = {
-  services: BookingServiceItem[];
+  lineItems: LineItemResponse[];
 };
 
-export function BookingServiceList({ services }: BookingServiceListProps) {
+export function BookingServiceList({ lineItems }: BookingServiceListProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Services</CardTitle>
         <CardAction>
-          <Status>{services.length}</Status>
+          <Status>{lineItems.length}</Status>
         </CardAction>
       </CardHeader>
       <CardContent>
-        {/* <ServiceTable services={services} /> */}
-        <ServiceList services={services} />
+        <ServiceList lineItems={lineItems} />
       </CardContent>
     </Card>
   );
 }
 
-function ServiceTable({ services }: BookingServiceListProps) {
+function ServiceTable({ lineItems }: BookingServiceListProps) {
   return (
     <div className="overflow-hidden rounded-lg border bg-background">
       <Table>
@@ -61,15 +60,15 @@ function ServiceTable({ services }: BookingServiceListProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {services.map((service) => (
-            <TableRow key={service.service_id}>
+          {lineItems.map((lineItem) => (
+            <TableRow key={lineItem.service_id}>
               <TableCell className="font-medium">
-                {service.service_name}
+                {lineItem.service_name}
               </TableCell>
-              <TableCell>{formatMoney(service.cost_per_item)}</TableCell>
-              <TableCell>{service.total_items}</TableCell>
+              <TableCell>{formatMoney(lineItem.cost_per_item)}</TableCell>
+              <TableCell>{lineItem.total_items}</TableCell>
               <TableCell>
-                {formatMoney(service.cost_per_item * service.total_items)}
+                {formatMoney(lineItem.cost_per_item * lineItem.total_items)}
               </TableCell>
             </TableRow>
           ))}
@@ -79,9 +78,9 @@ function ServiceTable({ services }: BookingServiceListProps) {
             <TableCell colSpan={3}>Total</TableCell>
             <TableCell className="text-right">
               {formatMoney(
-                services.reduce(
-                  (prev, service) =>
-                    service.cost_per_item * service.total_items + prev,
+                lineItems.reduce(
+                  (prev, lineItem) =>
+                    lineItem.cost_per_item * lineItem.total_items + prev,
                   0,
                 ) ?? 0,
               )}
@@ -93,20 +92,20 @@ function ServiceTable({ services }: BookingServiceListProps) {
   );
 }
 
-function ServiceList({ services }: BookingServiceListProps) {
+function ServiceList({ lineItems }: BookingServiceListProps) {
   return (
     <div className="grid gap-4">
-      {services.map((service, index) => (
-        <Item key={`${service.service_id}*${index}`} variant={"outline"}>
+      {lineItems.map((lineItem, index) => (
+        <Item key={`${lineItem.service_id}*${index}`} variant={"outline"}>
           <ItemContent>
-            <ItemTitle>{service.service_name}</ItemTitle>
+            <ItemTitle>{lineItem.service_name}</ItemTitle>
             <ItemDescription>
-              {formatMoney(service.cost_per_item * service.total_items)}
+              {formatMoney(lineItem.cost_per_item * lineItem.total_items)}
             </ItemDescription>
           </ItemContent>
           <ItemActions>
             <Button variant="outline" size="sm">
-              {service.total_items}
+              {lineItem.total_items}
             </Button>
           </ItemActions>
         </Item>
