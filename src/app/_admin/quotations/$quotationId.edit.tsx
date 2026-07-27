@@ -7,6 +7,7 @@ import { quotationDetailsQueryOptions } from "@/features/quotations/query-option
 import { IDSchema } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
+import { useBackNavigation } from "@/hooks/use-back"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
 
 function RouteComponent() {
   const { data: quotation } = Route.useLoaderData()
+  const back = useBackNavigation()
 
   return (
     <div>
@@ -30,7 +32,7 @@ function RouteComponent() {
           Edit Quotation <Badge>v{quotation.versions.length + 1}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"}>Cancel</Button>
+          <Button variant={"outline"} onClick={back}>Cancel</Button>
           <Button type="submit" form="form-quotation">
             Submit
           </Button>

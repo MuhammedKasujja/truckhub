@@ -61,9 +61,9 @@ function ServiceTable({ lineItems }: BookingServiceListProps) {
         </TableHeader>
         <TableBody>
           {lineItems.map((lineItem) => (
-            <TableRow key={lineItem.service_id}>
+            <TableRow key={lineItem.unit_price}>
               <TableCell className="font-medium">
-                {lineItem.service_name}
+                {lineItem.unit_price}
               </TableCell>
               <TableCell>{formatMoney(lineItem.cost_per_item)}</TableCell>
               <TableCell>{lineItem.total_items}</TableCell>
@@ -98,9 +98,9 @@ function ServiceList({ lineItems }: BookingServiceListProps) {
       {lineItems.map((lineItem, index) => (
         <Item key={`${lineItem.service_id}*${index}`} variant={"outline"}>
           <ItemContent>
-            <ItemTitle>{lineItem.service_name}</ItemTitle>
+            <ItemTitle>{formatMoney(lineItem.line_total)} {lineItem.item_type}</ItemTitle>
             <ItemDescription>
-              {formatMoney(lineItem.cost_per_item * lineItem.total_items)}
+              Qty {lineItem.quantity} - Price {formatMoney(lineItem.unit_price)}, {lineItem.estimated_consumption_rate_km}km/l
             </ItemDescription>
           </ItemContent>
           <ItemActions>

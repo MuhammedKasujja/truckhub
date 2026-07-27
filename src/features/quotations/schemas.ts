@@ -86,7 +86,7 @@ export const createQuotationSchema = z.object({
   partial: z.number().positive().optional(),
   number: z.string().optional(),
   tax_rates: z.array(createTaxRateSchema),
-  line_items: z.array(createLineItemSchema),
+  line_items: z.array(createLineItemSchema).min(1),
 })
 
 export const tonnagePricingSchema = z

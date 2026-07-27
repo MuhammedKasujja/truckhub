@@ -2,6 +2,7 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { QuotationForm } from "@/features/quotations/components"
 import { createQuotationFn } from "@/features/quotations/services"
+import { useBackNavigation } from "@/hooks/use-back"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { IDSchema } from "@/schemas"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
@@ -18,13 +19,16 @@ export const Route = createFileRoute("/_admin/quotations/new/")({
 function RouteComponent() {
   const queryInvalidator = useQueryInvalidator()
   const navigate = useNavigate()
+  const handleBack = useBackNavigation()
 
   return (
     <div>
       <PageHeader>
         <PageTitle>New Quotation</PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"}>Cancel</Button>
+          <Button variant={"outline"} onClick={handleBack}>
+            Cancel
+          </Button>
           <Button type="submit" form="form-quotation">
             Submit
           </Button>

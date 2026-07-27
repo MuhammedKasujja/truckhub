@@ -274,7 +274,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       </Card>
 
       <Separator />
-      {/* <QrCode value="c59167b3-07b7-491b-aac0-2443c3504ac1" className="[--qr-code-size:8rem]">
+      {/* <QrCode value="9e41b34c-6ffa-4cc6-8431-e35f9a761a6e" className="[--qr-code-size:8rem]">
         <QrCodeFrame className="rounded-md border" />
       </QrCode> */}
 
