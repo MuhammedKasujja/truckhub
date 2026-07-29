@@ -36,6 +36,7 @@ import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
 import { formatMoney } from "@/lib/format"
+// import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
   initialData?: Partial<CreateQuotationRequest>
@@ -274,7 +275,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       </Card>
 
       <Separator />
-      {/* <QrCode value="9e41b34c-6ffa-4cc6-8431-e35f9a761a6e" className="[--qr-code-size:8rem]">
+      {/* <QrCode value="813db729-e67d-4b9a-86ac-85373edead63" className="[--qr-code-size:8rem]">
         <QrCodeFrame className="rounded-md border" />
       </QrCode> */}
 

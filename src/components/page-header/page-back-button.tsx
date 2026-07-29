@@ -1,19 +1,9 @@
-"use client"
-
 import { ChevronLeftIcon } from "lucide-react"
-import { useRouter } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
+import { useBackNavigation } from "@/hooks/use-back-navigation"
 
 export function PageBackButton() {
-  const router = useRouter()
-
-  const handleBack = () => {
-    if (document.referrer) {
-      router.history.back()
-    } else {
-      router.navigate({ to: "/dashboard", replace: true })
-    }
-  }
+  const handleBack = useBackNavigation()
 
   return (
     <Button variant="ghost" size={"sm"} onClick={() => handleBack()}>

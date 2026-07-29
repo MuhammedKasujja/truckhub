@@ -1,6 +1,6 @@
 import z from "zod"
 
-export const IDSchema = z.string().min(2, "Required")
+export const IDSchema = z.string("Required").min(2, "Required")
 
 export type EntityId = z.infer<typeof IDSchema>
 

@@ -80,7 +80,7 @@ const createLineItemSchema = z.discriminatedUnion("item_type", [
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
   assigned_user_id: IDSchema.optional().nullable(),
-  expiry_date: z.string(),
+  expiry_date: z.string("Date is required"),
   purpose: z.string().optional(),
   discount: z.number().positive().optional(),
   partial: z.number().positive().optional(),
