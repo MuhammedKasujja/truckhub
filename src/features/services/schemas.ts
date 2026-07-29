@@ -15,9 +15,8 @@ export const ServiceCreateSchema = z.object({
   vehicle_category_id: IDSchema,
   car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
-  minimum_hire_fee: z.number(),
-  start_year: z.string().optional(),
-  end_year: z.string().optional(),
+  start_year: z.string().optional().nullable(),
+  end_year: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
 })
 

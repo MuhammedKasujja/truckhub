@@ -120,12 +120,6 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               required={false}
             />
             <NumberField
-              label={"Minimum Hire Fee"}
-              name={"minimum_hire_fee"}
-              control={form.control}
-              required={false}
-            />
-            <NumberField
               label={tr("services.base_fare")}
               name={"base_fare"}
               control={form.control}
