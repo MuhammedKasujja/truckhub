@@ -1,0 +1,15 @@
+import { EntityId } from "@/schemas"
+import { DataTableRowAction } from "@/types/data-table"
+
+export type Shipment = {
+  id: EntityId
+  status: string
+  started_at?: Date
+  driver?: { id: EntityId; number: string; name: string }
+  vehicle?: { id: EntityId; number: string; plate_number: string }
+}
+
+export interface ShipmentTableRowAction extends DataTableRowAction<
+  Shipment,
+  "update" | "view"
+> {}
