@@ -8,11 +8,11 @@ import {
   VehicleTypeUpdateSchemaType,
 } from "@/features/settings/vehicle-types/schemas";
 
-const endpoint = "/v1/vehicle-types";
+const endpoint = "/v1/vehicle-categories";
 
 export async function getVehicleTypes(input: VehicleTypeListSearchParams) {
   const { data, isSuccess, error } = await apiClient.getFn<VehicleType[]>(
-    `${endpoint}?limit=40`,
+    `${endpoint}?limit=${input.perPage}`,
   );
   return { data: isSuccess ? data! : [], error };
 }

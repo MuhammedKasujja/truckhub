@@ -27,7 +27,7 @@ export interface VehicleBase {
   gearbox: Gearbox
   year: string
   seats: number
-  vehicle_type_id: EntityId
+  vehicle_category_id: EntityId
   car_model_id: EntityId
   drive_train_id: EntityId
   consumption_rate: number

@@ -81,7 +81,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
-              name={"vehicle_type_id"}
+              name={"vehicle_category_id"}
               placeholder="Select Vehicle"
               emptyPlaceholder="No vehicles found"
               options={

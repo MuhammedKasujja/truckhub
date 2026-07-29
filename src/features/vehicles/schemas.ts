@@ -17,7 +17,7 @@ export const VehicleCreateSchema = z.object({
   year: z.string(),
   seats: z.number().optional().nullable(),
   total_axles: z.string().optional().nullable(),
-  vehicle_type_id: IDSchema,
+  vehicle_category_id: IDSchema,
   car_brand_id: IDSchema,
   car_model_id: IDSchema,
   drive_train_id: IDSchema,

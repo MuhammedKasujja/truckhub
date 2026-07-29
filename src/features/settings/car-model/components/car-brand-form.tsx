@@ -107,7 +107,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
-              name={"vehicle_type_id"}
+              name={"vehicle_category_id"}
               placeholder="Select Vehicle type"
               emptyPlaceholder="No Vehicle type found"
               options={
