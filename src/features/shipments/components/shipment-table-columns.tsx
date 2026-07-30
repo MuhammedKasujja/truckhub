@@ -58,7 +58,13 @@ export function getShipmentTableColumns({ tr }: Props): ColumnDef<Shipment>[] {
       id: "started_at",
       header: "Start Time",
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.started_at)}</p>
+        return (
+          <p>
+            {formatDate(row.original.item.scheduled_start, {
+              timeStyle: undefined,
+            })}
+          </p>
+        )
       },
     },
   ]

@@ -14,12 +14,16 @@ export type Quotation = {
     {
       version_number: number
       subtotal: number
-      total: number
+      total_amount: number
+      discount_amount: number
       discount: number
       tax_amount: number
-      valid_until: string
-      purpose: string | undefined
+      valid_until: string | null
+      purpose: string | null
       is_active: boolean
+      start_date: string
+      end_date: string
+      revision_reason: string | null
       line_items: LineItemResponse[],
       tax_rates: { id: EntityId; tax_name: string; rate: number }[]
     },
