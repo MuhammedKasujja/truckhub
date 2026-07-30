@@ -16,11 +16,13 @@ import {
   Trash2Icon,
   ArchiveRestore,
   ListCheckIcon,
+  LocateIcon,
 } from "lucide-react"
 
 type Module =
   | "Dashboard"
   | "Clients"
+  | "Shipments"
   | "Drivers"
   | "Vehicles"
   | "Users"
@@ -39,6 +41,7 @@ type Actions = "Create" | "Edit" | "Delete" | "Restore" | "Pay"
 export function getModuleIcon(module: Module) {
   const moduleIcons: Record<Module, LucideIcon> = {
     Dashboard: LayoutDashboard,
+    Shipments: LocateIcon,
     Rides: DatabaseSearch,
     Bookings: CalendarCheck,
     Payments: CreditCard,

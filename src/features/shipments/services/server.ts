@@ -3,8 +3,7 @@ import * as apiClient from "@/lib/api-client"
 import { ShipmentSearchParamsInput } from "../schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 
-// const endpoint = "/v1/bookings/shipments"
-const endpoint = "/v1/shipments"
+const endpoint = "/v1/trips"
 
 export async function getShipments(input: ShipmentSearchParamsInput) {
   const params = generateApiSearchParams(input)

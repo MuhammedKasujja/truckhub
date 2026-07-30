@@ -18,6 +18,7 @@ import { Route as AuthLoginRouteImport } from './app/_auth/login'
 import { Route as AdminSettingsRouteRouteImport } from './app/_admin/settings/route'
 import { Route as AdminBillingRouteRouteImport } from './app/_admin/billing/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
+import { Route as AdminShipmentsIndexRouteImport } from './app/_admin/shipments/index'
 import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/index'
 import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
 import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/index'
@@ -128,6 +129,11 @@ const AdminBillingRouteRoute = AdminBillingRouteRouteImport.update({
 const AdminVehiclesIndexRoute = AdminVehiclesIndexRouteImport.update({
   id: '/vehicles/',
   path: '/vehicles/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminShipmentsIndexRoute = AdminShipmentsIndexRouteImport.update({
+  id: '/shipments/',
+  path: '/shipments/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminServicesIndexRoute = AdminServicesIndexRouteImport.update({
@@ -536,6 +542,7 @@ export interface FileRoutesByFullPath {
   '/reviews/': typeof AdminReviewsIndexRoute
   '/rides/': typeof AdminRidesIndexRoute
   '/services/': typeof AdminServicesIndexRoute
+  '/shipments/': typeof AdminShipmentsIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -613,6 +620,7 @@ export interface FileRoutesByTo {
   '/reviews': typeof AdminReviewsIndexRoute
   '/rides': typeof AdminRidesIndexRoute
   '/services': typeof AdminServicesIndexRoute
+  '/shipments': typeof AdminShipmentsIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -692,6 +700,7 @@ export interface FileRoutesById {
   '/_admin/reviews/': typeof AdminReviewsIndexRoute
   '/_admin/rides/': typeof AdminRidesIndexRoute
   '/_admin/services/': typeof AdminServicesIndexRoute
+  '/_admin/shipments/': typeof AdminShipmentsIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
   '/_admin/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -771,6 +780,7 @@ export interface FileRouteTypes {
     | '/reviews/'
     | '/rides/'
     | '/services/'
+    | '/shipments/'
     | '/vehicles/'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -848,6 +858,7 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/rides'
     | '/services'
+    | '/shipments'
     | '/vehicles'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -926,6 +937,7 @@ export interface FileRouteTypes {
     | '/_admin/reviews/'
     | '/_admin/rides/'
     | '/_admin/services/'
+    | '/_admin/shipments/'
     | '/_admin/vehicles/'
     | '/_admin/bookings/$bookingId/edit'
     | '/_admin/bookings/$bookingId/view'
@@ -1050,6 +1062,13 @@ declare module '@tanstack/react-router' {
       path: '/vehicles'
       fullPath: '/vehicles/'
       preLoaderRoute: typeof AdminVehiclesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/shipments/': {
+      id: '/_admin/shipments/'
+      path: '/shipments'
+      fullPath: '/shipments/'
+      preLoaderRoute: typeof AdminShipmentsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/services/': {
@@ -1676,6 +1695,7 @@ interface AdminRouteRouteChildren {
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminRidesIndexRoute: typeof AdminRidesIndexRoute
   AdminServicesIndexRoute: typeof AdminServicesIndexRoute
+  AdminShipmentsIndexRoute: typeof AdminShipmentsIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
   AdminBookingsBookingIdEditRoute: typeof AdminBookingsBookingIdEditRoute
   AdminBookingsBookingIdViewRoute: typeof AdminBookingsBookingIdViewRoute
@@ -1719,6 +1739,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminRidesIndexRoute: AdminRidesIndexRoute,
   AdminServicesIndexRoute: AdminServicesIndexRoute,
+  AdminShipmentsIndexRoute: AdminShipmentsIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
   AdminBookingsBookingIdEditRoute: AdminBookingsBookingIdEditRoute,
   AdminBookingsBookingIdViewRoute: AdminBookingsBookingIdViewRoute,

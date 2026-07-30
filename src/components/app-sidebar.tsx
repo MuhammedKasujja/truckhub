@@ -20,6 +20,7 @@ import type { LucideIcon } from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
 import { Route as DashboardRoute } from "@/app/_admin/dashboard"
+import { Route as ShipmentRoute } from "@/app/_admin/shipments"
 import { Route as RidesRoute } from "@/app/_admin/rides"
 import { Route as BookingsRoute } from "@/app/_admin/bookings"
 import { Route as PaymentsRoute } from "@/app/_admin/payments"
@@ -38,6 +39,12 @@ export const sibebarModules: SidebarItem[] = [
     title: "routes.dashboard",
     url: DashboardRoute.to,
     icon: getModuleIcon("Dashboard"),
+    permission: "dashboard:view",
+  },
+  {
+    title: "routes.dispatch",
+    url: ShipmentRoute.to,
+    icon: getModuleIcon("Shipments"),
     permission: "dashboard:view",
   },
   {
