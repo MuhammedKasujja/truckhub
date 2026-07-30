@@ -97,6 +97,12 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               required={false}
             />
+            <TextField
+              label={"Address"}
+              name={"address"}
+              control={form.control}
+              required={false}
+            />
             <EmailField
               label={tr("common.form.email")}
               name={"email"}

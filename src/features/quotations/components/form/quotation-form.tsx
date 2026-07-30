@@ -169,8 +169,13 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
           <CardContent>
             <FieldGroup className="grid grid-flow-row gap-4">
               <DatePickerField
-                label={"Expiry Date"}
-                name={"expiry_date"}
+                label={"Start Date"}
+                name={"start_date"}
+                control={control}
+              />
+              <DatePickerField
+                label={"End Date"}
+                name={"end_date"}
                 control={control}
               />
               <NumberField
