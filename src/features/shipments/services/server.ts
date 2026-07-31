@@ -1,7 +1,14 @@
 import { Shipment } from "../types"
+import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
-import { ShipmentSearchParamsInput } from "../schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
+import {
+  FinishShipmentInput,
+  DispatchShipmentInput,
+  ShipmentSearchParamsInput,
+  AssignShipmentDriverInput,
+  AssignShipmentVehicleInput,
+} from "../schemas"
 
 const endpoint = "/v1/trips"
 
@@ -16,4 +23,41 @@ export async function getShipments(input: ShipmentSearchParamsInput) {
   }
 
   return { error: response.error }
+}
+
+export async function getShipmentById(unitId: EntityId) {
+  return await apiClient.getFn<Shipment>(`${endpoint}/${unitId}`)
+}
+
+export async function dispatchShipment(data: DispatchShipmentInput) {
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${data.unitId}/dispatch`,
+    { start_mileage: data.startMileage }
+  )
+}
+
+export async function completShipment(unitId: EntityId) {
+  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/end`, {})
+}
+
+export async function finishShipment(data: FinishShipmentInput) {
+  const { unitId, ...rest } = data
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${unitId}/complete`,
+    rest
+  )
+}
+
+export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${data.unitId}/dispatch`,
+    { vehicle_id: data.vehicleId }
+  )
+}
+
+export async function shipmentAssignDriver(data: AssignShipmentDriverInput) {
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${data.unitId}/dispatch`,
+    { driver_id: data.driverId }
+  )
 }

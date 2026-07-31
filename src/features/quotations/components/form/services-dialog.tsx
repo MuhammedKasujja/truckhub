@@ -21,6 +21,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
+import { ServicePickerField } from "@/features/services/components"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -117,8 +118,14 @@ export function ServicesDialog({
           <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4">
             <Field
               orientation={"horizontal"}
-              className="grid gap-4 md:grid-cols-2"
+              className="grid gap-4 md:grid-cols-3"
             >
+              <ServicePickerField
+                label={"Service"}
+                name={"service_id"}
+                control={form.control}
+                required={false}
+              />
               <CarBrandPickerField
                 label={"Car Brand"}
                 name={"car_brand_id"}

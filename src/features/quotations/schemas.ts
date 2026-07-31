@@ -26,7 +26,7 @@ const createVehicleAddonSchema = z.object({
   name: z.string(),
 })
 
-const createServiceRouteSchema = z.object({
+const createDistancePricingSchema = z.object({
   route_id: IDSchema,
   origin: z.string(),
   destination: z.string().optional(),
@@ -34,6 +34,18 @@ const createServiceRouteSchema = z.object({
   min_tons: z.number().positive(),
   max_tons: z.number().positive(),
 })
+const createRoutePricingSchema = z.object({
+  route_id: IDSchema,
+  origin: z.string(),
+  destination: z.string().optional(),
+  price: z.number().positive(),
+})
+const createRouteSchema = z.object({
+  route_id: IDSchema,
+  origin: z.string(),
+  destination: z.string().optional(),
+})
+// TODO: make a discriminated union for array of inputs/ services
 
 export const createCarQuotationLineItemSchema = z.object({
   tempId: z.string(),
@@ -41,7 +53,7 @@ export const createCarQuotationLineItemSchema = z.object({
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
   line_total: z.number().positive().nullable(),
-  services: z.array(createServiceRouteSchema),
+  services: z.array(createRouteSchema),
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
   quantity: z.int().positive(),
@@ -61,7 +73,7 @@ export const createTruckQuotationLineItemSchema = z.object({
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
-  services: z.array(createServiceRouteSchema),
+  services: z.array(createDistancePricingSchema),
   item_type: z.literal("truck"),
   quantity: z.int().positive(),
   discount: z.number().optional(),

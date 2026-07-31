@@ -30,11 +30,11 @@ export function ServicePicker({
       }}
       onSearch={(q) => setQuery(q)}
       filterFn={(s, q) =>
-        s.display_name.toLowerCase().includes(q.toLowerCase())
+        s.name.toLowerCase().includes(q.toLowerCase())
       }
       label={label}
       getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.display_name}</span>}
+      renderOption={(u) => <span>{u.name}</span>}
     />
   )
 }
@@ -61,10 +61,10 @@ export function ServicePickerField<TFieldValues extends FieldValues>({
       remote={remote}
       onSearch={(q) => setQuery(q)}
       filterFn={(b, q) =>
-        b.display_name.toLowerCase().includes(q.toLowerCase())
+        b.name.toLowerCase().includes(q.toLowerCase())
       }
       getOptionValue={(b) => b.id}
-      renderOption={(u) => <span>{u.display_name}</span>}
+      renderOption={(u) => <span>{u.name}</span>}
       onSelected={onSelected}
       {...props}
     />
