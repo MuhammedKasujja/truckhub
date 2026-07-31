@@ -25,7 +25,7 @@ export function RecordShipmentDetailsDialog({
   onOpenChange,
   open,
 }: Props) {
-  const { finishShipment } = useFinishShipment()
+  const { finishShipment, isPending } = useFinishShipment()
 
   const form = useForm<FinishShipmentInput>({
     resolver: zodResolver(finishShipmentSchema),
@@ -82,7 +82,7 @@ export function RecordShipmentDetailsDialog({
                 Cancle
               {/* </Button> */}
             </DialogClose>
-            <SubmitButton />
+            <SubmitButton isSubmitting={isPending} />
           </DialogFooter>
         </form>
       </DialogContent>

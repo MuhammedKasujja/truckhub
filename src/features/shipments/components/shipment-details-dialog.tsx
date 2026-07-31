@@ -14,6 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
 import { RecordShipmentDetailsDialog } from "./record-shipment-details-dialog"
+import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
+import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
+import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
+import { EndShipmentDialog } from "./end-shipment-dailog copy"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -25,7 +29,9 @@ export function ShipmentDetailsDialog({
   open,
   onOpenChange,
 }: ShipmentDialogProps) {
-  const [openModal, setOpenModal] = useState<"record" | "vehicle" | "driver">()
+  const [openModal, setOpenModal] = useState<
+    "dispatch" | "record" | "assign-vehicle" | "asign-driver" | "end-shipment"
+  >()
 
   return (
     <>
@@ -38,14 +44,34 @@ export function ShipmentDetailsDialog({
               </DialogTitle>
               <DialogDescription className="flex items-center gap-4">
                 <ButtonGroup>
-                  <Button variant={"outline"}>Dispatch</Button>
+                  <Button
+                    variant={"outline"}
+                    onClick={() => setOpenModal("dispatch")}
+                  >
+                    Dispatch
+                  </Button>
                   {!shipment?.vehicle && (
-                    <Button variant={"outline"}>Assign Vehicle</Button>
+                    <Button
+                      variant={"outline"}
+                      onClick={() => setOpenModal("assign-vehicle")}
+                    >
+                      Assign Vehicle
+                    </Button>
                   )}
                   {!shipment?.driver && (
-                    <Button variant={"outline"}>Assign Driver</Button>
+                    <Button
+                      variant={"outline"}
+                      onClick={() => setOpenModal("asign-driver")}
+                    >
+                      Assign Driver
+                    </Button>
                   )}
-                  <Button variant={"outline"}>Finish</Button>
+                  <Button
+                    variant={"outline"}
+                    onClick={() => setOpenModal("end-shipment")}
+                  >
+                    Finish
+                  </Button>
                   <Button
                     variant={"outline"}
                     onClick={() => setOpenModal("record")}
@@ -85,9 +111,29 @@ export function ShipmentDetailsDialog({
           </div>
         </DialogContent>
       </Dialog>
+      <DispatchShipmentDialog
+        shipment={shipment}
+        open={openModal === "dispatch"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
+      <ShipmentAssignVehicleDialog
+        shipment={shipment}
+        open={openModal === "assign-vehicle"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
+      <ShipmentAssignDriverDialog
+        shipment={shipment}
+        open={openModal === "asign-driver"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
       <RecordShipmentDetailsDialog
         shipment={shipment}
         open={openModal === "record"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
+      <EndShipmentDialog
+        shipment={shipment}
+        open={openModal === "end-shipment"}
         onOpenChange={() => setOpenModal(undefined)}
       />
     </>

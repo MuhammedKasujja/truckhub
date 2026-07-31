@@ -36,7 +36,7 @@ export async function dispatchShipment(data: DispatchShipmentInput) {
   )
 }
 
-export async function completShipment(unitId: EntityId) {
+export async function endShipment(unitId: EntityId) {
   return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/end`, {})
 }
 

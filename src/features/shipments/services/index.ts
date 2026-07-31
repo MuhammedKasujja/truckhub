@@ -8,9 +8,9 @@ import {
   assignShipmentVehicleSchema,
 } from "../schemas"
 import {
+  endShipment,
   getShipments,
   finishShipment,
-  completShipment,
   getShipmentById,
   dispatchShipment,
   shipmentAssignDriver,
@@ -34,10 +34,10 @@ export const getShipmentByIdFn = createServerFn()
     return { data: result.data!, message: result.message }
   })
 
-export const completShipmentFn = createServerFn()
+export const endShipmentFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await completShipment(data.id)
+    const result = await endShipment(data.id)
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }

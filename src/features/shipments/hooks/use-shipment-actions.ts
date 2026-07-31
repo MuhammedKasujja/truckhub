@@ -7,8 +7,8 @@ import {
   AssignShipmentVehicleInput,
 } from "../schemas"
 import {
+  endShipmentFn,
   finishShipmentFn,
-  completShipmentFn,
   dispatchShipmentFn,
   shipmentAssignDriverFn,
   shipmentAssignVehicleFn,
@@ -31,21 +31,21 @@ export function useDispatchShipment() {
   return { isPending, dispatchShipment }
 }
 
-const useCompleteShipmentBase = createEntityActionHook(
-  completShipmentFn,
+const useEndShipmentBase = createEntityActionHook(
+  endShipmentFn,
   (invalidator, input) => {
     // invalidator.quotations.list.invalidate()
     // invalidator.quotations.details(input.data.id)
   }
 )
 
-export function useCompleteShipment() {
-  const { isPending, execute } = useCompleteShipmentBase()
+export function useEndShipment() {
+  const { isPending, execute } = useEndShipmentBase()
 
-  function completeShipment(id: EntityId) {
+  function endShipment(id: EntityId) {
     return execute({ data: { id } })
   }
-  return { isPending, completeShipment }
+  return { isPending, endShipment }
 }
 
 const useFinishShipmentBase = createEntityActionHook(
