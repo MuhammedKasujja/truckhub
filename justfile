@@ -21,3 +21,7 @@ build:
 build-web:
     #!/usr/bin/env bash
     pnpm run build
+
+preview:
+    #!/usr/bin/env bash
+    npx vite preview

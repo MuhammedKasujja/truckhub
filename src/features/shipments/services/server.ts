@@ -50,14 +50,14 @@ export async function finishShipment(data: FinishShipmentInput) {
 
 export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
   return await apiClient.postFn<Shipment>(
-    `${endpoint}/${data.unitId}/dispatch`,
+    `${endpoint}/${data.unitId}/vehicle`,
     { vehicle_id: data.vehicleId }
   )
 }
 
 export async function shipmentAssignDriver(data: AssignShipmentDriverInput) {
   return await apiClient.postFn<Shipment>(
-    `${endpoint}/${data.unitId}/dispatch`,
+    `${endpoint}/${data.unitId}/driver`,
     { driver_id: data.driverId }
   )
 }

@@ -18,6 +18,7 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
+import { formatMoney } from "@/lib/format"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -103,7 +104,7 @@ export function ShipmentDetailsDialog({
                   </CardHeader>
                   <CardContent>
                     <div>{shipment?.driver?.number}</div>
-                    <div>{shipment?.driver?.name}</div>
+                    <div>{shipment?.driver?.fullname}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -153,8 +154,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
       <div>{shipment.item.is_round_trip && <>Round Trip</>}</div>
       <div>{shipment.item.engine_mode}</div>
       <div>{shipment.item.item_type}</div>
-      <div>{shipment.item.line_total}</div>
-      <div>{shipment.item.unit_price}</div>
+      <div>{formatMoney(shipment.item.unit_price)}</div>
       <div>{shipment.item.with_driver && <>Needs Driver</>}</div>
       <div>{shipment.item.with_loaders && <>Needs Loaders</>}</div>
     </div>
