@@ -2,10 +2,10 @@ import { DataTable } from "@/components/data-table"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useTranslation } from "@/i18n"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { getShipmentTableColumns } from "./shipment-table-columns"
 import { useDataTable } from "@/hooks/use-data-table"
-import { Shipment } from "../types"
+import { Shipment, ShipmentTableRowAction } from "../types"
 import { Pagination } from "@/types"
 
 interface ShipmentTableProps {
@@ -15,7 +15,13 @@ interface ShipmentTableProps {
 
 export function ShipmentTable({ data, pagination }: ShipmentTableProps) {
   const tr = useTranslation()
-  const columns = useMemo(() => getShipmentTableColumns({ tr }), [tr])
+  const [rowAction, setRowAction] = useState<ShipmentTableRowAction | null>(
+    null
+  )
+  const columns = useMemo(
+    () => getShipmentTableColumns({ tr, setRowAction }),
+    [tr, setRowAction]
+  )
 
   const { table } = useDataTable({
     data: data ?? [],

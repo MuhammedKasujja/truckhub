@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
-import { Link } from "@tanstack/react-router"
+import { EyeIcon, MoreVertical } from "lucide-react"
 import { Can } from "@/components/has-permission"
 import {
   DropdownMenu,
@@ -10,17 +9,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Shipment, ShipmentTableRowAction } from "../types"
+import { ShipmentTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 
+export type SetShipmentTableAction = React.Dispatch<
+  React.SetStateAction<ShipmentTableRowAction | null>
+>
+type Row = Pick<ShipmentTableRowAction, "row">
+
 interface TableActionsProps {
-  shipment: Shipment
-  setRowAction?: React.Dispatch<
+  shipmentRow: Row
+  setRowAction: React.Dispatch<
     React.SetStateAction<ShipmentTableRowAction | null>
   >
 }
 
-export function ShipmentTableActions({ shipment }: TableActionsProps) {
+export function ShipmentTableActions({
+  shipmentRow,
+  setRowAction,
+}: TableActionsProps) {
+  const shipment = shipmentRow.row.original
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,40 +38,14 @@ export function ShipmentTableActions({ shipment }: TableActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <Can permission={"quotations:edit"}>
-            <DropdownMenuItem asChild>
-              <Link
-                to={"/quotations/$quotationId/edit"}
-                params={{ quotationId: shipment.id }}
-              >
-                <EditIcon />
-                Edit
-              </Link>
-            </DropdownMenuItem>
-          </Can>
           <Can permission={"clients:view"}>
-            <DropdownMenuItem asChild>
-              <Link
-                to={"/quotations/$quotationId/view"}
-                params={{ quotationId: shipment.id }}
-              >
-                <EyeIcon />
-                View
-              </Link>
-            </DropdownMenuItem>
-          </Can>
-          <DropdownMenuSeparator />
-          <Can permission={"quotations:accept"}>
-            {isNotInEnum(shipment.status, ["accepted"]) && (
-              <DropdownMenuItem onClick={() => {}}>
-                Mark Accepted
-              </DropdownMenuItem>
-            )}
-          </Can>
-          <Can permission={"quotations:email"}>
-            <DropdownMenuItem>
-              <MailIcon />
-              Email
+            <DropdownMenuItem
+              onClick={() =>
+                setRowAction({ row: shipmentRow.row, variant: "view" })
+              }
+            >
+              <EyeIcon />
+              View
             </DropdownMenuItem>
           </Can>
           <DropdownMenuSeparator />

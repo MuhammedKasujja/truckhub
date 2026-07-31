@@ -6,7 +6,7 @@ export type Shipment = {
   status: string
   started_at?: Date
   driver?: { id: EntityId; number: string; name: string }
-  vehicle?: { id: EntityId; number: string; plate_number: string },
+  vehicle?: { id: EntityId; number: string; plate_number: string }
   item: {
     scheduled_start: string
     scheduled_end: string
@@ -15,5 +15,11 @@ export type Shipment = {
 
 export interface ShipmentTableRowAction extends DataTableRowAction<
   Shipment,
-  "update" | "view"
+  | "edit"
+  | "view"
+  | "dispatch"
+  | "assign-vehicle"
+  | "assign-driver"
+  | "complete"
+  | "finish"
 > {}
