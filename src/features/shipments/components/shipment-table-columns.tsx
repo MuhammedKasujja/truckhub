@@ -38,7 +38,7 @@ export function getShipmentTableColumns({
         if (!driver) return <p>-</p>
         return (
           <Link to="/drivers/$driverId/view" params={{ driverId: driver?.id }}>
-            {driver?.name}
+            {driver?.fullname}
           </Link>
         )
       },

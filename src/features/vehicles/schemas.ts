@@ -10,7 +10,7 @@ export const VehicleCreateSchema = z.object({
   interior_color: z.string().optional().nullable(),
   cylinders: z.string(),
   tank_capacity: z.number(),
-  consumption_rate: z.number(),
+  fuel_consumption_rate: z.number(),
   engine_type: z.enum(EngineTypes),
   gearbox: z.enum(Gearboxes),
   // year: z.number().min(2010).max((new Date()).getFullYear()),

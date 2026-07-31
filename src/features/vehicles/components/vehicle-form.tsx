@@ -214,7 +214,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                   />
                   <NumberField
                     label={"Consumption Rate (km/l)"}
-                    name={"consumption_rate"}
+                    name={"fuel_consumption_rate"}
                     control={form.control}
                   />
                   <NumberField
