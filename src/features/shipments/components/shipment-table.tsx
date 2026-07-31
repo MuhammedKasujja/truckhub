@@ -7,6 +7,7 @@ import { getShipmentTableColumns } from "./shipment-table-columns"
 import { useDataTable } from "@/hooks/use-data-table"
 import { Shipment, ShipmentTableRowAction } from "../types"
 import { Pagination } from "@/types"
+import { ShipmentDetailsDialog } from "./shipment-details-dialog"
 
 interface ShipmentTableProps {
   data: Shipment[] | undefined
@@ -36,10 +37,18 @@ export function ShipmentTable({ data, pagination }: ShipmentTableProps) {
     clearOnDefault: true,
   })
   return (
-    <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <DataTableSortList table={table} align="end" />
-      </DataTableToolbar>
-    </DataTable>
+    <>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar>
+      </DataTable>
+      <ShipmentDetailsDialog
+        key={rowAction?.row.id}
+        open={rowAction?.variant == "view"}
+        onOpenChange={() => setRowAction(null)}
+        shipment={rowAction?.row.original}
+      />
+    </>
   )
 }

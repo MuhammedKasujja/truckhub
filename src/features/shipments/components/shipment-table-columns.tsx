@@ -4,20 +4,31 @@ import { TFunction } from "@/i18n"
 import { formatDate } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
-import { SetShipmentTableAction, ShipmentTableActions } from "./shipment-table-actions"
+import {
+  SetShipmentTableAction,
+  ShipmentTableActions,
+} from "./shipment-table-actions"
 
 type Props = {
-  tr: TFunction,
+  tr: TFunction
   setRowAction: SetShipmentTableAction
 }
 
-export function getShipmentTableColumns({ tr, setRowAction }: Props): ColumnDef<Shipment>[] {
+export function getShipmentTableColumns({
+  tr,
+  setRowAction,
+}: Props): ColumnDef<Shipment>[] {
   return [
     {
       id: "left-actions",
       size: 20,
       maxSize: 16,
-      cell: ({ row }) => <ShipmentTableActions shipmentRow={{ row }} />,
+      cell: ({ row }) => (
+        <ShipmentTableActions
+          shipmentRow={{ row }}
+          setRowAction={setRowAction}
+        />
+      ),
     },
     {
       id: "driver",

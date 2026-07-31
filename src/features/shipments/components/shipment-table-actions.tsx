@@ -38,16 +38,14 @@ export function ShipmentTableActions({
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <Can permission={"clients:view"}>
-            <DropdownMenuItem
-              onClick={() =>
-                setRowAction({ row: shipmentRow.row, variant: "view" })
-              }
-            >
-              <EyeIcon />
-              View
-            </DropdownMenuItem>
-          </Can>
+          <DropdownMenuItem
+            onClick={() =>
+              setRowAction({ row: shipmentRow.row, variant: "view" })
+            }
+          >
+            <EyeIcon />
+            View
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>
             {isNotInEnum(shipment.status, [

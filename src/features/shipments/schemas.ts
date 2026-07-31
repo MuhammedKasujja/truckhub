@@ -37,8 +37,8 @@ export const finishShipmentSchema = z.object({
   distance_km: z.number(),
   average_fuel_rate_per_km: z.number(),
   fuel_used_litres: z.number(),
-  note: z.string().nullable(),
-  consumed_fuel_rates: z.array(consumedFuelRateSchema).default([]),
+  note: z.string().optional().nullable(),
+  consumed_fuel_rates: z.array(consumedFuelRateSchema).optional(),
 })
 
 export type FinishShipmentInput = z.infer<typeof finishShipmentSchema>

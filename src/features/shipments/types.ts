@@ -1,5 +1,11 @@
 import { EntityId } from "@/schemas"
 import { DataTableRowAction } from "@/types/data-table"
+import { LineItemResponse } from "../quotations/schemas"
+
+export type ShipmentLineItem = LineItemResponse & {
+  scheduled_start: string
+  scheduled_end: string
+}
 
 export type Shipment = {
   id: EntityId
@@ -7,10 +13,7 @@ export type Shipment = {
   started_at?: Date
   driver?: { id: EntityId; number: string; name: string }
   vehicle?: { id: EntityId; number: string; plate_number: string }
-  item: {
-    scheduled_start: string
-    scheduled_end: string
-  }
+  item: ShipmentLineItem
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<
