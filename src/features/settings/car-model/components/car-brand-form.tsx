@@ -35,6 +35,7 @@ import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
+import { CarBrandPickerField } from "../../car-brand/components"
 
 type CarModelFormProps = {
   trigger?: React.ReactNode
@@ -94,18 +95,12 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            <AutoCompleteField
+            <CarBrandPickerField
               label={tr("common.car_brand")}
               control={form.control}
               name={"car_brand_id"}
-              placeholder="Select Car Brand"
-              emptyPlaceholder="No Car Brand found"
-              options={
-                data?.car_brands.map((opt) => ({
-                  label: opt.name,
-                  value: opt.id,
-                })) ?? []
-              }
+              placeholder="Select car brand"
+              // emptyPlaceholder="No Car Brand found"
             />
             <TextField label="Model" control={form.control} name={"name"} />
             <AutoCompleteField

@@ -131,6 +131,10 @@ export function ServicesDialog({
                 name={"car_brand_id"}
                 control={form.control}
                 required={false}
+                onSelected={(_) => {
+                  form.setValue("car_model_id", "")
+                  form.setValue("estimated_consumption_rate_km", Number(undefined))
+                }}
               />
               <CarModelPickerField
                 label={"Carr Model"}
@@ -138,6 +142,12 @@ export function ServicesDialog({
                 carBrandId={form.watch("car_brand_id")}
                 control={form.control}
                 required={false}
+                onSelected={(model) => {
+                  form.setValue(
+                    "estimated_consumption_rate_km",
+                    Number(model?.consumption_rate)
+                  )
+                }}
               />
             </Field>
             <Field
