@@ -41,11 +41,16 @@ export async function endShipment(unitId: EntityId) {
 }
 
 export async function finishShipment(data: FinishShipmentInput) {
-  const { unitId, ...rest } = data
-  return await apiClient.postFn<Shipment>(
-    `${endpoint}/${unitId}/complete`,
-    rest
-  )
+  const { unitId, consumedFuelRates, notes, endMileage } = data
+  const fuelRates = consumedFuelRates
+    .filter((r) => r.value)
+    .map((rate) => rate.value)
+
+  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/complete`, {
+    notes,
+    end_mileage: endMileage,
+    consumed_fuel_rates: fuelRates,
+  })
 }
 
 export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
@@ -56,8 +61,7 @@ export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
 }
 
 export async function shipmentAssignDriver(data: AssignShipmentDriverInput) {
-  return await apiClient.postFn<Shipment>(
-    `${endpoint}/${data.unitId}/driver`,
-    { driver_id: data.driverId }
-  )
+  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/driver`, {
+    driver_id: data.driverId,
+  })
 }

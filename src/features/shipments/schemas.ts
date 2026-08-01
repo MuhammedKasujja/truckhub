@@ -32,15 +32,15 @@ export const assignShipmentDriverSchema = z.object({
 
 export const finishShipmentSchema = z.object({
   unitId: IDSchema,
-  start_mileage: z.number(),
-  end_mileage: z.number(),
-  distance_km: z.number(),
-  average_fuel_rate_per_km: z.number(),
-  fuel_used_litres: z.number(),
-  fuel_rate: z.number(),
-  actual_fuel_consumed: z.number(),
-  note: z.string().optional().nullable(),
-  consumed_fuel_rates: z.array(consumedFuelRateSchema),
+  startMileage: z.number(),
+  endMileage: z.number(),
+  distanceKm: z.number(),
+  vehicleConsumptionRate: z.number(),
+  fuelUsedLitres: z.number(),
+  fuelRate: z.number(),
+  actualFuelConsumed: z.number(),
+  notes: z.string().optional().nullable(),
+  consumedFuelRates: z.array(consumedFuelRateSchema),
 })
 
 export type FinishShipmentInput = z.infer<typeof finishShipmentSchema>

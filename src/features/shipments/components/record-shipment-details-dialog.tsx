@@ -35,44 +35,42 @@ export function RecordShipmentDetailsDialog({
     resolver: zodResolver(finishShipmentSchema),
     defaultValues: {
       unitId: shipment?.id,
-      start_mileage: Number(shipment?.consumption?.start_mileage),
-      average_fuel_rate_per_km: Number(
-        shipment?.vehicle?.fuel_consumption_rate
-      ),
-      consumed_fuel_rates: [{ value: null }],
+      startMileage: Number(shipment?.consumption?.start_mileage),
+      vehicleConsumptionRate: Number(shipment?.vehicle?.fuel_consumption_rate),
+      consumedFuelRates: [{ value: null }],
     },
     reValidateMode: "onChange",
   })
 
-  const startMileage = form.watch("start_mileage")
-  const endMileage = form.watch("end_mileage")
-  const fuelRate = form.watch("fuel_rate")
-  const litresConsumed = form.watch("fuel_used_litres")
+  const startMileage = form.watch("startMileage")
+  const endMileage = form.watch("endMileage")
+  const fuelRate = form.watch("fuelRate")
+  const litresConsumed = form.watch("fuelUsedLitres")
 
   const fuelConsumptionRatesFields = useFieldArray({
     control: form.control,
-    name: "consumed_fuel_rates",
+    name: "consumedFuelRates",
   })
 
-  const fuelConsumptionRates = form.watch("consumed_fuel_rates")
+  const fuelConsumptionRates = form.watch("consumedFuelRates")
 
   useEffect(() => {
     if (startMileage > endMileage) {
-      form.setError("end_mileage", {
+      form.setError("endMileage", {
         message: "Invalid end mileage",
       })
     } else {
       // form.clearErrors()
       const distance = Number(endMileage - startMileage)
-      form.setValue("distance_km", distance)
-      const consumptionRate = form.getValues("average_fuel_rate_per_km")
+      form.setValue("distanceKm", distance)
+      const consumptionRate = form.getValues("vehicleConsumptionRate")
       const litresUsed = distance / consumptionRate
-      form.setValue("fuel_used_litres", litresUsed)
+      form.setValue("fuelUsedLitres", litresUsed)
     }
   }, [startMileage, endMileage])
 
   useEffect(() => {
-    form.setValue("actual_fuel_consumed", Number(fuelRate * litresConsumed))
+    form.setValue("actualFuelConsumed", Number(fuelRate * litresConsumed))
   }, [fuelRate, litresConsumed])
 
   useEffect(() => {
@@ -84,7 +82,7 @@ export function RecordShipmentDetailsDialog({
       0
     )
 
-    form.setValue("fuel_rate", Number(rates / validFuelRates.length))
+    form.setValue("fuelRate", Number(rates / validFuelRates.length))
   }, [fuelConsumptionRates])
 
   return (
@@ -105,13 +103,13 @@ export function RecordShipmentDetailsDialog({
                 readOnly
                 required={false}
                 label="Start Mileage"
-                name="start_mileage"
+                name="startMileage"
                 control={form.control}
               />
               <NumberField
                 required={false}
                 label="End Mileage"
-                name="end_mileage"
+                name="endMileage"
                 control={form.control}
               />
             </Field>
@@ -119,7 +117,7 @@ export function RecordShipmentDetailsDialog({
               readOnly
               required={false}
               label="Distance (km)"
-              name="distance_km"
+              name="distanceKm"
               control={form.control}
             />
 
@@ -128,14 +126,14 @@ export function RecordShipmentDetailsDialog({
                 readOnly
                 required={false}
                 label="Vehicle Consumption Rate (km/l)"
-                name="average_fuel_rate_per_km"
+                name="vehicleConsumptionRate"
                 control={form.control}
               />
               <NumberField
                 readOnly
                 required={false}
                 label="Litres consumed"
-                name="fuel_used_litres"
+                name="fuelUsedLitres"
                 control={form.control}
               />
             </Field>
@@ -155,7 +153,7 @@ export function RecordShipmentDetailsDialog({
                 <Field key={ele.id} orientation={"horizontal"}>
                   <NumberField
                     control={form.control}
-                    name={`consumed_fuel_rates.${index}.value`}
+                    name={`consumedFuelRates.${index}.value`}
                   />
                   <Button
                     type="button"
@@ -172,20 +170,20 @@ export function RecordShipmentDetailsDialog({
               readOnly
               required={false}
               label="Fuel Rate"
-              name="fuel_rate"
+              name="fuelRate"
               control={form.control}
             />
             <NumberField
               readOnly
               required={false}
               label="Actual Fuel Consumed"
-              name="actual_fuel_consumed"
+              name="actualFuelConsumed"
               control={form.control}
             />
 
             <TextareaField
               label="Notes"
-              name="note"
+              name="notes"
               control={form.control}
               required={false}
               placeholder="optional"

@@ -21,7 +21,13 @@ export type Shipment = {
   started_at?: Date
   actual_start?: Date
   actual_end?: Date
-  driver?: { id: EntityId; number: string; fullname: string }
+  driver?: {
+    id: EntityId
+    number: string
+    fullname: string
+    phone: string
+    email: string
+  }
   vehicle?: {
     id: EntityId
     number: string
