@@ -18,7 +18,7 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
-import { formatMoney } from "@/lib/format"
+import { formatMoney, formatNumber } from "@/lib/format"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -94,8 +94,13 @@ export function ShipmentDetailsDialog({
                     <CardTitle>Vehicle</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div>{shipment?.vehicle?.number}</div>
-                    <div>{shipment?.vehicle?.plate_number}</div>
+                    <div>Number: {shipment?.vehicle?.number}</div>
+                    <div>Plate No. {shipment?.vehicle?.plate_number}</div>
+                    <div>
+                      Consumption Rate:{" "}
+                      {formatNumber(shipment?.vehicle?.fuel_consumption_rate)}{" "}
+                      km/l
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
@@ -156,7 +161,9 @@ function ShipmentOverviewDetails({ shipment }: Props) {
       <div>{shipment.item.item_type}</div>
       <div>{formatMoney(shipment.item.unit_price)}</div>
       <div>{shipment.item.with_driver && <>Needs Driver</>}</div>
-      <div>{shipment.item.with_loaders && <>Needs Loaders</>}</div>
+      {shipment.item.item_type === "truck" && (
+        <div>{shipment.item.with_loaders && <>Needs Loaders</>}</div>
+      )}
     </div>
   )
 }

@@ -13,7 +13,7 @@ export type Shipment = {
   status: ShipmentStatus
   started_at?: Date
   driver?: { id: EntityId; number: string; fullname: string }
-  vehicle?: { id: EntityId; number: string; plate_number: string }
+  vehicle?: { id: EntityId; number: string; plate_number: string, fuel_consumption_rate: string| number }
   item: ShipmentLineItem
 }
 
