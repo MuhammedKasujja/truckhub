@@ -8,6 +8,7 @@ import {
   SetShipmentTableAction,
   ShipmentTableActions,
 } from "./shipment-table-actions"
+import { Button } from "@/components/ui/button"
 
 type Props = {
   tr: TFunction
@@ -24,10 +25,17 @@ export function getShipmentTableColumns({
       size: 20,
       maxSize: 16,
       cell: ({ row }) => (
-        <ShipmentTableActions
-          shipmentRow={{ row }}
-          setRowAction={setRowAction}
-        />
+        <Button
+          variant={"ghost"}
+          size={"sm"}
+          onClick={() => setRowAction({ row, variant: "view" })}
+        >
+          {row.original.number}
+        </Button>
+        // <ShipmentTableActions
+        //   shipmentRow={{ row }}
+        //   setRowAction={setRowAction}
+        // />
       ),
     },
     {

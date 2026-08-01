@@ -17,6 +17,7 @@ export type ShipmentConsumption = {
 
 export type Shipment = {
   id: EntityId
+  number: string | null
   status: ShipmentStatus
   started_at?: Date
   actual_start?: Date
