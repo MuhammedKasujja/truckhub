@@ -17,8 +17,8 @@ import {
 const useDispatchShipmentBase = createEntityActionHook(
   dispatchShipmentFn,
   (invalidator, input) => {
-    // invalidator.quotations.list.invalidate()
-    // invalidator.quotations.details(input.data.id)
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId)
   }
 )
 
@@ -34,8 +34,8 @@ export function useDispatchShipment() {
 const useEndShipmentBase = createEntityActionHook(
   endShipmentFn,
   (invalidator, input) => {
-    // invalidator.quotations.list.invalidate()
-    // invalidator.quotations.details(input.data.id)
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.id)
   }
 )
 
@@ -51,8 +51,8 @@ export function useEndShipment() {
 const useFinishShipmentBase = createEntityActionHook(
   finishShipmentFn,
   (invalidator, input) => {
-    // invalidator.quotations.list.invalidate()
-    // invalidator.quotations.details(input.data.id)
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId)
   }
 )
 
@@ -68,8 +68,8 @@ export function useFinishShipment() {
 const useAssignShipmentDriverBase = createEntityActionHook(
   shipmentAssignDriverFn,
   (invalidator, input) => {
-    // invalidator.quotations.list.invalidate()
-    // invalidator.quotations.details(input.data.id)
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId)
   }
 )
 
@@ -85,8 +85,8 @@ export function useAssignShipmentDriver() {
 const useAssignShipmentVehicleBase = createEntityActionHook(
   shipmentAssignVehicleFn,
   (invalidator, input) => {
-    // invalidator.quotations.list.invalidate()
-    // invalidator.quotations.details(input.data.id)
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId)
   }
 )
 

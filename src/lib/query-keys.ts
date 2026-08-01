@@ -9,6 +9,7 @@ import { settingsQueryKeys } from "@/features/settings/query-options"
 import { rideQueryKeys } from "@/features/ride-requests/query-options"
 import { dashboardQueryKeys } from "@/features/dashboard/query-options"
 import { bookingsQueryKeys } from "@/features/bookings/queries-options"
+import { shipmentsQueryKeys } from "@/features/shipments/query-options"
 import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { quotationQueryKeys } from "@/features/quotations/query-options"
@@ -53,4 +54,5 @@ export const queryKeys = {
   vehicles: vehicleQueryKeys,
   auditLogs: auditLogsQueryKeys,
   quotations: quotationQueryKeys,
+  shipments: shipmentsQueryKeys,
 }

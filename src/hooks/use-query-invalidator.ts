@@ -308,6 +308,21 @@ export class QueryInvalidator {
     }),
   }
 
+  shipments = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.list(),
+        }),
+    },
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.detail(id),
+        }),
+    }),
+  }
+
   users = {
     list: {
       invalidate: () =>
