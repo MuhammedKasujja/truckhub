@@ -16,6 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { VehiclePickerField } from "@/features/vehicles/components"
+import { CarBrandPicker } from "@/features/settings/car-brand/components"
+import { CarModelPicker } from "@/features/settings/car-model/components"
+import { ServicePicker } from "@/features/services/components"
+import { Label } from "@/components/ui/label"
 
 type Props = {
   shipment?: Shipment
@@ -50,6 +54,43 @@ export function ShipmentAssignVehicleDialog({
             <DialogTitle>Shipment Assign Vehicle</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {shipment?.item.item_type === "small" && (
+              <div className="space-y-4">
+                {shipment?.item.service_id && (
+                  <div className="space-y-2">
+                    <Label htmlFor="service">Service</Label>
+                    <ServicePicker
+                      id="service"
+                      value={shipment?.item.service_id}
+                    />
+                  </div>
+                )}
+                {shipment?.item.car_brand_id && (
+                  <div className="space-y-2">
+                    <Label htmlFor="car_make">Car Make</Label>
+                    <CarBrandPicker
+                      id="car_make"
+                      value={shipment?.item.car_brand_id}
+                    />
+                  </div>
+                )}
+                {shipment?.item.car_model_id && (
+                  <div className="space-y-2">
+                    <Label htmlFor="model">Model</Label>
+                    <CarModelPicker
+                      id="model"
+                      value={shipment?.item.car_model_id}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            {shipment?.item.item_type === "truck" && (
+              <div>
+                <div>Tonnage Capacity</div>
+                <div>{shipment.item.tonnage} Tons</div>
+              </div>
+            )}
             <VehiclePickerField
               label="Vehicle"
               name="vehicleId"
