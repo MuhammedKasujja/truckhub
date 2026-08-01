@@ -37,6 +37,7 @@ export const REPORT_TEMPLATES = [
   "driver",
   "vehicle",
   "route_pricing",
+  "fuel_calculator",
   "loading_offloading_fees",
 ] as const
 

@@ -9,7 +9,7 @@ import { Shipment } from "../types"
 import { Badge } from "@/components/ui/badge"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
-import { ReceiptPoundSterlingIcon } from "lucide-react"
+import { PlusIcon, ReceiptPoundSterlingIcon } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
@@ -19,6 +19,7 @@ import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
 import { formatDate, formatMoney, formatNumber } from "@/lib/format"
+import { Empty, EmptyContent } from "@/components/ui/empty"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -94,13 +95,31 @@ export function ShipmentDetailsDialog({
                     <CardTitle>Vehicle</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div>Number: {shipment?.vehicle?.number}</div>
-                    <div>Plate No. {shipment?.vehicle?.plate_number}</div>
-                    <div>
-                      Consumption Rate:{" "}
-                      {formatNumber(shipment?.vehicle?.fuel_consumption_rate)}{" "}
-                      km/l
-                    </div>
+                    {shipment?.vehicle ? (
+                      <div>
+                        <div>Number: {shipment?.vehicle?.number}</div>
+                        <div>Plate No. {shipment?.vehicle?.plate_number}</div>
+                        <div>
+                          Consumption Rate:{" "}
+                          {formatNumber(
+                            shipment?.vehicle?.fuel_consumption_rate
+                          )}{" "}
+                          km/l
+                        </div>
+                      </div>
+                    ) : (
+                      <Empty className="border border-dashed">
+                        <EmptyContent>
+                          <Button
+                            variant={"outline"}
+                            size={"icon-sm"}
+                            onClick={() => setOpenModal("assign-vehicle")}
+                          >
+                            <PlusIcon />
+                          </Button>
+                        </EmptyContent>
+                      </Empty>
+                    )}
                   </CardContent>
                 </Card>
                 <Card>
@@ -108,8 +127,24 @@ export function ShipmentDetailsDialog({
                     <CardTitle>Driver</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div>{shipment?.driver?.number}</div>
-                    <div>{shipment?.driver?.fullname}</div>
+                    {shipment?.vehicle ? (
+                      <div>
+                        <div>{shipment?.driver?.number}</div>
+                        <div>{shipment?.driver?.fullname}</div>
+                      </div>
+                    ) : (
+                      <Empty className="border border-dashed">
+                        <EmptyContent>
+                          <Button
+                            variant={"outline"}
+                            size={"icon-sm"}
+                            onClick={() => setOpenModal("asign-driver")}
+                          >
+                            <PlusIcon />
+                          </Button>
+                        </EmptyContent>
+                      </Empty>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -157,7 +192,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
         {formatDate(shipment.actual_start)} - {formatDate(shipment.actual_end)}
       </div>
       <div>
-        Scheduled: {shipment.item.scheduled_start} - {shipment.item.scheduled_end}
+        Scheduled: {shipment.item.scheduled_start} -{" "}
+        {shipment.item.scheduled_end}
       </div>
       <div>{shipment.item.is_round_trip && <>Round Trip</>}</div>
       <div>{shipment.item.engine_mode}</div>
