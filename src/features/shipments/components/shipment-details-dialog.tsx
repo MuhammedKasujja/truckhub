@@ -18,7 +18,7 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
-import { formatMoney, formatNumber } from "@/lib/format"
+import { formatDate, formatMoney, formatNumber } from "@/lib/format"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -154,7 +154,10 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   return (
     <div className="space-y-4">
       <div>
-        {shipment.item.scheduled_start} - {shipment.item.scheduled_end}
+        {formatDate(shipment.actual_start)} - {formatDate(shipment.actual_end)}
+      </div>
+      <div>
+        Scheduled: {shipment.item.scheduled_start} - {shipment.item.scheduled_end}
       </div>
       <div>{shipment.item.is_round_trip && <>Round Trip</>}</div>
       <div>{shipment.item.engine_mode}</div>

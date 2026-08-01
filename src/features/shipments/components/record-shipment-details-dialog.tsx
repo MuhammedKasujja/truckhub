@@ -35,6 +35,7 @@ export function RecordShipmentDetailsDialog({
     resolver: zodResolver(finishShipmentSchema),
     defaultValues: {
       unitId: shipment?.id,
+      start_mileage: Number(shipment?.consumption?.start_mileage),
       average_fuel_rate_per_km: Number(
         shipment?.vehicle?.fuel_consumption_rate
       ),
@@ -75,7 +76,9 @@ export function RecordShipmentDetailsDialog({
   }, [fuelRate, litresConsumed])
 
   useEffect(() => {
-    const validFuelRates = fuelConsumptionRates.filter((rate)=> rate.value != null)
+    const validFuelRates = fuelConsumptionRates.filter(
+      (rate) => rate.value != null
+    )
     const rates = validFuelRates.reduce(
       (curr, rate) => curr + Number(rate.value),
       0
@@ -99,6 +102,7 @@ export function RecordShipmentDetailsDialog({
           <div className="space-y-4">
             <Field orientation={"horizontal"}>
               <NumberField
+                readOnly
                 required={false}
                 label="Start Mileage"
                 name="start_mileage"
@@ -118,14 +122,15 @@ export function RecordShipmentDetailsDialog({
               name="distance_km"
               control={form.control}
             />
-            <NumberField
-              readOnly
-              required={false}
-              label="Vehicle Consumption Rate (km/l)"
-              name="average_fuel_rate_per_km"
-              control={form.control}
-            />
+
             <Field orientation={"horizontal"}>
+              <NumberField
+                readOnly
+                required={false}
+                label="Vehicle Consumption Rate (km/l)"
+                name="average_fuel_rate_per_km"
+                control={form.control}
+              />
               <NumberField
                 readOnly
                 required={false}
@@ -133,20 +138,7 @@ export function RecordShipmentDetailsDialog({
                 name="fuel_used_litres"
                 control={form.control}
               />
-              <NumberField
-                required={false}
-                label="Fuel Rate"
-                name="fuel_rate"
-                control={form.control}
-              />
             </Field>
-            <NumberField
-              readOnly
-              required={false}
-              label="Actual Fuel Consumed"
-              name="actual_fuel_consumed"
-              control={form.control}
-            />
             <FieldGroup className="rounded-lg border border-dashed p-4">
               <FieldLabel>
                 Fuel Consumptions{" "}
@@ -176,6 +168,20 @@ export function RecordShipmentDetailsDialog({
                 </Field>
               ))}
             </FieldGroup>
+            <NumberField
+              readOnly
+              required={false}
+              label="Fuel Rate"
+              name="fuel_rate"
+              control={form.control}
+            />
+            <NumberField
+              readOnly
+              required={false}
+              label="Actual Fuel Consumed"
+              name="actual_fuel_consumed"
+              control={form.control}
+            />
 
             <TextareaField
               label="Notes"

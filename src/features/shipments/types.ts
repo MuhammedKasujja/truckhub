@@ -8,13 +8,28 @@ export type ShipmentLineItem = LineItemResponse & {
   scheduled_end: string
 }
 
+export type ShipmentConsumption = {
+  start_mileage: string | number
+  end_mileage: string | number | null
+  distance_km: string | number | null
+  days: number | null
+}
+
 export type Shipment = {
   id: EntityId
   status: ShipmentStatus
   started_at?: Date
+  actual_start?: Date
+  actual_end?: Date
   driver?: { id: EntityId; number: string; fullname: string }
-  vehicle?: { id: EntityId; number: string; plate_number: string, fuel_consumption_rate: string| number }
+  vehicle?: {
+    id: EntityId
+    number: string
+    plate_number: string
+    fuel_consumption_rate: string | number
+  }
   item: ShipmentLineItem
+  consumption: ShipmentConsumption | null
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<
