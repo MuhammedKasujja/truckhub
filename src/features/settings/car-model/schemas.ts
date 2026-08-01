@@ -8,6 +8,7 @@ export const CarModelCreateSchema = z.object({
   name: z.string(),
   car_brand_id: IDSchema,
   vehicle_category_id: IDSchema,
+  consumption_rate: z.number(),
 })
 
 export const CarModelUpdateSchema = z.object({

@@ -24,7 +24,11 @@ import {
   createCarModelFn,
   updateCarModelFn,
 } from "@/features/settings/car-model/services"
-import { AutoCompleteField, TextField } from "@/components/ui/form-fields"
+import {
+  AutoCompleteField,
+  NumberField,
+  TextField,
+} from "@/components/ui/form-fields"
 import React from "react"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
@@ -116,6 +120,11 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
                   value: opt.id,
                 })) ?? []
               }
+            />
+            <NumberField
+              label="Consumption Rate"
+              control={form.control}
+              name={"consumption_rate"}
             />
           </FieldGroup>
           <DialogFooter className="sm:justify-end">
