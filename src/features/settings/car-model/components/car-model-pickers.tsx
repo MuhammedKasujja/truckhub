@@ -39,10 +39,20 @@ export function CarModelPicker({
       onChange={(model) => {
         onSelected?.(model)
       }}
-      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(model, q) => model.name.toLowerCase().includes(q.toLowerCase())}
       label="Car Model"
-      getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      getOptionValue={(model) => model.id}
+      renderOption={(model) => (
+        <p>
+          {model.name}
+          {model.manufacture_year && (
+            <span className="text-muted-foreground">
+              {" "}
+              ({model.manufacture_year})
+            </span>
+          )}
+        </p>
+      )}
     />
   )
 }
@@ -64,13 +74,13 @@ export function CarModelPickerField<TFieldValues extends FieldValues>({
   const [models, setModels] = useState<CarModel[]>([])
 
   useEffect(() => {
-    let brandModels = data?.car_models
+    let brandModels = data?.car_models ?? []
     if (carBrandId) {
       brandModels = brandModels?.filter(
         (model) => model.car_brand_id === carBrandId
       )
     }
-    setModels(brandModels ?? [])
+    setModels(brandModels)
   }, [carBrandId, data])
 
   return (
@@ -85,7 +95,17 @@ export function CarModelPickerField<TFieldValues extends FieldValues>({
       //   onSearch={(q) => setQuery(q)}
       filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
       getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      renderOption={(model) => (
+        <p>
+          {model.name}
+          {model.manufacture_year && (
+            <span className="text-muted-foreground">
+              {" "}
+              ({model.manufacture_year})
+            </span>
+          )}
+        </p>
+      )}
       onSelected={onSelected}
       {...props}
     />

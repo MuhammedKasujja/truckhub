@@ -133,7 +133,11 @@ export function ServicesDialog({
                 required={false}
                 onSelected={(_) => {
                   form.setValue("car_model_id", "")
-                  form.setValue("estimated_consumption_rate_km", Number(undefined))
+                  form.setValue(
+                    "estimated_consumption_rate_km",
+                    Number(undefined)
+                  )
+                  form.setValue("vehicle_year", "")
                 }}
               />
               <CarModelPickerField
@@ -146,6 +150,10 @@ export function ServicesDialog({
                   form.setValue(
                     "estimated_consumption_rate_km",
                     Number(model?.consumption_rate)
+                  )
+                  form.setValue(
+                    "vehicle_year",
+                    model?.manufacture_year ? `${model?.manufacture_year}` : ""
                   )
                 }}
               />
