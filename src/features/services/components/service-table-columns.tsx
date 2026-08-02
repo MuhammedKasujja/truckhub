@@ -10,6 +10,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import { useTranslation } from "@/i18n"
+import { Can } from "@/components/has-permission"
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
   return [
@@ -82,27 +84,38 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
 }
 
 function ServiceListItem({ service }: { service: Service }) {
+  const tr = useTranslation()
   return (
     <HoverCard openDelay={10} closeDelay={100}>
       <HoverCardTrigger asChild>
-        <Button asChild variant={"outline"}>
-          <Link
-            to={`/services/$serviceId/edit`}
-            params={{ serviceId: service.id }}
-          >
-            {service.name}
-          </Link>
-        </Button>
+        <Can permission="services:edit" fallbackText={`${service.name}`}>
+          <Button asChild variant={"outline"}>
+            <Link
+              to={`/services/$serviceId/edit`}
+              params={{ serviceId: service.id }}
+            >
+              {service.name}
+            </Link>
+          </Button>
+        </Can>
       </HoverCardTrigger>
       <HoverCardContent className="flex w-64 flex-col gap-0.5">
         <div className="grid grid-cols-1 gap-4">
           <div>
             {service.category} - {service.name}
           </div>
-          <div>Base fee: {formatMoney(service.base_fare)}</div>
-          <div>Booking fee: {formatMoney(service.booking_fee)}</div>
+          <div>
+            {tr("services.price")}: {formatMoney(service.base_fare)}
+          </div>
+          <div>
+            {tr("services.last_price")}: {formatMoney(service.min_fare)}
+          </div>
           {/* <div>Tax fee: {formatMoney(service.tax_fee)}</div> */}
-          {!service.is_truck && <div>Seats: {service.seats}</div>}
+          {!service.is_truck && (
+            <div>
+              {tr("services.seating_capacity")}: {service.seats}
+            </div>
+          )}
         </div>
       </HoverCardContent>
     </HoverCard>

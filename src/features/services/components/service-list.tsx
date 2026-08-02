@@ -41,29 +41,44 @@ export function ServiceList({ services }: ServiceListProps) {
 
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span>{tr("services.seats")}</span>
-              <span>{service.seats}</span>
-            </div>
-
-            <div className="flex justify-between">
               <span>{tr("services.price")}</span>
-              <span>{formatMoney(service.base_fare)}</span>
+              <span className="font-semibold">
+                {formatMoney(service.base_fare)}
+              </span>
             </div>
 
             <div className="flex justify-between">
               <span>{tr("services.last_price")}</span>
-              <span>{formatMoney(service.min_fare)}</span>
+              <span className="font-semibold">
+                {formatMoney(service.min_fare)}
+              </span>
             </div>
 
             <div className="flex justify-between">
-              <span>Per Min</span>
-              <span>{formatMoney(service.price_per_min)}</span>
+              <p>
+                Time price{" "}
+                <span className="text-muted-foreground">(minutes)</span>
+              </p>
+              <span className="font-semibold">
+                {formatMoney(service.price_per_min)}
+              </span>
             </div>
 
             <div className="flex justify-between">
-              <span>Per Distance</span>
-              <span>{formatMoney(service.price_per_unit_distance)}</span>
+              <p>
+                Distance price{" "}
+                <span className="text-muted-foreground">(km/l)</span>
+              </p>
+              <span className="font-semibold">
+                {formatMoney(service.price_per_unit_distance)}
+              </span>
             </div>
+            {!service.is_truck && (
+              <div className="flex justify-between">
+                <span>{tr("services.seats")}</span>
+                <span className="font-semibold">{service.seats}</span>
+              </div>
+            )}
 
             {/* <div className="flex justify-between">
               <span>Booking Fee</span>
