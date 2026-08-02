@@ -29,6 +29,7 @@ import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/inde
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
+import { Route as AdminShipmentsLiveRouteImport } from './app/_admin/shipments/live'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
@@ -184,6 +185,11 @@ const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
 const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminShipmentsLiveRoute = AdminShipmentsLiveRouteImport.update({
+  id: '/shipments/live',
+  path: '/shipments/live',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
@@ -532,6 +538,7 @@ export interface FileRoutesByFullPath {
   '/drivers/new': typeof AdminDriversNewRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
+  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
@@ -610,6 +617,7 @@ export interface FileRoutesByTo {
   '/drivers/new': typeof AdminDriversNewRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
+  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
@@ -690,6 +698,7 @@ export interface FileRoutesById {
   '/_admin/drivers/new': typeof AdminDriversNewRoute
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
+  '/_admin/shipments/live': typeof AdminShipmentsLiveRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -770,6 +779,7 @@ export interface FileRouteTypes {
     | '/drivers/new'
     | '/rides/live'
     | '/rides/new'
+    | '/shipments/live'
     | '/bookings/'
     | '/clients/'
     | '/dashboard/'
@@ -848,6 +858,7 @@ export interface FileRouteTypes {
     | '/drivers/new'
     | '/rides/live'
     | '/rides/new'
+    | '/shipments/live'
     | '/bookings'
     | '/clients'
     | '/dashboard'
@@ -927,6 +938,7 @@ export interface FileRouteTypes {
     | '/_admin/drivers/new'
     | '/_admin/rides/live'
     | '/_admin/rides/new'
+    | '/_admin/shipments/live'
     | '/_admin/bookings/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
@@ -1139,6 +1151,13 @@ declare module '@tanstack/react-router' {
       path: '/bookings'
       fullPath: '/bookings/'
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/shipments/live': {
+      id: '/_admin/shipments/live'
+      path: '/shipments/live'
+      fullPath: '/shipments/live'
+      preLoaderRoute: typeof AdminShipmentsLiveRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/rides/new': {
@@ -1685,6 +1704,7 @@ interface AdminRouteRouteChildren {
   AdminDriversNewRoute: typeof AdminDriversNewRoute
   AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
+  AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
@@ -1729,6 +1749,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDriversNewRoute: AdminDriversNewRoute,
   AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
+  AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
