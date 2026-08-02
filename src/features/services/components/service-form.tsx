@@ -115,7 +115,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               />
             </Field>
             <NumberField
-              label={tr("services.seats")}
+              label={tr("services.seating_capacity")}
               name={"seats"}
               control={form.control}
               required={false}

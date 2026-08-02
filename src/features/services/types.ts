@@ -13,8 +13,8 @@ export type Service = {
   min_fare: number;
   price_per_min: number;
   price_per_unit_distance: number;
-  booking_fee: number;
-  tax_fee: number;
+  // booking_fee: number;
+  // tax_fee: number;
   distance_unit: DistanceUnit;
   vehicle_category_id: number;
   description: string | undefined;

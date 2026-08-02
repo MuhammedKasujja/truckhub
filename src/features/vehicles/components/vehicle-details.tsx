@@ -67,7 +67,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="w-fit">
-            {vehicle.vehicle_type.name}
+            {vehicle.category.name}
           </Badge>
           <Can permission="vehicles:edit">
             <Button size={"icon-sm"} asChild>
@@ -127,7 +127,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               <DetailItem label="Vehicle Number" value={vehicle.number} />
 
               <DetailItem label="Plate Number" value={vehicle.plate_number} />
-              {vehicle.vehicle_type.is_truck && (
+              {vehicle.category.is_truck && (
                 <DetailItem
                   label="Second Plate"
                   value={vehicle.second_plate_number ?? "-"}
@@ -143,7 +143,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 }
               />
 
-              <DetailItem label="Type" value={vehicle.vehicle_type.name} />
+              <DetailItem label="Type" value={vehicle.category.name} />
 
               <DetailItem
                 label="Drive Train"
@@ -162,7 +162,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 label="Interior Color"
                 value={vehicle.interior_color}
               />
-              {vehicle.vehicle_type.is_truck && (
+              {vehicle.category.is_truck && (
                 <DetailItem
                   label="Tonnage Capacity"
                   value={vehicle.tonnage_capacity ?? "-"}
@@ -191,7 +191,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             </CardHeader>
             <CardContent className="flex flex-1">
               <DriverPicker
-                value={driver}
+                value={driver?.id}
                 onSelected={(driver) => {
                   if (driver) setDriver({ ...driver, name: driver?.fullname })
                   else setDriver(null)

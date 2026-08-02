@@ -75,7 +75,7 @@ export function ServiceList({ services }: ServiceListProps) {
             </div>
             {!service.is_truck && (
               <div className="flex justify-between">
-                <span>{tr("services.seats")}</span>
+                <span>{tr("services.seating_capacity")}</span>
                 <span className="font-semibold">{service.seats}</span>
               </div>
             )}

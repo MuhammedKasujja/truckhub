@@ -218,7 +218,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     control={form.control}
                   />
                   <NumberField
-                    label={tr("services.seats")}
+                    label={tr("services.seating_capacity")}
                     name={"seats"}
                     control={form.control}
                     required={false}

@@ -41,7 +41,7 @@ export interface VehicleBase {
 
 export interface Vehicle extends VehicleBase {
   driver: VehicleDriver | null
-  vehicle_type: {
+  category: {
     id: EntityId
     name: string
     is_truck: boolean

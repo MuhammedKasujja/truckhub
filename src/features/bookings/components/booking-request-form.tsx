@@ -256,7 +256,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                         prepend({
                           service_id: service.id,
                           service_name: service.name,
-                          cost_per_item: service.booking_fee.toString(),
+                          cost_per_item: service.base_fare.toString(),
                           total_items: 1,
                           discount: 0,
                         })
