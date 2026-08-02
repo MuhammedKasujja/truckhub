@@ -6,6 +6,10 @@ import { ShipmentSearchParamsInput } from "./schemas"
 export const shipmentsQueryKeys = {
   all: () => ["shipments"],
   list: () => [...shipmentsQueryKeys.all(), "list"],
+  active: () => [...shipmentsQueryKeys.all(), "active"],
+  confirmed: () => [...shipmentsQueryKeys.all(), "confirmed"],
+  requested: () => [...shipmentsQueryKeys.all(), "requested"],
+  completed: () => [...shipmentsQueryKeys.all(), "completed"],
   details: () => [...shipmentsQueryKeys.all(), "detail"],
   search: () => [...shipmentsQueryKeys.all(), "search"],
   detail: (id: EntityId) => [...shipmentsQueryKeys.details(), id],
@@ -17,3 +21,34 @@ export const shipmentsQueryOptions = (search: ShipmentSearchParamsInput) =>
     queryFn: () => getShipmentsFn({ data: search }),
   })
 
+export const shipmentsConfirmedQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: [...shipmentsQueryKeys.confirmed()],
+    queryFn: () => getShipmentsFn({ data: search }),
+  })
+
+export const shipmentsActiveQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: [...shipmentsQueryKeys.active()],
+    queryFn: () => getShipmentsFn({ data: search }),
+  })
+
+export const shipmentsRequestsQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: [...shipmentsQueryKeys.requested()],
+    queryFn: () => getShipmentsFn({ data: search }),
+  })
+
+export const shipmentsCompletedQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: [...shipmentsQueryKeys.completed()],
+    queryFn: () => getShipmentsFn({ data: search }),
+  })

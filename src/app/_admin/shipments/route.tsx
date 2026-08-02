@@ -8,6 +8,7 @@ import {
 import { Route as ActiveShipmentsRoute } from "@/app/_admin/shipments/active"
 import { Route as ConfirmedShipmentsRoute } from "@/app/_admin/shipments/confirmed"
 import { Route as RequestedShipmentsRoute } from "@/app/_admin/shipments/requests"
+import { Route as CompletedShipmentsRoute } from "@/app/_admin/shipments/completed"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
@@ -30,11 +31,15 @@ const shipmentTabs = [
     name: "requests",
     route: RequestedShipmentsRoute.to,
   },
+  {
+    name: "completed",
+    route: CompletedShipmentsRoute.to,
+  },
 ] as const
 
 export const Route = createFileRoute("/_admin/shipments")({
   component: RouteComponent,
-  beforeLoad: ()=> requirePermission("billing:module")
+  beforeLoad: ()=> requirePermission("shipments:module")
 })
 
 function RouteComponent() {

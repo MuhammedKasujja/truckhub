@@ -41,6 +41,7 @@ import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admi
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminShipmentsRequestsIndexRouteImport } from './app/_admin/shipments/requests/index'
 import { Route as AdminShipmentsConfirmedIndexRouteImport } from './app/_admin/shipments/confirmed/index'
+import { Route as AdminShipmentsCompletedIndexRouteImport } from './app/_admin/shipments/completed/index'
 import { Route as AdminShipmentsActiveIndexRouteImport } from './app/_admin/shipments/active/index'
 import { Route as AdminSettingsUserProfileIndexRouteImport } from './app/_admin/settings/user-profile/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
@@ -254,6 +255,12 @@ const AdminShipmentsConfirmedIndexRoute =
   AdminShipmentsConfirmedIndexRouteImport.update({
     id: '/confirmed/',
     path: '/confirmed/',
+    getParentRoute: () => AdminShipmentsRouteRoute,
+  } as any)
+const AdminShipmentsCompletedIndexRoute =
+  AdminShipmentsCompletedIndexRouteImport.update({
+    id: '/completed/',
+    path: '/completed/',
     getParentRoute: () => AdminShipmentsRouteRoute,
   } as any)
 const AdminShipmentsActiveIndexRoute =
@@ -609,6 +616,7 @@ export interface FileRoutesByFullPath {
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/shipments/active/': typeof AdminShipmentsActiveIndexRoute
+  '/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
@@ -691,6 +699,7 @@ export interface FileRoutesByTo {
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
   '/settings/user-profile': typeof AdminSettingsUserProfileIndexRoute
   '/shipments/active': typeof AdminShipmentsActiveIndexRoute
+  '/shipments/completed': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
@@ -775,6 +784,7 @@ export interface FileRoutesById {
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/_admin/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/_admin/shipments/active/': typeof AdminShipmentsActiveIndexRoute
+  '/_admin/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
@@ -859,6 +869,7 @@ export interface FileRouteTypes {
     | '/settings/tax-rates/'
     | '/settings/user-profile/'
     | '/shipments/active/'
+    | '/shipments/completed/'
     | '/shipments/confirmed/'
     | '/shipments/requests/'
     | '/vehicles/new/'
@@ -941,6 +952,7 @@ export interface FileRouteTypes {
     | '/settings/tax-rates'
     | '/settings/user-profile'
     | '/shipments/active'
+    | '/shipments/completed'
     | '/shipments/confirmed'
     | '/shipments/requests'
     | '/vehicles/new'
@@ -1024,6 +1036,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/tax-rates/'
     | '/_admin/settings/user-profile/'
     | '/_admin/shipments/active/'
+    | '/_admin/shipments/completed/'
     | '/_admin/shipments/confirmed/'
     | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
@@ -1274,6 +1287,13 @@ declare module '@tanstack/react-router' {
       path: '/confirmed'
       fullPath: '/shipments/confirmed/'
       preLoaderRoute: typeof AdminShipmentsConfirmedIndexRouteImport
+      parentRoute: typeof AdminShipmentsRouteRoute
+    }
+    '/_admin/shipments/completed/': {
+      id: '/_admin/shipments/completed/'
+      path: '/completed'
+      fullPath: '/shipments/completed/'
+      preLoaderRoute: typeof AdminShipmentsCompletedIndexRouteImport
       parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/shipments/active/': {
@@ -1759,6 +1779,7 @@ const AdminSettingsRouteRouteWithChildren =
 interface AdminShipmentsRouteRouteChildren {
   AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
   AdminShipmentsActiveIndexRoute: typeof AdminShipmentsActiveIndexRoute
+  AdminShipmentsCompletedIndexRoute: typeof AdminShipmentsCompletedIndexRoute
   AdminShipmentsConfirmedIndexRoute: typeof AdminShipmentsConfirmedIndexRoute
   AdminShipmentsRequestsIndexRoute: typeof AdminShipmentsRequestsIndexRoute
 }
@@ -1766,6 +1787,7 @@ interface AdminShipmentsRouteRouteChildren {
 const AdminShipmentsRouteRouteChildren: AdminShipmentsRouteRouteChildren = {
   AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
   AdminShipmentsActiveIndexRoute: AdminShipmentsActiveIndexRoute,
+  AdminShipmentsCompletedIndexRoute: AdminShipmentsCompletedIndexRoute,
   AdminShipmentsConfirmedIndexRoute: AdminShipmentsConfirmedIndexRoute,
   AdminShipmentsRequestsIndexRoute: AdminShipmentsRequestsIndexRoute,
 }

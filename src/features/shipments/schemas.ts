@@ -1,12 +1,14 @@
 import z from "zod"
 import { Shipment } from "./types"
 import { IDSchema } from "@/schemas"
+import { shipmentStatuses } from "./enums"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ShipmentSearchParams = z.object({
   sort: getSortingStateSchema<Shipment>().default([]),
   // advanced filter
+  status: z.enum(shipmentStatuses).optional(),
   filters: getFiltersStateSchema<Shipment>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })

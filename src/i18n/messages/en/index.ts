@@ -90,6 +90,7 @@ const en = {
     active: "Active",
     confirmed: "Confirmed",
     requests: "Requests",
+    completed: "Completed",
     overview: "Overview",
     invoice_number: "Invoice Number",
     form: {

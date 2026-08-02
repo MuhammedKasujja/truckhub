@@ -9,6 +9,7 @@ import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
 import { BillingModulePermissions } from "./billing_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
+import { ShipmentModulePermissions } from "./shipment_permissions";
 import { QuotationModulePermissions } from "./quotation_permissions";
 import { DashboardModulePermissions } from "./dashboard_permissions";
 
@@ -18,6 +19,7 @@ import { DashboardModulePermissions } from "./dashboard_permissions";
 export const KeyNamedPermissions = {
   ...DashboardModulePermissions,
   ...QuotationModulePermissions,
+  ...ShipmentModulePermissions,
   ...UserModulePermissions,
   ...BookingModulePermissions,
   ...ServiceModulePermissions,
@@ -36,6 +38,7 @@ export type UserPermission = keyof typeof KeyNamedPermissions;
 export const SystemPermissions = {
   dashboard: DashboardModulePermissions,
   quotations: QuotationModulePermissions,
+  shipment: ShipmentModulePermissions,
   bookings: BookingModulePermissions,
   services: ServiceModulePermissions,
   rides: RideModulePermissions,
