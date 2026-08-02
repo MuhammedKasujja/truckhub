@@ -27,7 +27,9 @@ import {
 import {
   AutoCompleteField,
   NumberField,
+  SelectField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import React from "react"
 import { Field, FieldGroup } from "@/components/ui/field"
@@ -122,7 +124,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
                 control={form.control}
                 name={"consumption_rate"}
               />
-              <NumberField
+              <YearPickerField
                 required={false}
                 label="Year"
                 control={form.control}

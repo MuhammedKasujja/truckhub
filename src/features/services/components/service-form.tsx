@@ -13,6 +13,7 @@ import {
   NumberField,
   TextareaField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
@@ -102,7 +103,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
             /> */}
             <Field orientation={"horizontal"}>
-              <TextField
+              <YearPickerField
                 label={"Start Year"}
                 name={"start_year"}
                 control={form.control}
@@ -120,13 +121,13 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               required={false}
             />
             <NumberField
-              label={tr("services.base_fare")}
+              label={tr("services.price")}
               name={"base_fare"}
               control={form.control}
               required={false}
             />
             <NumberField
-              label={tr("services.min_fare")}
+              label={tr("services.last_price")}
               name={"min_fare"}
               control={form.control}
               required={false}
@@ -141,12 +142,12 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               name={"price_per_unit_distance"}
               control={form.control}
             />
-            <NumberField
+            {/* <NumberField
               label={tr("services.booking_fee")}
               name={"booking_fee"}
               control={form.control}
               required={false}
-            />
+            /> */}
             <CarBrandPickerField
               label={tr("services.car_brand")}
               name={"car_brand_id"}

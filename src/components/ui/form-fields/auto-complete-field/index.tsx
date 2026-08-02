@@ -21,7 +21,7 @@ import { RequiredLabelIcon } from "@/components/required-label-icon";
 
 type Option = { label: string; value: string | number };
 
-type AutoCompleteFieldProps<T extends FieldValues> = {
+export type AutoCompleteFieldProps<T extends FieldValues> = {
   label?: string;
   options: readonly Option[];
   control: Control<T>;

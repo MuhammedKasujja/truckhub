@@ -6,6 +6,8 @@ export const en = {
   seating_capacity: "Seating Capacity",
   base_fare: "Base fare",
   min_fare: "Min fare",
+  price: "Price",
+  last_price: "Last Price",
   price_per_min: "Price per minute",
   price_per_unit_distance: "Price per unit distance",
   booking_fee: "Booking fee",
