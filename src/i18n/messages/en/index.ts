@@ -87,6 +87,9 @@ const en = {
     invoices: "Invoices",
     quotation: "Quotation",
     quotations: "Quotations",
+    active: "Active",
+    confirmed: "Confirmed",
+    requests: "Requests",
     overview: "Overview",
     invoice_number: "Invoice Number",
     form: {

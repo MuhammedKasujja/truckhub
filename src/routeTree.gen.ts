@@ -15,10 +15,10 @@ import { Route as AuthUnauthorizedModuleRouteImport } from './app/_auth/unauthor
 import { Route as AuthUnauthorizedRouteImport } from './app/_auth/unauthorized'
 import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
 import { Route as AuthLoginRouteImport } from './app/_auth/login'
+import { Route as AdminShipmentsRouteRouteImport } from './app/_admin/shipments/route'
 import { Route as AdminSettingsRouteRouteImport } from './app/_admin/settings/route'
 import { Route as AdminBillingRouteRouteImport } from './app/_admin/billing/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
-import { Route as AdminShipmentsIndexRouteImport } from './app/_admin/shipments/index'
 import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/index'
 import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
 import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/index'
@@ -39,6 +39,9 @@ import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admi
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
+import { Route as AdminShipmentsRequestsIndexRouteImport } from './app/_admin/shipments/requests/index'
+import { Route as AdminShipmentsConfirmedIndexRouteImport } from './app/_admin/shipments/confirmed/index'
+import { Route as AdminShipmentsActiveIndexRouteImport } from './app/_admin/shipments/active/index'
 import { Route as AdminSettingsUserProfileIndexRouteImport } from './app/_admin/settings/user-profile/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
@@ -117,6 +120,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminShipmentsRouteRoute = AdminShipmentsRouteRouteImport.update({
+  id: '/shipments',
+  path: '/shipments',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminSettingsRouteRoute = AdminSettingsRouteRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -130,11 +138,6 @@ const AdminBillingRouteRoute = AdminBillingRouteRouteImport.update({
 const AdminVehiclesIndexRoute = AdminVehiclesIndexRouteImport.update({
   id: '/vehicles/',
   path: '/vehicles/',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminShipmentsIndexRoute = AdminShipmentsIndexRouteImport.update({
-  id: '/shipments/',
-  path: '/shipments/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminServicesIndexRoute = AdminServicesIndexRouteImport.update({
@@ -188,9 +191,9 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminShipmentsLiveRoute = AdminShipmentsLiveRouteImport.update({
-  id: '/shipments/live',
-  path: '/shipments/live',
-  getParentRoute: () => AdminRouteRoute,
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => AdminShipmentsRouteRoute,
 } as any)
 const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
   id: '/rides/new',
@@ -241,6 +244,24 @@ const AdminVehiclesNewIndexRoute = AdminVehiclesNewIndexRouteImport.update({
   path: '/vehicles/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminShipmentsRequestsIndexRoute =
+  AdminShipmentsRequestsIndexRouteImport.update({
+    id: '/requests/',
+    path: '/requests/',
+    getParentRoute: () => AdminShipmentsRouteRoute,
+  } as any)
+const AdminShipmentsConfirmedIndexRoute =
+  AdminShipmentsConfirmedIndexRouteImport.update({
+    id: '/confirmed/',
+    path: '/confirmed/',
+    getParentRoute: () => AdminShipmentsRouteRoute,
+  } as any)
+const AdminShipmentsActiveIndexRoute =
+  AdminShipmentsActiveIndexRouteImport.update({
+    id: '/active/',
+    path: '/active/',
+    getParentRoute: () => AdminShipmentsRouteRoute,
+  } as any)
 const AdminSettingsUserProfileIndexRoute =
   AdminSettingsUserProfileIndexRouteImport.update({
     id: '/user-profile/',
@@ -526,6 +547,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/billing': typeof AdminBillingRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
+  '/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
@@ -549,7 +571,6 @@ export interface FileRoutesByFullPath {
   '/reviews/': typeof AdminReviewsIndexRoute
   '/rides/': typeof AdminRidesIndexRoute
   '/services/': typeof AdminServicesIndexRoute
-  '/shipments/': typeof AdminShipmentsIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -587,6 +608,9 @@ export interface FileRoutesByFullPath {
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
+  '/shipments/active/': typeof AdminShipmentsActiveIndexRoute
+  '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
+  '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -605,6 +629,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/billing': typeof AdminBillingRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
+  '/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
@@ -628,7 +653,6 @@ export interface FileRoutesByTo {
   '/reviews': typeof AdminReviewsIndexRoute
   '/rides': typeof AdminRidesIndexRoute
   '/services': typeof AdminServicesIndexRoute
-  '/shipments': typeof AdminShipmentsIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -666,6 +690,9 @@ export interface FileRoutesByTo {
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
   '/settings/user-profile': typeof AdminSettingsUserProfileIndexRoute
+  '/shipments/active': typeof AdminShipmentsActiveIndexRoute
+  '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
+  '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
   '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -686,6 +713,7 @@ export interface FileRoutesById {
   '/_admin': typeof AdminRouteRouteWithChildren
   '/_admin/billing': typeof AdminBillingRouteRouteWithChildren
   '/_admin/settings': typeof AdminSettingsRouteRouteWithChildren
+  '/_admin/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
@@ -709,7 +737,6 @@ export interface FileRoutesById {
   '/_admin/reviews/': typeof AdminReviewsIndexRoute
   '/_admin/rides/': typeof AdminRidesIndexRoute
   '/_admin/services/': typeof AdminServicesIndexRoute
-  '/_admin/shipments/': typeof AdminShipmentsIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
   '/_admin/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
@@ -747,6 +774,9 @@ export interface FileRoutesById {
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
   '/_admin/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
+  '/_admin/shipments/active/': typeof AdminShipmentsActiveIndexRoute
+  '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
+  '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/_admin/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
@@ -767,6 +797,7 @@ export interface FileRouteTypes {
     | '/'
     | '/billing'
     | '/settings'
+    | '/shipments'
     | '/login'
     | '/logout'
     | '/unauthorized'
@@ -790,7 +821,6 @@ export interface FileRouteTypes {
     | '/reviews/'
     | '/rides/'
     | '/services/'
-    | '/shipments/'
     | '/vehicles/'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -828,6 +858,9 @@ export interface FileRouteTypes {
     | '/settings/pdf-templates/'
     | '/settings/tax-rates/'
     | '/settings/user-profile/'
+    | '/shipments/active/'
+    | '/shipments/confirmed/'
+    | '/shipments/requests/'
     | '/vehicles/new/'
     | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions/'
@@ -846,6 +879,7 @@ export interface FileRouteTypes {
     | '/'
     | '/billing'
     | '/settings'
+    | '/shipments'
     | '/login'
     | '/logout'
     | '/unauthorized'
@@ -869,7 +903,6 @@ export interface FileRouteTypes {
     | '/reviews'
     | '/rides'
     | '/services'
-    | '/shipments'
     | '/vehicles'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
@@ -907,6 +940,9 @@ export interface FileRouteTypes {
     | '/settings/pdf-templates'
     | '/settings/tax-rates'
     | '/settings/user-profile'
+    | '/shipments/active'
+    | '/shipments/confirmed'
+    | '/shipments/requests'
     | '/vehicles/new'
     | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions'
@@ -926,6 +962,7 @@ export interface FileRouteTypes {
     | '/_admin'
     | '/_admin/billing'
     | '/_admin/settings'
+    | '/_admin/shipments'
     | '/_auth/login'
     | '/_auth/logout'
     | '/_auth/unauthorized'
@@ -949,7 +986,6 @@ export interface FileRouteTypes {
     | '/_admin/reviews/'
     | '/_admin/rides/'
     | '/_admin/services/'
-    | '/_admin/shipments/'
     | '/_admin/vehicles/'
     | '/_admin/bookings/$bookingId/edit'
     | '/_admin/bookings/$bookingId/view'
@@ -987,6 +1023,9 @@ export interface FileRouteTypes {
     | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/tax-rates/'
     | '/_admin/settings/user-profile/'
+    | '/_admin/shipments/active/'
+    | '/_admin/shipments/confirmed/'
+    | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
     | '/_admin/billing/invoices/$invoiceId/view'
     | '/_admin/settings/user-management/permissions/'
@@ -1055,6 +1094,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_admin/shipments': {
+      id: '/_admin/shipments'
+      path: '/shipments'
+      fullPath: '/shipments'
+      preLoaderRoute: typeof AdminShipmentsRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/settings': {
       id: '/_admin/settings'
       path: '/settings'
@@ -1074,13 +1120,6 @@ declare module '@tanstack/react-router' {
       path: '/vehicles'
       fullPath: '/vehicles/'
       preLoaderRoute: typeof AdminVehiclesIndexRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/shipments/': {
-      id: '/_admin/shipments/'
-      path: '/shipments'
-      fullPath: '/shipments/'
-      preLoaderRoute: typeof AdminShipmentsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/services/': {
@@ -1155,10 +1194,10 @@ declare module '@tanstack/react-router' {
     }
     '/_admin/shipments/live': {
       id: '/_admin/shipments/live'
-      path: '/shipments/live'
+      path: '/live'
       fullPath: '/shipments/live'
       preLoaderRoute: typeof AdminShipmentsLiveRouteImport
-      parentRoute: typeof AdminRouteRoute
+      parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/rides/new': {
       id: '/_admin/rides/new'
@@ -1222,6 +1261,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/vehicles/new/'
       preLoaderRoute: typeof AdminVehiclesNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/shipments/requests/': {
+      id: '/_admin/shipments/requests/'
+      path: '/requests'
+      fullPath: '/shipments/requests/'
+      preLoaderRoute: typeof AdminShipmentsRequestsIndexRouteImport
+      parentRoute: typeof AdminShipmentsRouteRoute
+    }
+    '/_admin/shipments/confirmed/': {
+      id: '/_admin/shipments/confirmed/'
+      path: '/confirmed'
+      fullPath: '/shipments/confirmed/'
+      preLoaderRoute: typeof AdminShipmentsConfirmedIndexRouteImport
+      parentRoute: typeof AdminShipmentsRouteRoute
+    }
+    '/_admin/shipments/active/': {
+      id: '/_admin/shipments/active/'
+      path: '/active'
+      fullPath: '/shipments/active/'
+      preLoaderRoute: typeof AdminShipmentsActiveIndexRouteImport
+      parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/settings/user-profile/': {
       id: '/_admin/settings/user-profile/'
@@ -1696,15 +1756,32 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
 const AdminSettingsRouteRouteWithChildren =
   AdminSettingsRouteRoute._addFileChildren(AdminSettingsRouteRouteChildren)
 
+interface AdminShipmentsRouteRouteChildren {
+  AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
+  AdminShipmentsActiveIndexRoute: typeof AdminShipmentsActiveIndexRoute
+  AdminShipmentsConfirmedIndexRoute: typeof AdminShipmentsConfirmedIndexRoute
+  AdminShipmentsRequestsIndexRoute: typeof AdminShipmentsRequestsIndexRoute
+}
+
+const AdminShipmentsRouteRouteChildren: AdminShipmentsRouteRouteChildren = {
+  AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
+  AdminShipmentsActiveIndexRoute: AdminShipmentsActiveIndexRoute,
+  AdminShipmentsConfirmedIndexRoute: AdminShipmentsConfirmedIndexRoute,
+  AdminShipmentsRequestsIndexRoute: AdminShipmentsRequestsIndexRoute,
+}
+
+const AdminShipmentsRouteRouteWithChildren =
+  AdminShipmentsRouteRoute._addFileChildren(AdminShipmentsRouteRouteChildren)
+
 interface AdminRouteRouteChildren {
   AdminBillingRouteRoute: typeof AdminBillingRouteRouteWithChildren
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
+  AdminShipmentsRouteRoute: typeof AdminShipmentsRouteRouteWithChildren
   AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
   AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
-  AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
@@ -1715,7 +1792,6 @@ interface AdminRouteRouteChildren {
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminRidesIndexRoute: typeof AdminRidesIndexRoute
   AdminServicesIndexRoute: typeof AdminServicesIndexRoute
-  AdminShipmentsIndexRoute: typeof AdminShipmentsIndexRoute
   AdminVehiclesIndexRoute: typeof AdminVehiclesIndexRoute
   AdminBookingsBookingIdEditRoute: typeof AdminBookingsBookingIdEditRoute
   AdminBookingsBookingIdViewRoute: typeof AdminBookingsBookingIdViewRoute
@@ -1744,12 +1820,12 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminBillingRouteRoute: AdminBillingRouteRouteWithChildren,
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
+  AdminShipmentsRouteRoute: AdminShipmentsRouteRouteWithChildren,
   AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
   AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
-  AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
@@ -1760,7 +1836,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminRidesIndexRoute: AdminRidesIndexRoute,
   AdminServicesIndexRoute: AdminServicesIndexRoute,
-  AdminShipmentsIndexRoute: AdminShipmentsIndexRoute,
   AdminVehiclesIndexRoute: AdminVehiclesIndexRoute,
   AdminBookingsBookingIdEditRoute: AdminBookingsBookingIdEditRoute,
   AdminBookingsBookingIdViewRoute: AdminBookingsBookingIdViewRoute,
