@@ -70,6 +70,8 @@ const useAssignShipmentDriverBase = createEntityActionHook(
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
     invalidator.shipments.details(input.data.unitId)
+    invalidator.drivers.list.invalidate()
+    invalidator.drivers.details(input.data.driverId)
   }
 )
 
@@ -87,6 +89,8 @@ const useAssignShipmentVehicleBase = createEntityActionHook(
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
     invalidator.shipments.details(input.data.unitId)
+    invalidator.vehicles.list.invalidate()
+    invalidator.vehicles.details(input.data.vehicleId)
   }
 )
 

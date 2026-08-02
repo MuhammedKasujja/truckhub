@@ -26,11 +26,12 @@ export interface VehicleBase {
   engine_type: Engine
   gearbox: Gearbox
   year: string
+  status: string
   seats: number
   vehicle_category_id: EntityId
   car_model_id: EntityId
   drive_train_id: EntityId
-  consumption_rate: number
+  fuel_consumption_rate: number
   tonnage_id: EntityId
   created_at: Date
   updated_at: Date
