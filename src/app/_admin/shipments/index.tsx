@@ -34,7 +34,7 @@ function RouteComponent() {
             <Button size={"sm"} asChild>
               <Link to={"/shipments/live"}>
                 <MapIcon />
-                Live
+                Live Map
               </Link>
             </Button>
           </Can>

@@ -8,9 +8,11 @@ import { IDSchema } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
   validateSearch: z.object({
     clientId: IDSchema.optional(),
   }),

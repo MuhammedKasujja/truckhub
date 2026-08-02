@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { Can } from "@/components/has-permission"
 import { NotFound } from "@/components/not-found"
 import {
@@ -27,7 +28,7 @@ import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
-  errorComponent: NotFound,
+  errorComponent: DefaultCatchBoundary,
   beforeLoad: () => requirePermission("clients:view"),
   loader: async ({ context: { queryClient }, params }) => {
     const clientId = params.clientId

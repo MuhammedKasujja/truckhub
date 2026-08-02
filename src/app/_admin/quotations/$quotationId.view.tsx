@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +15,7 @@ import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
   component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
   loader: ({ context, params }) => {
     return context.queryClient.ensureQueryData(
       quotationDetailsQueryOptions(params.quotationId)
