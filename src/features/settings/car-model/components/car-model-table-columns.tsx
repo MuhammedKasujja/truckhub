@@ -19,7 +19,13 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-        return <p>{row.original.name}</p>
+        const model = row.original
+        return (
+          <p>
+            {model.name}
+            {model.manufacture_year && <span className="text-muted-foreground"> ({model.manufacture_year})</span>}
+          </p>
+        )
       },
     },
     {

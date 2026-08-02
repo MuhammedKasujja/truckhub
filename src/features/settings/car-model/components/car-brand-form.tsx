@@ -30,7 +30,7 @@ import {
   TextField,
 } from "@/components/ui/form-fields"
 import React from "react"
-import { FieldGroup } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
@@ -116,11 +116,19 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
                 })) ?? []
               }
             />
-            <NumberField
-              label="Consumption Rate"
-              control={form.control}
-              name={"consumption_rate"}
-            />
+            <Field orientation={"horizontal"}>
+              <NumberField
+                label="Consumption Rate"
+                control={form.control}
+                name={"consumption_rate"}
+              />
+              <NumberField
+                required={false}
+                label="Year"
+                control={form.control}
+                name={"manufacture_year"}
+              />
+            </Field>
           </FieldGroup>
           <DialogFooter className="sm:justify-end">
             <SubmitButton
