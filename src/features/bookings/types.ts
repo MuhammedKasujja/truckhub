@@ -17,8 +17,8 @@ export type Booking = {
   request_start_time: Date
   pickup_time: Date
   return_time: Date
-  estimated_pickup_time: Date
-  estimated_return_time: Date
+  start_date: Date
+  end_date: Date
   status: BookingStatus
   partial: number | null
   balance: number
@@ -26,6 +26,7 @@ export type Booking = {
   amount: number
   line_items: LineItemResponse[]
   client: BookingCustomer
+  quotation: { id: EntityId; number: string } | null
 }
 
 export type BookingDetails = {

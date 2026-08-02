@@ -57,7 +57,7 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                 <TableHead>Client</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Balance</TableHead>
+                <TableHead>Quotation</TableHead>
                 <TableHead>Start Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -73,9 +73,15 @@ export function RecentBookingTable({ bookings }: RecentBookingTableProps) {
                       <Badge variant={"outline"}>{booking.status}</Badge>
                     </TableCell>
                     <TableCell>{formatMoney(booking.amount)}</TableCell>
-                    <TableCell>{formatMoney(booking.balance)}</TableCell>
                     <TableCell>
-                      {formatDate(booking.estimated_pickup_time)}
+                      {booking.quotation ? (
+                        <>{booking.quotation?.number}</>
+                      ) : (
+                        <>-</>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {formatDate(booking.start_date, { timeStyle: undefined })}
                     </TableCell>
                   </TableRow>
                 ))

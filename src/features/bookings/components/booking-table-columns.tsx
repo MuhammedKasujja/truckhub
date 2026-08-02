@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { formatDateTime, formatMoney } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Booking, BookingStatusList } from "@/features/bookings/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
@@ -86,10 +86,20 @@ export function getBookingTableColumns(
       enableColumnFilter: true,
     },
     {
-      accessorKey: "pickup_time",
-      header: "Pickup Date",
+      id: "quotation",
+      header: "Quotation",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.estimated_pickup_time)}</p>
+        const quotation = row.original.quotation
+        return quotation ? (
+          <Link
+            to={"/quotations/$quotationId/view"}
+            params={{ quotationId: quotation.id }}
+          >
+            {quotation.number}
+          </Link>
+        ) : (
+          <>-</>
+        )
       },
     },
     {
@@ -100,10 +110,10 @@ export function getBookingTableColumns(
       },
     },
     {
-      accessorKey: "balance",
-      header: tr("balance"),
+      id: "date",
+      header: tr("common.form.date"),
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.balance)}</p>
+        return <p>{formatDate(row.original.start_date, {timeStyle: undefined})}</p>
       },
     },
   ]
