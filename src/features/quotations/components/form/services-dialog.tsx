@@ -22,6 +22,8 @@ import { useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ServicePickerField } from "@/features/services/components"
+import { formatMoney } from "@/lib/format"
+import { ServiceRoutesDialog } from "./service-routes"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -65,7 +67,9 @@ export function ServicesDialog({
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
               <span className="text-sm text-muted-foreground">
-                Select a service
+                {formatMoney(form.watch("line_total"), {
+                  showZeroAsNumber: true,
+                })}
               </span>
               <div className="flex gap-4">
                 <Controller
@@ -115,104 +119,111 @@ export function ServicesDialog({
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4">
-            <Field
-              orientation={"horizontal"}
-              className="grid gap-4 md:grid-cols-3"
-            >
-              <ServicePickerField
-                label={"Service"}
-                name={"service_id"}
-                control={form.control}
+          <div className="grid grid-cols-6">
+            <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4 col-span-4">
+              <Field
+                orientation={"horizontal"}
+                className="grid gap-4 md:grid-cols-3"
+              >
+                <ServicePickerField
+                  label={"Service"}
+                  name={"service_id"}
+                  control={form.control}
+                  required={false}
+                  onSelected={(service) => {
+                    form.setValue("unit_price", Number(service?.base_fare))
+                  }}
+                />
+                <CarBrandPickerField
+                  label={"Car Brand"}
+                  name={"car_brand_id"}
+                  control={form.control}
+                  required={false}
+                  onSelected={(_) => {
+                    form.setValue("car_model_id", "")
+                    form.setValue(
+                      "estimated_consumption_rate_km",
+                      Number(undefined)
+                    )
+                    form.setValue("vehicle_year", "")
+                  }}
+                />
+                <CarModelPickerField
+                  label={"Car Model"}
+                  name={"car_model_id"}
+                  carBrandId={form.watch("car_brand_id")}
+                  control={form.control}
+                  required={false}
+                  onSelected={(model) => {
+                    form.setValue(
+                      "estimated_consumption_rate_km",
+                      Number(model?.consumption_rate)
+                    )
+                    form.setValue(
+                      "vehicle_year",
+                      model?.manufacture_year
+                        ? `${model?.manufacture_year}`
+                        : ""
+                    )
+                  }}
+                />
+              </Field>
+              <Field
+                orientation={"horizontal"}
+                className="grid gap-4 md:grid-cols-2"
+              >
+                <TextField
+                  required={false}
+                  label={"Year Make"}
+                  name={"vehicle_year"}
+                  control={form.control}
+                />
+                <NumberField
+                  required={false}
+                  label={"Vehicle Consumption (km/l)"}
+                  name={"estimated_consumption_rate_km"}
+                  control={form.control}
+                />
+              </Field>
+              <Field
+                orientation={"horizontal"}
+                className="grid gap-4 md:grid-cols-3"
+              >
+                <NumberField
+                  label={"Quantity"}
+                  name={"quantity"}
+                  control={form.control}
+                />
+                <NumberField
+                  label={"Unit Price"}
+                  name={"unit_price"}
+                  control={form.control}
+                />
+                <NumberField
+                  required={false}
+                  label={"Discount"}
+                  name={"discount"}
+                  control={form.control}
+                />
+              </Field>
+              <NumberField
+                readOnly
                 required={false}
-                onSelected={(service) => {
-                  form.setValue("unit_price", Number(service?.base_fare))
-                }}
-              />
-              <CarBrandPickerField
-                label={"Car Brand"}
-                name={"car_brand_id"}
-                control={form.control}
-                required={false}
-                onSelected={(_) => {
-                  form.setValue("car_model_id", "")
-                  form.setValue(
-                    "estimated_consumption_rate_km",
-                    Number(undefined)
-                  )
-                  form.setValue("vehicle_year", "")
-                }}
-              />
-              <CarModelPickerField
-                label={"Car Model"}
-                name={"car_model_id"}
-                carBrandId={form.watch("car_brand_id")}
-                control={form.control}
-                required={false}
-                onSelected={(model) => {
-                  form.setValue(
-                    "estimated_consumption_rate_km",
-                    Number(model?.consumption_rate)
-                  )
-                  form.setValue(
-                    "vehicle_year",
-                    model?.manufacture_year ? `${model?.manufacture_year}` : ""
-                  )
-                }}
-              />
-            </Field>
-            <Field
-              orientation={"horizontal"}
-              className="grid gap-4 md:grid-cols-2"
-            >
-              <TextField
-                required={false}
-                label={"Year Make"}
-                name={"vehicle_year"}
+                label={"Sub total"}
+                name={"subtotal"}
                 control={form.control}
               />
               <NumberField
+                readOnly
                 required={false}
-                label={"Vehicle Consumption (km/l)"}
-                name={"estimated_consumption_rate_km"}
+                label={"Line Total"}
+                name={"line_total"}
                 control={form.control}
               />
-            </Field>
-            <Field
-              orientation={"horizontal"}
-              className="grid gap-4 md:grid-cols-3"
-            >
-              <NumberField
-                label={"Quantity"}
-                name={"quantity"}
-                control={form.control}
-              />
-              <NumberField
-                label={"Unit Price"}
-                name={"unit_price"}
-                control={form.control}
-              />
-              <NumberField
-                required={false}
-                label={"Discount"}
-                name={"discount"}
-                control={form.control}
-              />
-            </Field>
-            <NumberField
-              readOnly
-              required={false}
-              label={"Sub total"}
-              name={"subtotal"}
-              control={form.control}
-            />
-            <NumberField
-              readOnly
-              required={false}
-              label={"Line Total"}
-              name={"line_total"}
-              control={form.control}
-            />
+            </div>
+            <div className="col-span-2">
+              <ServiceRoutesDialog clientId={clientId}/>
+            </div>
           </div>
         </form>
       </DialogContent>

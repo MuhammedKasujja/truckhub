@@ -227,13 +227,13 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               <MapPin className="h-4 w-4" />
             </div>
             <div>
-              <CardTitle className="text-base">Locations</CardTitle>
+              <CardTitle className="text-base">Services</CardTitle>
               <CardDescription>
                 <Badge variant="secondary" className="font-normal">
                   {lineItemsFields.fields.length}{" "}
                   {lineItemsFields.fields.length === 1
-                    ? "location"
-                    : "locations"}
+                    ? "service"
+                    : "services"}
                 </Badge>
               </CardDescription>
             </div>
@@ -292,9 +292,10 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 <div className="text-muted-foreground">
                   {item.is_round_trip && <>Round</>}
                 </div>
-                <div>{item.subtotal}</div>
                 <div>{item.quantity}</div>
-                <div>{item.unit_price}</div>
+                <div>{formatMoney(item.unit_price)}</div>
+                <div>{formatMoney(item.line_total)}</div>
+                <div>{formatMoney(item.discount)}</div>
                 <Button
                   size={"sm"}
                   variant={"destructive"}
