@@ -64,8 +64,8 @@ export function ServicesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
-        <form className="flex flex-col">
+      <DialogContent className="max-h-[90vh] min-h-[90vh] flex overflow-hidden p-0 md:min-w-[90vw]">
+        <form className="flex flex-col w-full">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Service Pricing
@@ -124,8 +124,8 @@ export function ServicesDialog({
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-6">
-            <div className="col-span-4 flex-1 space-y-4 overflow-y-scroll px-4 pt-4">
+          <div className="flex-1 grid grid-cols-6 overflow-hidden">
+            <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-3"
@@ -226,7 +226,7 @@ export function ServicesDialog({
                 control={form.control}
               />
             </div>
-            <div className="col-span-2 p-4">
+            <div className="col-span-2 p-6 overflow-y-auto">
               <ServiceRoutesDialog
                 clientId={clientId}
                 onSelected={(route) => {

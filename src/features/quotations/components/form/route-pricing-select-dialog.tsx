@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import {
   Item,
   ItemContent,
@@ -47,6 +46,11 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateTruckEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import { NumberField } from "@/components/ui/form-fields"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -101,6 +105,7 @@ export function RoutePricingSelectDialog({
   const routes = watch("routes")
   const quantity = watch("quantity")
   const isRoundTrip = watch("is_round_trip")
+  const tonnage = watch("tonnage")
 
   const [query, setQuery] = useState("")
 
@@ -108,14 +113,21 @@ export function RoutePricingSelectDialog({
     return (data?.routes ?? []).filter((route) => {
       const q = query.toLowerCase()
 
+      // if (tonnage) {
+      //   tonnage &&
+      //     route.pricings.find(
+      //       (p) =>
+      //         tonnage >= Number(p.min_tons) && tonnage <= Number(p.max_tons)
+      //     )
+      // }
+
       return (
         route.origin.toLowerCase().includes(q) ||
         route.destination.toLowerCase().includes(q)
       )
     })
-  }, [query, data])
+  }, [query, data, tonnage])
 
-  // reset when client changes
   useEffect(() => {
     const unitPrice = routes.reduce(
       (curr, route) => curr + Number(route.pricing.price),
@@ -197,7 +209,7 @@ export function RoutePricingSelectDialog({
 
           <DialogDescription className="flex items-center justify-between gap-4">
             <span className="text-sm text-muted-foreground">
-              Select one pricing per route
+              Destinations - {serviceLocationsFields.fields.length}
             </span>
             <div className="flex gap-4">
               <Controller
@@ -257,16 +269,16 @@ export function RoutePricingSelectDialog({
           {/* LEFT SIDE */}
           <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-3">
             <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
+              <InputGroup className="flex-1">
+                <InputGroupInput
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search routes by origin or destination..."
-                  type="search"
-                  className="pl-9"
                 />
-              </div>
+                <InputGroupAddon>
+                  <Search />
+                </InputGroupAddon>
+              </InputGroup>
               <Select items={data?.tonnages ?? []}>
                 <SelectTrigger className="sm:w-48">
                   <SelectValue placeholder="Filter by tonnage" />
