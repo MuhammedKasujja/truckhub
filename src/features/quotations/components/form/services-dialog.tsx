@@ -125,6 +125,9 @@ export function ServicesDialog({
                 name={"service_id"}
                 control={form.control}
                 required={false}
+                onSelected={(service) => {
+                  form.setValue("unit_price", Number(service?.base_fare))
+                }}
               />
               <CarBrandPickerField
                 label={"Car Brand"}
@@ -141,7 +144,7 @@ export function ServicesDialog({
                 }}
               />
               <CarModelPickerField
-                label={"Carr Model"}
+                label={"Car Model"}
                 name={"car_model_id"}
                 carBrandId={form.watch("car_brand_id")}
                 control={form.control}

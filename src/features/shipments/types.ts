@@ -8,10 +8,11 @@ export type ShipmentLineItem = LineItemResponse & {
   scheduled_end: string
 }
 
-export type ShipmentConsumption = {
+export type ShipmentVehicleConsumption = {
   start_mileage: string | number
   end_mileage: string | number | null
   distance_km: string | number | null
+  fuel_rate: string | number | null
   days: number | null
 }
 
@@ -36,7 +37,7 @@ export type Shipment = {
     fuel_consumption_rate: string | number
   }
   item: ShipmentLineItem
-  consumption: ShipmentConsumption | null
+  consumption: ShipmentVehicleConsumption | null
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<

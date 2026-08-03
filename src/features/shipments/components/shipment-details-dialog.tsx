@@ -42,7 +42,7 @@ export function ShipmentDetailsDialog({
           <div className="flex flex-col">
             <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
               <DialogTitle className="text-lg font-semibold tracking-tight">
-                Shipment <Badge>{shipment?.status}</Badge>
+                Shipment<span className="text-muted-foreground mx-1">•</span>{shipment?.number} <Badge>{shipment?.status}</Badge>
               </DialogTitle>
               <DialogDescription className="flex items-center gap-4">
                 <ButtonGroup>

@@ -9,6 +9,7 @@ import { FieldValues } from "react-hook-form"
 import { EntityPickerProps } from "@/common/types"
 import { Service } from "../types"
 import { servicesSearchQueryOptions } from "../query-options"
+import { formatMoney } from "@/lib/format"
 
 export function ServicePicker({
   value,
@@ -29,12 +30,17 @@ export function ServicePicker({
         onSelected?.(booking)
       }}
       onSearch={(q) => setQuery(q)}
-      filterFn={(s, q) =>
-        s.name.toLowerCase().includes(q.toLowerCase())
-      }
+      filterFn={(s, q) => s.name.toLowerCase().includes(q.toLowerCase())}
       label={label}
-      getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      getOptionValue={(s) => s.id}
+      renderOption={(s) => (
+        <p>
+          {s.name}
+          <span className="ml-2 text-muted-foreground">
+            ({formatMoney(s.base_fare)})
+          </span>
+        </p>
+      )}
     />
   )
 }
@@ -60,11 +66,16 @@ export function ServicePickerField<TFieldValues extends FieldValues>({
       label={label}
       remote={remote}
       onSearch={(q) => setQuery(q)}
-      filterFn={(b, q) =>
-        b.name.toLowerCase().includes(q.toLowerCase())
-      }
-      getOptionValue={(b) => b.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      filterFn={(s, q) => s.name.toLowerCase().includes(q.toLowerCase())}
+      getOptionValue={(s) => s.id}
+      renderOption={(s) => (
+        <p>
+          {s.name}
+          <span className="ml-2 text-muted-foreground">
+            ({formatMoney(s.base_fare)})
+          </span>
+        </p>
+      )}
       onSelected={onSelected}
       {...props}
     />
