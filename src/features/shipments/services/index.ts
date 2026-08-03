@@ -21,7 +21,12 @@ import { ApiError } from "@/types"
 export const getShipmentsFn = createServerFn()
   .inputValidator(ShipmentSearchParams)
   .handler(async ({ data }) => {
-    return getShipments(data)
+    const response = await getShipments(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getShipmentByIdFn = createServerFn()
