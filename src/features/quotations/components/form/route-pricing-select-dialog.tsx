@@ -17,7 +17,7 @@ import { TonnagePricing } from "@/features/settings/pricing"
 import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   createTruckQuotationLineItemSchema,
   routePricingsSchema,
@@ -41,7 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import z from "zod"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateTruckEmptyLineItem } from "../../utils"
@@ -93,7 +93,14 @@ export function RoutePricingSelectDialog({
 
   const { watch } = form
 
+  const serviceLocationsFields = useFieldArray({
+    control: form.control,
+    name: "services",
+  })
+
   const routes = watch("routes")
+  const quantity = watch("quantity")
+  const isRoundTrip = watch("is_round_trip")
 
   const [query, setQuery] = useState("")
 
@@ -109,9 +116,17 @@ export function RoutePricingSelectDialog({
   }, [query, data])
 
   // reset when client changes
-  // useEffect(() => {
-  //   setRoutesMap(selectedPricings)
-  // }, [clientId, selectedPricings])
+  useEffect(() => {
+    const unitPrice = routes.reduce(
+      (curr, route) => curr + Number(route.pricing.price),
+      0
+    )
+    const subtotal = unitPrice * quantity * (isRoundTrip ? 2 : 1)
+    const lineTotal = subtotal
+    form.setValue("unit_price", unitPrice)
+    form.setValue("subtotal", subtotal)
+    form.setValue("line_total", lineTotal)
+  }, [routes, quantity, isRoundTrip])
 
   function handleSelectPricing(pricing: TonnagePricing, route: RouteDetails) {
     const updated: RoutePricingStruct = {
@@ -127,8 +142,6 @@ export function RoutePricingSelectDialog({
         min_tons: Number(pricing.min_tons),
         max_tons: Number(pricing.max_tons),
         price: Number(pricing.price),
-        tons: "",
-        default_price: pricing.price,
       },
     }
 
@@ -154,6 +167,13 @@ export function RoutePricingSelectDialog({
     form.setValue("routes", next, {
       shouldDirty: true,
       shouldValidate: true,
+    })
+    serviceLocationsFields.append({
+      ...route,
+      price: Number(pricing.price),
+      pricing_id: pricing.id,
+      max_tons: Number(pricing.max_tons),
+      min_tons: Number(pricing.min_tons),
     })
 
     // 🔥 LIVE SYNC to MAIN FORM
@@ -392,73 +412,13 @@ export function RoutePricingSelectDialog({
                         <GripVertical className="h-4 w-4" />
                       </Button>
                     </SortableItemHandle>
-
-                    <div className="flex flex-1 flex-col gap-2">
-                      <div>
-                        <div className="leading-tight font-medium">
-                          {r.destination}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {formatNumber(r.pricing.min_tons)} –{" "}
-                          {formatNumber(r.pricing.max_tons)} tons &nbsp;•&nbsp;{" "}
-                          {formatMoney(r.pricing.price)}
-                        </div>
+                    <div className="flex items-center gap-2">
+                      <div className="leading-tight font-medium">
+                        {r.destination}
                       </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <Controller
-                          name={`routes.${routeIndex}.pricing.price`}
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <div className="text-xs text-muted-foreground">
-                                Price
-                              </div>
-                              <Input
-                                {...field}
-                                type={"text"}
-                                id={field.name}
-                                aria-invalid={fieldState.invalid}
-                                autoComplete="off"
-                                className="h-8"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  className="text-[10px]"
-                                  errors={[fieldState.error]}
-                                />
-                              )}
-                            </Field>
-                          )}
-                        />
-                        <Controller
-                          name={`routes.${routeIndex}.pricing.tons`}
-                          control={form.control}
-                          render={({ field, fieldState }) => (
-                            <Field data-invalid={fieldState.invalid}>
-                              <div className="text-xs text-muted-foreground">
-                                Tons{" "}
-                                <span className="text-[10px]">
-                                  ({r.pricing.min_tons}-{r.pricing.max_tons})
-                                </span>
-                              </div>
-                              <Input
-                                {...field}
-                                type={"text"}
-                                id={field.name}
-                                aria-invalid={fieldState.invalid}
-                                autoComplete="off"
-                                className="h-8"
-                              />
-                              {fieldState.invalid && (
-                                <FieldError
-                                  className="text-[10px]"
-                                  errors={[fieldState.error]}
-                                />
-                              )}
-                            </Field>
-                          )}
-                        />
+                      <div className="text-sm text-muted-foreground">
+                        {formatNumber(r.distance_km)} km &nbsp;•&nbsp;{" "}
+                        {formatMoney(r.pricing.price)}
                       </div>
                     </div>
                   </SortableItem>

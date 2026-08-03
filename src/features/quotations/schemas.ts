@@ -28,6 +28,7 @@ const createVehicleAddonSchema = z.object({
 
 const createDistancePricingSchema = z.object({
   route_id: IDSchema,
+  pricing_id: IDSchema,
   origin: z.string(),
   destination: z.string().optional(),
   price: z.number().positive(),
@@ -53,7 +54,7 @@ export const createCarQuotationLineItemSchema = z.object({
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
   line_total: z.number().positive().nullable(),
-  services: z.array(createRouteSchema),
+  services: z.array(createRouteSchema).min(1),
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
   quantity: z.int().positive(),
@@ -73,15 +74,15 @@ export const createTruckQuotationLineItemSchema = z.object({
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
-  services: z.array(createDistancePricingSchema),
+  services: z.array(createDistancePricingSchema).min(1),
   item_type: z.literal("truck"),
   quantity: z.int().positive(),
   discount: z.number().optional(),
   with_loaders: z.boolean(),
   with_driver: z.boolean(),
-  estimated_consumption_rate_km: z.number().optional(),
+  estimated_consumption_rate_km: z.number().min(1, "Required"),
   engine_mode: z.enum(ENGINE_MODES),
-  tonnage: z.number("Required"),
+  tonnage: z.number("Required").min(0.1, "Required"),
 })
 
 const createLineItemSchema = z.discriminatedUnion("item_type", [
@@ -103,7 +104,7 @@ export const createQuotationSchema = z.object({
   line_items: z.array(createLineItemSchema).min(1),
 })
 
-export const tonnagePricingSchema = z
+export const tonnagePricingRangeSchema = z
   .object({
     id: IDSchema,
     min_tons: z.union([z.string(), z.number()]),
@@ -121,6 +122,13 @@ export const tonnagePricingSchema = z
       })
     }
   })
+
+export const tonnagePricingSchema = z.object({
+  id: IDSchema,
+  min_tons: z.union([z.string(), z.number()]),
+  max_tons: z.union([z.string(), z.number()]),
+  price: z.union([z.string(), z.number()]).optional(),
+})
 
 export const routePricingsSchema = z.object({
   tempId: IDSchema,
