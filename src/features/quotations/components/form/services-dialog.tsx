@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog"
 import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import {
   createCarQuotationLineItemSchema,
   SmallLineItemRequest,
@@ -48,6 +48,11 @@ export function ServicesDialog({
   const isRoundTrip = form.watch("is_round_trip")
   const discount = form.watch("discount")
 
+  const locationsFields = useFieldArray({
+    control: form.control,
+    name: "services",
+  })
+
   useEffect(() => {
     const price = unitPrice ?? 0
     const qty = quantity ?? 1
@@ -69,7 +74,7 @@ export function ServicesDialog({
               <span className="text-sm text-muted-foreground">
                 {formatMoney(form.watch("line_total"), {
                   showZeroAsNumber: true,
-                })}
+                })} - locations {locationsFields.fields.length}
               </span>
               <div className="flex gap-4">
                 <Controller
@@ -120,7 +125,7 @@ export function ServicesDialog({
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-6">
-            <div className="flex-1 space-y-4 overflow-y-scroll px-4 pt-4 col-span-4">
+            <div className="col-span-4 flex-1 space-y-4 overflow-y-scroll px-4 pt-4">
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-3"
@@ -221,8 +226,13 @@ export function ServicesDialog({
                 control={form.control}
               />
             </div>
-            <div className="col-span-2">
-              <ServiceRoutesDialog clientId={clientId}/>
+            <div className="col-span-2 p-4">
+              <ServiceRoutesDialog
+                clientId={clientId}
+                onSelected={(route) => {
+                  locationsFields.prepend(route)
+                }}
+              />
             </div>
           </div>
         </form>

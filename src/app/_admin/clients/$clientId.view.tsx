@@ -54,6 +54,14 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <PageBackButton />
           <ButtonGroup>
+            <Can permission={"quotations:create"}>
+              <Button asChild variant={"secondary"}>
+                <Link to={"/quotations/new"} search={{ clientId }}>
+                  <PlusIcon />
+                  Quotation
+                </Link>
+              </Button>
+            </Can>
             <Can permission={"bookings:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/bookings/new"} search={{ clientId }}>

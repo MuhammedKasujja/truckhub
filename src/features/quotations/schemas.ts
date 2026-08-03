@@ -146,6 +146,8 @@ export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
 
 export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 
+export type RouteServiceInput = z.infer<typeof createRouteSchema>
+
 export type LineItemRequest = z.infer<typeof createLineItemSchema>
 export type LineItemResponse = LineItemRequest
 
@@ -155,3 +157,39 @@ export type SmallLineItemRequest = z.infer<
 export type TruckLineItemRequest = z.infer<
   typeof createTruckQuotationLineItemSchema
 >
+
+const loactionBasedSchema = z.object({
+  // source: z.literal("location"),
+  source: z.literal("small"),
+  ...createRouteSchema.shape,
+})
+
+const routePricingBasedSchema = z.object({
+  source: z.literal("route"),
+  ...createRouteSchema.shape,
+})
+
+const distancePricingBasedSchema = z.object({
+  source: z.literal("distance"),
+  ...createRouteSchema.shape,
+})
+
+export type LocationServiceResponse = z.infer<typeof loactionBasedSchema>
+
+export type PricingRouteServiceResponse = z.infer<
+  typeof routePricingBasedSchema
+>
+
+export type DistanceRouteServiceResponse = z.infer<
+  typeof distancePricingBasedSchema
+>
+
+const locationServiceSchema = z.discriminatedUnion("source", [
+  loactionBasedSchema,
+  routePricingBasedSchema,
+  distancePricingBasedSchema,
+])
+
+const locationSourceSchema = z.array(locationServiceSchema)
+
+export type LocationSourceResponse = z.infer<typeof locationSourceSchema>
