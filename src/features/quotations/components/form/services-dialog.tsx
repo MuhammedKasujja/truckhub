@@ -19,7 +19,6 @@ import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect } from "react"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ServicePickerField } from "@/features/services/components"
 import { formatMoney } from "@/lib/format"
@@ -50,7 +49,7 @@ export function ServicesDialog({
 
   const locationsFields = useFieldArray({
     control: form.control,
-    name: "services",
+    name: "locations",
   })
 
   useEffect(() => {

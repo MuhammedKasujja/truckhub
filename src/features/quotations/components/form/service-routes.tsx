@@ -45,7 +45,7 @@ export function ServiceRoutesDialog({
         <InputGroupInput
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search routes by origin or destination..."
+          placeholder="Search by origin or destination..."
         />
         <InputGroupAddon>
           <SearchIcon />

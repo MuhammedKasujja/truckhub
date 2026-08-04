@@ -8,6 +8,8 @@ export const Route = createFileRoute("/_admin/billing/quotations/")({
   component: RouteComponent,
   validateSearch: QuotationSearchParams,
   loaderDeps: ({ search }) => search,
+  loader: ({ context, deps: search }) =>
+    context.queryClient.prefetchQuery(quotationQueryOptions(search)),
 })
 
 function RouteComponent() {

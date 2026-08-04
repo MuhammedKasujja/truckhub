@@ -50,11 +50,12 @@ const createRouteSchema = z.object({
 
 export const createCarQuotationLineItemSchema = z.object({
   tempId: z.string(),
+  source: z.literal('service'),
   is_round_trip: z.boolean().nullable(),
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
   line_total: z.number().positive().nullable(),
-  services: z.array(createRouteSchema).min(1),
+  locations: z.array(createRouteSchema).min(1),
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
   quantity: z.int().positive(),
@@ -71,10 +72,11 @@ export const createCarQuotationLineItemSchema = z.object({
 export const createTruckQuotationLineItemSchema = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
+  source: z.literal('route'),
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
-  services: z.array(createDistancePricingSchema).min(1),
+  locations: z.array(createDistancePricingSchema).min(1),
   item_type: z.literal("truck"),
   quantity: z.int().positive(),
   discount: z.number().optional(),
@@ -85,9 +87,29 @@ export const createTruckQuotationLineItemSchema = z.object({
   tonnage: z.number("Required").min(0.1, "Required"),
 })
 
-const createLineItemSchema = z.discriminatedUnion("item_type", [
+export const createDistanceTonnageLineItemSchema = z.object({
+  tempId: z.string(),
+  is_round_trip: z.boolean().nullable(),
+  source: z.literal('distance'),
+  unit_price: z.number().positive(),
+  subtotal: z.number().positive(),
+  line_total: z.number().positive(),
+  locations: z.array(createDistancePricingSchema).min(1),
+  item_type: z.literal("truck"),
+  quantity: z.int().positive(),
+  discount: z.number().optional(),
+  distance_km: z.number(),
+  with_loaders: z.boolean(),
+  with_driver: z.boolean(),
+  estimated_consumption_rate_km: z.number().min(1, "Required"),
+  engine_mode: z.enum(ENGINE_MODES),
+  tonnage: z.number("Required").min(0.1, "Required"),
+})
+
+const createLineItemSchema = z.discriminatedUnion("source", [
   createCarQuotationLineItemSchema,
   createTruckQuotationLineItemSchema,
+  createDistanceTonnageLineItemSchema,
 ])
 
 export const createQuotationSchema = z.object({
@@ -164,6 +186,10 @@ export type SmallLineItemRequest = z.infer<
 >
 export type TruckLineItemRequest = z.infer<
   typeof createTruckQuotationLineItemSchema
+>
+
+export type DistanceLineItemRequest = z.infer<
+  typeof createDistanceTonnageLineItemSchema
 >
 
 const loactionBasedSchema = z.object({

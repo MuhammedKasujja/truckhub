@@ -99,7 +99,7 @@ export function RoutePricingSelectDialog({
 
   const serviceLocationsFields = useFieldArray({
     control: form.control,
-    name: "services",
+    name: "locations",
   })
 
   const routes = watch("routes")
@@ -273,7 +273,7 @@ export function RoutePricingSelectDialog({
                 <InputGroupInput
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search routes by origin or destination..."
+                  placeholder="Search by origin or destination..."
                 />
                 <InputGroupAddon>
                   <Search />

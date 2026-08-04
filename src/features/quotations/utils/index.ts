@@ -1,6 +1,6 @@
 import { Quotation } from "../types"
-import { SmallLineItemRequest, TruckLineItemRequest } from "../schemas"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
+import { DistanceLineItemRequest, SmallLineItemRequest, TruckLineItemRequest } from "../schemas"
 
 export function generateEmptyLineItem() {
   const emptyLineItem: SmallLineItemRequest = {
@@ -9,12 +9,13 @@ export function generateEmptyLineItem() {
     unit_price: null,
     subtotal: null,
     line_total: null,
-    services: [],
+    locations: [],
     vehicle_addons: [],
     item_type: "small",
     quantity: 1,
     discount: null,
     car_brand_id: "",
+    source: "service",
     car_model_id: "",
     with_driver: false,
     estimated_consumption_rate_km: undefined,
@@ -25,13 +26,14 @@ export function generateEmptyLineItem() {
 
 export function generateTruckEmptyLineItem() {
   const emptyLineItem: TruckLineItemRequest = {
-    tempId: makeId("__truck_line_item__"),
+    tempId: makeId("__route_line_item__"),
     is_round_trip: false,
     unit_price: 0,
     subtotal: 0,
     line_total: 0,
-    services: [],
+    locations: [],
     item_type: "truck",
+    source: "route",
     quantity: 1,
     discount: 0,
     with_driver: false,
@@ -39,6 +41,28 @@ export function generateTruckEmptyLineItem() {
     engine_mode: "wet",
     with_loaders: false,
     tonnage: 0,
+  }
+  return emptyLineItem
+}
+
+export function generateDistanceEmptyLineItem() {
+  const emptyLineItem: DistanceLineItemRequest = {
+    tempId: makeId("__distance_line_item__"),
+    is_round_trip: false,
+    unit_price: 0,
+    subtotal: 0,
+    line_total: 0,
+    locations: [],
+    item_type: "truck",
+    source: "distance",
+    quantity: 1,
+    discount: 0,
+    with_driver: false,
+    estimated_consumption_rate_km: 0,
+    engine_mode: "wet",
+    with_loaders: false,
+    tonnage: 0,
+    distance_km: 0
   }
   return emptyLineItem
 }
