@@ -53,12 +53,12 @@ export const sibebarModules: SidebarItem[] = [
     icon: getModuleIcon("Quotations"),
     permission: "rides:module",
   },
-  {
-    title: "routes.rides",
-    url: RidesRoute.to,
-    icon: getModuleIcon("Rides"),
-    permission: "rides:module",
-  },
+  // {
+  //   title: "routes.rides",
+  //   url: RidesRoute.to,
+  //   icon: getModuleIcon("Rides"),
+  //   permission: "rides:module",
+  // },
   {
     title: "routes.bookings",
     url: BookingsRoute.to,

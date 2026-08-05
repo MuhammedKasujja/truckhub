@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { CreditCard, CalendarDays, MapPin } from "lucide-react"
+import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
@@ -38,6 +38,8 @@ import {
   clientRidesQueryOptions,
 } from "../query-options"
 import { useTranslation } from "@/i18n"
+import { EnterPaymentModal } from "@/features/payments/components"
+import { useState } from "react"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -50,6 +52,8 @@ export function CustomerDetailsWrapper({
     data: { data: customer, error },
   } = useSuspenseQuery(clientProfileQueryOptions(clientId))
   useFetchEror(error)
+
+  const [openModal, setOpenModal] = useState(false)
 
   const [
     { data: paymentsResponse },
@@ -97,7 +101,7 @@ export function CustomerDetailsWrapper({
           </CardAction>
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
-          <div className="w-40 bg-muted dark:bg-background/70 rounded-lg flex items-center justify-center text-2xl font-extrabold uppercase">
+          <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
             {generateAvatorFallback(customer?.name)}
           </div>
           <div className="space-y-4">
@@ -214,7 +218,7 @@ export function CustomerDetailsWrapper({
 
       <Card>
         <CardHeader>
-          <CardTitle>Customer Activity</CardTitle>
+          <CardTitle>Client Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="payments" className="w-full">
@@ -265,15 +269,16 @@ export function CustomerDetailsWrapper({
                             </EmptyHeader>
                             <EmptyContent>
                               <Can permission={"payments:create"}>
-                                <EditPaymentModal
+                                <Button onClick={() => setOpenModal(true)}>
+                                  <PlusIcon />
+                                  {tr("payments.form.new_payment")}
+                                </Button>
+                                <EnterPaymentModal
+                                  open={openModal}
+                                  onOpenChange={() => setOpenModal(false)}
                                   initialData={{
-                                    type: "booking",
+                                    type: "invoice",
                                   }}
-                                  trigger={
-                                    <Button variant="outline">
-                                      Make Payment
-                                    </Button>
-                                  }
                                 />
                               </Can>
                             </EmptyContent>
