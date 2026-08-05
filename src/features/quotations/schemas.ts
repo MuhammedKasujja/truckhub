@@ -94,7 +94,7 @@ export const createDistanceTonnageLineItemSchema = z.object({
   unit_price: z.number().positive(),
   subtotal: z.number().positive(),
   line_total: z.number().positive(),
-  locations: z.array(createDistancePricingSchema).min(1),
+  locations: z.array(createDistancePricingSchema),
   item_type: z.literal("truck"),
   quantity: z.int().positive(),
   discount: z.number().optional(),

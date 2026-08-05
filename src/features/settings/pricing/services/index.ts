@@ -46,7 +46,7 @@ export const getDistanceTonnagePricingFn = createServerFn().handler(
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }
-    return { data: result.data, message: result.message }
+    return { data: result.data ??[], message: result.message }
   }
 )
 

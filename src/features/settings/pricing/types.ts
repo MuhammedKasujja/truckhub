@@ -44,3 +44,14 @@ export type IslandPricingResponse = {
   locations: string[]
   general_price: number | string
 }
+
+export type DistanceTonnagePricingResponse = {
+  id: EntityId
+  distance_min_km: number
+  distance_max_km: number | null
+  distance_no_upper_limit: boolean
+  tonnage_min: number
+  tonnage_max: number
+  min_price: number
+  max_price: number
+}

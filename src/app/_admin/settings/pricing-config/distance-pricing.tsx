@@ -18,7 +18,7 @@ function RouteComponent() {
 
   return (
     <DistancePricingScheduleForm
-      initialSchedule={fromDbRows(data ?? [])}
+      initialSchedule={fromDbRows(data)}
       onSave={async (pricings, _) => {
         await createDistanceTonnage(pricings)
       }}
