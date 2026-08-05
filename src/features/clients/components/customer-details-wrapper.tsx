@@ -102,7 +102,7 @@ export function CustomerDetailsWrapper({
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
           <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
-            {generateAvatorFallback(customer?.name)}
+            {customer?.short_name ?? generateAvatorFallback(customer?.name)}
           </div>
           <div className="space-y-4">
             <div>{customer?.email}</div>

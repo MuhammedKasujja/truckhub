@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Shipment } from "../types"
-import { useFieldArray, useForm } from "react-hook-form"
+import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { FinishShipmentInput, finishShipmentSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFinishShipment } from "../hooks/use-shipment-actions"
@@ -17,6 +17,8 @@ import { useEffect } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { PlusIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { emptyRow } from "@/features/settings/pricing/components/route-pricing/route-pricing-datagrid"
 
 type Props = {
   shipment?: Shipment
@@ -144,16 +146,36 @@ export function RecordShipmentDetailsDialog({
                   type="button"
                   variant={"outline"}
                   size={"icon-sm"}
-                  onClick={() => fuelConsumptionRatesFields.prepend({})}
+                  onClick={() => fuelConsumptionRatesFields.append({})}
                 >
                   <PlusIcon />
                 </Button>
               </FieldLabel>
               {fuelConsumptionRatesFields.fields.map((ele, index) => (
                 <Field key={ele.id} orientation={"horizontal"}>
-                  <NumberField
+                  <Controller
                     control={form.control}
                     name={`consumedFuelRates.${index}.value`}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        {...field}
+                        type={"number"}
+                        inputMode="numeric"
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        autoComplete="off"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault()
+                            fuelConsumptionRatesFields.append({})
+                          }
+                        }}
+                        onChange={(e) => {
+                          const number = e.target.valueAsNumber
+                          field.onChange(isNaN(number) ? null : number)
+                        }}
+                      />
+                    )}
                   />
                   <Button
                     type="button"

@@ -76,7 +76,7 @@ export function getShipmentTableColumns({
     },
     {
       id: "started_at",
-      header: "Start Time",
+      header: "Start Date",
       cell: ({ row }) => {
         return (
           <p>
