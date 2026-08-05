@@ -36,6 +36,7 @@ import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
 import { formatMoney } from "@/lib/format"
+import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -45,8 +46,9 @@ type QuotationFormProps = {
 
 export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const tr = useTranslation()
-  const [open, setOpen] = useState(false)
-  const [openService, setServiceOpen] = useState(false)
+  const [openModal, setOpenModal] = useState<
+    "service" | "route" | "distance" | null
+  >(null)
   const defaultTaxRate = useDefaultTaxRate()
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
@@ -231,9 +233,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               <CardDescription>
                 <Badge variant="secondary" className="font-normal">
                   {lineItemsFields.fields.length}{" "}
-                  {lineItemsFields.fields.length === 1
-                    ? "service"
-                    : "services"}
+                  {lineItemsFields.fields.length === 1 ? "service" : "services"}
                 </Badge>
               </CardDescription>
             </div>
@@ -243,9 +243,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               disabled={!selectedClient}
               type="button"
               variant={"outline"}
-              onClick={() => {
-                setServiceOpen(true)
-              }}
+              onClick={() => setOpenModal("service")}
             >
               <Plus />
               Cars
@@ -254,25 +252,37 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               disabled={!selectedClient}
               type="button"
               variant={"outline"}
-              onClick={() => {
-                // lineItemsFields.prepend(generateTruckEmptyLineItem())
-                setOpen(true)
-              }}
+              onClick={() => setOpenModal("route")}
             >
               <Plus />
-              Trucks
+              Routes
+            </Button>
+            <Button
+              disabled={!selectedClient}
+              type="button"
+              variant={"outline"}
+              onClick={() => setOpenModal("distance")}
+            >
+              <Plus />
+              Distance
             </Button>
             <RoutePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
-              open={open}
+              open={openModal === "route"}
               selectedPricings={[]}
-              onOpenChange={setOpen}
+              onOpenChange={() => setOpenModal(null)}
               onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
             <ServicesDialog
               clientId={selectedClient?.id ?? ""}
-              open={openService}
-              onOpenChange={setServiceOpen}
+              open={openModal === "service"}
+              onOpenChange={() => setOpenModal(null)}
+              onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
+            />
+            <DistancePricingSelectDialog
+              clientId={selectedClient?.id ?? ""}
+              open={openModal === "distance"}
+              onOpenChange={() => setOpenModal(null)}
               onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
           </CardAction>
