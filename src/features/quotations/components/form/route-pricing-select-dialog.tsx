@@ -459,14 +459,14 @@ export function RoutePricingSelectDialog({
               name="discount"
             />
             <NumberField
-              // readOnly
+              readOnly
               required={false}
               label="Subtotal"
               control={form.control}
               name="subtotal"
             />
             <NumberField
-              // readOnly
+              readOnly
               required={false}
               label="Line total"
               control={form.control}

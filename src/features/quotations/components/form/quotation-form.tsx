@@ -305,7 +305,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 <div>{item.quantity}</div>
                 <div>{formatMoney(item.unit_price)}</div>
                 <div>{formatMoney(item.line_total)}</div>
-                <div>{formatMoney(item.discount)}</div>
+                {item.discount &&<div>{item.discount && formatMoney(item.discount)}</div>}
                 <Button
                   size={"sm"}
                   variant={"destructive"}
