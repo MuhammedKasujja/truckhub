@@ -10,6 +10,19 @@ import {
   DistanceLineItemRequest,
 } from "./schemas"
 
+interface LineItemOut {
+  unit_price: number
+  quantity: number
+  subtotal: number
+  line_total: number
+  discount: number | null
+  is_round_trip: boolean
+  vehicle_category_id: EntityId
+  estimated_fuel_rate_km: number | null
+  engine_mode: EngineMode
+  with_driver: boolean
+}
+
 export type ServiceLineItem = SmallLineItemRequest
 export type RouteLineItem = TruckLineItemRequest
 export type DistanceLineItem = DistanceLineItemRequest

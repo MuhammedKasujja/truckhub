@@ -26,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateDistanceEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { NumberField } from "@/components/ui/form-fields"
+import { NumberField, SwitchField } from "@/components/ui/form-fields"
 import {
   InputGroup,
   InputGroupAddon,
@@ -262,6 +262,18 @@ export function DistancePricingSelectDialog({
                 Pick a price on the left to add a route here.
               </p>
             </div>
+            <Field orientation={"horizontal"}>
+              <SwitchField
+                label={"Include Driver"}
+                name={"with_driver"}
+                control={form.control}
+              />
+              <SwitchField
+                label={"Include Loaders"}
+                name={"with_loaders"}
+                control={form.control}
+              />
+            </Field>
             <NumberField
               label="Consumption Rate (km/l)"
               control={form.control}

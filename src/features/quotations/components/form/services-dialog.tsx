@@ -14,7 +14,11 @@ import {
 } from "@/features/quotations/schemas"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
-import { NumberField, TextField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  SwitchField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -63,8 +67,8 @@ export function ServicesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] min-h-[90vh] flex overflow-hidden p-0 md:min-w-[90vw]">
-        <form className="flex flex-col w-full">
+      <DialogContent className="flex max-h-[90vh] min-h-[90vh] overflow-hidden p-0 md:min-w-[90vw]">
+        <form className="flex w-full flex-col">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Service Pricing
@@ -73,7 +77,8 @@ export function ServicesDialog({
               <span className="text-sm text-muted-foreground">
                 {formatMoney(form.watch("line_total"), {
                   showZeroAsNumber: true,
-                })} - locations {locationsFields.fields.length}
+                })}{" "}
+                - locations {locationsFields.fields.length}
               </span>
               <div className="flex gap-4">
                 <Controller
@@ -123,7 +128,7 @@ export function ServicesDialog({
               </div>
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 grid grid-cols-6 overflow-hidden">
+          <div className="grid flex-1 grid-cols-6 overflow-hidden">
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
               <Field
                 orientation={"horizontal"}
@@ -189,6 +194,13 @@ export function ServicesDialog({
                   control={form.control}
                 />
               </Field>
+              <Field orientation={"horizontal"}>
+                <SwitchField
+                  label={"Include Driver"}
+                  name={"with_driver"}
+                  control={form.control}
+                />
+              </Field>
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-3"
@@ -225,7 +237,7 @@ export function ServicesDialog({
                 control={form.control}
               />
             </div>
-            <div className="col-span-2 p-6 overflow-y-auto">
+            <div className="col-span-2 overflow-y-auto p-6">
               <ServiceRoutesDialog
                 clientId={clientId}
                 onSelected={(route) => {
