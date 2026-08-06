@@ -58,7 +58,7 @@ export type QuotationVersion = {
   discount: number
   tax_amount: number
   valid_until: string | null
-  purpose: string | null
+  purpose: string | undefined
   is_active: boolean
   start_date: string
   end_date: string

@@ -50,7 +50,7 @@ const createRouteSchema = z.object({
 
 export const createCarQuotationLineItemSchema = z.object({
   tempId: z.string(),
-  source: z.literal('service'),
+  source: z.literal("service"),
   is_round_trip: z.boolean().nullable(),
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
@@ -72,7 +72,7 @@ export const createCarQuotationLineItemSchema = z.object({
 export const createTruckQuotationLineItemSchema = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
-  source: z.literal('route'),
+  source: z.literal("route"),
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
   line_total: z.number().positive().nullable(),
@@ -90,7 +90,7 @@ export const createTruckQuotationLineItemSchema = z.object({
 export const createDistanceTonnageLineItemSchema = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
-  source: z.literal('distance'),
+  source: z.literal("distance"),
   unit_price: z.number().positive().nullable(),
   subtotal: z.number().positive().nullable(),
   line_total: z.number().positive().nullable(),
@@ -172,7 +172,14 @@ const bookingRoutesSchema = z.object({
     .max(20, "Maximum 20 items per order"),
 })
 
+export const updateQuotationSchema = z.object({
+  id: IDSchema,
+  ...createQuotationSchema.shape,
+})
+
 export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
+
+export type UpdateQuotationRequest = z.infer<typeof updateQuotationSchema>
 
 export type RoutePricingStruct = z.infer<typeof routePricingsSchema>
 

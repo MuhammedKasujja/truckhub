@@ -1,7 +1,7 @@
 import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { createQuotationSchema, QuotationSearchParams } from "../schemas"
+import { createQuotationSchema, QuotationSearchParams, updateQuotationSchema } from "../schemas"
 import {
   getQuotations,
   createQuotation,
@@ -30,7 +30,7 @@ export const createQuotationFn = createServerFn({ method: "POST" })
   })
 
 export const updateQuotationFn = createServerFn({ method: "POST" })
-  .inputValidator(createQuotationSchema)
+  .inputValidator(updateQuotationSchema)
   .handler(async ({ data }) => {
     return updateQuotation(data)
   })

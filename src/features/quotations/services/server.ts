@@ -2,7 +2,11 @@ import { Quotation } from "../types"
 import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
-import { CreateQuotationRequest, QuotationListSearchParams } from "../schemas"
+import {
+  CreateQuotationRequest,
+  UpdateQuotationRequest,
+  QuotationListSearchParams,
+} from "../schemas"
 
 const endpoint = "/v1/quotations"
 
@@ -23,8 +27,9 @@ export async function createQuotation(data: CreateQuotationRequest) {
   return await apiClient.postFn<Quotation>(endpoint, data)
 }
 
-export async function updateQuotation(data: CreateQuotationRequest) {
-  return await apiClient.patchFn<Quotation>(endpoint, data)
+export async function updateQuotation(data: UpdateQuotationRequest) {
+  const { id: quotationId, ...rest } = data
+  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}`, rest)
 }
 
 export async function getQuotationDetails(quotationId: EntityId) {
@@ -32,15 +37,11 @@ export async function getQuotationDetails(quotationId: EntityId) {
 }
 
 export async function markQuotationAccepted(quotationId: EntityId) {
-  return await apiClient.patchFn<Quotation>(
-    `${endpoint}/${quotationId}/accept`
-  )
+  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}/accept`)
 }
 
 export async function markQuotationRejected(quotationId: EntityId) {
-  return await apiClient.patchFn<Quotation>(
-    `${endpoint}/${quotationId}/reject`
-  )
+  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}/reject`)
 }
 
 export async function markQuotationExpired(quotationId: EntityId) {

@@ -1,6 +1,11 @@
 import { Quotation } from "../types"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
-import { DistanceLineItemRequest, SmallLineItemRequest, TruckLineItemRequest } from "../schemas"
+import {
+  SmallLineItemRequest,
+  TruckLineItemRequest,
+  CreateQuotationRequest,
+  DistanceLineItemRequest,
+} from "../schemas"
 
 export function generateEmptyLineItem() {
   const emptyLineItem: SmallLineItemRequest = {
@@ -62,19 +67,22 @@ export function generateDistanceEmptyLineItem() {
     engine_mode: "wet",
     with_loaders: false,
     tonnage: 0,
-    distance_km: 0
+    distance_km: 0,
   }
   return emptyLineItem
 }
 
 export function getEditableQuotation(quotation: Quotation) {
+  const activeVersion = quotation.versions[0]
   return {
     client_id: quotation.client.id,
-    line_items: quotation.versions[0].line_items,
-    tax_rates: quotation.versions[0].tax_rates,
-    expiry_date: quotation.versions[0].valid_until,
+    line_items: activeVersion.line_items,
+    tax_rates: activeVersion.tax_rates,
+    expiry_date: activeVersion.valid_until,
+    start_date: activeVersion.start_date,
+    end_date: activeVersion.end_date,
     number: quotation.number,
-    discount: quotation.versions[0].discount,
-    purpose: quotation.versions[0].purpose,
-  }
+    discount: activeVersion.discount,
+    purpose: activeVersion.purpose,
+  } satisfies CreateQuotationRequest
 }

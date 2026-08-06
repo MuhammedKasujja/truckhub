@@ -360,7 +360,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 </div>
               </div>
               <div className="flex justify-between">
-                <div className="text-muted-foreground">Tax ({taxRate?.name}{taxRate?.rate}%)</div>
+                <div className="text-muted-foreground">Tax ({taxRate?.name} {taxRate?.rate}%)</div>
                 <div className="font-semibold">
                   {formatMoney(taxAmount, { showZeroAsNumber: true })}
                 </div>

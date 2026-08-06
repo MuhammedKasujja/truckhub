@@ -9,6 +9,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { useEditQuotation } from "@/features/quotations/hooks/use-edit-quotation"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
@@ -24,14 +25,17 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
 })
 
 function RouteComponent() {
+  const { quotationId } = Route.useParams()
   const { data: quotation } = Route.useLoaderData()
   const back = useBackNavigation()
+  const { editQuotation } = useEditQuotation()
 
   return (
     <div>
       <PageHeader>
         <PageTitle>
-          Edit Quotation <Badge>v{quotation.versions.length + 1}</Badge>
+          Edit Quotation{" "}
+          <Badge variant={"outline"}>v{quotation.versions.length}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
           <Button variant={"outline"} onClick={back}>
@@ -44,7 +48,7 @@ function RouteComponent() {
       </PageHeader>
       <QuotationForm
         initialData={getEditableQuotation(quotation)}
-        onSubmit={(data) => {}}
+        onSubmit={(data) => editQuotation({ ...data, id: quotationId })}
       />
     </div>
   )
