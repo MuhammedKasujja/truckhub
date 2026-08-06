@@ -55,7 +55,7 @@ export function EndShipmentDialog({ shipment, onOpenChange, open }: Props) {
             name="endMileage"
           />
           <DialogFooter>
-            <DialogClose>
+            <DialogClose asChild>
               <Button type="button" variant={"ghost"}>
                 Cancle
               </Button>

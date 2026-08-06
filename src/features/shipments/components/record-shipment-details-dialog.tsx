@@ -18,7 +18,6 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { PlusIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { emptyRow } from "@/features/settings/pricing/components/route-pricing/route-pricing-datagrid"
 
 type Props = {
   shipment?: Shipment
@@ -38,6 +37,7 @@ export function RecordShipmentDetailsDialog({
     defaultValues: {
       unitId: shipment?.id,
       startMileage: Number(shipment?.consumption?.start_mileage),
+      endMileage: shipment?.consumption?.end_mileage,
       vehicleConsumptionRate: Number(shipment?.vehicle?.fuel_consumption_rate),
       consumedFuelRates: [{ value: null }],
     },

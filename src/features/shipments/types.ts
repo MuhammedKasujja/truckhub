@@ -10,7 +10,7 @@ export type ShipmentLineItem = LineItemResponse & {
 
 export type ShipmentVehicleConsumption = {
   start_mileage: string | number
-  end_mileage: string | number | null
+  end_mileage: number | undefined
   distance_km: string | number | null
   fuel_rate: string | number | null
   days: number | null
