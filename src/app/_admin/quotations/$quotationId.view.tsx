@@ -20,7 +20,7 @@ import { QuotationVersion } from "@/features/quotations/types"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { formatMoney } from "@/lib/format"
 import { createFileRoute } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
+import { MailIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
@@ -49,8 +49,12 @@ function RouteComponent() {
           Quotation <Badge variant={'outline'}>v{quotation.versions.length}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"} onClick={back}>
+          <Button variant={"outline"} size={'sm'} onClick={back}>
             Back
+          </Button>
+          <Button variant={"outline"} size={'sm'}>
+            <MailIcon/>
+            Send Email
           </Button>
         </PageAction>
       </PageHeader>

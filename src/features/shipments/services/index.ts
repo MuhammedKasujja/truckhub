@@ -1,6 +1,7 @@
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import {
+  endShipmentSchema,
   finishShipmentSchema,
   ShipmentSearchParams,
   dispatchShipmentSchema,
@@ -40,9 +41,9 @@ export const getShipmentByIdFn = createServerFn()
   })
 
 export const endShipmentFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .inputValidator(endShipmentSchema)
   .handler(async ({ data }) => {
-    const result = await endShipment(data.id)
+    const result = await endShipment(data)
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }

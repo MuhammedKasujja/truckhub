@@ -1,6 +1,6 @@
-import { EntityId } from "@/schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import {
+  EndShipmentInput,
   FinishShipmentInput,
   DispatchShipmentInput,
   AssignShipmentDriverInput,
@@ -35,15 +35,15 @@ const useEndShipmentBase = createEntityActionHook(
   endShipmentFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.id)
+    invalidator.shipments.details(input.data.unitId)
   }
 )
 
 export function useEndShipment() {
   const { isPending, execute } = useEndShipmentBase()
 
-  function endShipment(id: EntityId) {
-    return execute({ data: { id } })
+  function endShipment(data: EndShipmentInput) {
+    return execute({ data })
   }
   return { isPending, endShipment }
 }

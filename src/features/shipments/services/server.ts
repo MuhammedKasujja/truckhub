@@ -3,6 +3,7 @@ import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
 import {
+  EndShipmentInput,
   FinishShipmentInput,
   DispatchShipmentInput,
   ShipmentSearchParamsInput,
@@ -37,8 +38,10 @@ export async function dispatchShipment(data: DispatchShipmentInput) {
   )
 }
 
-export async function endShipment(unitId: EntityId) {
-  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/end`, {})
+export async function endShipment(data: EndShipmentInput) {
+  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/end`, {
+    end_mileage: data.endMileage,
+  })
 }
 
 export async function finishShipment(data: FinishShipmentInput) {

@@ -45,6 +45,13 @@ export const finishShipmentSchema = z.object({
   consumedFuelRates: z.array(consumedFuelRateSchema),
 })
 
+export const endShipmentSchema = z.object({
+  unitId: IDSchema,
+  endMileage: z.number(),
+})
+
+export type EndShipmentInput = z.infer<typeof endShipmentSchema>
+
 export type FinishShipmentInput = z.infer<typeof finishShipmentSchema>
 
 export type DispatchShipmentInput = z.infer<typeof dispatchShipmentSchema>

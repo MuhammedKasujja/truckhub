@@ -10,6 +10,10 @@ import { Shipment } from "../types"
 import { useEndShipment } from "../hooks/use-shipment-actions"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { EndShipmentInput, endShipmentSchema } from "../schemas"
+import { NumberField } from "@/components/ui/form-fields"
 
 type Props = {
   shipment?: Shipment
@@ -20,19 +24,36 @@ type Props = {
 export function EndShipmentDialog({ shipment, onOpenChange, open }: Props) {
   const { endShipment, isPending: isSubmitting } = useEndShipment()
 
-  function handleEndShipment() {
+  const form = useForm<EndShipmentInput>({
+    resolver: zodResolver(endShipmentSchema),
+    defaultValues: {
+      unitId: shipment?.id,
+    },
+  })
+
+  function handleEndShipment(data: EndShipmentInput) {
     if (!shipment?.id) return
-    endShipment(shipment?.id)
+    endShipment(data)
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
-        <div className="flex flex-col gap-4">
+        <form
+          id="end-trip-form"
+          className="flex flex-col gap-4"
+          onSubmit={form.handleSubmit(handleEndShipment, (errors) => {
+            console.log(errors)
+          })}
+        >
           <DialogHeader>
             <DialogTitle>End Shipment</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">{shipment?.item.unit_price}</div>
+          <NumberField
+            label="Vehicle meter reading"
+            control={form.control}
+            name="endMileage"
+          />
           <DialogFooter>
             <DialogClose>
               <Button type="button" variant={"ghost"}>
@@ -40,15 +61,15 @@ export function EndShipmentDialog({ shipment, onOpenChange, open }: Props) {
               </Button>
             </DialogClose>
             <Button
-              type={"button"}
+              form="end-trip-form"
+              type={"submit"}
               disabled={isSubmitting}
-              onClick={handleEndShipment}
             >
               {isSubmitting && <Loader2 className="size-4 animate-spin" />}
               {isSubmitting ? "Sending...." : "Yes, End"}
             </Button>
           </DialogFooter>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   )
