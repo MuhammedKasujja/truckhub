@@ -120,6 +120,7 @@ const en = {
       username: "Username",
       amount: "Amount",
       balance: "Balance",
+      serviceName: "Service Name",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",

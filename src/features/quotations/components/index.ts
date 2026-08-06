@@ -1,2 +1,5 @@
 export * from "./quotation-table"
 export { QuotationForm } from "./form/quotation-form"
+export { DistanceLineItemListItem } from "./details/distance-line-items"
+export { RouteLineItemListItem } from "./details/route-line-item"
+export { ServiceLineItemListItem } from "./details/service-line-item"

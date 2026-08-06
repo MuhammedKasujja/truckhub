@@ -89,7 +89,7 @@ export function DistancePricingSelectDialog({
   }, [query, data, tonnage, distanceKm])
 
   useEffect(() => {
-    const subtotal = unitPrice * quantity * (isRoundTrip ? 2 : 1)
+    const subtotal = Number(unitPrice) * quantity * (isRoundTrip ? 2 : 1)
     const lineTotal = subtotal
     form.setValue("unit_price", unitPrice)
     form.setValue("subtotal", subtotal)
@@ -237,8 +237,8 @@ export function DistancePricingSelectDialog({
 
                     <ItemDescription>
                       {formatMoney(pricing.min_price)} –{" "}
-                      {formatMoney(pricing.max_price)} hrs &nbsp;•&nbsp;{" "}
-                      {formatNumber(pricing.distance_max_km)} km
+                      {formatMoney(pricing.max_price)} hrs &nbsp;•&nbsp;
+                      {pricing.tonnage_min} - {pricing.tonnage_max} tons
                     </ItemDescription>
                   </ItemContent>
                 </Item>

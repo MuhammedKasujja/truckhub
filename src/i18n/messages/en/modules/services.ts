@@ -19,4 +19,5 @@ export const en = {
   seats: "Seats",
   car_brand: "Car Brand",
   car_model: "Car Model",
+  service_name: "Service Name",
 } as const;

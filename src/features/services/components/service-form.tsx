@@ -93,7 +93,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               }
             />
             <TextField
-              label={tr("common.form.name")}
+              label={tr("common.form.serviceName")}
               name={"name"}
               control={form.control}
             />
