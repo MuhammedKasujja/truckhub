@@ -49,6 +49,8 @@ export function CounterField<T extends FieldValues>({
               <NumberInputInput
                 // {...field}
                 id={field.name}
+                ref={field.ref}
+                onBlur={field.onBlur}
                 // onChange={(e) => {
                 //   const number = e.target.valueAsNumber
                 //   field.onChange(isNaN(number) ? null : number)

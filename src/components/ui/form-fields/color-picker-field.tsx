@@ -30,6 +30,7 @@ export function ColorPickerField<TFieldValues extends FieldValues>({
 }: ColorPickerFieldProps<TFieldValues>) {
   return (
     <FormAutoComplete
+      {...props}
       name={name}
       description={description}
       options={options}
@@ -45,7 +46,6 @@ export function ColorPickerField<TFieldValues extends FieldValues>({
         </div>
       )}
       onSelected={onSelected}
-      {...props}
     />
   )
 }
