@@ -26,7 +26,7 @@ import { useSearch } from "@tanstack/react-router"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
@@ -52,6 +52,8 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const defaultTaxRate = useDefaultTaxRate()
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
+  const [subtotal, setSubtotal] = useState<number>()
+  const [taxAmount, setTaxAmount] = useState<number>()
   const [selectedClient, setSelectedClient] = useState<Client>()
   const isEdit = !!initialData
 
@@ -110,19 +112,38 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     )
   }
 
-  const subtotal = useMemo(
-    () => lineItems.reduce((curr, item) => curr + Number(item.line_total), 0),
-    [lineItems]
-  )
+  useEffect(() => {
+    setTaxRate(defaultTaxRate)
+    form.setValue(
+      "tax_rates",
+      defaultTaxRate
+        ? [
+            ...taxRates,
+            {
+              id: defaultTaxRate.id,
+              tax_name: defaultTaxRate.name,
+              rate: Number(defaultTaxRate.rate),
+            },
+          ]
+        : taxRates
+    )
+  }, [defaultTaxRate])
 
   const grandTotal = useMemo(() => {
+    const subtotal = lineItems.reduce(
+      (curr, item) => curr + Number(item.line_total),
+      0
+    )
     let total = subtotal
+    setSubtotal(subtotal)
     if (taxRates.length > 0) {
       const rates = taxRates.reduce((curr, tax) => curr + tax.rate, 0)
-      total += total * (rates / 100)
+      const taxAmount =total * (rates / 100)
+      total += taxAmount
+      setTaxAmount(taxAmount)
     }
     return total
-  }, [subtotal, taxRates])
+  }, [taxRates, lineItems])
 
   return (
     <form
@@ -305,7 +326,9 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 <div>{item.quantity}</div>
                 <div>{formatMoney(item.unit_price)}</div>
                 <div>{formatMoney(item.line_total)}</div>
-                {item.discount &&<div>{item.discount && formatMoney(item.discount)}</div>}
+                {item.discount && (
+                  <div>{item.discount && formatMoney(item.discount)}</div>
+                )}
                 <Button
                   size={"sm"}
                   variant={"destructive"}
@@ -318,27 +341,39 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             ))}
           </CardContent>
         </Card>
-        <Card className="md:col-span-2">
-          <CardContent className="space-y-4">
-            <div className="flex justify-between">
-              <div className="text-muted-foreground">Subtotal</div>
-              <div className="font-semibold">
-                {formatMoney(subtotal, { showZeroAsNumber: true })}
+        <div className="space-y-4 md:col-span-2">
+          <Card>
+            <CardContent>
+              <TaxRatePicker
+                id="tax"
+                value={taxRate?.id}
+                onSelected={handleUpdateTaxRates}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between">
+                <div className="text-muted-foreground">Subtotal</div>
+                <div className="font-semibold">
+                  {formatMoney(subtotal, { showZeroAsNumber: true })}
+                </div>
               </div>
-            </div>
-            <TaxRatePicker
-              id="tax"
-              value={taxRate}
-              onSelected={handleUpdateTaxRates}
-            />
-            <div className="flex justify-between">
-              <div className="text-muted-foreground">Grand total</div>
-              <div className="font-semibold">
-                {formatMoney(grandTotal, { showZeroAsNumber: true })}
+              <div className="flex justify-between">
+                <div className="text-muted-foreground">Tax ({taxRate?.name}{taxRate?.rate}%)</div>
+                <div className="font-semibold">
+                  {formatMoney(taxAmount, { showZeroAsNumber: true })}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="flex justify-between border-b-2 pb-1.5">
+                <div className="text-muted-foreground">Grand total</div>
+                <div className="font-bold">
+                  {formatMoney(grandTotal, { showZeroAsNumber: true })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </form>
   )

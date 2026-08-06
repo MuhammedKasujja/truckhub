@@ -15,7 +15,7 @@ import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
-import { MapIcon } from "lucide-react"
+import { CalendarIcon, MapIcon } from "lucide-react"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 
 const shipmentTabs = [
@@ -56,6 +56,10 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <Button variant={"outline"} size={"sm"} onClick={handleBack}>
             Back
+          </Button>
+          <Button variant={"outline"} size={"sm"}>
+            <CalendarIcon/>
+            Calendar
           </Button>
           <Can permission="rides:active">
             <Button size={"sm"} asChild>
