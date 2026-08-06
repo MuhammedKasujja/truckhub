@@ -45,12 +45,17 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateTruckEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { NumberField, SwitchField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  SelectField,
+  SwitchField,
+} from "@/components/ui/form-fields"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { ENGINE_MODES } from "@/common/config"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -437,14 +442,24 @@ export function RoutePricingSelectDialog({
                 ))}
               </SortableContent>
             </Sortable>
-            <Field orientation={"horizontal"}>
+            <Field orientation={"horizontal"} className="items-end">
+              <SelectField
+                label={"Engine"}
+                control={form.control}
+                name={"engine_mode"}
+                placeholder="Select engine"
+                options={ENGINE_MODES.map((opt) => ({
+                  label: `${opt}`,
+                  value: `${opt}`,
+                }))}
+              />
               <SwitchField
-                label={"Include Driver"}
+                label={"Driver"}
                 name={"with_driver"}
                 control={form.control}
               />
               <SwitchField
-                label={"Include Loaders"}
+                label={"Loaders"}
                 name={"with_loaders"}
                 control={form.control}
               />

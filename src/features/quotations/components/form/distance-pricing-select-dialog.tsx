@@ -26,7 +26,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateDistanceEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { NumberField, SwitchField } from "@/components/ui/form-fields"
+import {
+  NumberField,
+  SelectField,
+  SwitchField,
+} from "@/components/ui/form-fields"
 import {
   InputGroup,
   InputGroupAddon,
@@ -34,6 +38,7 @@ import {
 } from "@/components/ui/input-group"
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { DistanceTonnagePricingResponse } from "@/features/settings/pricing/types"
+import { ENGINE_MODES } from "@/common/config"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -262,16 +267,26 @@ export function DistancePricingSelectDialog({
                 Pick a price on the left to add a route here.
               </p>
             </div>
-            <Field orientation={"horizontal"}>
+            <Field orientation={"horizontal"} className="items-end">
               <SwitchField
-                label={"Include Driver"}
+                label={"Driver"}
                 name={"with_driver"}
                 control={form.control}
               />
               <SwitchField
-                label={"Include Loaders"}
+                label={"Loaders"}
                 name={"with_loaders"}
                 control={form.control}
+              />
+              <SelectField
+                label={"Engine"}
+                control={form.control}
+                name={"engine_mode"}
+                placeholder="Select engine"
+                options={ENGINE_MODES.map((opt) => ({
+                  label: `${opt}`,
+                  value: `${opt}`,
+                }))}
               />
             </Field>
             <NumberField

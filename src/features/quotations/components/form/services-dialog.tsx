@@ -16,6 +16,7 @@ import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import {
   NumberField,
+  SelectField,
   SwitchField,
   TextField,
 } from "@/components/ui/form-fields"
@@ -27,6 +28,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { ServicePickerField } from "@/features/services/components"
 import { formatMoney } from "@/lib/format"
 import { ServiceRoutesDialog } from "./service-routes"
+import { ENGINE_MODES } from "@/common/config"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -194,7 +196,17 @@ export function ServicesDialog({
                   control={form.control}
                 />
               </Field>
-              <Field orientation={"horizontal"}>
+              <Field orientation={"horizontal"} className="items-end">
+                <SelectField
+                  label={"Engine"}
+                  control={form.control}
+                  name={"engine_mode"}
+                  placeholder="Select engine"
+                  options={ENGINE_MODES.map((opt) => ({
+                    label: `${opt}`,
+                    value: `${opt}`,
+                  }))}
+                />
                 <SwitchField
                   label={"Include Driver"}
                   name={"with_driver"}
