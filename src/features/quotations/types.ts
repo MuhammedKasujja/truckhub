@@ -13,9 +13,9 @@ import {
 interface LineItemOut {
   unit_price: number
   quantity: number
-  subtotal: number
-  line_total: number
-  discount: number | null
+  subtotal: string
+  line_total: string
+  discount: string | null
   is_round_trip: boolean
   vehicle_category_id: EntityId
   estimated_fuel_rate_km: number | null
@@ -29,9 +29,9 @@ export type DistanceLineItem = DistanceLineItemRequest
 
 type QuotationLineItemResponse = {
   is_round_trip: boolean
-  unit_price: number
-  subtotal: number
-  line_total: number
+  unit_price: string
+  subtotal: string
+  line_total: string
   services: LocationSourceResponse
   vehicle_addons: {
     id: string
@@ -42,7 +42,7 @@ type QuotationLineItemResponse = {
   with_driver: boolean
   with_loaders: boolean
   engine_mode: EngineMode
-  discount: number | null
+  discount: string
   vehicle_year: string | null
   service_id: EntityId | null
   car_brand_id: EntityId | null
@@ -52,11 +52,11 @@ type QuotationLineItemResponse = {
 
 export type QuotationVersion = {
   version_number: number
-  subtotal: number
-  total_amount: number
-  discount_amount: number
-  discount: number
-  tax_amount: number
+  subtotal: string
+  total_amount: string
+  discount_amount: string
+  discount: string
+  tax_amount: string
   valid_until: string | null
   purpose: string | undefined
   is_active: boolean
@@ -71,7 +71,7 @@ export type Quotation = {
   id: EntityId
   number: string
   status: QuotationStatus
-  amount: string | number
+  amount: string
   last_updated_at: Date
   created_at: Date
   versions: QuotationVersion[]

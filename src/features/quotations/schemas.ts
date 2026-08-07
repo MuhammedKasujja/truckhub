@@ -48,62 +48,50 @@ const createRouteSchema = z.object({
 })
 // TODO: make a discriminated union for array of inputs/ services
 
-export const createCarQuotationLineItemSchema = z.object({
+const lineItemBase = z.object({
   tempId: z.string(),
-  source: z.literal("service"),
   is_round_trip: z.boolean().nullable(),
-  unit_price: z.number().positive().nullable(),
-  subtotal: z.number().positive().nullable(),
-  line_total: z.number().positive().nullable(),
+  quantity: z.int().positive(),
+  unit_price: z.string().nullable(),
+  subtotal: z.string().nullable(),
+  line_total: z.string().nullable(),
+  discount: z.string().optional().nullable(),
+  engine_mode: z.enum(ENGINE_MODES),
+  with_driver: z.boolean(),
+})
+
+export const createCarQuotationLineItemSchema = z.object({
+  source: z.literal("service"),
   locations: z.array(createRouteSchema).min(1),
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
-  quantity: z.int().positive(),
-  discount: z.number().optional().nullable(),
   vehicle_year: z.string().optional().nullable(),
   service_id: IDSchema.optional().nullable(),
   car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
-  with_driver: z.boolean(),
   estimated_consumption_rate_km: z.number().optional(),
-  engine_mode: z.enum(ENGINE_MODES),
+  ...lineItemBase.shape,
 })
 
 export const createTruckQuotationLineItemSchema = z.object({
-  tempId: z.string(),
-  is_round_trip: z.boolean().nullable(),
   source: z.literal("route"),
-  unit_price: z.number().positive().nullable(),
-  subtotal: z.number().positive().nullable(),
-  line_total: z.number().positive().nullable(),
   locations: z.array(createDistancePricingSchema).min(1),
   item_type: z.literal("truck"),
-  quantity: z.int().positive(),
-  discount: z.number().optional().nullable(),
   with_loaders: z.boolean(),
-  with_driver: z.boolean(),
   estimated_consumption_rate_km: z.number().min(1, "Required"),
-  engine_mode: z.enum(ENGINE_MODES),
   tonnage: z.number("Required").min(0.1, "Required"),
+  ...lineItemBase.shape,
 })
 
 export const createDistanceTonnageLineItemSchema = z.object({
-  tempId: z.string(),
-  is_round_trip: z.boolean().nullable(),
   source: z.literal("distance"),
-  unit_price: z.number().positive().nullable(),
-  subtotal: z.number().positive().nullable(),
-  line_total: z.number().positive().nullable(),
   locations: z.array(createDistancePricingSchema),
   item_type: z.literal("truck"),
-  quantity: z.int().positive(),
-  discount: z.number().optional().nullable(),
   distance_km: z.number(),
   with_loaders: z.boolean(),
-  with_driver: z.boolean(),
   estimated_consumption_rate_km: z.number().min(1, "Required"),
-  engine_mode: z.enum(ENGINE_MODES),
   tonnage: z.number("Required").min(0.1, "Required"),
+  ...lineItemBase.shape,
 })
 
 const createLineItemSchema = z.discriminatedUnion("source", [
