@@ -4,18 +4,18 @@ import { logger } from "@/lib/logger"
 import { EntityId } from "@/schemas"
 import { useState, useEffect } from "react"
 
-type ClientPdfProps = {
-  clientId: EntityId
+type QuotationPdfProps = {
+  quotationId: EntityId
 }
 
-export function ClientPdf({ clientId }: ClientPdfProps) {
+export function QuotationPdf({ quotationId }: QuotationPdfProps) {
   const [pdfData, setPageData] = useState<Uint8Array>()
   useEffect(() => {
     setPageData(undefined)
     const loadPdf = async () => {
       try {
         const response = await generateReportTemplatePdfFn({
-          data: { template: "client_statement" },
+          data: { template: "quotation" },
         })
         const buffer = await response.arrayBuffer()
         setPageData(new Uint8Array(buffer))
