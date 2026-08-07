@@ -1,6 +1,5 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { formatMoney } from "@/lib/format"
 import { Payment } from "@/features/payments/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -19,36 +18,16 @@ export const EditPaymentBaseSchema = z.object({
 })
 
 export const EditPaymentSchema = z.object({
-  amount: z.number().min(1),
+  amount: z.string().min(1),
   ...EditPaymentBaseSchema.shape,
 })
 
-/**
- *
- * @param maxAmount zero value means already fully paid
- * @returns
- */
-export const createEditPaymentSchema = (maxAmount: number = 0) => {
-  // TODO: get company min amount from settings
-  const companyMinAmount = 5
+export const createEditPaymentSchema = z.object({
+  amount: z.string(),
+  ...EditPaymentBaseSchema.shape,
+})
 
-  const minAmount =
-    maxAmount > 0 && maxAmount < companyMinAmount ? maxAmount : companyMinAmount
-
-  return z.object({
-    amount: z
-      .number()
-      .min(minAmount)
-      .max(maxAmount, {
-        error: `Payment amount cannot exceed ${formatMoney(maxAmount, { showZeroAsNumber: true })}`,
-      }),
-    ...EditPaymentBaseSchema.shape,
-  })
-}
-
-export type PaymentEditSchemaType = z.infer<
-  ReturnType<typeof createEditPaymentSchema>
->
+export type PaymentEditSchemaType = z.infer<typeof createEditPaymentSchema>
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),

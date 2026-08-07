@@ -5,11 +5,11 @@ import { LineItemResponse } from "../quotations/schemas"
 export type Invoice = {
   id: EntityId
   number: string
-  total: string | number
+  total: string
   status: string
-  amount_paid: string | number | null
-  balance_due: number
-  discount: string | number
+  amount_paid: string | null
+  balance_due: string
+  discount: string | null
   due_date: Date
   purpose: string | null
   created_at: Date

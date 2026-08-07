@@ -50,7 +50,7 @@ export function EnterPaymentModal({
 
   // const isEdit = !!initialData && "id" in initialData
 
-  const formSchema = createEditPaymentSchema(initialData?.amount)
+  const formSchema = createEditPaymentSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -102,7 +102,8 @@ export function EnterPaymentModal({
                   control={form.control}
                   name={"entity_id"}
                   onSelected={(booking) => {
-                    form.setValue("amount", Number(booking?.balance))
+                    const balanceDue = booking?.balance ?? ""
+                    form.setValue("amount", balanceDue)
                   }}
                 />
               )}
@@ -112,7 +113,8 @@ export function EnterPaymentModal({
                   name={"entity_id"}
                   control={form.control}
                   onSelected={(ride) => {
-                    form.setValue("amount", Number(ride?.balance))
+                    const balanceDue = ride?.balance ?? ""
+                    form.setValue("amount", balanceDue)
                   }}
                 />
               )}
@@ -122,7 +124,8 @@ export function EnterPaymentModal({
                   name={"entity_id"}
                   control={form.control}
                   onSelected={(invoice) => {
-                    form.setValue("amount", Number(invoice?.balance_due))
+                    const balanceDue = invoice?.balance_due ?? ""
+                    form.setValue("amount", balanceDue)
                   }}
                 />
               )}

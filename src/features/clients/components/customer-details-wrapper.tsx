@@ -27,7 +27,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Can } from "@/components/has-permission"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
 import { EntityId } from "@/schemas"
@@ -84,9 +83,15 @@ export function CustomerDetailsWrapper({
           <CardTitle className="capitalize">{customer?.name}</CardTitle>
           <CardAction className="flex gap-4">
             <Can permission={"payments:create"}>
-              <EditPaymentModal
+              <Button onClick={() => setOpenModal(true)}>
+                <PlusIcon />
+                {tr("payments.form.new_payment")}
+              </Button>
+              <EnterPaymentModal
+                open={openModal}
+                onOpenChange={() => setOpenModal(false)}
                 initialData={{
-                  type: "booking",
+                  type: "invoice",
                 }}
               />
             </Can>

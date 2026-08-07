@@ -20,10 +20,10 @@ export type Booking = {
   start_date: Date
   end_date: Date
   status: BookingStatus
-  partial: number | null
-  balance: number
-  discount: number
-  amount: number
+  partial: string | null
+  balance: string
+  discount: string
+  amount: string
   line_items: LineItemResponse[]
   client: BookingCustomer
   quotation: { id: EntityId; number: string } | null
@@ -37,10 +37,10 @@ export type BookingDetails = {
   return_time: Date
   is_paid: boolean
   status: BookingStatus
-  partial: number | undefined
-  balance: number
-  discount: number
-  amount: number
+  partial: string | null
+  balance: string
+  discount: string
+  amount: string
   line_items: LineItemResponse[]
   client: BookingCustomer
   payments: Payment[]

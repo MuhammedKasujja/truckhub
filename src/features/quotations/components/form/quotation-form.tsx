@@ -37,6 +37,7 @@ import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
 import { formatMoney } from "@/lib/format"
 import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
+import Decimal from "@/lib/decimal-config"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -52,8 +53,8 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const defaultTaxRate = useDefaultTaxRate()
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
-  const [subtotal, setSubtotal] = useState<number>()
-  const [taxAmount, setTaxAmount] = useState<number>()
+  const [subtotal, setSubtotal] = useState<string>()
+  const [taxAmount, setTaxAmount] = useState<string>()
   const [selectedClient, setSelectedClient] = useState<Client>()
   const isEdit = !!initialData
 
@@ -131,18 +132,18 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
   const grandTotal = useMemo(() => {
     const subtotal = lineItems.reduce(
-      (curr, item) => curr + Number(item.line_total),
-      0
+      (curr, item) => curr.plus(item.line_total ?? 0),
+      new Decimal(0)
     )
     let total = subtotal
-    setSubtotal(subtotal)
+    setSubtotal(subtotal.toString())
     if (taxRates.length > 0) {
       const rates = taxRates.reduce((curr, tax) => curr + tax.rate, 0)
-      const taxAmount =total * (rates / 100)
-      total += taxAmount
-      setTaxAmount(taxAmount)
+      const taxAmount = total.times(rates / 100)
+      total = total.plus(taxAmount)
+      setTaxAmount(taxAmount.toString())
     }
-    return total
+    return total.toString()
   }, [taxRates, lineItems])
 
   return (
@@ -360,7 +361,9 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 </div>
               </div>
               <div className="flex justify-between">
-                <div className="text-muted-foreground">Tax ({taxRate?.name} {taxRate?.rate}%)</div>
+                <div className="text-muted-foreground">
+                  Tax ({taxRate?.name} {taxRate?.rate}%)
+                </div>
                 <div className="font-semibold">
                   {formatMoney(taxAmount, { showZeroAsNumber: true })}
                 </div>
