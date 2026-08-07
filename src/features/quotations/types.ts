@@ -81,6 +81,7 @@ export type Quotation = {
     id: EntityId
     number: string
     name: string
+    short_name: string
   }
 }
 
