@@ -42,7 +42,7 @@ type QuotationLineItemResponse = {
   with_driver: boolean
   with_loaders: boolean
   engine_mode: EngineMode
-  discount: string
+  discount: string| null
   vehicle_year: string | null
   service_id: EntityId | null
   car_brand_id: EntityId | null

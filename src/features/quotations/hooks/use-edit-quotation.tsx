@@ -1,12 +1,12 @@
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
-import { updateQuotationFn } from "../services"
-import { UpdateQuotationRequest } from "../schemas"
+import { createQuotationFn, updateQuotationFn } from "../services"
+import { CreateQuotationRequest, UpdateQuotationRequest } from "../schemas"
 
 const useEditQuotationBase = createEntityActionHook(
   updateQuotationFn,
   (invalidator, input) => {
     invalidator.quotations.list.invalidate()
-    invalidator.quotations.details(input.data.id)
+    invalidator.quotations.details(input.data.quotationId)
   }
 )
 
@@ -17,4 +17,20 @@ export function useEditQuotation() {
     return execute({ data })
   }
   return { isPending, editQuotation }
+}
+
+const useCreateQuotationBase = createEntityActionHook(
+  createQuotationFn,
+  (invalidator) => {
+    invalidator.quotations.list.invalidate()
+  }
+)
+
+export function useCreateQuotation() {
+  const { isPending, execute, isSuccess } = useCreateQuotationBase()
+
+  function editQuotation(data: CreateQuotationRequest) {
+    return execute({ data })
+  }
+  return { isPending, editQuotation, isSuccess }
 }

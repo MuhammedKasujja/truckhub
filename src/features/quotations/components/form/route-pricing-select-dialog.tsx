@@ -57,6 +57,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { ENGINE_MODES } from "@/common/config"
+import Decimal from "@/lib/decimal-config"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -136,14 +137,14 @@ export function RoutePricingSelectDialog({
 
   useEffect(() => {
     const unitPrice = routes.reduce(
-      (curr, route) => curr + Number(route.pricing.price),
-      0
+      (curr, route) => curr.plus(route.pricing.price ?? 0),
+      new Decimal("0")
     )
-    const subtotal = unitPrice * quantity * (isRoundTrip ? 2 : 1)
+    const subtotal = unitPrice.times(quantity).times(isRoundTrip ? 2 : 1)
     const lineTotal = subtotal
-    form.setValue("unit_price", unitPrice)
-    form.setValue("subtotal", subtotal)
-    form.setValue("line_total", lineTotal)
+    form.setValue("unit_price", unitPrice.toString())
+    form.setValue("subtotal", subtotal.toString())
+    form.setValue("line_total", lineTotal.toString())
   }, [routes, quantity, isRoundTrip])
 
   function handleSelectPricing(pricing: TonnagePricing, route: RouteDetails) {
@@ -159,7 +160,7 @@ export function RoutePricingSelectDialog({
         id: pricing.id,
         min_tons: Number(pricing.min_tons),
         max_tons: Number(pricing.max_tons),
-        price: Number(pricing.price),
+        price: pricing.price,
       },
     }
 

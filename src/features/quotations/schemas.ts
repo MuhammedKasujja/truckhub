@@ -35,18 +35,12 @@ const createDistancePricingSchema = z.object({
   min_tons: z.number().positive(),
   max_tons: z.number().positive(),
 })
-const createRoutePricingSchema = z.object({
-  route_id: IDSchema,
-  origin: z.string(),
-  destination: z.string().optional(),
-  price: z.number().positive(),
-})
+
 const createRouteSchema = z.object({
   route_id: IDSchema,
   origin: z.string(),
   destination: z.string().optional(),
 })
-// TODO: make a discriminated union for array of inputs/ services
 
 const lineItemBase = z.object({
   tempId: z.string(),
@@ -107,8 +101,8 @@ export const createQuotationSchema = z.object({
   start_date: z.string("Date is required"),
   end_date: z.string("Date is required"),
   purpose: z.string().optional(),
-  discount: z.number().positive().optional(),
-  partial: z.number().positive().optional(),
+  discount: z.string().optional().nullable(),
+  partial: z.string().optional().nullable(),
   number: z.string().optional(),
   tax_rates: z.array(createTaxRateSchema),
   line_items: z.array(createLineItemSchema).min(1),
@@ -137,7 +131,7 @@ export const tonnagePricingSchema = z.object({
   id: IDSchema,
   min_tons: z.union([z.string(), z.number()]),
   max_tons: z.union([z.string(), z.number()]),
-  price: z.union([z.string(), z.number()]).optional(),
+  price: z.string().optional(),
 })
 
 export const routePricingsSchema = z.object({
@@ -151,17 +145,8 @@ export const routePricingsSchema = z.object({
   pricing: tonnagePricingSchema,
 })
 
-const bookingRoutesSchema = z.object({
-  tempId: IDSchema,
-  is_round_trip: z.boolean().default(false).optional(),
-  routes: z
-    .array(routePricingsSchema)
-    .min(1, "Add at least one destination")
-    .max(20, "Maximum 20 items per order"),
-})
-
 export const updateQuotationSchema = z.object({
-  id: IDSchema,
+  quotationId: IDSchema,
   ...createQuotationSchema.shape,
 })
 

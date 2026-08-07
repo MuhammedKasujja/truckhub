@@ -48,7 +48,7 @@ function RouteComponent() {
       </PageHeader>
       <QuotationForm
         initialData={getEditableQuotation(quotation)}
-        onSubmit={(data) => editQuotation({ ...data, id: quotationId })}
+        onSubmit={(data) => editQuotation({ ...data, quotationId })}
       />
     </div>
   )

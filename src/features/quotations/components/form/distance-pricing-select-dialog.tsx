@@ -40,6 +40,7 @@ import {
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { DistanceTonnagePricingResponse } from "@/features/settings/pricing/types"
 import { ENGINE_MODES } from "@/common/config"
+import Decimal from "@/lib/decimal-config"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -95,18 +96,20 @@ export function DistancePricingSelectDialog({
   }, [query, data, tonnage, distanceKm])
 
   useEffect(() => {
-    const subtotal = Number(unitPrice) * quantity * (isRoundTrip ? 2 : 1)
+    const subtotal = new Decimal(unitPrice ?? 0)
+      .times(quantity)
+      .times(isRoundTrip ? 2 : 1)
     const lineTotal = subtotal
     form.setValue("unit_price", unitPrice)
-    form.setValue("subtotal", subtotal)
-    form.setValue("line_total", lineTotal)
+    form.setValue("subtotal", subtotal.toString())
+    form.setValue("line_total", lineTotal.toString())
   }, [quantity, isRoundTrip, unitPrice])
 
   const isSelected = (pricingId: EntityId) =>
     (data ?? []).find((r) => r.id === pricingId)
 
   function handleSelect(pricing: DistanceTonnagePricingResponse) {
-    form.setValue("unit_price", Number(pricing.max_price))
+    form.setValue("unit_price", pricing.max_price)
   }
 
   return (

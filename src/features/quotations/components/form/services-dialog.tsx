@@ -30,6 +30,7 @@ import { ServicePickerField } from "@/features/services/components"
 import { formatMoney } from "@/lib/format"
 import { ServiceRoutesDialog } from "./service-routes"
 import { ENGINE_MODES } from "@/common/config"
+import Decimal from "@/lib/decimal-config"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -60,12 +61,12 @@ export function ServicesDialog({
   })
 
   useEffect(() => {
-    const price = unitPrice ?? 0
+    const price = new Decimal(unitPrice ?? 0)
     const qty = quantity ?? 1
-    const subtotal = price * qty * (isRoundTrip === true ? 2 : 1)
-    const lineTotal = subtotal - (discount ?? 0)
-    form.setValue("subtotal", subtotal)
-    form.setValue("line_total", lineTotal)
+    const subtotal = price.times(qty).times(isRoundTrip === true ? 2 : 1)
+    const lineTotal = subtotal.sub(discount ?? 0)
+    form.setValue("subtotal", subtotal.toFixed(2))
+    form.setValue("line_total", lineTotal.toFixed(2))
   }, [unitPrice, quantity, isRoundTrip, discount])
 
   return (
@@ -143,7 +144,11 @@ export function ServicesDialog({
                   control={form.control}
                   required={false}
                   onSelected={(service) => {
-                    form.setValue("unit_price", Number(service?.base_fare))
+                    const unitPrice = service?.base_fare ?? ""
+                    form.setValue(
+                      "unit_price",
+                      new Decimal(unitPrice).toFixed(2)
+                    )
                   }}
                 />
                 <CarBrandPickerField

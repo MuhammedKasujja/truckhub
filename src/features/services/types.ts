@@ -9,10 +9,10 @@ export type Service = {
   category: string;
   display_name: string;
   seats: number;
-  base_fare: number;
-  min_fare: number;
-  price_per_min: number;
-  price_per_unit_distance: number;
+  base_fare: string;
+  min_fare: string;
+  price_per_min: string;
+  price_per_unit_distance: string;
   // booking_fee: number;
   // tax_fee: number;
   distance_unit: DistanceUnit;
