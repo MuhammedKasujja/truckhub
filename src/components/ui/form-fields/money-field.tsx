@@ -40,6 +40,7 @@ export function MoneyField<T extends FieldValues>({
             <InputGroupInput
               {...field}
               type={"text"}
+              inputMode="decimal"
               id={field.name}
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}

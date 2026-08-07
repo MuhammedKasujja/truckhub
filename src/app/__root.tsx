@@ -15,6 +15,8 @@ import { getTranslationsData } from "@/i18n/request"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { useEffect } from "react"
 import { useHistoryStore } from "@/store/use-navigation-history-store"
+import "@/lib/decimal-config"; // side-effect import, runs Decimal.set() early
+
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
