@@ -29,7 +29,7 @@ export function PaymentForm({ initialData }: PaymentFormProps) {
 
   const isEdit = !!initialData && "id" in initialData
 
-  const schema = createEditPaymentSchema(initialData?.amount)
+  const schema = createEditPaymentSchema
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),

@@ -105,7 +105,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
         ? [
             {
               tax_name: taxRate.name,
-              rate: Number(taxRate.rate),
+              rate: taxRate.rate,
               id: taxRate.id,
             },
           ]
@@ -123,7 +123,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             {
               id: defaultTaxRate.id,
               tax_name: defaultTaxRate.name,
-              rate: Number(defaultTaxRate.rate),
+              rate: defaultTaxRate.rate,
             },
           ]
         : taxRates
@@ -138,8 +138,8 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     let total = subtotal
     setSubtotal(subtotal.toString())
     if (taxRates.length > 0) {
-      const rates = taxRates.reduce((curr, tax) => curr + tax.rate, 0)
-      const taxAmount = total.times(rates / 100)
+      const rates = taxRates.reduce((curr, tax) => curr.plus(tax.rate), new Decimal(0))
+      const taxAmount = total.times(rates.div(100))
       total = total.plus(taxAmount)
       setTaxAmount(taxAmount.toString())
     }
@@ -149,7 +149,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (errors) => {
-        console.log(errors.line_items)
+        console.log(errors.tax_rates)
       })}
       className="space-y-4"
       id="form-quotation"

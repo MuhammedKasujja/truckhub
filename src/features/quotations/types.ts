@@ -64,7 +64,7 @@ export type QuotationVersion = {
   end_date: string
   revision_reason: string | null
   line_items: LineItemResponse[]
-  tax_rates: { id: EntityId; tax_name: string; rate: number }[]
+  tax_rates: { id: EntityId; tax_name: string; rate: string }[]
 }
 
 export type Quotation = {

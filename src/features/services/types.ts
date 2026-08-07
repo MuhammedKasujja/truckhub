@@ -16,7 +16,7 @@ export type Service = {
   // booking_fee: number;
   // tax_fee: number;
   distance_unit: DistanceUnit;
-  vehicle_category_id: number;
+  vehicle_category_id: EntityId;
   description: string | undefined;
   id: EntityId;
   is_truck: boolean;

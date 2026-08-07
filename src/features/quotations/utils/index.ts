@@ -1,6 +1,7 @@
 import { Quotation } from "../types"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import {
+  LineItemResponse,
   SmallLineItemRequest,
   TruckLineItemRequest,
   CreateQuotationRequest,
@@ -72,12 +73,25 @@ export function generateDistanceEmptyLineItem() {
   return emptyLineItem
 }
 
+const validateLineItem = (lineItems: LineItemResponse[]) => {
+  return lineItems.map((item) => {
+    if (item.source === "service") {
+      return {
+        ...item,
+        item_type: "small" as const,
+        tempId: makeId("__small_"),
+      }
+    }
+    return { ...item, item_type: "truck" as const, tempId: makeId("__small_") }
+  })
+}
+
 export function getEditableQuotation(quotation: Quotation) {
   const activeVersion = quotation.versions[0]
   return {
     client_id: quotation.client.id,
-    line_items: activeVersion.line_items,
-    tax_rates: activeVersion.tax_rates,
+    line_items: validateLineItem(activeVersion.line_items),
+    tax_rates: activeVersion.tax_rates.map((tax)=>({...tax, rate: Number(tax.rate)})),
     expiry_date: activeVersion.valid_until,
     start_date: activeVersion.start_date,
     end_date: activeVersion.end_date,

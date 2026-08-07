@@ -29,7 +29,7 @@ export async function createQuotation(data: CreateQuotationRequest) {
 
 export async function updateQuotation(data: UpdateQuotationRequest) {
   const { quotationId, ...rest } = data
-  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}`, rest)
+  return await apiClient.putFn<Quotation>(`${endpoint}/${quotationId}`, rest)
 }
 
 export async function getQuotationDetails(quotationId: EntityId) {
