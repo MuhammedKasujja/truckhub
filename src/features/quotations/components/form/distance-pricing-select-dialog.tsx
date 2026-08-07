@@ -28,6 +28,7 @@ import { generateDistanceEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   NumberField,
+  MoneyField,
   SelectField,
   SwitchField,
 } from "@/components/ui/form-fields"
@@ -304,20 +305,20 @@ export function DistancePricingSelectDialog({
               control={form.control}
               name="unit_price"
             />
-            <NumberField
+            <MoneyField
               required={false}
               label="Discount"
               control={form.control}
               name="discount"
             />
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Subtotal"
               control={form.control}
               name="subtotal"
             />
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Line total"

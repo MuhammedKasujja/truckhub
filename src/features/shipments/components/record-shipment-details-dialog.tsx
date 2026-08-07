@@ -11,7 +11,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { FinishShipmentInput, finishShipmentSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFinishShipment } from "../hooks/use-shipment-actions"
-import { NumberField, TextareaField } from "@/components/ui/form-fields"
+import { MoneyField, NumberField, TextareaField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -124,7 +124,7 @@ export function RecordShipmentDetailsDialog({
             />
 
             <Field orientation={"horizontal"}>
-              <NumberField
+              <MoneyField
                 readOnly
                 required={false}
                 label="Vehicle Consumption Rate (km/l)"
@@ -188,14 +188,14 @@ export function RecordShipmentDetailsDialog({
                 </Field>
               ))}
             </FieldGroup>
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Fuel Rate"
               name="fuelRate"
               control={form.control}
             />
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Actual Fuel Consumed"

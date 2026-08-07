@@ -35,8 +35,8 @@ export function NumberField<T extends FieldValues>({
           )}
           <Input
             {...field}
-            type={"text"}
-            inputMode="decimal"
+            type={"number"}
+            inputMode="numeric"
             id={field.name}
             readOnly={readOnly}
             aria-invalid={fieldState.invalid}

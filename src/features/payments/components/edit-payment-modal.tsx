@@ -23,7 +23,7 @@ import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   TextareaField,
-  NumberField,
+  MoneyField,
 } from "@/components/ui/form-fields"
 import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
@@ -122,7 +122,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
                   }}
                 />
               )}
-              <NumberField
+              <MoneyField
                 label={"Amount"}
                 name={"amount"}
                 control={form.control}

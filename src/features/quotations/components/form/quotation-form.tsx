@@ -8,11 +8,11 @@ import {
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
 import {
-  NumberField,
   DiscountField,
   TextField,
   TextareaField,
   DatePickerField,
+  MoneyField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -71,7 +71,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     },
   })
 
-  const { control, getValues, setValue } = form
+  const { control, setValue } = form
 
   const lineItemsFields = useFieldArray({
     control,
@@ -201,7 +201,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 name={"end_date"}
                 control={control}
               />
-              <NumberField
+              <MoneyField
                 label={"Partial Amount"}
                 name={"partial"}
                 control={control}

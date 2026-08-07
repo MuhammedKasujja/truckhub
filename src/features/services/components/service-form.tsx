@@ -10,6 +10,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
+  MoneyField,
   NumberField,
   TextareaField,
   TextField,
@@ -120,24 +121,24 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
               required={false}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.price")}
               name={"base_fare"}
               control={form.control}
               required={false}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.last_price")}
               name={"min_fare"}
               control={form.control}
               required={false}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.price_per_min")}
               name={"price_per_min"}
               control={form.control}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.price_per_unit_distance")}
               name={"price_per_unit_distance"}
               control={form.control}

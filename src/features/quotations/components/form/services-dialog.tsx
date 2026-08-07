@@ -15,6 +15,7 @@ import {
 import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import {
+  MoneyField,
   NumberField,
   SelectField,
   SwitchField,
@@ -222,26 +223,26 @@ export function ServicesDialog({
                   name={"quantity"}
                   control={form.control}
                 />
-                <NumberField
+                <MoneyField
                   label={"Unit Price"}
                   name={"unit_price"}
                   control={form.control}
                 />
-                <NumberField
+                <MoneyField
                   required={false}
                   label={"Discount"}
                   name={"discount"}
                   control={form.control}
                 />
               </Field>
-              <NumberField
+              <MoneyField
                 readOnly
                 required={false}
                 label={"Sub total"}
                 name={"subtotal"}
                 control={form.control}
               />
-              <NumberField
+              <MoneyField
                 readOnly
                 required={false}
                 label={"Line Total"}

@@ -46,6 +46,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateTruckEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
+  MoneyField,
   NumberField,
   SelectField,
   SwitchField,
@@ -474,25 +475,25 @@ export function RoutePricingSelectDialog({
               control={form.control}
               name="quantity"
             />
-            <NumberField
+            <MoneyField
               label="Unit Price"
               control={form.control}
               name="unit_price"
             />
-            <NumberField
+            <MoneyField
               required={false}
               label="Discount"
               control={form.control}
               name="discount"
             />
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Subtotal"
               control={form.control}
               name="subtotal"
             />
-            <NumberField
+            <MoneyField
               readOnly
               required={false}
               label="Line total"
