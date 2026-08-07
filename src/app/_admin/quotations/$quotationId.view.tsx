@@ -19,7 +19,9 @@ import { quotationDetailsQueryOptions } from "@/features/quotations/query-option
 import { QuotationVersion } from "@/features/quotations/types"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { formatMoney } from "@/lib/format"
-import { createFileRoute } from "@tanstack/react-router"
+import { cn } from "@/lib/utils"
+import { IconFileTypePdf } from "@tabler/icons-react"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { MailIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
@@ -34,41 +36,58 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
 })
 
 function RouteComponent() {
+  const { quotationId } = Route.useParams()
   const [activeVersion, setActiveVersion] = useState<QuotationVersion>()
   const { data: quotation } = Route.useLoaderData()
   const back = useBackNavigation()
 
+  const quotationRevisions = quotation.versions
+
   useEffect(() => {
-    setActiveVersion(quotation.versions.at(0))
+    setActiveVersion(quotation.activeRevision)
   }, [quotation])
 
   return (
     <div className="space-y-4">
       <PageHeader className="pb-0">
         <PageTitle>
-          Quotation <Badge variant={'outline'}>v{quotation.versions.length}</Badge>
+          Quotation{" "}
+          <Badge variant={"outline"}>v{quotationRevisions.length}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"} size={'sm'} onClick={back}>
+          <Button variant={"outline"} size={"sm"} onClick={back}>
             Back
           </Button>
-          <Button variant={"outline"} size={'sm'}>
-            <MailIcon/>
+          <Button variant={"outline"} size={"sm"}>
+            <MailIcon />
             Send Email
+          </Button>
+          <Button variant={"outline"} size={"sm"} asChild>
+            <Link to="/quotations/$quotationId/pdf" params={{ quotationId }}>
+              <IconFileTypePdf />
+              PDF
+            </Link>
           </Button>
         </PageAction>
       </PageHeader>
       <Card>
         <CardHeader>
-          <CardTitle>{quotation?.number} <Badge>{quotation?.status}</Badge></CardTitle>
+          <CardTitle>
+            {quotation?.number} <Badge>{quotation?.status}</Badge>
+          </CardTitle>
           <CardDescription>
             {/* <Badge>{quotation?.status}</Badge> */}
           </CardDescription>
           <CardAction>
             {quotation.status != "accepted" && (
-              <Button>
-                <PlusIcon />
-                New Revision
+              <Button asChild>
+                <Link
+                  to="/quotations/$quotationId/edit"
+                  params={{ quotationId }}
+                >
+                  <PlusIcon />
+                  New Revision
+                </Link>
               </Button>
             )}
           </CardAction>
@@ -76,10 +95,14 @@ function RouteComponent() {
       </Card>
       <div className="grid gap-5 md:grid-cols-5">
         <div className="md:col-span-2">
-          {quotation?.versions.map((ver) => (
+          {quotationRevisions.map((ver) => (
             <div
               key={ver.version_number}
-              className="space-y-2 rounded-lg border border-dashed p-4"
+              className={cn(
+                "space-y-2 rounded-lg border border-dashed p-4",
+                ver.version_number === activeVersion?.version_number &&
+                  "bg-card"
+              )}
               onClick={() => setActiveVersion(ver)}
             >
               <div>Version: {ver.version_number}</div>
@@ -112,7 +135,7 @@ function RouteComponent() {
           )}
           <div className="grid md:grid-cols-2">
             <div className="col-span-1"></div>
-            <div className="col-span-1 space-y-2 mt-2">
+            <div className="col-span-1 mt-2 space-y-2">
               <div className="flex justify-between">
                 <div>Subtotal</div>
                 <div>{formatMoney(activeVersion?.subtotal)}</div>
@@ -123,10 +146,12 @@ function RouteComponent() {
               </div>
               <div className="flex justify-between">
                 <div>Total</div>
-                <div className="font-semibold">{formatMoney(activeVersion?.total_amount)}</div>
+                <div className="font-semibold">
+                  {formatMoney(activeVersion?.total_amount)}
+                </div>
               </div>
-              <Separator/>
-              <Separator/>
+              <Separator />
+              <Separator />
             </div>
           </div>
         </div>

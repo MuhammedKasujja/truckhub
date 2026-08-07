@@ -1,7 +1,11 @@
 import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { createQuotationSchema, QuotationSearchParams, updateQuotationSchema } from "../schemas"
+import {
+  createQuotationSchema,
+  QuotationSearchParams,
+  updateQuotationSchema,
+} from "../schemas"
 import {
   getQuotations,
   createQuotation,
@@ -72,5 +76,10 @@ export const getQuotationDetailsFn = createServerFn({ method: "GET" })
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }
-    return { data: result.data!, message: result.message }
+
+    const quotation = result.data!
+    const versions = quotation.versions.toReversed()
+    const activeRevision = versions[0]
+
+    return { data: { ...quotation, activeRevision, versions }, message: result.message }
   })

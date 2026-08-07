@@ -87,7 +87,7 @@ const validateLineItem = (lineItems: LineItemResponse[]) => {
 }
 
 export function getEditableQuotation(quotation: Quotation) {
-  const activeVersion = quotation.versions[0]
+  const activeVersion = quotation.activeRevision
   return {
     client_id: quotation.client.id,
     line_items: validateLineItem(activeVersion.line_items),
@@ -97,6 +97,6 @@ export function getEditableQuotation(quotation: Quotation) {
     end_date: activeVersion.end_date,
     number: quotation.number,
     discount: activeVersion.discount,
-    purpose: activeVersion.purpose,
+    purpose: undefined,
   } satisfies CreateQuotationRequest
 }

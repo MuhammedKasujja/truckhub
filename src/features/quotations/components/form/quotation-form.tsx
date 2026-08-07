@@ -149,7 +149,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit, (errors) => {
-        console.log(errors.tax_rates)
+        console.error(errors)
       })}
       className="space-y-4"
       id="form-quotation"

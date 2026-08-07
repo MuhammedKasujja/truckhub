@@ -65,6 +65,7 @@ export type QuotationVersion = {
   revision_reason: string | null
   line_items: LineItemResponse[]
   tax_rates: { id: EntityId; tax_name: string; rate: string }[]
+  isActive: boolean
 }
 
 export type Quotation = {
@@ -75,6 +76,7 @@ export type Quotation = {
   last_updated_at: Date
   created_at: Date
   versions: QuotationVersion[]
+  activeRevision: QuotationVersion
   client: {
     id: EntityId
     number: string
