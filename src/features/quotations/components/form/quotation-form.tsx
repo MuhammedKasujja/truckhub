@@ -38,6 +38,7 @@ import { TaxRate } from "@/features/settings/tax-rates/types"
 import { formatMoney } from "@/lib/format"
 import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 import Decimal from "@/lib/decimal-config"
+import { LineItemRow } from "../details/line-item-row"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -138,7 +139,10 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     let total = subtotal
     setSubtotal(subtotal.toString())
     if (taxRates.length > 0) {
-      const rates = taxRates.reduce((curr, tax) => curr.plus(tax.rate), new Decimal(0))
+      const rates = taxRates.reduce(
+        (curr, tax) => curr.plus(tax.rate),
+        new Decimal(0)
+      )
       const taxAmount = total.times(rates.div(100))
       total = total.plus(taxAmount)
       setTaxAmount(taxAmount.toString())
@@ -318,28 +322,52 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
       <div className="grid gap-4 md:grid-cols-6">
         <Card className="md:col-span-4">
+          <CardHeader className="pb-2">
+            <CardTitle className="font-mono text-sm tracking-wide text-muted-foreground uppercase">
+              Line items — {lineItems.length}
+            </CardTitle>
+          </CardHeader>
           <CardContent>
-            {lineItemsFields.fields.map((item, index) => (
-              <div key={item.tempId} className="flex gap-4 space-y-2">
-                <div className="text-muted-foreground">
-                  {item.is_round_trip && <>Round</>}
-                </div>
-                <div>{item.quantity}</div>
-                <div>{formatMoney(item.unit_price)}</div>
-                <div>{formatMoney(item.line_total)}</div>
-                {item.discount && (
-                  <div>{item.discount && formatMoney(item.discount)}</div>
-                )}
-                <Button
-                  size={"sm"}
-                  variant={"destructive"}
-                  type="button"
-                  onClick={() => lineItemsFields.remove(index)}
-                >
-                  <Trash2Icon />
-                </Button>
-              </div>
-            ))}
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border text-left text-[10px] tracking-wide text-muted-foreground uppercase">
+                  <th className="pr-3 pb-2 font-medium">#</th>
+                  <th className="pr-4 pb-2 font-medium">Item</th>
+                  <th className="px-3 pb-2 text-right font-medium">
+                    Unit price
+                  </th>
+                  <th className="px-3 pb-2 text-right font-medium">Qty</th>
+                  <th className="pb-2 pl-3 text-right font-medium">
+                    Line total
+                  </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {lineItemsFields.fields.map((item, index) => (
+                  <LineItemRow
+                    item={item}
+                    idx={index}
+                    key={index}
+                    actions={
+                      <div>
+                        <Button type="button" size={"xs"} variant={"ghost"}>
+                          <EditIcon />
+                        </Button>
+                        <Button
+                          type="button"
+                          size={"xs"}
+                          variant={"ghost"}
+                          onClick={() => lineItemsFields.remove(index)}
+                        >
+                          <Trash2Icon />
+                        </Button>
+                      </div>
+                    }
+                  />
+                ))}
+              </tbody>
+            </table>
           </CardContent>
         </Card>
         <div className="space-y-4 md:col-span-2">

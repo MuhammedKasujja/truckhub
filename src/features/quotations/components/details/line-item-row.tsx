@@ -1,14 +1,16 @@
-import { ArrowRight, Package, Truck } from "lucide-react";
-import { LineItemResponse } from "../../schemas";
-import { formatMoney } from "@/lib/format";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Package, Truck } from "lucide-react"
+import { LineItemResponse } from "../../schemas"
+import { formatMoney } from "@/lib/format"
+import { Badge } from "@/components/ui/badge"
 
 type RouteLeg = {
   origin: string
   destination: string
 }
 
-export function LineItemRow({ item, idx }: { item: LineItemResponse; idx: number }) {
+type Props = { item: LineItemResponse; idx: number; actions?: React.ReactNode }
+
+export function LineItemRow({ item, idx, actions }: Props) {
   const isService = item.source === "service"
   return (
     <tr className="border-b border-border align-top last:border-0 hover:bg-muted/50">
@@ -84,6 +86,11 @@ export function LineItemRow({ item, idx }: { item: LineItemResponse; idx: number
       <td className="py-3 pl-3 text-right font-mono text-sm font-semibold whitespace-nowrap text-foreground">
         {formatMoney(item.line_total)}
       </td>
+      {actions && (
+        <td className="py-3 pl-3 text-right font-mono text-sm font-semibold whitespace-nowrap text-foreground">
+          {actions}
+        </td>
+      )}
     </tr>
   )
 }
