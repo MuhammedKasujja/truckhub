@@ -1,30 +1,21 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import {
   LineItemRow,
+  QuotationDetailsPageHeader,
 } from "@/features/quotations/components"
 import { QuotationStatus } from "@/features/quotations/enums"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
 import { QuotationVersion } from "@/features/quotations/types"
-import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { formatMoney } from "@/lib/format"
-import { IconFileTypePdf } from "@tabler/icons-react"
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   ArrowDownRight,
   ArrowUpRight,
   CalendarRange,
   FileText,
-  MailIcon,
   Minus,
 } from "lucide-react"
 import React, { useMemo } from "react"
@@ -47,7 +38,6 @@ interface DeltaProps {
 }
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline"
-
 
 const statusVariant = (s: QuotationStatus) =>
   (
@@ -103,10 +93,8 @@ const fullDate = (iso: string | Date): string =>
 
 // ---------------------------------------------------------------------------
 function RouteComponent() {
-  const { quotationId } = Route.useParams()
   const [activeVersion, setActiveVersion] = useState<QuotationVersion>()
   const { data: quotation } = Route.useLoaderData()
-  const back = useBackNavigation()
 
   const versions = quotation.versions
 
@@ -127,26 +115,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <PageHeader className="pb-4">
-        <PageTitle>
-          Quotation <Badge variant={"outline"}>v{versions.length}</Badge>
-        </PageTitle>
-        <PageAction className="flex gap-2">
-          <Button variant={"outline"} size={"sm"} onClick={back}>
-            Back
-          </Button>
-          <Button variant={"outline"} size={"sm"}>
-            <MailIcon />
-            Send Email
-          </Button>
-          <Button variant={"outline"} size={"sm"} asChild>
-            <Link to="/quotations/$quotationId/pdf" params={{ quotationId }}>
-              <IconFileTypePdf />
-              PDF
-            </Link>
-          </Button>
-        </PageAction>
-      </PageHeader>
+      <QuotationDetailsPageHeader quotation={quotation} />
       <div className="flex h-screen w-full overflow-hidden bg-background font-sans text-foreground">
         {/* ================= Center: detail ================= */}
         <section className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -367,7 +336,6 @@ function RouteComponent() {
     </div>
   )
 }
-
 
 // function RouteComponent() {
 //   const { quotationId } = Route.useParams()

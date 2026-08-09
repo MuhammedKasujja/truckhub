@@ -6,7 +6,7 @@ import {
 } from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
-const useMarkQuotationAcceptedBase = createEntityActionHook(
+const useAcceptQuotationBase = createEntityActionHook(
   markQuotationAcceptedFn,
   (invalidator, input) => {
     invalidator.quotations.list.invalidate()
@@ -14,13 +14,13 @@ const useMarkQuotationAcceptedBase = createEntityActionHook(
   }
 )
 
-export function useMarkQuotationAccepted() {
-  const { isPending, execute } = useMarkQuotationAcceptedBase()
+export function useAcceptQuotation() {
+  const { isPending, execute } = useAcceptQuotationBase()
 
-  function markQuotationAccepted(quotationId: EntityId) {
+  function acceptQuotation(quotationId: EntityId) {
     return execute({ data: { id: quotationId } })
   }
-  return { isPending, markQuotationAccepted }
+  return { isPending, acceptQuotation }
 }
 
 const useMarkQuotationExpiredBase = createEntityActionHook(

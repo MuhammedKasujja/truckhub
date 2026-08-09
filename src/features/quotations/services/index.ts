@@ -36,7 +36,11 @@ export const createQuotationFn = createServerFn({ method: "POST" })
 export const updateQuotationFn = createServerFn({ method: "POST" })
   .inputValidator(updateQuotationSchema)
   .handler(async ({ data }) => {
-    return updateQuotation(data)
+    const result = await updateQuotation(data)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const markQuotationAcceptedFn = createServerFn({ method: "POST" })

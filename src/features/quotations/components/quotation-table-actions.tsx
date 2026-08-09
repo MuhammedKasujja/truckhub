@@ -13,7 +13,7 @@ import {
 import { Quotation, QuotationTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 import {
-  useMarkQuotationAccepted,
+  useAcceptQuotation,
   useMarkQuotationRejected,
 } from "../hooks/use-quotation-actions"
 
@@ -25,7 +25,7 @@ interface TableActionsProps {
 }
 
 export function QuotationTableActions({ quotation }: TableActionsProps) {
-  const { markQuotationAccepted } = useMarkQuotationAccepted()
+  const { acceptQuotation } = useAcceptQuotation()
   const { markQuotationRejected } = useMarkQuotationRejected()
   return (
     <DropdownMenu>
@@ -62,7 +62,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           <Can permission={"quotations:accept"}>
             {isNotInEnum(quotation.status, ["accepted"]) && (
               <DropdownMenuItem
-                onClick={() => markQuotationAccepted(quotation.id)}
+                onClick={() => acceptQuotation(quotation.id)}
               >
                 Mark Accepted
               </DropdownMenuItem>
