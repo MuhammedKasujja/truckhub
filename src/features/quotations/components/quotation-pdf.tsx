@@ -1,8 +1,8 @@
 import { PdfViewer, SkeletonPdfViewer } from "@/components/pdf-viewer"
-import { generateReportTemplatePdfFn } from "@/features/settings/pdf-templates/services"
 import { logger } from "@/lib/logger"
 import { EntityId } from "@/schemas"
 import { useState, useEffect } from "react"
+import { getQuotationReportPdfFn } from "../services"
 
 type QuotationPdfProps = {
   quotationId: EntityId
@@ -14,8 +14,8 @@ export function QuotationPdf({ quotationId }: QuotationPdfProps) {
     setPageData(undefined)
     const loadPdf = async () => {
       try {
-        const response = await generateReportTemplatePdfFn({
-          data: { template: "quotation" },
+        const response = await getQuotationReportPdfFn({
+          data: { id: quotationId },
         })
         const buffer = await response.arrayBuffer()
         setPageData(new Uint8Array(buffer))
@@ -28,7 +28,7 @@ export function QuotationPdf({ quotationId }: QuotationPdfProps) {
   }, [])
 
   if (!pdfData) {
-    return <SkeletonPdfViewer/>
+    return <SkeletonPdfViewer />
   }
   return <PdfViewer pdfUrl={pdfData} />
 }

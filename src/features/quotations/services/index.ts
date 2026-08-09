@@ -14,6 +14,7 @@ import {
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
+  getQuotationReportPdf,
 } from "./server"
 
 export const getQuotationsFn = createServerFn()
@@ -85,5 +86,27 @@ export const getQuotationDetailsFn = createServerFn({ method: "GET" })
     const versions = quotation.versions.toReversed()
     const activeRevision = versions[0]
 
-    return { data: { ...quotation, activeRevision, versions }, message: result.message }
+    return {
+      data: { ...quotation, activeRevision, versions },
+      message: result.message,
+    }
+  })
+
+export const getQuotationReportPdfFn = createServerFn({ method: "GET" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    try {
+      const response = await getQuotationReportPdf(data.id)
+
+      return new Response(response.data, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename=${data.id}-demo"}.pdf"`,
+        },
+      })
+    } catch (error: any) {
+      console.error("PDF generation error:", error?.response?.data || error)
+      throw new Error(`Failed to generate PDF: ${error.message}`)
+    }
   })

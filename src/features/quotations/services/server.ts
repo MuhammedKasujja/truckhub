@@ -7,6 +7,7 @@ import {
   UpdateQuotationRequest,
   QuotationListSearchParams,
 } from "../schemas"
+import { api } from "@/lib/api"
 
 const endpoint = "/v1/quotations"
 
@@ -48,4 +49,11 @@ export async function markQuotationExpired(quotationId: EntityId) {
   return await apiClient.patchFn<Quotation>(
     `${endpoint}/${quotationId}/expired`
   )
+}
+
+export async function getQuotationReportPdf(quotationId: EntityId) {
+  return await api.get(`${endpoint}/${quotationId}/pdf`, {
+    responseType: "arraybuffer",
+    timeout: 30000,
+  })
 }
