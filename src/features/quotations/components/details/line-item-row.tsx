@@ -2,18 +2,27 @@ import { ArrowRight, Package, Truck } from "lucide-react"
 import { LineItemResponse } from "../../schemas"
 import { formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
+import { MouseEventHandler } from "react"
 
 type RouteLeg = {
   origin: string
   destination: string
 }
 
-type Props = { item: LineItemResponse; idx: number; actions?: React.ReactNode }
+type Props = {
+  item: LineItemResponse
+  idx: number
+  actions?: React.ReactNode
+  onClick?: MouseEventHandler<HTMLTableRowElement>
+}
 
-export function LineItemRow({ item, idx, actions }: Props) {
+export function LineItemRow({ item, idx, actions, onClick }: Props) {
   const isService = item.source === "service"
   return (
-    <tr className="border-b border-border align-top last:border-0 hover:bg-muted/50">
+    <tr
+      className="border-b border-border align-top last:border-0 hover:bg-muted/50"
+      onClick={onClick}
+    >
       <td className="py-3 pr-3 font-mono text-xs text-muted-foreground">
         {String(idx + 1).padStart(2, "0")}
       </td>

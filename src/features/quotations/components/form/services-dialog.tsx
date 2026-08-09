@@ -36,6 +36,7 @@ type ServiceSelectDialogProps = {
   clientId: EntityId
   open: boolean
   onOpenChange: (v: boolean) => void
+  lineItem?: SmallLineItemRequest
   onLineItemAdded: (lineItem: SmallLineItemRequest) => void
 }
 
@@ -43,11 +44,16 @@ export function ServicesDialog({
   clientId,
   open,
   onOpenChange,
+  lineItem,
   onLineItemAdded,
 }: ServiceSelectDialogProps) {
   const form = useForm<SmallLineItemRequest>({
     resolver: zodResolver(createCarQuotationLineItemSchema),
-    defaultValues: { ...generateEmptyLineItem() },
+    defaultValues: lineItem
+      ? { ...lineItem }
+      : {
+          ...generateEmptyLineItem(),
+        },
   })
 
   const unitPrice = form.watch("unit_price")
@@ -68,6 +74,12 @@ export function ServicesDialog({
     form.setValue("subtotal", subtotal.toFixed(2))
     form.setValue("line_total", lineTotal.toFixed(2))
   }, [unitPrice, quantity, isRoundTrip, discount])
+
+  useEffect(() => {
+    if (lineItem) {
+      form.reset({ ...lineItem })
+    }
+  }, [lineItem, form])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

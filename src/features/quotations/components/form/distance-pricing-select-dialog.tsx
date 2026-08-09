@@ -11,7 +11,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item"
-import { formatMoney, formatNumber } from "@/lib/format"
+import { formatMoney } from "@/lib/format"
 import { EntityId } from "@/schemas"
 import { useEffect, useMemo, useState } from "react"
 import {
@@ -52,6 +52,7 @@ type FormValues = z.infer<typeof formSchema>
 type DistancePricingDialogProps = {
   clientId: EntityId
   open: boolean
+  lineItem?: DistanceLineItemRequest
   onOpenChange: (v: boolean) => void
   onLineItemAdded: (lineItem: DistanceLineItemRequest) => void
 }
@@ -59,6 +60,7 @@ type DistancePricingDialogProps = {
 export function DistancePricingSelectDialog({
   clientId,
   open,
+  lineItem,
   onOpenChange,
   onLineItemAdded,
 }: DistancePricingDialogProps) {
@@ -66,10 +68,12 @@ export function DistancePricingSelectDialog({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      ...generateDistanceEmptyLineItem(),
-      // routes:  [],
-    },
+    defaultValues: lineItem
+      ? { ...lineItem }
+      : {
+          ...generateDistanceEmptyLineItem(),
+          // routes:  [],
+        },
     mode: "onChange",
   })
 
@@ -111,6 +115,12 @@ export function DistancePricingSelectDialog({
   function handleSelect(pricing: DistanceTonnagePricingResponse) {
     form.setValue("unit_price", pricing.max_price)
   }
+
+  useEffect(() => {
+    if (lineItem) {
+      form.reset({ ...lineItem })
+    }
+  }, [lineItem, form])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

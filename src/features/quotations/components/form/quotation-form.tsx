@@ -31,7 +31,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
 import { UserPickerField } from "@/features/users/components"
-import { CreateQuotationRequest, createQuotationSchema } from "../../schemas"
+import {
+  CreateQuotationRequest,
+  createQuotationSchema,
+  DistanceLineItemRequest,
+  LineItemRequest,
+  SmallLineItemRequest,
+  TruckLineItemRequest,
+} from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
@@ -46,11 +53,13 @@ type QuotationFormProps = {
   onSubmit: (data: CreateQuotationRequest) => void
 }
 
+type ModalType = "service" | "route" | "distance"
+
 export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const tr = useTranslation()
-  const [openModal, setOpenModal] = useState<
-    "service" | "route" | "distance" | null
-  >(null)
+  const [openModal, setOpenModal] = useState<ModalType | null>(null)
+  const [selectedLineItem, setSelectedLineItem] = useState<LineItemRequest>()
+
   const defaultTaxRate = useDefaultTaxRate()
 
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
@@ -149,6 +158,11 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     }
     return total.toString()
   }, [taxRates, lineItems])
+
+  function handleSourceChange(source: ModalType | null, item?: LineItemRequest) {
+    setOpenModal(source)
+    setSelectedLineItem(item)
+  }
 
   return (
     <form
@@ -269,7 +283,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               disabled={!selectedClient}
               type="button"
               variant={"outline"}
-              onClick={() => setOpenModal("service")}
+              onClick={() => handleSourceChange("service")}
             >
               <Plus />
               Cars
@@ -278,7 +292,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               disabled={!selectedClient}
               type="button"
               variant={"outline"}
-              onClick={() => setOpenModal("route")}
+              onClick={() => handleSourceChange("route")}
             >
               <Plus />
               Routes
@@ -287,7 +301,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               disabled={!selectedClient}
               type="button"
               variant={"outline"}
-              onClick={() => setOpenModal("distance")}
+              onClick={() => handleSourceChange("distance")}
             >
               <Plus />
               Distance
@@ -295,20 +309,23 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             <RoutePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
               open={openModal === "route"}
+              lineItem={selectedLineItem as TruckLineItemRequest}
               selectedPricings={[]}
-              onOpenChange={() => setOpenModal(null)}
+              onOpenChange={() => handleSourceChange(null)}
               onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
             <ServicesDialog
               clientId={selectedClient?.id ?? ""}
               open={openModal === "service"}
-              onOpenChange={() => setOpenModal(null)}
+              lineItem={selectedLineItem as SmallLineItemRequest}
+              onOpenChange={() => handleSourceChange(null)}
               onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
             <DistancePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
+              lineItem={selectedLineItem as DistanceLineItemRequest}
               open={openModal === "distance"}
-              onOpenChange={() => setOpenModal(null)}
+              onOpenChange={() => handleSourceChange(null)}
               onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
             />
           </CardAction>
@@ -346,12 +363,18 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               <tbody>
                 {lineItemsFields.fields.map((item, index) => (
                   <LineItemRow
+                    // onClick={()=>handleSourceChange(item.source, item)}
                     item={item}
                     idx={index}
                     key={index}
                     actions={
                       <div>
-                        <Button type="button" size={"xs"} variant={"ghost"}>
+                        <Button
+                          type="button"
+                          size={"xs"}
+                          variant={"ghost"}
+                          onClick={() => handleSourceChange(item.source, item)}
+                        >
                           <EditIcon />
                         </Button>
                         <Button

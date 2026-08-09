@@ -71,6 +71,7 @@ type RoutePricingDialogProps = {
   open: boolean
   selectedPricings: RoutePricingStruct[]
   onOpenChange: (v: boolean) => void
+  lineItem?: TruckLineItemRequest
   onLiveChange?: (route: RoutePricingStruct) => void
   onLineItemAdded: (lineItem: TruckLineItemRequest) => void
 }
@@ -88,6 +89,7 @@ export function RoutePricingSelectDialog({
   open,
   selectedPricings,
   onOpenChange,
+  lineItem,
   onLiveChange,
   onLineItemAdded,
 }: RoutePricingDialogProps) {
@@ -95,10 +97,12 @@ export function RoutePricingSelectDialog({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      ...generateTruckEmptyLineItem(),
-      routes: selectedPricings ?? [],
-    },
+    defaultValues: lineItem
+      ? { ...lineItem, routes: selectedPricings ?? [] }
+      : {
+          ...generateTruckEmptyLineItem(),
+          routes: selectedPricings ?? [],
+        },
     mode: "onChange",
   })
 
@@ -206,6 +210,12 @@ export function RoutePricingSelectDialog({
     return routes.filter((r) => r.pricing).length
   }, [routes])
 
+  useEffect(() => {
+    if (lineItem) {
+      form.reset({ ...lineItem, routes: [] })
+    }
+  }, [lineItem, form])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
@@ -286,7 +296,7 @@ export function RoutePricingSelectDialog({
                   <Search />
                 </InputGroupAddon>
               </InputGroup>
-              <Select items={data?.tonnages ?? []}>
+              <Select>
                 <SelectTrigger className="sm:w-48">
                   <SelectValue placeholder="Filter by tonnage" />
                 </SelectTrigger>
@@ -416,7 +426,7 @@ export function RoutePricingSelectDialog({
               getItemValue={(item) => item.route_id}
             >
               <SortableContent className="flex flex-col gap-2">
-                {routes.map((r, routeIndex) => (
+                {routes.map((r) => (
                   <SortableItem
                     key={r.route_id}
                     value={r.route_id}
