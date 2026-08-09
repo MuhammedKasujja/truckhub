@@ -103,15 +103,17 @@ function RouteComponent() {
   }, [quotation])
 
   const [selected, setSelected] = useState(versions.length)
-  const v = versions.find((x) => x.version_number === selected)!
+  const v = versions.find((x) => x.version_number === selected)
   const prev = versions.find((x) => x.version_number === selected - 1)
 
   const combinedTaxRate = useMemo(() => {
-    if (!v.tax_rates?.length) return null
-    return [...new Set(v.tax_rates.map((r) => r.rate))].join("% + ") + "%"
+    if (v?.tax_rates?.length) return null
+    return [...new Set(v?.tax_rates.map((r) => r.rate))].join("% + ") + "%"
   }, [v])
 
   const maxTotal = Math.max(...versions.map((x) => Number(x.total_amount)))
+
+  if (!v) return <>Loading...</>
 
   return (
     <div>

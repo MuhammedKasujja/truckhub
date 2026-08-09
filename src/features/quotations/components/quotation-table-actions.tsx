@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
+import { DownloadCloud, EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -61,17 +61,16 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           <DropdownMenuSeparator />
           <Can permission={"quotations:accept"}>
             {isNotInEnum(quotation.status, ["accepted"]) && (
-              <DropdownMenuItem
-                onClick={() => acceptQuotation(quotation.id)}
-              >
+              <DropdownMenuItem onClick={() => acceptQuotation(quotation.id)}>
                 Mark Accepted
               </DropdownMenuItem>
             )}
           </Can>
           <Can permission={"quotations:email"}>
             <DropdownMenuItem>
-              <MailIcon/>
-              Email</DropdownMenuItem>
+              <MailIcon />
+              Email
+            </DropdownMenuItem>
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>
@@ -88,6 +87,15 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
               </DropdownMenuItem>
             )}
           </Can>
+          <DropdownMenuItem asChild>
+            <Link
+              to={"/quotations/$quotationId/pdf"}
+              params={{ quotationId: quotation.id }}
+            >
+              <DownloadCloud />
+              Pdf
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
