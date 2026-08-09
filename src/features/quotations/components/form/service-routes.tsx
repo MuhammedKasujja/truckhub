@@ -18,15 +18,20 @@ import { SearchIcon } from "lucide-react"
 
 type ServiceRoutesDialogProps = {
   clientId: EntityId
+  selectedRoutes: RouteServiceInput[]
   onSelected: (route: RouteServiceInput) => void
 }
 
 export function ServiceRoutesDialog({
   clientId,
   onSelected,
+  selectedRoutes,
 }: ServiceRoutesDialogProps) {
   const [query, setQuery] = useState("")
   const { routes, isLoading } = useBookingRoutes()
+
+  const isSelected = (routeId: EntityId) =>
+    selectedRoutes.find((r) => r.route_id === routeId)
 
   const filteredRoutes = useMemo(() => {
     return (routes ?? []).filter((route) => {
@@ -55,7 +60,7 @@ export function ServiceRoutesDialog({
         <Item
           className="cursor"
           key={route.id}
-          variant={"outline"}
+          variant={isSelected(route.id) ? "muted" : "outline"}
           onClick={() => onSelected({ ...route, route_id: route.id })}
         >
           <ItemContent>

@@ -65,7 +65,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const [taxRate, setTaxRate] = useState(defaultTaxRate)
   const [subtotal, setSubtotal] = useState<string>()
   const [taxAmount, setTaxAmount] = useState<string>()
-  const [selectedClient, setSelectedClient] = useState<Client>()
+  const [selectedClient, setSelectedClient] = useState<Client | null>()
   const isEdit = !!initialData
 
   const search = useSearch({
@@ -93,7 +93,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
   const taxRates = form.watch("tax_rates")
 
-  function handleClientSelected(client?: Client) {
+  function handleClientSelected(client?: Client | null) {
     // navigate({
     //   to: "/quotations/new",
     //   search: (prev) => ({

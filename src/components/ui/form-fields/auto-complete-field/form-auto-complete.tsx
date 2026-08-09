@@ -21,7 +21,7 @@ export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   remote?: boolean
   /** Min chars before triggering remote search */
   minSearchLength?: number
-  label: string
+  label?: string
   placeholder?: string
   disabled?: boolean
   clearable?: boolean

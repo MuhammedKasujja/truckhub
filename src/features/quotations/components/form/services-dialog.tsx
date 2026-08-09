@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import {
   createCarQuotationLineItemSchema,
+  RouteServiceInput,
   SmallLineItemRequest,
 } from "@/features/quotations/schemas"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
@@ -60,11 +61,18 @@ export function ServicesDialog({
   const quantity = form.watch("quantity")
   const isRoundTrip = form.watch("is_round_trip")
   const discount = form.watch("discount")
+  const locations = form.watch("locations")
 
   const locationsFields = useFieldArray({
     control: form.control,
     name: "locations",
   })
+
+  function handleLocationSelected(route: RouteServiceInput) {
+    const index = locations.findIndex((r) => r.route_id === route.route_id)
+    if (index > -1) locationsFields.remove(index)
+    else locationsFields.prepend(route)
+  }
 
   useEffect(() => {
     const price = new Decimal(unitPrice ?? 0)
@@ -274,10 +282,9 @@ export function ServicesDialog({
             </div>
             <div className="col-span-2 overflow-y-auto p-6">
               <ServiceRoutesDialog
+                selectedRoutes={locationsFields.fields}
                 clientId={clientId}
-                onSelected={(route) => {
-                  locationsFields.prepend(route)
-                }}
+                onSelected={handleLocationSelected}
               />
             </div>
           </div>
