@@ -11,3 +11,13 @@ export function PageBackButton() {
     </Button>
   )
 }
+
+export function PageBackIconButton() {
+  const handleBack = useBackNavigation()
+
+  return (
+    <Button variant="ghost" size={"sm"} onClick={() => handleBack()}>
+      <ChevronLeftIcon />
+    </Button>
+  )
+}
