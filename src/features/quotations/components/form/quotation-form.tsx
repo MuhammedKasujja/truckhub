@@ -159,9 +159,21 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     return total.toString()
   }, [taxRates, lineItems])
 
-  function handleSourceChange(source: ModalType | null, item?: LineItemRequest) {
-    setOpenModal(source)
+  function handleSourceChange(
+    source: ModalType | null,
+    item?: LineItemRequest
+  ) {
     setSelectedLineItem(item)
+    setOpenModal(source)
+  }
+
+  function handleUpdateLineItems(lineItem: LineItemRequest) {
+    const index = lineItems.findIndex((i) => i.tempId === lineItem.tempId)
+    if (index > -1) {
+      lineItemsFields.update(index, lineItem)
+    } else {
+      lineItemsFields.prepend(lineItem)
+    }
   }
 
   return (
@@ -312,21 +324,21 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               lineItem={selectedLineItem as TruckLineItemRequest}
               selectedPricings={[]}
               onOpenChange={() => handleSourceChange(null)}
-              onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
+              onLineItemAdded={handleUpdateLineItems}
             />
             <ServicesDialog
               clientId={selectedClient?.id ?? ""}
               open={openModal === "service"}
               lineItem={selectedLineItem as SmallLineItemRequest}
               onOpenChange={() => handleSourceChange(null)}
-              onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
+              onLineItemAdded={handleUpdateLineItems}
             />
             <DistancePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
               lineItem={selectedLineItem as DistanceLineItemRequest}
               open={openModal === "distance"}
               onOpenChange={() => handleSourceChange(null)}
-              onLineItemAdded={(lineItem) => lineItemsFields.prepend(lineItem)}
+              onLineItemAdded={handleUpdateLineItems}
             />
           </CardAction>
         </CardHeader>

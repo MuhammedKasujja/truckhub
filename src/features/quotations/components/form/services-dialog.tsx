@@ -77,7 +77,12 @@ export function ServicesDialog({
 
   useEffect(() => {
     if (lineItem) {
-      form.reset({ ...lineItem })
+      form.reset({
+        ...lineItem,
+        source: "service",
+        vehicle_addons: [],
+        item_type: "small",
+      })
     }
   }, [lineItem, form])
 
