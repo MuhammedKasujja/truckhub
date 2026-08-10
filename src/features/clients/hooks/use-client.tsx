@@ -1,36 +1,22 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { changeClientTypeFn } from "../services"
 import { EntityId } from "@/schemas"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { queryKeys } from "@/lib/query-keys"
+import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 export function useEditClientDetails() {}
 
-export function useChangeClientType() {
-  const queryClient = useQueryClient()
-  const invalidator = useQueryInvalidator()
+const useChangeClientTypeBase = createEntityActionHook(
+  changeClientTypeFn,
+  (invalidator, input) => {
+    invalidator.clients.list.invalidate()
+    invalidator.clients.details(input.data.id)
+  }
+)
 
-  const mutation = useMutation({
-    mutationFn: changeClientTypeFn,
-    onSuccess: (data) => {
-      invalidator.clients.list.invalidate()
-    //   if (data.data?.id)
-        // console.log(data.data)
-        // queryClient.setQueryData(
-        //   queryKeys.clients.profile(data.data?.id),
-        //   data.data
-        // )
-    },
-  })
+export function useChangeClientType() {
+  const { isPending, execute, isSuccess, error} = useChangeClientTypeBase()
 
   function changeClientType(clientId: EntityId) {
-    return mutation.mutate({ data: { id: clientId } })
+    return execute({ data:{ id: clientId } })
   }
-
-  return {
-    changeClientType,
-    isLoading: mutation.isPending,
-    isSuccess: mutation.isSuccess,
-    error: mutation.error,
-  }
+  return { isLoading:isPending, changeClientType, isSuccess, error }
 }

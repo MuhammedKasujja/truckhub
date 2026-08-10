@@ -125,5 +125,9 @@ export const createClientLoadingOffloadingPricingFn = createServerFn()
 export const changeClientTypeFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return changeClientType(data.id)
+    const result = await changeClientType(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
