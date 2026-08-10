@@ -45,10 +45,10 @@ export function MoneyField<T extends FieldValues>({
               aria-invalid={fieldState.invalid}
               placeholder={placeholder}
               autoComplete="off"
-              onChange={(e) => {
-                const number = e.target.valueAsNumber;
-                field.onChange(isNaN(number) ? null : number);
-              }}
+              // onChange={(e) => {
+              //   const number = e.target.valueAsNumber;
+              //   field.onChange(isNaN(number) ? null : number);
+              // }}
             />
             <InputGroupAddon align="inline-start">
               <InputGroupButton variant="secondary">{settings?.currency_code}</InputGroupButton>
