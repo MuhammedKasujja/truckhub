@@ -6,6 +6,8 @@ export const en = {
   seating_capacity: "Seating Capacity",
   base_fare: "Base fare",
   min_fare: "Min fare",
+  price: "Price",
+  last_price: "Last Price",
   price_per_min: "Price per minute",
   price_per_unit_distance: "Price per unit distance",
   booking_fee: "Booking fee",
@@ -14,5 +16,8 @@ export const en = {
   service_created_successfully: "Service created successfully",
   service_updated_successfully: "Service updated successfully",
   year_of_manufacture: "Year of Manufacture",
-  seats: "Seating Capacity",
+  seats: "Seats",
+  car_brand: "Car Brand",
+  car_model: "Car Model",
+  service_name: "Service Name",
 } as const;

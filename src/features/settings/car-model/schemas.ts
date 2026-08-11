@@ -7,7 +7,9 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const CarModelCreateSchema = z.object({
   name: z.string(),
   car_brand_id: IDSchema,
-  vehicle_type_id: IDSchema,
+  vehicle_category_id: IDSchema,
+  consumption_rate: z.number(),
+  manufacture_year: z.string().optional().nullable(),
 })
 
 export const CarModelUpdateSchema = z.object({

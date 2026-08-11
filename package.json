@@ -46,6 +46,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "decimal.js": "^10.6.0",
     "jose": "^6.2.3",
     "json-colorizer": "^3.0.1",
     "lucide-react": "^1.14.0",

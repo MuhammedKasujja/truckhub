@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { BookingRequestForm } from "@/features/bookings/components/booking-request-form"
 import { bookingDetailsQueryOptions } from "@/features/bookings/queries-options"
 import { clientsSearchQueryOptions } from "@/features/clients/query-options"
@@ -7,6 +8,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/bookings/$bookingId/edit")({
   component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
   beforeLoad: async () => requirePermission("bookings:edit"),
   loader: async ({ context, params }) => {
     context.queryClient.prefetchQuery(clientsSearchQueryOptions())

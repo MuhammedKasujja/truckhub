@@ -14,5 +14,5 @@ export const createVehicleTypesQueryOptions = (
 ) =>
   queryOptions({
     queryKey: [...vehicleTypesQueryKeys.list(), search],
-    queryFn: () => getVehicleTypesFn({ data: search }),
+    queryFn: () => getVehicleTypesFn({ data: { ...search, perPage: 50 } }),
   })

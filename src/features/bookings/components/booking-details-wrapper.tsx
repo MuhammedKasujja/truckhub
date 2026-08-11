@@ -22,11 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Can } from "@/components/has-permission"
 import {
   Empty,
-  EmptyContent,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
@@ -47,17 +45,6 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
           <CardHeader>
             <CardTitle>{booking.number}</CardTitle>
             <CardAction className="flex gap-4">
-              {!booking.is_paid && (
-                <Can permission={"payments:create"}>
-                  <EditPaymentModal
-                    initialData={{
-                      entity_id: booking?.id,
-                      amount: booking?.balance,
-                      type: "booking",
-                    }}
-                  />
-                </Can>
-              )}
               <Status>{booking.status}</Status>
               <Can permission={"bookings:edit"}>
                 <Button asChild>
@@ -90,7 +77,7 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
         <BookingClientWidget client={booking.client} />
       </div>
       <div className="grid gap-4 md:grid-flow-col">
-        <BookingServiceList services={booking.services ?? []} />
+        <BookingServiceList lineItems={booking.line_items} />
         <Card>
           <CardHeader>
             <CardTitle>Payments</CardTitle>
@@ -130,24 +117,6 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
                             </EmptyMedia>
                             <EmptyTitle>No Payments Found</EmptyTitle>
                           </EmptyHeader>
-                          <EmptyContent>
-                            {!booking.is_paid && (
-                              <Can permission={"payments:create"}>
-                                <EditPaymentModal
-                                  initialData={{
-                                    entity_id: booking?.id,
-                                    amount: booking?.balance,
-                                    type: "booking",
-                                  }}
-                                  trigger={
-                                    <Button variant={"outline"}>
-                                      Make Payment
-                                    </Button>
-                                  }
-                                />
-                              </Can>
-                            )}
-                          </EmptyContent>
                         </Empty>
                       </TableCell>
                     </TableRow>

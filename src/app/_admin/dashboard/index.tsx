@@ -10,6 +10,8 @@ import {
   RecentPaymentsTable,
   RecentBookingTable,
   RecentRidesTable,
+  WeeklyQuotationStatistics,
+  AnalyticsCard,
 } from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
 import { formatMoney } from "@/lib/format"
@@ -25,8 +27,6 @@ export const Route = createFileRoute("/_admin/dashboard/")({
   loader: async ({ context }) =>
     context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })
-
-
 
 function RouteComponent() {
   const { data } = Route.useLoaderData()
@@ -100,6 +100,10 @@ function RouteComponent() {
           <StatTrend trend="down">Capacity threshold reached</StatTrend>
         </Stat>
       </div>
+      {/* <div className="flex">
+        <AnalyticsCard />
+        <WeeklyQuotationStatistics />
+      </div> */}
       <RecentPaymentsTable payments={data.recent_payments} />
       <RecentBookingTable bookings={data.recent_bookings} />
       <RecentRidesTable rides={data.recent_rides} />

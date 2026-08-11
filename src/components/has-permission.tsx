@@ -18,8 +18,10 @@ export function HasPermission({
   const { hasPermission } = usePermissions()
 
   if (hasPermission(permission)) return children
-  
+
   if (renderFallback) return <NoPermissionCard>{fallbackText}</NoPermissionCard>
+
+  if (fallbackText) return <span>{fallbackText}</span>
   return null
 }
 

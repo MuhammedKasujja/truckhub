@@ -1,5 +1,5 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { Can } from "@/components/has-permission"
-import { NotFound } from "@/components/not-found"
 import {
   PageAction,
   PageBackButton,
@@ -27,7 +27,7 @@ import { PlusIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
-  errorComponent: NotFound,
+  errorComponent: DefaultCatchBoundary,
   beforeLoad: () => requirePermission("clients:view"),
   loader: async ({ context: { queryClient }, params }) => {
     const clientId = params.clientId
@@ -39,9 +39,8 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 })
 
 function RouteComponent() {
-  const { error, data } = Route.useLoaderData()
+  const data = Route.useLoaderData()
   const { clientId } = Route.useParams()
-  useFetchEror(error)
   return (
     <div>
       <PageHeader>
@@ -54,6 +53,14 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <PageBackButton />
           <ButtonGroup>
+            <Can permission={"quotations:create"}>
+              <Button asChild variant={"secondary"}>
+                <Link to={"/quotations/new"} search={{ clientId }}>
+                  <PlusIcon />
+                  Quotation
+                </Link>
+              </Button>
+            </Can>
             <Can permission={"bookings:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/bookings/new"} search={{ clientId }}>

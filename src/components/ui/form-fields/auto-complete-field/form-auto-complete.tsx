@@ -10,6 +10,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
+import { cn } from "@/lib/utils"
 
 export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   name: FieldPath<TFieldValues>
@@ -20,13 +21,13 @@ export interface FormAutoCompleteProps<TFieldValues extends FieldValues, T> {
   remote?: boolean
   /** Min chars before triggering remote search */
   minSearchLength?: number
-  label: string
+  label?: string
   placeholder?: string
   disabled?: boolean
   clearable?: boolean
   required?: boolean
   noResultsMessage?: React.ReactNode
-  createMode?: "dialog" | "page",
+  createMode?: "dialog" | "page"
 }
 
 interface FormAutoCompleteFieldProps<
@@ -81,6 +82,10 @@ export function FormAutoComplete<TFieldValues extends FieldValues, T>({
                 {...props}
                 id={field.name}
                 options={options}
+                className={cn(
+                  !field.value && "text-muted-foreground",
+                  fieldState.invalid && "border-destructive"
+                )}
                 // API mode search: pass onSearch, skip filterFn
                 {...(remote
                   ? { onSearch: onSearch }

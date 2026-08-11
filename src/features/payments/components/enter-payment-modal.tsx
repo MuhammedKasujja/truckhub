@@ -1,4 +1,3 @@
-"use client"
 import { Button } from "@/components/ui/button"
 import {
   Drawer,
@@ -8,10 +7,8 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { CreditCard } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -24,32 +21,36 @@ import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
   TextareaField,
-  NumberField,
+  MoneyField,
 } from "@/components/ui/form-fields"
 import { toast } from "sonner"
 import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
-import React from "react"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { BookingPickerField } from "@/features/bookings/components/booking-picker"
 import { RidePickerField } from "@/features/ride-requests/components"
+import { InvoicePickerField } from "@/features/invoices/components/invoice-picker"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
-  trigger?: React.ReactNode
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
+export function EnterPaymentModal({
+  initialData,
+  open,
+  onOpenChange,
+}: PaymentFormProps) {
   const isMobile = useIsMobile()
-  const [isOpen, setIsOpen] = React.useState(false)
 
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
 
   // const isEdit = !!initialData && "id" in initialData
 
-  const formSchema = createEditPaymentSchema(initialData?.amount)
+  const formSchema = createEditPaymentSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,7 +72,7 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
         type: initialData?.type ?? "booking",
       })
       form.reset()
-      setIsOpen(false)
+      onOpenChange(false)
     } else {
       toast.error(error?.message)
     }
@@ -79,17 +80,9 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
   return (
     <Drawer
       direction={isMobile ? "bottom" : "right"}
-      open={isOpen}
-      onOpenChange={setIsOpen}
+      open={open}
+      onOpenChange={onOpenChange}
     >
-      <DrawerTrigger asChild>
-        {trigger ?? (
-          <Button variant={"outline"}>
-            <CreditCard />
-            Pay
-          </Button>
-        )}
-      </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>Enter Payment</DrawerTitle>
@@ -109,7 +102,8 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
                   control={form.control}
                   name={"entity_id"}
                   onSelected={(booking) => {
-                    form.setValue("amount", Number(booking?.balance))
+                    const balanceDue = booking?.balance ?? ""
+                    form.setValue("amount", balanceDue)
                   }}
                 />
               )}
@@ -119,11 +113,23 @@ export function EditPaymentModal({ initialData, trigger }: PaymentFormProps) {
                   name={"entity_id"}
                   control={form.control}
                   onSelected={(ride) => {
-                    form.setValue("amount", Number(ride?.balance))
+                    const balanceDue = ride?.balance ?? ""
+                    form.setValue("amount", balanceDue)
                   }}
                 />
               )}
-              <NumberField
+              {initialData?.type === "invoice" && (
+                <InvoicePickerField
+                  label={"Invoice"}
+                  name={"entity_id"}
+                  control={form.control}
+                  onSelected={(invoice) => {
+                    const balanceDue = invoice?.balance_due ?? ""
+                    form.setValue("amount", balanceDue)
+                  }}
+                />
+              )}
+              <MoneyField
                 label={"Amount"}
                 name={"amount"}
                 control={form.control}

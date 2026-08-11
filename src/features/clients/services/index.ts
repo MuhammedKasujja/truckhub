@@ -27,6 +27,7 @@ import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "@/features/settings/pricing/schemas"
+import { apiResponseEntity, apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(ClientSearchParamsCache)
@@ -59,7 +60,7 @@ export const getClientByIdFn = createServerFn()
 export const getClientProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getCustomerDetailsById(data.id)
+    return apiResponseEntity(getCustomerDetailsById(data.id))
   })
 
 export const deleteClientFn = createServerFn({ method: "POST" })
@@ -119,11 +120,15 @@ export const getClientLoadingOffloadingFreesFn = createServerFn()
 export const createClientLoadingOffloadingPricingFn = createServerFn()
   .inputValidator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
-    return createClientLoadingOffloadingPricing(data)
+    return apiResponseTransform(createClientLoadingOffloadingPricing(data))
   })
 
 export const changeClientTypeFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return changeClientType(data.id)
+    const result = await changeClientType(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })

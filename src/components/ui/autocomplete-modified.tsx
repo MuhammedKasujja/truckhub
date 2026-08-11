@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import { Check, ChevronDown, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -37,8 +37,10 @@ export interface AutoCompleteProps<T> {
   renderOption: (option: T, selected: boolean) => React.ReactNode
   renderValue?: (option: T) => React.ReactNode
 
-  label: string
+  label?: string
+  searchPlaceholder?: string
   placeholder?: string
+  className?: string
   disabled?: boolean
   clearable?: boolean
 
@@ -71,6 +73,8 @@ export function AutoComplete<T>({
 
   onCreateNew,
   createNewLabel,
+  className,
+  searchPlaceholder
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -122,7 +126,7 @@ export function AutoComplete<T>({
           variant="outline"
           role="combobox"
           disabled={disabled}
-          className="w-full justify-between"
+          className={cn("w-full justify-between font-normal", className)}
         >
           {selectedOption
             ? (renderValue?.(selectedOption) ??
@@ -131,14 +135,14 @@ export function AutoComplete<T>({
               ? currentValueKey // string id, not yet resolvable from `options` — caller's job to hydrate [[ Unknown Option ]]
               : placeholder}
 
-          <ChevronsUpDown className="opacity-50" />
+          <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={`Search ${label.toLowerCase()}...`}
+            placeholder={ searchPlaceholder??`Search...`}
             value={search}
             onValueChange={(val) => {
               setSearch(val)
@@ -155,7 +159,7 @@ export function AutoComplete<T>({
 
             {!loading && filteredOptions.length === 0 && (
               <CommandEmpty className="text-muted-foreground">
-                {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
+                {noResultsMessage ?? `No data found.`}
               </CommandEmpty>
             )}
 
@@ -184,7 +188,7 @@ export function AutoComplete<T>({
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
-                  className="bg-muted/60 flex justify-center items-center"
+                  className="flex items-center justify-center bg-muted/60"
                   onSelect={() => {
                     onCreateNew(search)
                     setOpen(false)

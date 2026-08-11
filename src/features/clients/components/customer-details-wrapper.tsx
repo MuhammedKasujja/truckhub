@@ -6,8 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useFetchEror } from "@/hooks/use-fetch-error"
-import { CreditCard, CalendarDays, MapPin } from "lucide-react"
+import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
@@ -27,7 +26,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Can } from "@/components/has-permission"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
 import { EntityId } from "@/schemas"
@@ -38,6 +36,8 @@ import {
   clientRidesQueryOptions,
 } from "../query-options"
 import { useTranslation } from "@/i18n"
+import { EnterPaymentModal } from "@/features/payments/components"
+import { useState } from "react"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -46,10 +46,11 @@ type CustomerDetailsWrapperProps = {
 export function CustomerDetailsWrapper({
   clientId,
 }: CustomerDetailsWrapperProps) {
-  const {
-    data: { data: customer, error },
-  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
-  useFetchEror(error)
+  const { data: client } = useSuspenseQuery(
+    clientProfileQueryOptions(clientId)
+  )
+
+  const [openModal, setOpenModal] = useState(false)
 
   const [
     { data: paymentsResponse },
@@ -77,19 +78,25 @@ export function CustomerDetailsWrapper({
     <div className="grid gap-5">
       <Card>
         <CardHeader>
-          <CardTitle className="capitalize">{customer?.name}</CardTitle>
+          <CardTitle className="capitalize">{client?.name}</CardTitle>
           <CardAction className="flex gap-4">
             <Can permission={"payments:create"}>
-              <EditPaymentModal
+              <Button onClick={() => setOpenModal(true)}>
+                <PlusIcon />
+                {tr("payments.form.new_payment")}
+              </Button>
+              <EnterPaymentModal
+                open={openModal}
+                onOpenChange={() => setOpenModal(false)}
                 initialData={{
-                  type: "booking",
+                  type: "invoice",
                 }}
               />
             </Can>
             <Button asChild size={"icon"}>
               <Link
                 to={"/clients/$clientId/edit"}
-                params={{ clientId: customer?.id }}
+                params={{ clientId: client?.id }}
               >
                 <IconEdit />
               </Link>
@@ -97,14 +104,14 @@ export function CustomerDetailsWrapper({
           </CardAction>
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
-          <div className="w-40 bg-muted dark:bg-background/70 rounded-lg flex items-center justify-center text-2xl font-extrabold uppercase">
-            {generateAvatorFallback(customer?.name)}
+          <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
+            {client?.short_name ?? generateAvatorFallback(client?.name)}
           </div>
           <div className="space-y-4">
-            <div>{customer?.email}</div>
-            <div>{customer?.phone}</div>
-            <div>Balance: {formatMoney(customer?.balance)}</div>
-            <div>Paid to Date: {formatMoney(customer?.paid_to_date)}</div>
+            <div>{client?.email}</div>
+            <div>{client?.phone}</div>
+            <div>Balance: {formatMoney(client?.balance)}</div>
+            <div>Paid to Date: {formatMoney(client?.paid_to_date)}</div>
           </div>
         </CardContent>
       </Card>
@@ -214,7 +221,7 @@ export function CustomerDetailsWrapper({
 
       <Card>
         <CardHeader>
-          <CardTitle>Customer Activity</CardTitle>
+          <CardTitle>Client Activity</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="payments" className="w-full">
@@ -265,15 +272,16 @@ export function CustomerDetailsWrapper({
                             </EmptyHeader>
                             <EmptyContent>
                               <Can permission={"payments:create"}>
-                                <EditPaymentModal
+                                <Button onClick={() => setOpenModal(true)}>
+                                  <PlusIcon />
+                                  {tr("payments.form.new_payment")}
+                                </Button>
+                                <EnterPaymentModal
+                                  open={openModal}
+                                  onOpenChange={() => setOpenModal(false)}
                                   initialData={{
-                                    type: "booking",
+                                    type: "invoice",
                                   }}
-                                  trigger={
-                                    <Button variant="outline">
-                                      Make Payment
-                                    </Button>
-                                  }
                                 />
                               </Can>
                             </EmptyContent>

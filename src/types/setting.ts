@@ -19,7 +19,7 @@ export type CarModel = {
   name: string
   id: EntityId
   car_brand_id: EntityId
-  vehicle_type_id: EntityId
+  vehicle_category_id: EntityId
 }
 
 export type VehicleFeature = {
@@ -55,7 +55,7 @@ export type VehicleConfigurations = {
     {
       name: string
       capacity: number
-      vehicle_type_id: number
+      vehicle_category_id: number
       id: EntityId
     },
   ]

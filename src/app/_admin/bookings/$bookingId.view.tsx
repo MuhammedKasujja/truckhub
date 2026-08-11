@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { BookingDetailsWrapper } from "@/features/bookings/components/booking-details-wrapper"
 import { bookingDetailsQueryOptions } from "@/features/bookings/queries-options"
 import { requirePermission } from "@/lib/auth"
@@ -10,6 +11,7 @@ export const Route = createFileRoute("/_admin/bookings/$bookingId/view")({
     context.queryClient.ensureQueryData(
       bookingDetailsQueryOptions(params.bookingId)
     ),
+  errorComponent: DefaultCatchBoundary
 })
 
 function RouteComponent() {

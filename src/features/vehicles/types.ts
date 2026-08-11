@@ -26,11 +26,12 @@ export interface VehicleBase {
   engine_type: Engine
   gearbox: Gearbox
   year: string
+  status: string
   seats: number
-  vehicle_type_id: EntityId
+  vehicle_category_id: EntityId
   car_model_id: EntityId
   drive_train_id: EntityId
-  consumption_rate: number
+  fuel_consumption_rate: number
   tonnage_id: EntityId
   created_at: Date
   updated_at: Date
@@ -41,7 +42,7 @@ export interface VehicleBase {
 
 export interface Vehicle extends VehicleBase {
   driver: VehicleDriver | null
-  vehicle_type: {
+  category: {
     id: EntityId
     name: string
     is_truck: boolean

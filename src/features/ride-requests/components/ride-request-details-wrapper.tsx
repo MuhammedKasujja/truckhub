@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { CircleDotIcon, Edit2Icon, MapPin } from "lucide-react"
+import { CircleDotIcon, Edit2Icon, MapPin, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import {
   formatDate,
@@ -20,7 +20,6 @@ import {
 } from "@/lib/format"
 import { Status } from "@/components/ui/status"
 import { Can } from "@/components/has-permission"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { RideRequestMap } from "./ride-request-map"
 import { RidePassenger } from "./ride-passenger"
 import { Layers, Rocket } from "lucide-react"
@@ -40,6 +39,9 @@ import { RideTimeline } from "./ride-timeline"
 import { RideDriver } from "./ride-driver"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { rideDetailsQueryOptions } from "../query-options"
+import { EnterPaymentModal } from "@/features/payments/components"
+import { useState } from "react"
+import { useTranslation } from "@/i18n"
 
 const timelineItems = [
   {
@@ -67,9 +69,11 @@ type RideRequestDetailsWrapperProps = {
 export function RideRequestDetailsWrapper({
   rideId,
 }: RideRequestDetailsWrapperProps) {
+  const tr = useTranslation()
   const {
     data: { data: ride },
   } = useSuspenseQuery(rideDetailsQueryOptions(rideId))
+  const [openModal, setOpenModal] = useState(false)
   return (
     <div className="grid gap-5">
       <div className="grid gap-4 md:grid-flow-col">
@@ -79,11 +83,15 @@ export function RideRequestDetailsWrapper({
             <CardAction className="flex gap-4">
               {!ride?.is_paid && (
                 <Can permission={"payments:create"}>
-                  <EditPaymentModal
+                  <Button onClick={() => setOpenModal(true)}>
+                    <PlusIcon />
+                    {tr("payments.form.new_payment")}
+                  </Button>
+                  <EnterPaymentModal
+                    open={openModal}
+                    onOpenChange={() => setOpenModal(false)}
                     initialData={{
-                      entity_id: ride?.id,
-                      amount: ride?.balance,
-                      type: "ride",
+                      type: "invoice",
                     }}
                   />
                 </Can>

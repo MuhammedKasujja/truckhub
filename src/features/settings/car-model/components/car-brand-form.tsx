@@ -24,13 +24,20 @@ import {
   createCarModelFn,
   updateCarModelFn,
 } from "@/features/settings/car-model/services"
-import { AutoCompleteField, TextField } from "@/components/ui/form-fields"
+import {
+  AutoCompleteField,
+  NumberField,
+  SelectField,
+  TextField,
+  YearPickerField,
+} from "@/components/ui/form-fields"
 import React from "react"
-import { FieldGroup } from "@/components/ui/field"
+import { Field, FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
+import { CarBrandPickerField } from "../../car-brand/components"
 
 type CarModelFormProps = {
   trigger?: React.ReactNode
@@ -90,24 +97,18 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            <AutoCompleteField
+            <CarBrandPickerField
               label={tr("common.car_brand")}
               control={form.control}
               name={"car_brand_id"}
-              placeholder="Select Car Brand"
-              emptyPlaceholder="No Car Brand found"
-              options={
-                data?.car_brands.map((opt) => ({
-                  label: opt.name,
-                  value: opt.id,
-                })) ?? []
-              }
+              placeholder="Select car brand"
+              // emptyPlaceholder="No Car Brand found"
             />
             <TextField label="Model" control={form.control} name={"name"} />
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
-              name={"vehicle_type_id"}
+              name={"vehicle_category_id"}
               placeholder="Select Vehicle type"
               emptyPlaceholder="No Vehicle type found"
               options={
@@ -117,6 +118,19 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
                 })) ?? []
               }
             />
+            <Field orientation={"horizontal"}>
+              <NumberField
+                label="Consumption Rate"
+                control={form.control}
+                name={"consumption_rate"}
+              />
+              <YearPickerField
+                required={false}
+                label="Year"
+                control={form.control}
+                name={"manufacture_year"}
+              />
+            </Field>
           </FieldGroup>
           <DialogFooter className="sm:justify-end">
             <SubmitButton

@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon } from "lucide-react"
 import { CarModelForm } from "./car-brand-form"
 import { Can } from "@/components/has-permission"
+import { formatNumber } from "@/lib/format"
 
 export function getCarModelColumns(): ColumnDef<CarModel>[] {
   return [
@@ -18,7 +19,20 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-        return <p>{row.original.name}</p>
+        const model = row.original
+        return (
+          <p>
+            {model.name}
+            {model.manufacture_year && <span className="text-muted-foreground"> ({model.manufacture_year})</span>}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: "consumption_rate",
+      header: "Consumption Rate",
+      cell: ({ row }) => {
+        return <p>{formatNumber(row.original.consumption_rate)} km/l</p>
       },
     },
     {

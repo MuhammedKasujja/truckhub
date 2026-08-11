@@ -4,7 +4,7 @@ import { queryKeys } from "@/lib/query-keys"
 import { PaymentType } from "@/config/constants"
 import { QueryClient, useQueryClient } from "@tanstack/react-query"
 
-class QueryInvalidator {
+export class QueryInvalidator {
   constructor(private queryClient: QueryClient) {}
 
   /** Refreshes all App-wide visted queries */
@@ -41,7 +41,35 @@ class QueryInvalidator {
       this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
   }
 
+  quotations = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.quotations.list(),
+        }),
+    },
+    details: (id: EntityId) =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.quotations.detail(id),
+      }),
+  }
+
   bookings = {
+    list: {
+      invalidate: () => {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.list(),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bookings.statistics(),
+        })
+      },
+    },
+    details: (id: string) =>
+      this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+  }
+
+  invoices = {
     list: {
       invalidate: () => {
         this.queryClient.invalidateQueries({
@@ -99,6 +127,14 @@ class QueryInvalidator {
       if (type === "ride") {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.rides.detail(entityId),
+        })
+      }
+      if (type === "invoice") {
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.detail(entityId),
+        })
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.list(),
         })
       }
     },
@@ -258,10 +294,10 @@ class QueryInvalidator {
           queryKey: queryKeys.clients.list(),
         }),
     },
-    details: (id: string) => ({
+    profile: (id: string) => ({
       invalidate: () =>
         this.queryClient.invalidateQueries({
-          queryKey: queryKeys.clients.detail(id),
+          queryKey: queryKeys.clients.profile(id),
         }),
       routePricing: {
         invalidate: () =>
@@ -269,6 +305,21 @@ class QueryInvalidator {
             queryKey: queryKeys.clients.routePricing(id),
           }),
       },
+    }),
+  }
+
+  shipments = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.list(),
+        }),
+    },
+    details: (id: string) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.detail(id),
+        }),
     }),
   }
 

@@ -15,11 +15,14 @@ import {
   PlusIcon,
   Trash2Icon,
   ArchiveRestore,
+  ListCheckIcon,
+  LocateIcon,
 } from "lucide-react"
 
 type Module =
   | "Dashboard"
   | "Clients"
+  | "Shipments"
   | "Drivers"
   | "Vehicles"
   | "Users"
@@ -30,12 +33,15 @@ type Module =
   | "Billing"
   | "Settings"
   | "Reports"
+  | "Quotations"
+  | "Invoices"
 
 type Actions = "Create" | "Edit" | "Delete" | "Restore" | "Pay"
 
 export function getModuleIcon(module: Module) {
   const moduleIcons: Record<Module, LucideIcon> = {
     Dashboard: LayoutDashboard,
+    Shipments: LocateIcon,
     Rides: DatabaseSearch,
     Bookings: CalendarCheck,
     Payments: CreditCard,
@@ -47,6 +53,8 @@ export function getModuleIcon(module: Module) {
     Users: Users,
     Reports: ChartLine,
     Settings: SettingsIcon,
+    Quotations: ListCheckIcon,
+    Invoices: ListCheckIcon,
   }
   return moduleIcons[module]
 }

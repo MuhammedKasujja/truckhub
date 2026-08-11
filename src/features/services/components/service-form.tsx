@@ -10,9 +10,11 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
+  MoneyField,
   NumberField,
   TextareaField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
@@ -27,6 +29,8 @@ import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
+import { CarBrandPickerField } from "@/features/settings/car-brand/components"
+import { CarModelPickerField } from "@/features/settings/car-model/components"
 
 type ServiceFormProps = {
   initialData?: z.infer<typeof ServiceUpdateSchema>
@@ -79,7 +83,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
-              name={"vehicle_type_id"}
+              name={"vehicle_category_id"}
               placeholder="Select Vehicle"
               emptyPlaceholder="No vehicles found"
               options={
@@ -90,7 +94,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               }
             />
             <TextField
-              label={tr("common.form.name")}
+              label={tr("common.form.serviceName")}
               name={"name"}
               control={form.control}
             />
@@ -100,7 +104,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
             /> */}
             <Field orientation={"horizontal"}>
-              <TextField
+              <YearPickerField
                 label={"Start Year"}
                 name={"start_year"}
                 control={form.control}
@@ -112,51 +116,51 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               />
             </Field>
             <NumberField
-              label={tr("services.seats")}
+              label={tr("services.seating_capacity")}
               name={"seats"}
               control={form.control}
               required={false}
             />
-            <NumberField
-              label={"Minimum Hire Fee"}
-              name={"minimum_hire_fee"}
-              control={form.control}
-              required={false}
-            />
-            <NumberField
-              label={tr("services.base_fare")}
+            <MoneyField
+              label={tr("services.price")}
               name={"base_fare"}
               control={form.control}
               required={false}
             />
-            <NumberField
-              label={tr("services.min_fare")}
+            <MoneyField
+              label={tr("services.last_price")}
               name={"min_fare"}
               control={form.control}
               required={false}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.price_per_min")}
               name={"price_per_min"}
               control={form.control}
             />
-            <NumberField
+            <MoneyField
               label={tr("services.price_per_unit_distance")}
               name={"price_per_unit_distance"}
               control={form.control}
             />
-            <NumberField
+            {/* <NumberField
               label={tr("services.booking_fee")}
               name={"booking_fee"}
               control={form.control}
               required={false}
-            />
-            {/* <NumberField
-              label={tr("services.tax_fee")}
-              name={"tax_fee"}
-              control={form.control}
-              required={false}
             /> */}
+            <CarBrandPickerField
+              label={tr("services.car_brand")}
+              name={"car_brand_id"}
+              control={form.control}
+            />
+            <CarModelPickerField
+              disabled={form.watch("car_brand_id") == undefined}
+              label={tr("services.car_model")}
+              name={"car_model_id"}
+              carBrandId={form.watch("car_brand_id")}
+              control={form.control}
+            />
             <TextareaField
               label={tr("common.form.description")}
               name={"description"}

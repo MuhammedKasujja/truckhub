@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { FieldGroup } from "@/components/ui/field"
 import {
   AutoCompleteField,
+  MoneyField,
   NumberField,
   TextareaField,
 } from "@/components/ui/form-fields"
@@ -28,7 +29,7 @@ export function PaymentForm({ initialData }: PaymentFormProps) {
 
   const isEdit = !!initialData && "id" in initialData
 
-  const schema = createEditPaymentSchema(initialData?.amount)
+  const schema = createEditPaymentSchema
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -61,7 +62,7 @@ export function PaymentForm({ initialData }: PaymentFormProps) {
           name={"entity_id"}
           control={form.control}
         />
-        <NumberField label={"Amount"} name={"amount"} control={form.control} />
+        <MoneyField label={"Amount"} name={"amount"} control={form.control} />
         <AutoCompleteField
           label={"Payment Method"}
           control={form.control}

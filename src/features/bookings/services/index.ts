@@ -47,7 +47,11 @@ export const getBookingByIdFn = createServerFn()
 export const getBookingDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getBookingDetailsById(data.id)
+    const result = await getBookingDetailsById(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const deleteBookingFn = createServerFn()

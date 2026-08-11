@@ -23,6 +23,9 @@ import { Can } from "@/components/has-permission"
 import { Field } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { formatNumber } from "@/lib/format"
+import { Status, StatusLabel } from "@/components/ui/status"
+import { StatIndicator } from "@/components/ui/stat"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -61,14 +64,20 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
           <h1 className="text-3xl font-bold">
             {vehicle.car_model.car_brand.name} - {vehicle.car_model.name}
           </h1>
-          <p className="text-muted-foreground">
-            {vehicle.number} • {vehicle.plate_number}
-          </p>
+          <div className="flex gap-2 text-muted-foreground">
+            <div>
+              {vehicle.number} • {vehicle.plate_number}
+            </div>
+            <Status>
+              <StatIndicator color={"success"}>•</StatIndicator>
+              <StatusLabel>{vehicle.status}</StatusLabel>
+            </Status>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="w-fit">
-            {vehicle.vehicle_type.name}
-          </Badge>
+          {/* <Badge variant="secondary" className="w-fit">
+            {vehicle.category.name}
+          </Badge> */}
           <Can permission="vehicles:edit">
             <Button size={"icon-sm"} asChild>
               <Link
@@ -88,7 +97,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
           <CardContent className="space-y-2 p-4">
             <p className="text-sm text-muted-foreground">Consumption Rate</p>
             <p className="text-2xl font-bold">
-              {vehicle.consumption_rate} km/L
+              {formatNumber(vehicle.fuel_consumption_rate)} km/L
             </p>
           </CardContent>
         </Card>
@@ -103,7 +112,9 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
         <Card>
           <CardContent className="space-y-2 p-4">
             <p className="text-sm text-muted-foreground">Tank Capacity</p>
-            <p className="text-2xl font-bold">{vehicle.tank_capacity} L</p>
+            <p className="text-2xl font-bold">
+              {formatNumber(vehicle.tank_capacity)} L
+            </p>
           </CardContent>
         </Card>
 
@@ -127,7 +138,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
               <DetailItem label="Vehicle Number" value={vehicle.number} />
 
               <DetailItem label="Plate Number" value={vehicle.plate_number} />
-              {vehicle.vehicle_type.is_truck && (
+              {vehicle.category.is_truck && (
                 <DetailItem
                   label="Second Plate"
                   value={vehicle.second_plate_number ?? "-"}
@@ -143,7 +154,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 }
               />
 
-              <DetailItem label="Type" value={vehicle.vehicle_type.name} />
+              <DetailItem label="Type" value={vehicle.category.name} />
 
               <DetailItem
                 label="Drive Train"
@@ -162,7 +173,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 label="Interior Color"
                 value={vehicle.interior_color}
               />
-              {vehicle.vehicle_type.is_truck && (
+              {vehicle.category.is_truck && (
                 <DetailItem
                   label="Tonnage Capacity"
                   value={vehicle.tonnage_capacity ?? "-"}
@@ -191,7 +202,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             </CardHeader>
             <CardContent className="flex flex-1">
               <DriverPicker
-                value={driver}
+                value={driver?.id}
                 onSelected={(driver) => {
                   if (driver) setDriver({ ...driver, name: driver?.fullname })
                   else setDriver(null)

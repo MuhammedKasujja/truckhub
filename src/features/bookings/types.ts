@@ -1,19 +1,13 @@
 import { EntityId } from "@/schemas"
 import { Payment } from "@/features/payments/types"
+import { DataTableRowAction } from "@/types/data-table"
+import { LineItemResponse } from "@/features/quotations/schemas"
 
 export type BookingCustomer = {
   id: EntityId
   fullname: string
   phone: string
   email: string
-}
-
-export type BookingServiceItem = {
-  service_id: EntityId
-  service_name: string
-  cost_per_item: number
-  total_items: number
-  discount: number
 }
 
 export type Booking = {
@@ -23,15 +17,16 @@ export type Booking = {
   request_start_time: Date
   pickup_time: Date
   return_time: Date
-  estimated_pickup_time: Date
-  estimated_return_time: Date
+  start_date: Date
+  end_date: Date
   status: BookingStatus
-  partial: number | null
-  balance: number
-  discount: number
-  amount: number
-  services: BookingServiceItem[]
+  partial: string | null
+  balance: string
+  discount: string
+  amount: string
+  line_items: LineItemResponse[]
   client: BookingCustomer
+  quotation: { id: EntityId; number: string } | null
 }
 
 export type BookingDetails = {
@@ -42,11 +37,11 @@ export type BookingDetails = {
   return_time: Date
   is_paid: boolean
   status: BookingStatus
-  partial: number | undefined
-  balance: number
-  discount: number
-  amount: number
-  services: BookingServiceItem[]
+  partial: string | null
+  balance: string
+  discount: string
+  amount: string
+  line_items: LineItemResponse[]
   client: BookingCustomer
   payments: Payment[]
 }
@@ -81,3 +76,8 @@ export type BookingStatistics = {
   canceled: number
   total_payments: number | string
 }
+
+export interface BookingTableRowAction extends DataTableRowAction<
+  Booking,
+  "edit" | "view" | "email" | "invoice" | "start" | "markCompleted"
+> {}

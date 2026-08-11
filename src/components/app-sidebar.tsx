@@ -20,6 +20,7 @@ import type { LucideIcon } from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
 import { Route as DashboardRoute } from "@/app/_admin/dashboard"
+import { Route as ShipmentRoute } from "@/app/_admin/shipments/active"
 import { Route as RidesRoute } from "@/app/_admin/rides"
 import { Route as BookingsRoute } from "@/app/_admin/bookings"
 import { Route as PaymentsRoute } from "@/app/_admin/payments"
@@ -30,6 +31,7 @@ import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as BillingModuleRoute } from "@/app/_admin/billing/overview"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
+import { Route as QuotationsRoute } from "@/app/_admin/quotations"
 import { getModuleIcon } from "@/components/icons"
 
 export const sibebarModules: SidebarItem[] = [
@@ -40,11 +42,23 @@ export const sibebarModules: SidebarItem[] = [
     permission: "dashboard:view",
   },
   {
-    title: "routes.rides",
-    url: RidesRoute.to,
-    icon: getModuleIcon("Rides"),
+    title: "routes.dispatch",
+    url: ShipmentRoute.to,
+    icon: getModuleIcon("Shipments"),
+    permission: "dashboard:view",
+  },
+  {
+    title: "routes.quotations",
+    url: QuotationsRoute.to,
+    icon: getModuleIcon("Quotations"),
     permission: "rides:module",
   },
+  // {
+  //   title: "routes.rides",
+  //   url: RidesRoute.to,
+  //   icon: getModuleIcon("Rides"),
+  //   permission: "rides:module",
+  // },
   {
     title: "routes.bookings",
     url: BookingsRoute.to,

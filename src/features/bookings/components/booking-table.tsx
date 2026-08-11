@@ -3,13 +3,14 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import React from "react"
+import React, { useState } from "react"
 import { getBookingTableColumns } from "./booking-table-columns"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createBookingQueryOptions } from "../queries-options"
 import { useTranslation } from "@/i18n"
+import { BookingTableRowAction } from "../types"
 
 export function BookingTable() {
   const search = useSearch({ from: "/_admin/bookings/" })
@@ -18,9 +19,11 @@ export function BookingTable() {
     error,
   } = useSuspenseQuery(createBookingQueryOptions(search))
 
+  const [rowAction, setRowAction] = useState<BookingTableRowAction | null>(null)
+
   const tr = useTranslation()
 
-  const columns = React.useMemo(() => getBookingTableColumns(tr), [tr])
+  const columns = React.useMemo(() => getBookingTableColumns(tr, setRowAction), [tr, setRowAction])
 
   useFetchEror(error)
 

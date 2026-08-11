@@ -16,6 +16,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command"
 import { useHotkey } from "@tanstack/react-hotkeys"
+import { Route as QuotationCreate } from "@/app/_admin/quotations/new"
 import { Route as BookingCreate } from "@/app/_admin/bookings/new"
 import { Route as ClientCreate } from "@/app/_admin/clients/new"
 import { Route as DriverCreate } from "@/app/_admin/drivers/new"
@@ -26,6 +27,12 @@ import { Can } from "./has-permission"
 import { useNavigate } from "@tanstack/react-router"
 
 const entityList = [
+  {
+    to: QuotationCreate.to,
+    label: "quotation",
+    command: "⌘B",
+    permission: "quotations:create",
+  },
   {
     to: BookingCreate.to,
     label: "booking",

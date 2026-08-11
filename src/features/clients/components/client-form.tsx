@@ -9,7 +9,6 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
-  PasswordField,
   TextField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
@@ -98,6 +97,12 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               required={false}
             />
+            <TextField
+              label={"Address"}
+              name={"address"}
+              control={form.control}
+              required={false}
+            />
             <EmailField
               label={tr("common.form.email")}
               name={"email"}
@@ -109,13 +114,6 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               name={"asssigned_user_id"}
             />
-            {!isEdit && (
-              <PasswordField
-                label={tr("common.form.password")}
-                name={"password"}
-                control={form.control}
-              />
-            )}
           </FieldGroup>
         </CardContent>
         <CardFooter>

@@ -9,5 +9,19 @@ export type EntityPickerProps<T> = {
   /** Min chars before triggering remote search */
   minSearchLength?: number
   onSelected?: (value: T | null | undefined) => void
-  createMode?: "dialog" | "page",
+  createMode?: "dialog" | "page"
+}
+
+export function isNotInEnum<T extends string | number>(
+  value: T,
+  list: readonly T[]
+): boolean {
+  return !list.includes(value)
+}
+
+export function isInEnum<T extends string | number>(
+  value: T,
+  list: readonly T[]
+): boolean {
+  return list.includes(value)
 }

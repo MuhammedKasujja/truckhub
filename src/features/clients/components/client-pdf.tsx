@@ -1,4 +1,4 @@
-import { PdfViewer } from "@/components/pdf-viewer"
+import { PdfViewer, SkeletonPdfViewer } from "@/components/pdf-viewer"
 import { generateReportTemplatePdfFn } from "@/features/settings/pdf-templates/services"
 import { logger } from "@/lib/logger"
 import { EntityId } from "@/schemas"
@@ -28,7 +28,7 @@ export function ClientPdf({ clientId }: ClientPdfProps) {
   }, [])
 
   if (!pdfData) {
-    return <div>Loading pdf...</div>
+    return <SkeletonPdfViewer/>
   }
   return <PdfViewer pdfUrl={pdfData} />
 }

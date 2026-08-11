@@ -1,5 +1,5 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
+import { IDSchema, MoneySchema } from "@/schemas"
 import { Service } from "@/features/services/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -7,18 +7,16 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const ServiceCreateSchema = z.object({
   name: z.string(),
   seats: z.number().optional(),
-  base_fare: z.number(),
-  min_fare: z.number(),
-  price_per_min: z.number(),
-  price_per_unit_distance: z.number(),
-  booking_fee: z.number().optional(),
-  // tax_fee: z.number().optional(),
-  vehicle_type_id: IDSchema,
+  base_fare: MoneySchema,
+  min_fare: MoneySchema,
+  price_per_min: MoneySchema,
+  price_per_unit_distance: MoneySchema,
+  booking_fee: MoneySchema.optional(),
+  vehicle_category_id: IDSchema,
   car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
-  minimum_hire_fee: z.number(),
-  start_year: z.string().optional(),
-  end_year: z.string().optional(),
+  start_year: z.string().optional().nullable(),
+  end_year: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
 })
 

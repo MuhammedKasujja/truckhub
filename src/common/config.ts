@@ -204,3 +204,13 @@ export const COMMON_CAR_COLORS = {
 export const ENGINE_MODES = ["dry", "wet"] as const
 
 export const LINE_ITEM_TYPES = ["truck", "small"] as const
+
+/**
+ * Allowed vehicle input start dates
+ */
+export const VEHICLE_START_DATE = 2000
+
+/**
+ * Allowed vehicle input end dates
+ */
+export const VEHICLE_END_DATE = 2025

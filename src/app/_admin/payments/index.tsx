@@ -8,7 +8,7 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import {
   paymentsQueryOptions,
   paymentStatisticsQueryOptions,
@@ -20,7 +20,7 @@ import {
   PaymentStatisticsCard,
   PaymentTable,
   PaymentTableSkeleton,
-  EditPaymentModal,
+  EnterPaymentModal,
 } from "@/features/payments/components"
 
 export const Route = createFileRoute("/_admin/payments/")({
@@ -35,6 +35,8 @@ export const Route = createFileRoute("/_admin/payments/")({
 })
 
 function RouteComponent() {
+  const [openModal, setOpenModal] = useState(false)
+
   const { data: statistics } = Route.useLoaderData()
   const tr = useTranslation()
   return (
@@ -46,14 +48,16 @@ function RouteComponent() {
         </PageTitle>
         <PageAction>
           <Can permission={"payments:create"}>
-            <EditPaymentModal
-              initialData={{ type: "booking" }}
-              trigger={
-                <Button>
-                  <PlusIcon />
-                  {tr("payments.form.new_payment")}
-                </Button>
-              }
+            <Button onClick={() => setOpenModal(true)}>
+              <PlusIcon />
+              {tr("payments.form.new_payment")}
+            </Button>
+            <EnterPaymentModal
+              open={openModal}
+              onOpenChange={() => setOpenModal(false)}
+              initialData={{
+                type: "invoice",
+              }}
             />
           </Can>
         </PageAction>

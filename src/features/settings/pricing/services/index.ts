@@ -16,6 +16,7 @@ import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
+import { ApiError } from "@/types"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
@@ -32,12 +33,20 @@ export const createBatchRoutePricingFn = createServerFn()
 export const createBatchDistancePricingFn = createServerFn()
   .inputValidator(ListDistancePricingSchema)
   .handler(async ({ data }) => {
-    return createBatchDistancePricing(data)
+    const result = await createBatchDistancePricing(data)
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data, message: result.message }
   })
 
 export const getDistanceTonnagePricingFn = createServerFn().handler(
   async () => {
-    return getDistanceTonnagePricing()
+    const result = await getDistanceTonnagePricing()
+    if (result.error) {
+      throw new ApiError(result.error.message, 400)
+    }
+    return { data: result.data ??[], message: result.message }
   }
 )
 

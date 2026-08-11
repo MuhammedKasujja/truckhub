@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { ClientForm } from "@/features/clients/components"
 import { clientEditQueryOptions } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
@@ -6,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/edit")({
   component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
   beforeLoad: () => requirePermission("clients:edit"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(

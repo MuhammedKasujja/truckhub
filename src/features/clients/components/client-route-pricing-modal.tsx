@@ -30,7 +30,7 @@ export function ClientRouteTonnagePricingModal({
     )
     if (isSuccess && message) {
       toast.success(message)
-      queryInvaidator.clients.details(clientId).routePricing.invalidate()
+      queryInvaidator.clients.profile(clientId).routePricing.invalidate()
     }
     if (error) {
       toast.error(error.message)

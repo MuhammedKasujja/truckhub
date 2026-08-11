@@ -1,17 +1,29 @@
 import { Button } from "@/components/ui/button"
-import { formatDateTime, formatMoney } from "@/lib/format"
+import { formatDate, formatMoney } from "@/lib/format"
 import { Booking, BookingStatusList } from "@/features/bookings/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
-import { Can } from "@/components/has-permission"
-import { EditIcon, EyeIcon } from "lucide-react"
-import { EditPaymentModal } from "@/features/payments/components/edit-payment-modal"
 import { Badge } from "@/components/ui/badge"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { TFunction } from "@/i18n"
+import {
+  BookingTableActions,
+  SetBookingTableAction,
+} from "./booking-table-actions"
 
-export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
+export function getBookingTableColumns(
+  tr: TFunction,
+  setRowAction: SetBookingTableAction
+): ColumnDef<Booking>[] {
   return [
+    {
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => (
+        <BookingTableActions tableRow={{ row }} setRowAction={setRowAction} />
+      ),
+    },
     {
       accessorKey: "id",
       header: "ID",
@@ -52,12 +64,12 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
       id: "services",
       header: tr("services"),
       cell: ({ row }) => {
-        return <p className="text-center">{row.original.services.length}</p>
+        return <p className="text-center">{row.original.line_items.length}</p>
       },
       size: 80,
     },
     {
-      id:"status",
+      id: "status",
       accessorKey: "status",
       header: tr("status"),
       cell: ({ row }) => {
@@ -74,10 +86,20 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
       enableColumnFilter: true,
     },
     {
-      accessorKey: "pickup_time",
-      header: "Pickup Date",
+      id: "quotation",
+      header: "Quotation",
       cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.estimated_pickup_time)}</p>
+        const quotation = row.original.quotation
+        return quotation ? (
+          <Link
+            to={"/quotations/$quotationId/view"}
+            params={{ quotationId: quotation.id }}
+          >
+            {quotation.number}
+          </Link>
+        ) : (
+          <>-</>
+        )
       },
     },
     {
@@ -88,53 +110,10 @@ export function getBookingTableColumns(tr: TFunction): ColumnDef<Booking>[] {
       },
     },
     {
-      accessorKey: "balance",
-      header: tr("balance"),
+      id: "date",
+      header: tr("common.form.date"),
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.balance)}</p>
-      },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const booking = row.original
-        return (
-          <div className="flex gap-2">
-            {booking.status !== "completed" && (
-              <Can permission={"bookings:view"}>
-                <Button variant={"outline"} size={"icon"} asChild>
-                  <Link
-                    to={"/bookings/$bookingId/view"}
-                    params={{ bookingId: row.original.id }}
-                  >
-                    <EyeIcon />
-                  </Link>
-                </Button>
-              </Can>
-            )}
-            <Can permission={"bookings:edit"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link
-                  to={"/bookings/$bookingId/edit"}
-                  params={{ bookingId: row.original.id }}
-                >
-                  <EditIcon />
-                </Link>
-              </Button>
-            </Can>
-            {booking.balance > 0 && (
-              <Can permission={"payments:create"}>
-                <EditPaymentModal
-                  initialData={{
-                    entity_id: booking.id,
-                    type: "booking",
-                    amount: booking.balance,
-                  }}
-                />
-              </Can>
-            )}
-          </div>
-        )
+        return <p>{formatDate(row.original.start_date, {timeStyle: undefined})}</p>
       },
     },
   ]

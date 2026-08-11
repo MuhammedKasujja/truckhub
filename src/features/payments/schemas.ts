@@ -1,50 +1,33 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
-import { formatMoney } from "@/lib/format"
+import { IDSchema, MoneySchema } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
-import { PaymentModeList, PaymentStatuses } from "@/config/constants"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import {
+  PaymentModeList,
+  PaymentStatuses,
+  PaymentEntityList,
+} from "@/config/constants"
 
 export const EditPaymentBaseSchema = z.object({
   id: IDSchema.optional().nullable(),
   entity_id: IDSchema,
   payment_mode: z.string(),
   transaction_ref: z.string().optional().nullable(),
-  type: z.enum(["booking", "ride"]),
+  type: z.enum(PaymentEntityList),
 })
 
 export const EditPaymentSchema = z.object({
-  amount: z.number().min(1),
+  amount: MoneySchema,
   ...EditPaymentBaseSchema.shape,
 })
 
-/**
- *
- * @param maxAmount zero value means already fully paid
- * @returns
- */
-export const createEditPaymentSchema = (maxAmount: number = 0) => {
-  // TODO: get company min amount from settings
-  const companyMinAmount = 5
+export const createEditPaymentSchema = z.object({
+  amount: MoneySchema,
+  ...EditPaymentBaseSchema.shape,
+})
 
-  const minAmount =
-    maxAmount > 0 && maxAmount < companyMinAmount ? maxAmount : companyMinAmount
-
-  return z.object({
-    amount: z
-      .number()
-      .min(minAmount)
-      .max(maxAmount, {
-        error: `Payment amount cannot exceed ${formatMoney(maxAmount, { showZeroAsNumber: true })}`,
-      }),
-    ...EditPaymentBaseSchema.shape,
-  })
-}
-
-export type PaymentEditSchemaType = z.infer<
-  ReturnType<typeof createEditPaymentSchema>
->
+export type PaymentEditSchemaType = z.infer<typeof createEditPaymentSchema>
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),

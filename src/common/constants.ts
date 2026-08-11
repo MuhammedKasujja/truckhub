@@ -1,8 +1,9 @@
 export const NUMBERING_ENTITIES = [
   "Client",
   "Quotation",
-  "Invoice",
   "Booking",
+  "BookingLineItemUnit",
+  "Invoice",
   "RideRequest",
   "Payment",
   "Driver",
@@ -22,6 +23,7 @@ export const ENTITY_NUMBER_PATTERNS: Record<EntityWithPatterns, string[]> = {
   Driver: ["{counter}", "{year}", "{date}", "{month}", "{day}"],
   Vehicle: ["{counter}", "{year}", "{date}", "{month}"],
   User: ["{counter}", "{year}", "{date}", "{month}"],
+  BookingLineItemUnit: ["{counter}", "{year}", "{date}", "{month}"],
 }
 
 export const REPORT_TEMPLATES = [
@@ -35,6 +37,7 @@ export const REPORT_TEMPLATES = [
   "driver",
   "vehicle",
   "route_pricing",
+  "fuel_calculator",
   "loading_offloading_fees",
 ] as const
 

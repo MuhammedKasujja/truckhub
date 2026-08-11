@@ -6,7 +6,11 @@ export const CompanySchema = z.object({
   name: z.string().trim().min(2, "Required"),
   email: z.email().trim(),
   phone: z.string().trim().min(2, "Required"),
-  website: z.url().trim().optional().nullable(),
+  website: z
+    .url({ protocol: /^https?$/, hostname: z.regexes.domain })
+    .trim()
+    .optional()
+    .nullable(),
   address: z.string().trim().optional().nullable(),
   description: z.string().trim().min(3).optional().nullable(),
 })

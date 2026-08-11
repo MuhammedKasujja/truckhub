@@ -4,7 +4,7 @@ export type TonnagePricing = {
   id: EntityId
   min_tons: string | number
   max_tons: string | number
-  price: string | number
+  price: string
 }
 
 export type TonnageRange = {
@@ -43,4 +43,15 @@ export type IslandPricingResponse = {
   name: string
   locations: string[]
   general_price: number | string
+}
+
+export type DistanceTonnagePricingResponse = {
+  id: EntityId
+  distance_min_km: number
+  distance_max_km: number | null
+  distance_no_upper_limit: boolean
+  tonnage_min: number
+  tonnage_max: number
+  min_price: string
+  max_price: string
 }
