@@ -1,7 +1,7 @@
 import z from "zod"
 import { Quotation } from "./types"
-import { IDSchema } from "@/schemas"
 import { ENGINE_MODES } from "@/common/config"
+import { IDSchema, MoneySchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -46,9 +46,9 @@ const lineItemBase = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
   quantity: z.int().positive(),
-  unit_price: z.string().nullable(),
-  subtotal: z.string().nullable(),
-  line_total: z.string().nullable(),
+  unit_price: MoneySchema.nullable(),
+  subtotal: MoneySchema.nullable(),
+  line_total: MoneySchema.nullable(),
   discount: z.string().optional().nullable(),
   engine_mode: z.enum(ENGINE_MODES),
   with_driver: z.boolean(),
@@ -102,7 +102,7 @@ export const createQuotationSchema = z.object({
   end_date: z.string("Date is required"),
   purpose: z.string().optional(),
   discount: z.string().optional().nullable(),
-  partial: z.string().optional().nullable(),
+  partial: MoneySchema.optional().nullable(),
   number: z.string().optional(),
   tax_rates: z.array(createTaxRateSchema),
   line_items: z.array(createLineItemSchema).min(1),
@@ -114,7 +114,7 @@ export const tonnagePricingRangeSchema = z
     min_tons: z.union([z.string(), z.number()]),
     max_tons: z.union([z.string(), z.number()]),
     tons: z.string().min(1, "Required"),
-    price: z.union([z.string(), z.number()]).optional(),
+    price: MoneySchema.optional(),
     default_price: z.union([z.string(), z.number()]),
   })
   .superRefine(({ tons, min_tons, max_tons }, ctx) => {
@@ -131,7 +131,7 @@ export const tonnagePricingSchema = z.object({
   id: IDSchema,
   min_tons: z.union([z.string(), z.number()]),
   max_tons: z.union([z.string(), z.number()]),
-  price: z.string().optional(),
+  price: MoneySchema.optional(),
 })
 
 export const routePricingsSchema = z.object({

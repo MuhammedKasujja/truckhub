@@ -1,5 +1,5 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
+import { IDSchema, MoneySchema } from "@/schemas"
 import { Payment } from "@/features/payments/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -18,12 +18,12 @@ export const EditPaymentBaseSchema = z.object({
 })
 
 export const EditPaymentSchema = z.object({
-  amount: z.string().min(1),
+  amount: MoneySchema,
   ...EditPaymentBaseSchema.shape,
 })
 
 export const createEditPaymentSchema = z.object({
-  amount: z.string(),
+  amount: MoneySchema,
   ...EditPaymentBaseSchema.shape,
 })
 

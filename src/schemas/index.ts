@@ -2,6 +2,8 @@ import z from "zod"
 
 export const IDSchema = z.string("Required").min(2, "Required")
 
+export const MoneySchema = z.string("Required").regex(/^\d+(\.\d{1,2})?$/, "Invalid amount")
+
 export type EntityId = z.infer<typeof IDSchema>
 
 export const EntityIdSchema = z.object({
@@ -13,9 +15,3 @@ export const SearchQuerySchema = z.object({
 })
 
 export type SearchQuery = z.infer<typeof SearchQuerySchema>
-
-export const DeleteServiceSchema = z.object({
-  id: z.uuidv7("Invalid service ID"),
-})
-
-export type DeleteServiceInput = z.infer<typeof DeleteServiceSchema>
