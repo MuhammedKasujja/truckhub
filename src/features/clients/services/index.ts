@@ -27,6 +27,7 @@ import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "@/features/settings/pricing/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(ClientSearchParamsCache)
@@ -119,7 +120,7 @@ export const getClientLoadingOffloadingFreesFn = createServerFn()
 export const createClientLoadingOffloadingPricingFn = createServerFn()
   .inputValidator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
-    return createClientLoadingOffloadingPricing(data)
+    return apiResponseTransform(createClientLoadingOffloadingPricing(data))
   })
 
 export const changeClientTypeFn = createServerFn()

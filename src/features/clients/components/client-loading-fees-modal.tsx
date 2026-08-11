@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/sheet"
 import { LoadingOffloadingPricingForm } from "@/features/settings/pricing/components"
 import { LoadingOffloadingPricingRequest } from "@/features/settings/pricing/schemas"
-import { toast } from "sonner"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { useClientLoadingOffloadingFees } from "../hooks/use-client-loading-fees"
-import { createClientLoadingOffloadingPricingFn } from "../services"
+import {
+  useClientLoadingOffloadingFees,
+  useCreateClientLoadingFees,
+} from "../hooks/use-client-loading-fees"
 
 type ClientPricingProps = {
   clientId: string
@@ -23,20 +23,10 @@ export function ClientLoadingFeesModal({
   clientName = "",
 }: ClientPricingProps) {
   const { data } = useClientLoadingOffloadingFees(clientId)
-  const queryInvaidator = useQueryInvalidator()
+  const { createClientLoadingFees } = useCreateClientLoadingFees()
 
   async function handleSubmit(values: LoadingOffloadingPricingRequest) {
-    const { message, error, isSuccess } =
-      await createClientLoadingOffloadingPricingFn({
-        data: { ...values, client_id: clientId },
-      })
-    if (isSuccess && message) {
-      toast.success(message)
-      queryInvaidator.clients.details(clientId).routePricing.invalidate()
-    }
-    if (error) {
-      toast.error(error.message)
-    }
+    createClientLoadingFees(values)
   }
 
   return (

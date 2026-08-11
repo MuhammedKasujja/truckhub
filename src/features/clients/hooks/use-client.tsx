@@ -8,7 +8,7 @@ const useChangeClientTypeBase = createEntityActionHook(
   changeClientTypeFn,
   (invalidator, input) => {
     invalidator.clients.list.invalidate()
-    invalidator.clients.details(input.data.id)
+    invalidator.clients.profile(input.data.id)
   }
 )
 
