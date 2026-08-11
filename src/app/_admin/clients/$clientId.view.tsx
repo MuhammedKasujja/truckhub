@@ -39,9 +39,8 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 })
 
 function RouteComponent() {
-  const { error, data } = Route.useLoaderData()
+  const data = Route.useLoaderData()
   const { clientId } = Route.useParams()
-  useFetchEror(error)
   return (
     <div>
       <PageHeader>

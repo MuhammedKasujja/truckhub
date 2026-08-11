@@ -189,20 +189,20 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
           <CardContent className="space-y-4">
             {!selectedClient && (
               <ClientPickerField
-                required
+                // required
                 // label="Client"
-                placeholder="Select client"
+                // placeholder="Select client"
                 control={form.control}
                 name="client_id"
-                onSelected={handleClientSelected}
+                onChange={handleClientSelected}
               />
             )}
-            {selectedClient && (
+            {/* {selectedClient && (
               <ClientContactsList
                 contacts={selectedClient?.contacts}
                 // onSelected={setContacts}
               />
-            )}
+            )} */}
             {selectedClient && (
               <CardHeader className="gap-2 p-0">
                 <CardTitle className="text-lg">

@@ -155,7 +155,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
         </CardHeader>
         <CardContent>
           <ClientPicker
-            onSelected={(client) => {
+            onChange={(client) => {
               setValue("client_id", client?.id ?? "")
               setClient(client)
             }}

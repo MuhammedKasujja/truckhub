@@ -22,5 +22,17 @@ export async function apiResponseTransform<T>(
   return { data: result.data, message: result.message }
 }
 
+export async function apiResponseEntity<T>(
+  apiCall: Promise<ApiResponse<T>>
+): Promise<T | undefined> {
+  const result = await apiCall
+
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+
+  return result.data
+}
+
 // Example usage
 // const result = await handleApiCall(changeClientType(data.id))

@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useFetchEror } from "@/hooks/use-fetch-error"
 import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
@@ -47,10 +46,9 @@ type CustomerDetailsWrapperProps = {
 export function CustomerDetailsWrapper({
   clientId,
 }: CustomerDetailsWrapperProps) {
-  const {
-    data: { data: customer, error },
-  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
-  useFetchEror(error)
+  const { data: client } = useSuspenseQuery(
+    clientProfileQueryOptions(clientId)
+  )
 
   const [openModal, setOpenModal] = useState(false)
 
@@ -80,7 +78,7 @@ export function CustomerDetailsWrapper({
     <div className="grid gap-5">
       <Card>
         <CardHeader>
-          <CardTitle className="capitalize">{customer?.name}</CardTitle>
+          <CardTitle className="capitalize">{client?.name}</CardTitle>
           <CardAction className="flex gap-4">
             <Can permission={"payments:create"}>
               <Button onClick={() => setOpenModal(true)}>
@@ -98,7 +96,7 @@ export function CustomerDetailsWrapper({
             <Button asChild size={"icon"}>
               <Link
                 to={"/clients/$clientId/edit"}
-                params={{ clientId: customer?.id }}
+                params={{ clientId: client?.id }}
               >
                 <IconEdit />
               </Link>
@@ -107,13 +105,13 @@ export function CustomerDetailsWrapper({
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
           <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
-            {customer?.short_name ?? generateAvatorFallback(customer?.name)}
+            {client?.short_name ?? generateAvatorFallback(client?.name)}
           </div>
           <div className="space-y-4">
-            <div>{customer?.email}</div>
-            <div>{customer?.phone}</div>
-            <div>Balance: {formatMoney(customer?.balance)}</div>
-            <div>Paid to Date: {formatMoney(customer?.paid_to_date)}</div>
+            <div>{client?.email}</div>
+            <div>{client?.phone}</div>
+            <div>Balance: {formatMoney(client?.balance)}</div>
+            <div>Paid to Date: {formatMoney(client?.paid_to_date)}</div>
           </div>
         </CardContent>
       </Card>

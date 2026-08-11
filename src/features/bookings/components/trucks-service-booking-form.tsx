@@ -136,7 +136,7 @@ export function TrucksServiceBookingForm({
               label="Client"
               control={form.control}
               name="client_id"
-              onSelected={handleClientSelected}
+              onChange={handleClientSelected}
             />
             {selectedClient && (
               <ClientContactsList
