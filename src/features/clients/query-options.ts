@@ -34,7 +34,7 @@ export const clientQueryKeys = {
     id,
   ],
   search: (query?: string | undefined) => [
-    ...clientQueryKeys.details(),
+    ...clientQueryKeys.list(),
     "search",
     query,
   ],
