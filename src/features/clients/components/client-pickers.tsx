@@ -1,14 +1,14 @@
 import { Client } from "../types";
 import { ClientListSearchParams } from "../schemas";
 import { createEntityPicker } from "@/components/entity-picker";
-import { clientProfileQueryOptions, clientsSearchQueryOptions } from "../query-options";
+import { clientProfileQueryOptions, clientsSearchQueryOptions, clientsQueryOptions } from "../query-options";
 
 export const { Picker: ClientPicker, PickerField: ClientPickerField } =
   createEntityPicker<Client, ClientListSearchParams>({
     entityName: "client",
-    listQueryOptions: clientsSearchQueryOptions,
+    listQueryOptions: clientsQueryOptions,
     detailQueryOptions: clientProfileQueryOptions,
-    defaultSearchParams: { search: "", perPage: 50 },
+    defaultSearchParams: { search: "" },
     getOptionValue: (c) => c.id,
     renderOption: (c) => c.name,
     createRoute: "/clients/new",

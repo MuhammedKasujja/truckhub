@@ -82,7 +82,7 @@ export function useEntityPicker<
 
   const remoteQuery = useQuery({
     ...config.listQueryOptions(searchParams),
-    enabled: !isLocal && searchParams.search.length > 0,
+    enabled: !isLocal // && searchParams.search.length > 0,
   })
 
   const localQuery = useQuery({
@@ -100,9 +100,10 @@ export function useEntityPicker<
     !isLocal && remoteQuery.isFetching && (remoteQuery.data?.length ?? 0) > 0
   const rawOptions = isLocal
     ? (localQuery.data ?? [])
-    : (remoteQuery.data ?? [])
+    : (remoteQuery?.data?.data ?? [])
 
   const options = useMemo(() => {
+    console.log("rawOptions", rawOptions, "resolved", resolved)
     if (!resolved) return rawOptions
     if (!isLocal && searchParams.search.length > 0) return rawOptions
     const present = rawOptions.some(
