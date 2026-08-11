@@ -83,12 +83,14 @@ const emptyPricing = {
 }
 
 interface LoadingOffloadingPricingSchemaProp {
-  initialData?: LoadingOffloadingPricingRequest
+  initialData?: LoadingOffloadingPricingRequest,
+  isSubmitting?: boolean,
   onSubmit: (data: LoadingOffloadingPricingRequest) => Promise<void>
 }
 
 export function LoadingOffloadingPricingForm({
   initialData,
+  isSubmitting = false,
   onSubmit,
 }: LoadingOffloadingPricingSchemaProp) {
   const { hasPermission } = useAuth()
@@ -172,7 +174,7 @@ export function LoadingOffloadingPricingForm({
           </FieldGroup>
           {canCreateOrEdit && (
             <Field className="">
-              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+              <SubmitButton isSubmitting={isSubmitting} />
             </Field>
           )}
         </form>

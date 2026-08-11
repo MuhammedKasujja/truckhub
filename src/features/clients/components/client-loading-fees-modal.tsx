@@ -23,7 +23,7 @@ export function ClientLoadingFeesModal({
   clientName = "",
 }: ClientPricingProps) {
   const { data } = useClientLoadingOffloadingFees(clientId)
-  const { createClientLoadingFees } = useCreateClientLoadingFees()
+  const { createClientLoadingFees, isPending } = useCreateClientLoadingFees()
 
   async function handleSubmit(values: LoadingOffloadingPricingRequest) {
     createClientLoadingFees(values)
@@ -43,6 +43,7 @@ export function ClientLoadingFeesModal({
             initialData={
               data ? { pricings: data, client_id: clientId } : undefined
             }
+            isSubmitting={isPending}
             onSubmit={handleSubmit}
           />
         </div>

@@ -27,7 +27,7 @@ export function useCreateClientLoadingFees() {
     return execute({ data })
   }
   return {
-    isLoading: isPending,
+    isPending,
     createClientLoadingFees,
     isSuccess,
     error,
