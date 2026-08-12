@@ -54,14 +54,36 @@ palette) without `AutoComplete` at all.
 
 ### Config shape
 
-```ts
+```tsx
+/** Matches your API's actual response envelopes. */
+interface DetailResponse<T> {
+  data: T
+  message?: string
+}
+
+interface Pagination {
+  page: number
+  perPage: number
+  total: number
+  hasMore: boolean
+}
+
+interface ListResponse<T> {
+  data: T[]
+  pagination: Pagination
+}
+
 interface EntityPickerConfig<T, TSearchParams extends { search: string }> {
   entityName: string // used for the `created_${entityName}` return-nav signal
 
   // Reuse your EXISTING queryOptions factories verbatim — same cache
   // entries as every other place in the app that reads/writes this entity.
-  detailQueryOptions: (id: string) => UseQueryOptions<T>
-  listQueryOptions?: (params: TSearchParams) => UseQueryOptions<T[]> // omit in pure local mode
+  // These return the RAW envelope shape; the hook unwraps `.data` itself
+  // via `select`, so cache entries stay identical to what the rest of the
+  // app already reads/writes (e.g. a detail page using the same
+  // detailQueryOptions still gets the full { data, message } envelope).
+  detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
+  listQueryOptions?: (params: TSearchParams) => UseQueryOptions<ListResponse<T>>
 
   getOptionValue: (item: T) => string
 
@@ -75,9 +97,88 @@ interface EntityPickerConfig<T, TSearchParams extends { search: string }> {
 
   // create flow — provide ONE of these two, not both (see Create Flow section)
   createRoute?: string
-  createMutation?: (data: any) => Promise<T>
+  createMutation?: (data: any) => Promise<T>  // mutation still returns the bare entity, not an envelope
 }
 ```
+
+**Why unwrap with `select`, not by writing `.data.data` everywhere in the
+hook:** `useQuery`'s `select` option projects the cached value at read time —
+the cache itself still stores the full envelope (so anything else in the app
+reading the same query key via `useQuery(detailQueryOptions(id))` without a
+`select` still gets `{ data, message }` untouched), but `useEntityPicker`
+only ever sees the unwrapped `T`/`T[]`, plus `pagination` pulled out
+separately for list queries. One unwrap point, not scattered `.data` access
+through the rest of the hook.
+
+```tsx
+// inside useEntityPicker
+const { data: resolved } = useQuery({
+  ...config.detailQueryOptions(idToResolve!),
+  select: (res) => res.data,          // DetailResponse<T> -> T
+  enabled: !!idToResolve,
+  staleTime: 5 * 60 * 1000,
+})
+
+const remoteQuery = useQuery({
+  ...config.listQueryOptions!(searchParams),
+  select: (res) => res, // keep the envelope here — need both data and pagination
+  enabled: !isLocal && !!config.listQueryOptions && debouncedSearch.length > 0,
+})
+
+const rawOptions = isLocal ? (localQuery.data ?? []) : (remoteQuery.data?.data ?? [])
+const pagination = isLocal ? null : (remoteQuery.data?.pagination ?? null)
+```
+
+**Cache-seeding after create must match the envelope shape too** — since
+`createMutation` returns a bare `T` (not an envelope, per your mutation
+functions), seeding the detail cache has to wrap it before `setQueryData`,
+or a subsequent read via `detailQueryOptions` (which expects
+`DetailResponse<T>`) would break:
+
+```tsx
+onSuccess: (created) => {
+  queryClient.setQueryData(
+    config.detailQueryOptions(config.getOptionValue(created)).queryKey!,
+    { data: created } as DetailResponse<T> // match the envelope, not the bare entity
+  )
+  onChange(created)
+  setDialogOpen(false)
+},
+```
+
+Same applies to the page-mode create route's `onSuccess` — it must seed
+`{ data: created }`, not `created`, at the shared `detailQueryOptions` key.
+
+### `pagination` replaces the earlier "grow `perPage` and refetch" guess
+
+With a real `pagination.hasMore` from the server, "load more" no longer has
+to infer anything — the hook exposes it directly:
+
+```tsx
+return {
+  // ...
+  hasMore: pagination?.hasMore ?? false,
+  updateSearchParams, // still available for callers that want to bump perPage/page directly
+  // ...
+}
+```
+
+`Picker`'s "Load more" row can now check `p.hasMore` instead of always
+showing regardless of whether more data actually exists:
+
+```tsx
+{p.hasMore && p.updateSearchParams && (
+  <CommandItem onSelect={() => p.updateSearchParams((prev) => ({ ...prev, perPage: prev.perPage + 50 }))}>
+    {p.isFetchingMore ? "Loading..." : "Load more"}
+  </CommandItem>
+)}
+```
+
+This is still "refetch a bigger page," not "accumulate distinct pages" — see
+Known Limitations — but at least it now stops offering "Load more" once the
+server says there's nothing left.
+
+
 
 ### What it does, precisely
 
@@ -115,7 +216,7 @@ interface EntityPickerConfig<T, TSearchParams extends { search: string }> {
 
 ### Return shape
 
-```ts
+```tsx
 {
   search, searchParams, setSearch, updateSearchParams, isFetchingMore,
   filterFn, options, isFetching, resolved, isResolving,
@@ -443,8 +544,13 @@ behavior, not a bug. Check, in order:
 ## Known limitations / things to revisit
 
 - **No true infinite-scroll accumulation** — "load more" grows `perPage` and
-  refetches, it doesn't concatenate pages. Switch to `useInfiniteQuery` if
+  refetches (now gated correctly by the server's `pagination.hasMore`), but it
+  still doesn't concatenate distinct pages. Switch to `useInfiniteQuery` if
   real cursor/page accumulation is needed.
+- **Envelope unwrap is manual per query** — `select` unwraps `detailQueryOptions`
+  to `T` and pulls `data`/`pagination` apart for list queries. If any entity's
+  API deviates from the `{ data, pagination? }` / `{ data, message? }`
+  envelope shape, its config needs a bespoke `select`, not the shared one.
 - **`useSearch({ strict: false })` in shared components is a real trade-off**
   — reusable pickers can't type-bind to one route's search schema. If a
   picker is only ever used on a small, known set of routes, consider having

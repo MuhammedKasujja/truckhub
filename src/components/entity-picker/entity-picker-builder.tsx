@@ -16,6 +16,7 @@ import { RequiredLabelIcon } from "@/components/required-label-icon"
 import { AutoComplete } from "./autocomplete"
 
 export interface PickerProps<T> {
+  id?: string
   value: T | string | null | undefined
   onChange: (value: T | null | undefined) => void
   disabled?: boolean
@@ -41,6 +42,7 @@ export function createEntityPicker<
   }
 ) {
   function Picker({
+    id,
     value,
     onChange,
     disabled,
@@ -55,8 +57,10 @@ export function createEntityPicker<
     return (
       <>
         <AutoComplete<T>
+          id={id}
           options={p.options}
           value={p.resolved ?? (typeof value === "string" ? null : value)} // 👈 never pass a bare unresolved string down to avoid showing id to user to leak internal details
+          triggerLoading={p.isResolving}
           loading={p.isFetching}
           disabled={disabled}
           filterFn={p.filterFn}
@@ -121,6 +125,7 @@ export function createEntityPicker<
           </FieldLabel>
         )}
         <Picker
+          id={field.name}
           value={field.value}
           onChange={(val) => {
             field.onChange(val ? config.getOptionValue(val) : null) // stores string

@@ -5,6 +5,7 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from "@tanstack/react-query"
+import { Pagination } from "@/types"
 import { useDebounce } from "@/hooks/use-debounce"
 import { useNavigate, useSearch, useRouter } from "@tanstack/react-router"
 
@@ -16,16 +17,14 @@ interface DetailResponse<T> {
   message?: string
 }
 
-interface Pagination {
-  page: number
-  perPage: number
-  total: number
-  hasMore: boolean
-}
-
 interface ListResponse<T> {
   data: T[]
   pagination: Pagination
+}
+
+const getHasMore = (pagination: Pagination | null) => {
+  if (!pagination) return false
+  return pagination.page < pagination.totalPages
 }
 
 export interface EntityPickerConfig<
@@ -47,7 +46,7 @@ export interface EntityPickerConfig<
   searchDebounceMs?: number
 
   mode?: "remote" | "local"
-   /** local mode: fixed list, filtered client-side */
+  /** local mode: fixed list, filtered client-side */
   staticOptions?: T[] | (() => Promise<T[]>)
   filterFn?: (option: T, query: string) => boolean
 
@@ -228,6 +227,8 @@ export function useEntityPicker<
     }
   }
 
+  const hasMore = getHasMore(pagination)
+
   return {
     // search / pagination
     search: searchParams.search,
@@ -235,7 +236,7 @@ export function useEntityPicker<
     setSearch: isLocal ? undefined : setSearch,
     updateSearchParams: isLocal ? undefined : updateSearchParams,
     isFetchingMore,
-    hasMore: pagination?.hasMore ?? false,
+    hasMore: hasMore,
 
     // options
     filterFn: isLocal ? effectiveFilterFn : undefined,
