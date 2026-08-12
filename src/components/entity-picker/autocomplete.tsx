@@ -150,6 +150,8 @@ export function AutoComplete<T>({
     // a fresh observe call after layout shifts this significantly)
   }, [open, onLoadMore, handleLoadMore, filteredOptions.length])
 
+  console.log("Loading", loading, "Options", filteredOptions.length)
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -190,7 +192,7 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList ref={listRef} className="max-h-72 overflow-y-auto">
+          <CommandList ref={listRef}>
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />

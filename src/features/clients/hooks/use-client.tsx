@@ -75,9 +75,9 @@ export function useEditClient() {
 
 const useChangeClientTypeBase = createEntityActionHook(
   changeClientTypeFn,
-  (invalidator, input) => {
-    invalidator.clients.list.invalidate()
-    invalidator.clients.profile(input.data.id).invalidate()
+  (invalidator, _input) => {
+    invalidator.clients.refresh()
+    // invalidator.clients.profile(input.data.id).invalidate()
   }
 )
 

@@ -288,6 +288,11 @@ export class QueryInvalidator {
   }
 
   clients = {
+    refresh: () =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.clients.all(),
+      }),
+
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({
