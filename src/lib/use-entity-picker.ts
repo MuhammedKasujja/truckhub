@@ -5,6 +5,7 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from "@tanstack/react-query"
+import { useDebounce } from "@/hooks/use-debounce"
 import { useNavigate, useSearch, useRouter } from "@tanstack/react-router"
 
 export interface EntityPickerConfig<
@@ -16,6 +17,7 @@ export interface EntityPickerConfig<
   /** Your existing queryOptions factories — reused as-is, same cache entries as everywhere else. */
   detailQueryOptions: (id: string) => UseQueryOptions<T>
   listQueryOptions: (params: TSearchParams) => UseQueryOptions<T[]>
+  searchDebounceMs?: number
 
   getOptionValue: (item: T) => string
 
@@ -52,6 +54,10 @@ export function useEntityPicker<
   const [searchParams, setSearchParams] = useState<TSearchParams>(
     config.defaultSearchParams
   )
+  const debouncedSearch = useDebounce(
+    searchParams.search,
+    config.searchDebounceMs ?? 300
+  )
   const queryClient = useQueryClient()
 
   // ---- resolve a bare id into a full object ----
@@ -81,8 +87,8 @@ export function useEntityPicker<
   const isLocal = !!effectiveStaticOptions
 
   const remoteQuery = useQuery({
-    ...config.listQueryOptions(searchParams),
-    enabled: !isLocal // && searchParams.search.length > 0,
+    ...config.listQueryOptions({ ...searchParams, search: debouncedSearch }),
+    enabled: !isLocal, // && searchParams.search.length > 0,
   })
 
   const localQuery = useQuery({
