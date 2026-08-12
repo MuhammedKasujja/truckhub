@@ -30,12 +30,12 @@ export function useCreateClient() {
 
   const { isPending, execute, isSuccess, error } = useCreateClientBase()
 
-  function createClient(data: ClientCreateInput) {
+  function createClient(input: ClientCreateInput) {
     return execute(
-      { data },
+      { data: input },
       {
-        onSuccess: ({ data }) => {
-          queryClient.setQueryData(clientQueryKeys.profile(data!.id), data)
+        onSuccess: (result) => {
+          queryClient.setQueryData(clientQueryKeys.profile(result.data!.id), result)
           if (returnTo) {
             const [pathname, qs] = returnTo.split("?")
             const existing = qs
@@ -45,7 +45,7 @@ export function useCreateClient() {
               to: pathname,
               search: {
                 ...existing,
-                [`created_${field ?? "client"}`]: data!.id,
+                [`created_${field ?? "client"}`]: result.data!.id,
               },
             })
           } else {
