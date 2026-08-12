@@ -2,6 +2,9 @@ import { changeClientTypeFn, createClientFn, updateClientFn } from "../services"
 import { EntityId } from "@/schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import { ClientCreateInput, ClientUpdateInput } from "../schemas"
+import { useNavigate, useSearch } from "@tanstack/react-router"
+import { useQueryClient } from "@tanstack/react-query"
+import { clientQueryKeys } from "../query-options"
 
 const useCreateClientBase = createEntityActionHook(
   createClientFn,
@@ -19,12 +22,46 @@ const useEditClientBase = createEntityActionHook(
 )
 
 export function useCreateClient() {
+  const { prefill, returnTo, field } = useSearch({
+    from: "/_admin/clients/new/",
+  })
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const { isPending, execute, isSuccess, error } = useCreateClientBase()
 
   function createClient(data: ClientCreateInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data }) => {
+          queryClient.setQueryData(clientQueryKeys.profile(data!.id), data)
+          if (returnTo) {
+            const [pathname, qs] = returnTo.split("?")
+            const existing = qs
+              ? Object.fromEntries(new URLSearchParams(qs))
+              : {}
+            navigate({
+              to: pathname,
+              search: {
+                ...existing,
+                [`created_${field ?? "client"}`]: data!.id,
+              },
+            })
+          } else {
+            navigate({ to: "/clients" })
+          }
+        },
+      }
+    )
   }
-  return { isLoading: isPending, createClient, isSuccess, error }
+  return {
+    isLoading: isPending,
+    createClient,
+    isSuccess,
+    error,
+    prefill: { name: prefill },
+  }
 }
 
 export function useEditClient() {

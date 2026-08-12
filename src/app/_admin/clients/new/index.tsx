@@ -14,10 +14,8 @@ export const Route = createFileRoute("/_admin/clients/new/")({
 })
 
 function RouteComponent() {
-  // const { prefill, returnTo, field } = Route.useSearch()
-
   const { goBack } = useNavigationHistory()
-  const { createClient } = useCreateClient()
+  const { createClient, prefill } = useCreateClient()
   return (
     <>
       <PageHeader>
@@ -30,6 +28,7 @@ function RouteComponent() {
       </PageHeader>
       <ClientForm
         mode="create"
+        defaultValues={prefill}
         onSubmit={(data) => {
           createClient(data)
         }}
