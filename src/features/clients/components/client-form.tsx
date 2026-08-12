@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
-  CustomerCreateSchema,
-  CustomerUpdateSchema,
+  ClientCreateSchema,
+  ClientUpdateSchema,
 } from "@/features/clients/schemas"
 import { createClientFn, updateClientFn } from "@/features/clients/services"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -26,7 +26,7 @@ import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { UserPickerField } from "@/features/users/components/user-picker"
 
 type ClientFormProps = {
-  initialData?: z.infer<typeof CustomerUpdateSchema>
+  initialData?: z.infer<typeof ClientUpdateSchema>
 }
 
 export function ClientForm({ initialData }: ClientFormProps) {
@@ -35,7 +35,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
 
   const isEdit = !!initialData
 
-  const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema
+  const formSchema = isEdit ? ClientUpdateSchema : ClientCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

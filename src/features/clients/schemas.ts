@@ -5,7 +5,7 @@ import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
-export const CustomerCreateSchema = z.object({
+export const ClientCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
   short_name: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
@@ -15,14 +15,14 @@ export const CustomerCreateSchema = z.object({
   asssigned_user_id: IDSchema.optional().nullable(),
 })
 
-export const CustomerUpdateSchema = z.object({
+export const ClientUpdateSchema = z.object({
   id: IDSchema,
-  ...CustomerCreateSchema.partial().shape,
+  ...ClientCreateSchema.partial().shape,
 })
 
-export type CustomerCreateSchemaType = z.infer<typeof CustomerCreateSchema>
+export type ClientCreateInput = z.infer<typeof ClientCreateSchema>
 
-export type CustomerUpdateSchemaType = z.infer<typeof CustomerUpdateSchema>
+export type ClientUpdateInput = z.infer<typeof ClientUpdateSchema>
 
 export const ClientSearchParamsCache = z.object({
   sort: getSortingStateSchema<Client>().default([

@@ -5,9 +5,9 @@ import { Client } from "@/features/clients/types"
 import { Booking } from "@/features/bookings/types"
 import { RideRequest } from "@/features/ride-requests/types"
 import {
+  ClientUpdateInput,
+  ClientCreateInput,
   ClientListSearchParams,
-  CustomerCreateSchemaType,
-  CustomerUpdateSchemaType,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
@@ -62,12 +62,12 @@ export async function deleteCustomerById(clientId: EntityId) {
   return await apiClient.deleteFn(`${endpoint}/${clientId}`)
 }
 
-export async function updateClient(data: CustomerUpdateSchemaType) {
+export async function updateClient(data: ClientUpdateInput) {
   const { id: clientId, ...rest } = data
   return await apiClient.putFn<Client>(`${endpoint}/${clientId}`, rest)
 }
 
-export async function createClient(data: CustomerCreateSchemaType) {
+export async function createClient(data: ClientCreateInput) {
   return await apiClient.postFn<Client>(endpoint, data)
 }
 

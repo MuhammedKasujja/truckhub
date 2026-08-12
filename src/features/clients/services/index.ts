@@ -1,6 +1,6 @@
 import {
-  CustomerUpdateSchema,
-  CustomerCreateSchema,
+  ClientUpdateSchema,
+  ClientCreateSchema,
   ClientSearchParamsCache,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
@@ -70,13 +70,13 @@ export const deleteClientFn = createServerFn({ method: "POST" })
   })
 
 export const updateClientFn = createServerFn({ method: "POST" })
-  .inputValidator(CustomerUpdateSchema)
+  .inputValidator(ClientUpdateSchema)
   .handler(async ({ data }) => {
     return updateClient(data)
   })
 
 export const createClientFn = createServerFn({ method: "POST" })
-  .inputValidator(CustomerCreateSchema)
+  .inputValidator(ClientCreateSchema)
   .handler(async ({ data }) => {
     return createClient(data)
   })
