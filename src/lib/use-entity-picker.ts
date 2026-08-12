@@ -3,6 +3,7 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
+  useInfiniteQuery,
   type UseQueryOptions,
 } from "@tanstack/react-query"
 import { Pagination } from "@/types"
@@ -22,6 +23,16 @@ interface ListResponse<T> {
   pagination: Pagination
 }
 
+/** What an infinite list query needs: a page-stable key, and a queryFn that
+ *  accepts the page to fetch. Distinct from a plain UseQueryOptions because
+ *  useInfiniteQuery manages pages internally — the queryKey must NOT vary
+ *  by page, only by search/filter params. */
+interface InfiniteListQueryConfig<T> {
+  queryKey: readonly unknown[]
+  queryFn: (context: { pageParam: number }) => Promise<ListResponse<T>>
+  initialPageParam?: number // default 1
+}
+
 const getHasMore = (pagination: Pagination | null) => {
   if (!pagination) return false
   return pagination.page < pagination.totalPages
@@ -37,7 +48,10 @@ export interface EntityPickerConfig<
    *  unwrapped internally via `select`, so cache entries stay identical to
    *  what the rest of the app reads/writes for this entity. */
   detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
-  listQueryOptions?: (params: TSearchParams) => UseQueryOptions<ListResponse<T>>
+  /** Returns an infinite-query-shaped config: queryKey WITHOUT page, queryFn
+   *  that reads `pageParam`. Reuse your existing API call, just move `page`
+   *  from the params object into the queryFn's own argument. */
+  listQueryOptions?: (params: TSearchParams) => InfiniteListQueryConfig<T>
 
   getOptionValue: (item: T) => string
 
@@ -100,21 +114,42 @@ export function useEntityPicker<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolved])
 
-  // ---- remote vs local options ----
+  // ---- remote (infinite) vs local options ----
   const effectiveStaticOptions =
     overrides?.staticOptions ?? config.staticOptions
   const effectiveFilterFn = overrides?.filterFn ?? config.filterFn
   const isLocal = !!effectiveStaticOptions
 
-  const remoteQuery = useQuery({
-    ...(config.listQueryOptions?.({
-      ...searchParams,
-      search: debouncedSearch,
-    } as TSearchParams) ?? {
-      queryKey: ["__no-list-query__", entityName],
-      queryFn: () => Promise.resolve({ data: [], pagination: null } as any),
-    }),
-    enabled: !isLocal && !!config.listQueryOptions,
+  const effectiveSearchParams = {
+    ...searchParams,
+    search: debouncedSearch,
+  } as TSearchParams
+  const listConfig = !isLocal
+    ? config.listQueryOptions?.(effectiveSearchParams)
+    : undefined
+
+  // const remoteQuery = useQuery({
+  //   ...(config.listQueryOptions?.({
+  //     ...searchParams,
+  //     search: debouncedSearch,
+  //   } as TSearchParams) ?? {
+  //     queryKey: ["__no-list-query__", entityName],
+  //     queryFn: () => Promise.resolve({ data: [], pagination: null } as any),
+  //   }),
+  //   enabled: !isLocal && !!config.listQueryOptions,
+  // })
+
+  const remoteQuery = useInfiniteQuery({
+    queryKey: listConfig?.queryKey ?? ["__no-list-query__", entityName],
+    queryFn:
+      listConfig?.queryFn ??
+      (() => Promise.resolve({ data: [], pagination: null } as any)),
+    initialPageParam: listConfig?.initialPageParam ?? 1,
+    getNextPageParam: (lastPage: ListResponse<T>) =>
+      getHasMore(lastPage.pagination)
+        ? lastPage.pagination.page + 1
+        : undefined,
+    enabled: !isLocal && !!listConfig // && debouncedSearch.length > 0,
   })
 
   const localQuery = useQuery({
@@ -128,18 +163,15 @@ export function useEntityPicker<
   })
 
   const isFetching = isLocal ? localQuery.isFetching : remoteQuery.isFetching
-  const isFetchingMore =
-    !isLocal &&
-    remoteQuery.isFetching &&
-    ((remoteQuery.data as ListResponse<T> | undefined)?.data?.length ?? 0) > 0
+  const isFetchingMore = !isLocal && remoteQuery.isFetchingNextPage
+  const hasMore = !isLocal && remoteQuery.hasNextPage
 
+  // flatten all accumulated pages into one list — this is the actual
+  // "infinite scroll" part: each fetchNextPage() call appends a new page
+  // rather than replacing the current one
   const rawOptions = isLocal
     ? (localQuery.data ?? [])
-    : ((remoteQuery.data as ListResponse<T> | undefined)?.data ?? [])
-
-  const pagination = isLocal
-    ? null
-    : ((remoteQuery.data as ListResponse<T> | undefined)?.pagination ?? null)
+    : (remoteQuery.data?.pages.flatMap((page) => page.data) ?? [])
 
   const options = useMemo(() => {
     if (!resolved) return rawOptions
@@ -147,23 +179,20 @@ export function useEntityPicker<
     const present = rawOptions.some(
       (o) => getOptionValue(o) === getOptionValue(resolved)
     )
+    // Make sure the active option is always included in the list options
     return present ? rawOptions : [resolved, ...rawOptions]
   }, [rawOptions, resolved, searchParams.search, isLocal])
 
-  // typing a new query resets params (fresh page 1 equivalent)
   const setSearch = (query: string) => {
-    setSearchParams((prev) =>
+    setSearchParams((_prev) =>
       config.buildSearchParams
         ? config.buildSearchParams(config.defaultSearchParams, query)
         : ({ ...config.defaultSearchParams, search: query } as TSearchParams)
     )
   }
 
-  // load more / any other param tweak, without resetting the query text
-  const updateSearchParams = (
-    updater: (prev: TSearchParams) => TSearchParams
-  ) => {
-    setSearchParams(updater)
+  const fetchMore = () => {
+    if (!isLocal) remoteQuery.fetchNextPage()
   }
 
   // ---- create flow: dialog (createMutation) or page (createRoute) ----
@@ -227,14 +256,12 @@ export function useEntityPicker<
     }
   }
 
-  const hasMore = getHasMore(pagination)
-
   return {
     // search / pagination
     search: searchParams.search,
     searchParams,
     setSearch: isLocal ? undefined : setSearch,
-    updateSearchParams: isLocal ? undefined : updateSearchParams,
+    fetchMore: isLocal ? undefined : fetchMore,
     isFetchingMore,
     hasMore: hasMore,
 

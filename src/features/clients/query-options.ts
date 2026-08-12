@@ -41,6 +41,10 @@ export const clientQueryKeys = {
     "search",
     params,
   ],
+  filter: () => [
+    ...clientQueryKeys.list(),
+    "filter-list",
+  ],
   refreshQueries: () => [...clientQueryKeys.list()],
   refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
 } as const
@@ -64,7 +68,7 @@ export const clientsSearchQueryOptions = (query?: string | undefined) =>
   })
 
 export const clientListQueryOptions = (params: ClientSearchParams) => ({
-  queryKey: [...clientQueryKeys.list(), params.search, params.perPage], // no page here
+  queryKey: [...clientQueryKeys.filter(), params.search, params.perPage], // no page here
   queryFn: ({ pageParam }: { pageParam: number }) =>
     getClientsByQueryFn({
       data: { search: params.search, perPage: params.perPage, page: pageParam },
