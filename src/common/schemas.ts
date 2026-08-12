@@ -7,3 +7,13 @@ export const DefaultSearchParamsSchema = z.object({
   created_at: z.array(z.number().int()).optional(),
   joinOperator: z.enum(["and", "or"]).optional(),
 })
+
+export const EntityPickerSearchParams = z.object({
+  prefill: z.string().optional(),
+  returnTo: z.string().optional(),
+  field: z.string().optional(),
+})
+
+export type EntityPickerSearchParamsInput = z.infer<
+  typeof EntityPickerSearchParams
+>

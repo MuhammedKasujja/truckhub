@@ -1,25 +1,23 @@
+import { EntityPickerSearchParams } from "@/common/schemas"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ClientForm } from "@/features/clients/components"
+import { useCreateClient } from "@/features/clients/hooks/use-client"
 import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
-import { z } from "zod"
 
 export const Route = createFileRoute("/_admin/clients/new/")({
   component: RouteComponent,
-  validateSearch: z.object({
-    prefill: z.string().optional(),
-    returnTo: z.string().optional(),
-    field: z.string().optional(),
-  }),
+  validateSearch: EntityPickerSearchParams,
   beforeLoad: () => requirePermission("clients:create"),
 })
 
 function RouteComponent() {
-  const { prefill, returnTo, field } = Route.useSearch()
+  // const { prefill, returnTo, field } = Route.useSearch()
 
   const { goBack } = useNavigationHistory()
+  const { createClient } = useCreateClient()
   return (
     <>
       <PageHeader>
@@ -30,7 +28,12 @@ function RouteComponent() {
           </Button>
         </PageAction>
       </PageHeader>
-      <ClientForm />
+      <ClientForm
+        mode="create"
+        onSubmit={(data) => {
+          createClient(data)
+        }}
+      />
     </>
   )
 }

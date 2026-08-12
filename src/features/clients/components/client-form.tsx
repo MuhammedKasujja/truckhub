@@ -7,53 +7,42 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
-import {
-  EmailField,
-  TextField,
-} from "@/components/ui/form-fields"
+import { EmailField, TextField } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
+  ClientCreateInput,
   ClientCreateSchema,
+  ClientUpdateInput,
   ClientUpdateSchema,
 } from "@/features/clients/schemas"
-import { createClientFn, updateClientFn } from "@/features/clients/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { UserPickerField } from "@/features/users/components/user-picker"
+import { BaseFormProps } from "@/common/types"
 
-type ClientFormProps = {
-  initialData?: z.infer<typeof ClientUpdateSchema>
-}
+type ClientFormProps = BaseFormProps<ClientCreateInput, ClientUpdateInput>
 
-export function ClientForm({ initialData }: ClientFormProps) {
+export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
 
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
   const formSchema = isEdit ? ClientUpdateSchema : ClientCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateClientFn({ data: values })
-        : createClientFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.clients.list.invalidate()
+  async function handleSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(ClientUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(ClientCreateSchema.parse(values))
     }
   }
 
@@ -64,7 +53,7 @@ export function ClientForm({ initialData }: ClientFormProps) {
         <CardDescription>Create new client</CardDescription>
       </CardHeader>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
           console.log(errors)
         })}
       >
