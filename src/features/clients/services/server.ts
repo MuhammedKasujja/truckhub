@@ -38,15 +38,16 @@ export async function getCustomers(input: ClientListSearchParams) {
   return { error: response.error }
 }
 
-export async function getCustomersByQuery({ search }: SearchQuery) {
+export async function getCustomersByQuery({
+  page,
+  search,
+  perPage,
+}: SearchQuery) {
   return getCustomers({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
+    page: page ?? 1,
+    perPage: perPage ?? DEFAULT_FITER_QUERY_PER_PAGE,
     sort: [],
     search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
   })
 }
 

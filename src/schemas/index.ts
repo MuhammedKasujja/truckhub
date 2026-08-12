@@ -11,7 +11,9 @@ export const EntityIdSchema = z.object({
 })
 
 export const SearchQuerySchema = z.object({
+  page: z.number().optional().nullable(),
   search: z.string().optional().nullable(),
+  perPage: z.number().optional().nullable(),
 })
 
 export type SearchQuery = z.infer<typeof SearchQuerySchema>

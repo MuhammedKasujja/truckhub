@@ -15,7 +15,7 @@ const useCreateClientLoadingFeesBase = createEntityActionHook(
   createClientLoadingOffloadingPricingFn,
   (invalidator, input) => {
     invalidator.clients.list.invalidate()
-    invalidator.clients.profile(input.data.client_id!)
+    invalidator.clients.profile(input.data.client_id!).invalidate()
   }
 )
 

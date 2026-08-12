@@ -13,6 +13,11 @@ import {
   getClientLoadingOffloadingFreesFn,
 } from "./services"
 
+export interface ClientSearchParams {
+  search: string
+  perPage: number
+}
+
 export const clientQueryKeys = {
   all: () => ["clients"],
   list: () => [...clientQueryKeys.all(), "list"],
@@ -31,10 +36,10 @@ export const clientQueryKeys = {
     ...clientQueryKeys.detail(id),
     "loading_fees",
   ],
-  search: (query?: string | undefined) => [
-    ...clientQueryKeys.all(),
+  search: (params: ClientSearchParams) => [
+    ...clientQueryKeys.list(),
     "search",
-    query,
+    params,
   ],
   refreshQueries: () => [...clientQueryKeys.list()],
   refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
@@ -54,9 +59,18 @@ export const clientProfileQueryOptions = (clientId: EntityId) =>
 
 export const clientsSearchQueryOptions = (query?: string | undefined) =>
   queryOptions({
-    queryKey: clientQueryKeys.search(query),
+    queryKey: clientQueryKeys.search({ search: query ?? "", perPage: 10 }),
     queryFn: () => getClientsByQueryFn({ data: { search: query } }),
   })
+
+export const clientListQueryOptions = (params: ClientSearchParams) => ({
+  queryKey: [...clientQueryKeys.list(), params.search, params.perPage], // no page here
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getClientsByQueryFn({
+      data: { search: params.search, perPage: params.perPage, page: pageParam },
+    }),
+  initialPageParam: 1,
+})
 
 export const clientEditQueryOptions = (clientId: EntityId) =>
   queryOptions({

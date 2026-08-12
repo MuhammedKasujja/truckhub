@@ -297,7 +297,7 @@ export class QueryInvalidator {
     profile: (id: string) => ({
       invalidate: () =>
         this.queryClient.invalidateQueries({
-          queryKey: queryKeys.clients.profile(id),
+          queryKey: queryKeys.clients.detail(id),
         }),
       routePricing: {
         invalidate: () =>

@@ -48,7 +48,7 @@ export const getClientsByQueryFn = createServerFn()
       const { message, erroCode, statusCode } = response.error
       throw new ApiError(message, statusCode, erroCode)
     }
-    return response.data
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getClientByIdFn = createServerFn()
