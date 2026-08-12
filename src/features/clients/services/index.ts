@@ -27,7 +27,7 @@ import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "@/features/settings/pricing/schemas"
-import { apiResponseEntity, apiResponseTransform } from "@/lib/api-response-serializer"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(ClientSearchParamsCache)
@@ -60,7 +60,7 @@ export const getClientByIdFn = createServerFn()
 export const getClientProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return apiResponseEntity(getCustomerDetailsById(data.id))
+    return getCustomerDetailsById(data.id)
   })
 
 export const deleteClientFn = createServerFn({ method: "POST" })

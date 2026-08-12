@@ -46,9 +46,9 @@ type CustomerDetailsWrapperProps = {
 export function CustomerDetailsWrapper({
   clientId,
 }: CustomerDetailsWrapperProps) {
-  const { data: client } = useSuspenseQuery(
-    clientProfileQueryOptions(clientId)
-  )
+  const {
+    data: { data: client },
+  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
 
   const [openModal, setOpenModal] = useState(false)
 
@@ -94,10 +94,7 @@ export function CustomerDetailsWrapper({
               />
             </Can>
             <Button asChild size={"icon"}>
-              <Link
-                to={"/clients/$clientId/edit"}
-                params={{ clientId: client?.id }}
-              >
+              <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
                 <IconEdit />
               </Link>
             </Button>

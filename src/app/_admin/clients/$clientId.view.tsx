@@ -19,7 +19,6 @@ import {
   clientProfileQueryOptions,
   clientRidesQueryOptions,
 } from "@/features/clients/query-options"
-import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requirePermission } from "@/lib/auth"
 import { IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
@@ -39,7 +38,7 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 })
 
 function RouteComponent() {
-  const data = Route.useLoaderData()
+  const { data } = Route.useLoaderData()
   const { clientId } = Route.useParams()
   return (
     <div>
@@ -47,7 +46,7 @@ function RouteComponent() {
         <PageTitle className="capitalize">
           {data?.name}{" "}
           {data?.client_type === "premium" && (
-            <IconShieldStar stroke={2} className="text-amber-400 size-5" />
+            <IconShieldStar stroke={2} className="size-5 text-amber-400" />
           )}
         </PageTitle>
         <PageAction className="flex gap-2">

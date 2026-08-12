@@ -10,32 +10,50 @@ import { useNavigate, useSearch, useRouter } from "@tanstack/react-router"
 
 const DEFAULT_SEARCH_DEBOUNCE_MS = 300
 
+// ---- API envelope shapes ----
+interface DetailResponse<T> {
+  data: T
+  message?: string
+}
+
+interface Pagination {
+  page: number
+  perPage: number
+  total: number
+  hasMore: boolean
+}
+
+interface ListResponse<T> {
+  data: T[]
+  pagination: Pagination
+}
+
 export interface EntityPickerConfig<
   T,
   TSearchParams extends { search: string } = { search: string },
 > {
   entityName: string
 
-  /** Your existing queryOptions factories — reused as-is, same cache entries as everywhere else. */
-  detailQueryOptions: (id: string) => UseQueryOptions<T>
-  listQueryOptions: (params: TSearchParams) => UseQueryOptions<T[]>
-  searchDebounceMs?: number
+  /** Existing queryOptions factories, returning the RAW envelope —
+   *  unwrapped internally via `select`, so cache entries stay identical to
+   *  what the rest of the app reads/writes for this entity. */
+  detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
+  listQueryOptions?: (params: TSearchParams) => UseQueryOptions<ListResponse<T>>
 
   getOptionValue: (item: T) => string
 
-  /** Starting params for remote search (e.g. { search: "", perPage: 50 }). */
   defaultSearchParams: TSearchParams
-  /** Override how a new typed query resets params (default: spread defaults + swap `search`). */
   buildSearchParams?: (defaults: TSearchParams, query: string) => TSearchParams
+  searchDebounceMs?: number
 
   mode?: "remote" | "local"
-  /** local mode: fixed list, filtered client-side */
+   /** local mode: fixed list, filtered client-side */
   staticOptions?: T[] | (() => Promise<T[]>)
   filterFn?: (option: T, query: string) => boolean
 
   /** "create new" flow — provide createRoute (page) XOR createMutation (dialog) */
   createRoute?: string
-  createMutation?: (data: any) => Promise<T>
+  createMutation?: (data: any) => Promise<T> // mutation returns the bare entity, not an envelope
 }
 
 export interface UseEntityPickerOverrides<T> {
@@ -65,8 +83,9 @@ export function useEntityPicker<
   // ---- resolve a bare id into a full object ----
   const idToResolve = typeof value === "string" ? value : null
 
-  const { data: resolved, isFetching: isResolving  } = useQuery({
+  const { data: resolved, isLoading: isResolvingQuery } = useQuery({
     ...config.detailQueryOptions(idToResolve!),
+    select: (res: DetailResponse<T>) => res.data, // unwrap envelope -> T
     enabled: !!idToResolve,
     staleTime: 5 * 60 * 1000,
   })
@@ -89,8 +108,14 @@ export function useEntityPicker<
   const isLocal = !!effectiveStaticOptions
 
   const remoteQuery = useQuery({
-    ...config.listQueryOptions({ ...searchParams, search: debouncedSearch }),
-    enabled: !isLocal, // && searchParams.search.length > 0,
+    ...(config.listQueryOptions?.({
+      ...searchParams,
+      search: debouncedSearch,
+    } as TSearchParams) ?? {
+      queryKey: ["__no-list-query__", entityName],
+      queryFn: () => Promise.resolve({ data: [], pagination: null } as any),
+    }),
+    enabled: !isLocal && !!config.listQueryOptions,
   })
 
   const localQuery = useQuery({
@@ -105,13 +130,19 @@ export function useEntityPicker<
 
   const isFetching = isLocal ? localQuery.isFetching : remoteQuery.isFetching
   const isFetchingMore =
-    !isLocal && remoteQuery.isFetching && (remoteQuery.data?.length ?? 0) > 0
+    !isLocal &&
+    remoteQuery.isFetching &&
+    ((remoteQuery.data as ListResponse<T> | undefined)?.data?.length ?? 0) > 0
+
   const rawOptions = isLocal
     ? (localQuery.data ?? [])
-    : (remoteQuery?.data?.data ?? [])
+    : ((remoteQuery.data as ListResponse<T> | undefined)?.data ?? [])
+
+  const pagination = isLocal
+    ? null
+    : ((remoteQuery.data as ListResponse<T> | undefined)?.pagination ?? null)
 
   const options = useMemo(() => {
-    // console.log("rawOptions", rawOptions, "resolved", resolved)
     if (!resolved) return rawOptions
     if (!isLocal && searchParams.search.length > 0) return rawOptions
     const present = rawOptions.some(
@@ -143,9 +174,11 @@ export function useEntityPicker<
   const mutation = useMutation({
     mutationFn: config.createMutation!,
     onSuccess: (created) => {
+      // seed the SAME key detailQueryOptions uses, wrapped in the envelope
+      // shape that key's consumers (including this hook) expect back
       queryClient.setQueryData(
         config.detailQueryOptions(getOptionValue(created)).queryKey!,
-        created
+        { data: created } as DetailResponse<T>
       )
       onChange(created)
       setDialogOpen(false)
@@ -163,10 +196,10 @@ export function useEntityPicker<
   useEffect(() => {
     if (!config.createRoute || !createdId) return
 
-    const cached = queryClient.getQueryData<T>(
+    const cached = queryClient.getQueryData<DetailResponse<T>>(
       config.detailQueryOptions(createdId).queryKey!
     )
-    if (cached) onChange(cached)
+    if (cached) onChange(cached.data)
 
     navigate({
       search: (prev: any) => {
@@ -202,13 +235,14 @@ export function useEntityPicker<
     setSearch: isLocal ? undefined : setSearch,
     updateSearchParams: isLocal ? undefined : updateSearchParams,
     isFetchingMore,
+    hasMore: pagination?.hasMore ?? false,
 
     // options
     filterFn: isLocal ? effectiveFilterFn : undefined,
     options,
     isFetching,
     resolved,
-    isResolving: !!idToResolve && !resolved && isResolving,
+    isResolving: !!idToResolve && isResolvingQuery,
 
     // selection
     isSelected: (option: T) => {
