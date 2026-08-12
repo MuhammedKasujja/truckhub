@@ -34,12 +34,12 @@ export const clientQueryKeys = {
     id,
   ],
   search: (query?: string | undefined) => [
-    ...clientQueryKeys.list(),
+    ...clientQueryKeys.all(),
     "search",
     query,
   ],
   refreshQueries: () => [...clientQueryKeys.list()],
-  refreshSingle: (id: EntityId) => [...clientQueryKeys.profile(id)],
+  refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
 } as const
 
 export const clientsQueryOptions = (input: ClientListSearchParams) =>

@@ -67,6 +67,11 @@ export function createEntityPicker<
           onSearch={p.setSearch}
           onChange={onChange}
           onCreateNew={p.canCreate ? p.triggerCreate : undefined}
+          /// Load more for infiite scroll ///
+          onLoadMore={p.hasMore ? p.fetchMore : undefined}
+          hasMore={p.hasMore}  
+          loadingMore={p.isFetchingMore} 
+          ////////////////////////
           getOptionValue={config.getOptionValue}
           renderOption={renderOption ?? config.renderOption}
           renderValue={renderValue ?? config.renderValue}

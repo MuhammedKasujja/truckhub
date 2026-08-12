@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useCallback, useEffect } from "react"
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -40,6 +40,12 @@ export interface AutoCompleteProps<T> {
   renderOption: (option: T, selected: boolean) => React.ReactNode
   renderValue?: (option: T) => React.ReactNode
 
+  /** Infinite scroll: called automatically when the sentinel at the bottom
+   *  of the list scrolls into view. Omit (or leave hasMore falsy) to disable. */
+  onLoadMore?: () => void
+  loadingMore?: boolean
+  hasMore?: boolean
+
   /** shown as a persistent row at the bottom of the list; purely a UI hook,
    *  doesn't touch value/onChange itself */
   onCreateNew?: (search: string) => void
@@ -63,6 +69,9 @@ export function AutoComplete<T>({
   onChange,
   onSearch,
   filterFn,
+  onLoadMore,
+  loadingMore = false,
+  hasMore = false,
   getOptionValue,
   renderOption,
   renderValue,
@@ -77,6 +86,13 @@ export function AutoComplete<T>({
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
+
+  // scroll container for the IntersectionObserver's `root` — cmdk's
+  // CommandList renders the actual scrollable element, so we watch it
+  // directly rather than the viewport (the popover content may otherwise
+  // never fully leave the viewport, and the observer would never fire).
+  const listRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
 
   const filteredOptions = useMemo(() => {
     // Remote mode (React Query / API)
@@ -104,7 +120,35 @@ export function AutoComplete<T>({
     setOpen(false)
   }
 
-  // console.log("Value Data", value?.id, "triggerLoading", triggerLoading)
+  // stable callback so the observer effect doesn't need to reattach every
+  // render just because a new closure was created
+  const handleLoadMore = useCallback(() => {
+    if (onLoadMore && hasMore && !loadingMore) {
+      onLoadMore()
+    }
+  }, [onLoadMore, hasMore, loadingMore])
+
+  useEffect(() => {
+    if (!open || !onLoadMore) return
+    const sentinel = sentinelRef.current
+    const root = listRef.current
+    if (!sentinel || !root) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          handleLoadMore()
+        }
+      },
+      { root, rootMargin: "80px" } // fire a bit before it's fully visible
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+    // re-attach when the popover opens, or when the option list length
+    // changes (sentinel position moves — some observer implementations need
+    // a fresh observe call after layout shifts this significantly)
+  }, [open, onLoadMore, handleLoadMore, filteredOptions.length])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -146,7 +190,7 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList>
+          <CommandList ref={listRef} className="max-h-72 overflow-y-auto">
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -183,6 +227,21 @@ export function AutoComplete<T>({
                 )
               })}
             </CommandGroup>
+
+            {/* sentinel — invisible, purely a scroll-position marker for the observer */}
+            {onLoadMore && hasMore && (
+              <div
+                ref={sentinelRef}
+                className="h-px w-full"
+                aria-hidden="true"
+              />
+            )}
+
+            {loadingMore && (
+              <div className="flex justify-center p-2">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
 
             {onCreateNew && (
               <CommandGroup>
