@@ -13,7 +13,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
-import { AutoComplete } from "@/components/ui/autocomplete-modified"
+import { AutoComplete } from "./autocomplete"
 
 export interface PickerProps<T> {
   value: T | string | null | undefined
@@ -56,7 +56,7 @@ export function createEntityPicker<
       <>
         <AutoComplete<T>
           options={p.options}
-          value={value}
+          value={p.resolved ?? (typeof value === "string" ? null : value)} // 👈 never pass a bare unresolved string down to avoid showing id to user to leak internal details
           loading={p.isFetching}
           disabled={disabled}
           filterFn={p.filterFn}

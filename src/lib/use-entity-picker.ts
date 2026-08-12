@@ -8,6 +8,8 @@ import {
 import { useDebounce } from "@/hooks/use-debounce"
 import { useNavigate, useSearch, useRouter } from "@tanstack/react-router"
 
+const DEFAULT_SEARCH_DEBOUNCE_MS = 300
+
 export interface EntityPickerConfig<
   T,
   TSearchParams extends { search: string } = { search: string },
@@ -56,14 +58,14 @@ export function useEntityPicker<
   )
   const debouncedSearch = useDebounce(
     searchParams.search,
-    config.searchDebounceMs ?? 300
+    config.searchDebounceMs ?? DEFAULT_SEARCH_DEBOUNCE_MS
   )
   const queryClient = useQueryClient()
 
   // ---- resolve a bare id into a full object ----
   const idToResolve = typeof value === "string" ? value : null
 
-  const { data: resolved } = useQuery({
+  const { data: resolved, isFetching: isResolving  } = useQuery({
     ...config.detailQueryOptions(idToResolve!),
     enabled: !!idToResolve,
     staleTime: 5 * 60 * 1000,
@@ -109,7 +111,7 @@ export function useEntityPicker<
     : (remoteQuery?.data?.data ?? [])
 
   const options = useMemo(() => {
-    console.log("rawOptions", rawOptions, "resolved", resolved)
+    // console.log("rawOptions", rawOptions, "resolved", resolved)
     if (!resolved) return rawOptions
     if (!isLocal && searchParams.search.length > 0) return rawOptions
     const present = rawOptions.some(
@@ -206,6 +208,7 @@ export function useEntityPicker<
     options,
     isFetching,
     resolved,
+    isResolving: !!idToResolve && !resolved && isResolving,
 
     // selection
     isSelected: (option: T) => {

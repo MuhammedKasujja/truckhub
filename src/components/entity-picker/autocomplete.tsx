@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react"
-import { Check, ChevronDown, ChevronsUpDown, Loader2 } from "lucide-react"
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -16,13 +16,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { EntityId } from "@/schemas"
 
 export interface AutoCompleteProps<T> {
   id?: string
   options: T[]
-  value?: T | EntityId | null // 👈 accept either
+  value?: T | null
   loading?: boolean
+
+  /** true while a selected value's id is being resolved to a full object upstream —
+   *  shows a spinner in the trigger instead of the placeholder. */
+  triggerLoading?: boolean
 
   onChange: (value: T | null | undefined) => void
 
@@ -37,23 +40,18 @@ export interface AutoCompleteProps<T> {
   renderOption: (option: T, selected: boolean) => React.ReactNode
   renderValue?: (option: T) => React.ReactNode
 
+  /** shown as a persistent row at the bottom of the list; purely a UI hook,
+   *  doesn't touch value/onChange itself */
+  onCreateNew?: (search: string) => void
+  createNewLabel?: (search: string) => React.ReactNode
+
   label?: string
-  searchPlaceholder?: string
   placeholder?: string
-  className?: string
+  searchPlaceholder?: string
   disabled?: boolean
   clearable?: boolean
 
   noResultsMessage?: React.ReactNode
-
-  /** Shown as a persistent row at the bottom of the list. Doesn't touch `value`/`onChange` —
-   *  purely a UI hook for the caller to react to (e.g. navigate to a create page). */
-  onCreateNew?: (search: string) => void
-  createNewLabel?: (search: string) => React.ReactNode
-
-  /** true while a string `value` is being resolved to a full object — shows a spinner
-   *  in the trigger instead of falling back to raw text. */
-  triggerLoading?: boolean
 }
 
 export function AutoComplete<T>({
@@ -61,25 +59,21 @@ export function AutoComplete<T>({
   options,
   value,
   loading = false,
-
+  triggerLoading = false,
   onChange,
   onSearch,
   filterFn,
   getOptionValue,
   renderOption,
   renderValue,
-
+  onCreateNew,
+  createNewLabel,
   label,
   placeholder = "Select...",
+  searchPlaceholder,
   disabled,
   clearable = true,
   noResultsMessage,
-  triggerLoading,
-
-  onCreateNew,
-  createNewLabel,
-  className,
-  searchPlaceholder,
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -96,32 +90,21 @@ export function AutoComplete<T>({
     return options
   }, [options, search, filterFn, onSearch])
 
-  // 👇 normalize `value` into a plain string key for comparisons
-  const currentValueKey = useMemo(() => {
-    if (value == null) return null
-    return typeof value === "string" ? value : getOptionValue(value)
-  }, [value, getOptionValue])
-
-  // 👇 try to resolve the full option object, whether `value` was a string or T
-  const selectedOption = useMemo(() => {
-    if (value == null) return null
-    if (typeof value !== "string") return value
-    return options.find((opt) => getOptionValue(opt) === value) ?? null
-  }, [value, options, getOptionValue])
-
   const isSelected = (option: T) => {
-    if (currentValueKey == null) return false
-    return getOptionValue(option) === currentValueKey
+    if (!value) return false
+    return getOptionValue(option) === getOptionValue(value)
   }
 
   const handleSelect = (option: T) => {
-    if (clearable && currentValueKey && isSelected(option)) {
+    if (clearable && value && isSelected(option)) {
       onChange(null)
     } else {
       onChange(option)
     }
     setOpen(false)
   }
+
+  // console.log("Value Data", value?.id, "triggerLoading", triggerLoading)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -131,23 +114,31 @@ export function AutoComplete<T>({
           variant="outline"
           role="combobox"
           disabled={disabled}
-          className={cn("w-full justify-between font-normal", className)}
+          className="w-full justify-between"
         >
-          {selectedOption
-            ? (renderValue?.(selectedOption) ??
-              renderOption(selectedOption, true))
-            : currentValueKey
-              ? currentValueKey // string id, not yet resolvable from `options` — caller's job to hydrate [[ Unknown Option ]]
-              : placeholder}
+          {value ? (
+            (renderValue?.(value) ?? renderOption(value, true))
+          ) : triggerLoading ? (
+            <span className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Loading...
+            </span>
+          ) : (
+            placeholder
+          )}
 
-          <ChevronDown className="opacity-50" />
+          <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={ searchPlaceholder??`Search...`}
+            placeholder={
+              (searchPlaceholder ?? label)
+                ? `Search ${label?.toLowerCase()}...`
+                : "Search...."
+            }
             value={search}
             onValueChange={(val) => {
               setSearch(val)
@@ -164,7 +155,9 @@ export function AutoComplete<T>({
 
             {!loading && filteredOptions.length === 0 && (
               <CommandEmpty className="text-muted-foreground">
-                {noResultsMessage ?? `No data found.`}
+                {(noResultsMessage ?? label)
+                  ? `No ${label?.toLowerCase()} found.`
+                  : "No data found."}
               </CommandEmpty>
             )}
 
@@ -190,6 +183,7 @@ export function AutoComplete<T>({
                 )
               })}
             </CommandGroup>
+
             {onCreateNew && (
               <CommandGroup>
                 <CommandItem
