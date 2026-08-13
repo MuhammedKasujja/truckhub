@@ -5,50 +5,39 @@ import {
   getLoadingOffloadingFreesFn,
 } from "./services"
 
-export const distancePricingQueryKeys = {
-  all: () => ["distance-pricing"] as const,
-  list: () => [...distancePricingQueryKeys.all(), "list"] as const,
-} as const
-
-export const routePricingQueryKeys = {
-  all: () => ["routes-pricings"] as const,
-  list: () => [...routePricingQueryKeys.all(), "list"] as const,
-} as const
-
-export const loadingFeesQueryKeys = {
-  all: () => ["loading-fees"] as const,
-  list: () => [...loadingFeesQueryKeys.all(), "list"] as const,
-} as const
-
-export const islandPricingQueryKeys = {
-  all: () => ["island-pricing"] as const,
-  list: () => [...islandPricingQueryKeys.all(), "list"] as const,
+export const pricingQueryKeys = {
+  all: () => ["pricings"] as const,
+  distances: () => [...pricingQueryKeys.all(), "distances", "list"] as const,
+  routes: () => [...pricingQueryKeys.all(), "routes", "list"] as const,
+  loadingOffloading: () =>
+    [...pricingQueryKeys.all(), "loading-offloading", , "list"] as const,
+  islands: () => [...pricingQueryKeys.all(), "islands-fees", , "list"] as const,
 } as const
 
 export const distancePricingQueryOptions = () =>
   queryOptions({
-    queryKey: distancePricingQueryKeys.list(),
+    queryKey: pricingQueryKeys.distances(),
     queryFn: getDistanceTonnagePricingFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
 export const companyRoutePricingQueryOptions = () =>
   queryOptions({
-    queryKey: routePricingQueryKeys.list(),
+    queryKey: pricingQueryKeys.routes(),
     queryFn: getDistanceTonnagePricingFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
 export const createCompanyLoadingFreesQueryOptions = () =>
   queryOptions({
-    queryKey: loadingFeesQueryKeys.list(),
+    queryKey: pricingQueryKeys.loadingOffloading(),
     queryFn: getLoadingOffloadingFreesFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
 export const createCompanyIslandPricingQueryOptions = () =>
   queryOptions({
-    queryKey: islandPricingQueryKeys.list(),
+    queryKey: pricingQueryKeys.islands(),
     queryFn: getIslandPricingsFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })

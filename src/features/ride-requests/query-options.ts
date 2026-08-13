@@ -4,12 +4,12 @@ import { RideRequestListSearchParams } from "./schemas"
 import { getRideDetailsFn, getRidesFn } from "./services"
 
 export const rideQueryKeys = {
-  all: () => ["rides"],
-  list: () => [...rideQueryKeys.all(), "list"],
-  details: () => [...rideQueryKeys.all(), "detail"],
-  search: (search?: string) => [...rideQueryKeys.all(), "search", search],
-  detail: (id: string) => [...rideQueryKeys.details(), id],
-}
+  all: () => ["rides"] as const,
+  list: () => [...rideQueryKeys.all(), "list"] as const,
+  details: () => [...rideQueryKeys.all(), "detail"] as const,
+  search: (search?: string) => [...rideQueryKeys.all(), "search", search] as const,
+  detail: (id: string) => [...rideQueryKeys.details(), id] as const,
+} as const
 
 export const createRidesQueryOptions = (search: RideRequestListSearchParams) =>
   queryOptions({

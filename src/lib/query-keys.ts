@@ -14,6 +14,7 @@ import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { quotationQueryKeys } from "@/features/quotations/query-options"
 import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
+import { pricingQueryKeys } from "@/features/settings/pricing/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
 import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
 import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
@@ -40,12 +41,8 @@ export const queryKeys = {
 
   settings: {
     app: () => settingsQueryKeys.list(),
-    vehicles: () => settingsQueryKeys.vehicles(),
-    pricingPlans: {
-      all: () => ({ queryKey: [""] }),
-      list: () => ({ queryKey: ["", "list"] }),
-      details: (id: string) => ({ queryKey: ["", "detail", id] }),
-    },
+    vehiclesConfig: () => settingsQueryKeys.vehiclesConfig(),
+    pricingPlans: pricingQueryKeys,
   },
 
   drivers: driverQueryKeys,

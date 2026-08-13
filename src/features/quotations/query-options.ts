@@ -8,7 +8,7 @@ export const quotationQueryKeys = {
   list: () => [...quotationQueryKeys.all(), "list"],
   search: (search?: string) => [...quotationQueryKeys.all(), "search", search],
   detail: (id: EntityId) => [...quotationQueryKeys.all(), "detail", id],
-}
+} as const
 
 export const quotationQueryOptions = (search: QuotationListSearchParams) =>
   queryOptions({

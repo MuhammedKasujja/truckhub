@@ -2,14 +2,14 @@
 
 ## What this is
 
-A reusable pattern for "pick an entity from a list, search remotely or locally,
-create a new one inline, and use it as a React Hook Form field" — built from
-three layers:
+A reusable pattern for "pick an entity from a list, search remotely or
+locally, create a new one inline, and use it as a React Hook Form field" —
+built from three layers:
 
 ```
 AutoComplete            →  dumb, presentational combobox (Command + Popover)
-useEntityPicker         →  headless hook: resolve-by-id, search, create flow
-createEntityPicker      →  factory: binds a config to AutoComplete + RHF wiring
+useEntityPicker          →  headless hook: resolve-by-id, search, infinite scroll, create flow
+createEntityPicker       →  factory: binds a config to AutoComplete + RHF wiring
 ```
 
 Concrete pickers (`ClientPicker`, `VehicleTypePicker`, …) are just
@@ -18,78 +18,123 @@ implementations. New entity → new config object, not new code.
 
 ---
 
-## Layer 1 — `AutoComplete` (dumb, presentational)
+## API response shapes
 
-Lives at `components/autocomplete.tsx`. Knows nothing about ids, fetching,
-TanStack Query, or forms.
-
-**Contract:**
-- `value: T | null` — **always a full resolved object, never a bare id
-  string.** If you don't have the object yet, pass `null` and use
-  `triggerLoading` instead of faking a string value.
-- `options: T[]` — already-resolved list to render (search results, static
-  list, or merged-with-pinned-selection — decided by the caller).
-- `onSearch?` (remote mode) **or** `filterFn?` (local mode) — mutually
-  exclusive strategies for narrowing `options` as the user types.
-- `triggerLoading?: boolean` — shows a spinner in the trigger button when a
-  value is *conceptually* selected but not yet resolved to a renderable
-  object. Only shown when `value` is falsy (never overrides an already-loaded
-  value).
-- `onCreateNew?: (search: string) => void` — renders a "+ Create …" row at
-  the bottom of the list. Purely a UI hook; doesn't touch `value`/`onChange`
-  itself — the caller decides what "create" means (dialog vs. navigation).
-
-**Why it's kept dumb:** every entity-specific concern (fetching, caching,
-resolving ids, create flow) lives in `useEntityPicker` instead. This means
-`AutoComplete` never needs to change when a new entity or a new create-flow
-mode is added, and it stays trivially testable/reusable outside this system.
-
----
-
-## Layer 2 — `useEntityPicker` (headless state hook)
-
-Lives at `lib/use-entity-picker.ts`. This is where all the real behavior is.
-It has **no JSX** — usable standalone for custom UI (chips, cards, a command
-palette) without `AutoComplete` at all.
-
-### Config shape
+Every API call in this system returns the same envelope shape:
 
 ```tsx
-/** Matches your API's actual response envelopes. */
-interface DetailResponse<T> {
+export interface DetailResponse<T> {
   data: T
   message?: string
 }
 
-interface Pagination {
+export interface Pagination {
   page: number
   perPage: number
   total: number
   hasMore: boolean
 }
 
-interface ListResponse<T> {
+export interface ListResponse<T> {
   data: T[]
   pagination: Pagination
 }
+```
 
-interface EntityPickerConfig<T, TSearchParams extends { search: string }> {
+`detailQueryOptions`, `listQueryOptions`, **and** `createMutation` all return
+`DetailResponse<T>` / `ListResponse<T>` — never a bare `T`. The hook unwraps
+envelopes at read time via `select` (for detail queries) or by reading
+`.data`/`.pagination` directly (for list queries), so nothing downstream
+(`resolved`, `options`, `onChange`) ever deals in envelopes — only the config
+boundary does.
+
+---
+
+## Layer 1 — `AutoComplete` (dumb, presentational)
+
+Lives at `components/autocomplete.tsx`. Knows nothing about ids, fetching,
+TanStack Query, envelopes, or forms.
+
+**Contract:**
+
+- `value: T | null` — **always a full resolved object, never a bare id
+  string, never an envelope.** If you don't have the object yet, pass `null`
+  and use `triggerLoading` instead of faking a value.
+- `options: T[]` — already-resolved, already-unwrapped list to render.
+- `onSearch?` (remote mode) **or** `filterFn?` (local mode) — mutually
+  exclusive strategies for narrowing `options` as the user types.
+- `triggerLoading?: boolean` — spinner in the trigger button while a value
+  is selected-but-not-yet-resolved. Only shown when `value` is falsy.
+- `onLoadMore?`, `hasMore?`, `loadingMore?` — infinite scroll. A sentinel
+  element at the bottom of the list is watched via `IntersectionObserver`;
+  when it scrolls into view (and `hasMore` is true, and not already
+  `loadingMore`), `onLoadMore` fires automatically. No manual "Load more"
+  click required.
+- `onOpenChange?: (open: boolean) => void` — reports popover open/close, so
+  the picker can decide when to start fetching (see "Empty search / browse
+  all" below).
+- `onCreateNew?: (search: string) => void` — renders a "+ Create …" row.
+  Purely a UI hook — doesn't touch `value`/`onChange` itself.
+
+**Why it's kept dumb:** every entity-specific concern (fetching, caching,
+envelopes, resolving ids, pagination, create flow) lives in
+`useEntityPicker`. `AutoComplete` never changes when a new entity or a new
+create-flow mode is added, and it stays trivially reusable outside this
+system (e.g. for a fully local, non-entity dropdown).
+
+**Infinite scroll implementation notes:**
+
+- The `IntersectionObserver`'s `root` is the list's own scroll container
+  (`CommandList`, ref'd directly) — **not** the default viewport. Without an
+  explicit `root`, "scrolled into view" would mean "visible on the page,"
+  which is true almost immediately since the whole popover is on-screen.
+- `CommandList` needs an actual bounded height + `overflow-y-auto` — without
+  a real scrollable container, there's no scroll position for the sentinel
+  to be "out of view" of, and the observer reports it as always intersecting.
+- `rootMargin: "80px"` fires the load slightly before the sentinel is fully
+  visible, so new items appear to load ahead of the user reaching the
+  bottom rather than after a visible stall.
+
+---
+
+## Layer 2 — `useEntityPicker` (headless state hook)
+
+Lives at `lib/use-entity-picker.ts`. All real behavior lives here. Zero JSX
+— usable standalone for custom UI (chips, cards, a command palette) without
+`AutoComplete` at all. See "Headless usage" below.
+
+### Config shape
+
+```tsx
+export interface InfiniteListQueryConfig<T> {
+  /** Must NOT vary by page — useInfiniteQuery owns pagination internally
+   *  under this one key. Vary it by search/filter params only. */
+  queryKey: readonly unknown[]
+  queryFn: (context: { pageParam: number }) => Promise<ListResponse<T>>
+  initialPageParam?: number // default 1
+}
+
+export interface EntityPickerConfig<
+  T,
+  TSearchParams extends { search: string } = { search: string }
+> {
   entityName: string // used for the `created_${entityName}` return-nav signal
 
-  // Reuse your EXISTING queryOptions factories verbatim — same cache
-  // entries as every other place in the app that reads/writes this entity.
-  // These return the RAW envelope shape; the hook unwraps `.data` itself
-  // via `select`, so cache entries stay identical to what the rest of the
-  // app already reads/writes (e.g. a detail page using the same
-  // detailQueryOptions still gets the full { data, message } envelope).
   detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
-  listQueryOptions?: (params: TSearchParams) => UseQueryOptions<ListResponse<T>>
+  /** Returns an infinite-query-shaped config, not a plain UseQueryOptions —
+   *  see InfiniteListQueryConfig. Omit entirely for pure local mode. */
+  listQueryOptions?: (params: TSearchParams) => InfiniteListQueryConfig<T>
 
   getOptionValue: (item: T) => string
 
-  defaultSearchParams: TSearchParams          // e.g. { search: "", perPage: 50 }
+  defaultSearchParams: TSearchParams          // e.g. { search: "", perPage: 20 }
   buildSearchParams?: (defaults, query) => TSearchParams // override reset-on-new-search logic
   searchDebounceMs?: number                   // default 300
+
+  /** if true, fetch a first page as soon as the picker opens, even before
+   *  any text is typed ("browse all" default). If false/omitted, no fetch
+   *  runs until the user types something (see "Empty search" below). */
+  fetchOnOpen?: boolean
 
   mode?: "remote" | "local"
   staticOptions?: T[] | (() => Promise<T[]>)  // local mode: fixed list, filtered client-side
@@ -97,128 +142,73 @@ interface EntityPickerConfig<T, TSearchParams extends { search: string }> {
 
   // create flow — provide ONE of these two, not both (see Create Flow section)
   createRoute?: string
-  createMutation?: (data: any) => Promise<T>  // mutation still returns the bare entity, not an envelope
+  /** SAME envelope shape as detailQueryOptions — { data, message? }, not a bare T */
+  createMutation?: (data: any) => Promise<DetailResponse<T>>
 }
 ```
-
-**Why unwrap with `select`, not by writing `.data.data` everywhere in the
-hook:** `useQuery`'s `select` option projects the cached value at read time —
-the cache itself still stores the full envelope (so anything else in the app
-reading the same query key via `useQuery(detailQueryOptions(id))` without a
-`select` still gets `{ data, message }` untouched), but `useEntityPicker`
-only ever sees the unwrapped `T`/`T[]`, plus `pagination` pulled out
-separately for list queries. One unwrap point, not scattered `.data` access
-through the rest of the hook.
-
-```tsx
-// inside useEntityPicker
-const { data: resolved } = useQuery({
-  ...config.detailQueryOptions(idToResolve!),
-  select: (res) => res.data,          // DetailResponse<T> -> T
-  enabled: !!idToResolve,
-  staleTime: 5 * 60 * 1000,
-})
-
-const remoteQuery = useQuery({
-  ...config.listQueryOptions!(searchParams),
-  select: (res) => res, // keep the envelope here — need both data and pagination
-  enabled: !isLocal && !!config.listQueryOptions && debouncedSearch.length > 0,
-})
-
-const rawOptions = isLocal ? (localQuery.data ?? []) : (remoteQuery.data?.data ?? [])
-const pagination = isLocal ? null : (remoteQuery.data?.pagination ?? null)
-```
-
-**Cache-seeding after create must match the envelope shape too** — since
-`createMutation` returns a bare `T` (not an envelope, per your mutation
-functions), seeding the detail cache has to wrap it before `setQueryData`,
-or a subsequent read via `detailQueryOptions` (which expects
-`DetailResponse<T>`) would break:
-
-```tsx
-onSuccess: (created) => {
-  queryClient.setQueryData(
-    config.detailQueryOptions(config.getOptionValue(created)).queryKey!,
-    { data: created } as DetailResponse<T> // match the envelope, not the bare entity
-  )
-  onChange(created)
-  setDialogOpen(false)
-},
-```
-
-Same applies to the page-mode create route's `onSuccess` — it must seed
-`{ data: created }`, not `created`, at the shared `detailQueryOptions` key.
-
-### `pagination` replaces the earlier "grow `perPage` and refetch" guess
-
-With a real `pagination.hasMore` from the server, "load more" no longer has
-to infer anything — the hook exposes it directly:
-
-```tsx
-return {
-  // ...
-  hasMore: pagination?.hasMore ?? false,
-  updateSearchParams, // still available for callers that want to bump perPage/page directly
-  // ...
-}
-```
-
-`Picker`'s "Load more" row can now check `p.hasMore` instead of always
-showing regardless of whether more data actually exists:
-
-```tsx
-{p.hasMore && p.updateSearchParams && (
-  <CommandItem onSelect={() => p.updateSearchParams((prev) => ({ ...prev, perPage: prev.perPage + 50 }))}>
-    {p.isFetchingMore ? "Loading..." : "Load more"}
-  </CommandItem>
-)}
-```
-
-This is still "refetch a bigger page," not "accumulate distinct pages" — see
-Known Limitations — but at least it now stops offering "Load more" once the
-server says there's nothing left.
-
-
 
 ### What it does, precisely
 
-1. **Resolve-by-id.** If `value` is a bare string, runs
-   `detailQueryOptions(id)` (`enabled` only when a string id is present).
-   Once resolved, calls `onChange(resolved)` to **promote** the parent's
-   state from string → full object — but only if `value` is *still* the same
-   id being resolved (guards against a late resolution stomping a selection
-   the user already changed).
+1. **Resolve-by-id.** If `value` is a bare string, runs `detailQueryOptions(id)`
+   (unwrapped via `select: (res) => res.data`), `enabled` only while a string
+   id is present. Once resolved, calls `onChange(resolved)` to **promote**
+   the parent's state from string → full object — guarded so a late
+   resolution can't stomp a selection the user already changed in the
+   meantime (`value === getOptionValue(resolved)` check).
 
-2. **Search / options.**
-   - Remote mode: debounces the raw keystroke value
-     (`searchDebounceMs`, default 300ms) before it hits
-     `listQueryOptions(params)`, so typing fast fires one network call, not
-     one per keystroke. The **visible** input value is never debounced — only
-     the value fed into the query is.
-   - Local mode: fetches `staticOptions` once (`staleTime: Infinity`) and
-     filters client-side via `filterFn`.
+2. **Search / options (remote mode uses `useInfiniteQuery`).**
+   - The raw keystroke value is debounced (`searchDebounceMs`, default
+     300ms) before it's used to build the query — so typing fast fires one
+     network call, not one per keystroke. The **visible** input text is
+     never debounced, only the value fed into the query.
+   - Every `fetchNextPage()` (triggered by `AutoComplete`'s scroll sentinel)
+     **appends** a new page rather than replacing the current one —
+     `rawOptions = data.pages.flatMap(page => page.data)`.
+   - `hasMore`/`getNextPageParam` are derived directly from the server's
+     `pagination.hasMore` / `pagination.page` — no client-side guessing.
+   - Local mode: fetches `staticOptions` once (`staleTime: Infinity`),
+     filters client-side via `filterFn`. No pagination concept in local mode
+     — `hasMore`/`fetchMore` are always `false`/`undefined`.
    - **Pinning:** if the resolved/selected object isn't present in the
-     current `options` (common in remote mode — it was fetched by id, not by
+     current `options` (common in remote mode — fetched by id, not by
      search), it's pinned to the front of the list so the dropdown always
-     shows a checkmark next to the current selection. Pinning is suppressed
-     once the user has actually typed a query (`search.length > 0`), so a
-     stale pin doesn't sit unexplained atop unrelated search results.
+     shows a checkmark next to the current selection. Suppressed once the
+     user has typed a query, so a stale pin doesn't sit unexplained atop
+     unrelated search results.
 
-3. **Load more / pagination.** `updateSearchParams(updater)` lets a caller
-   mutate params (e.g. bump `perPage`) without resetting `search` — distinct
-   from `setSearch(query)`, which resets to `defaultSearchParams` on every
-   new typed query (a new search starts over; loading more does not).
-   **Caveat:** as implemented, "load more" means *refetch a bigger page*, not
-   *accumulate distinct pages* — that's `useInfiniteQuery` territory if true
-   infinite-scroll accumulation is ever needed; not yet built.
+3. **Create flow** (see dedicated section below).
 
-4. **Create flow** (see dedicated section below).
+### Empty search / "browse all" vs. type-to-search
+
+By default, the remote query only runs once the user has typed something
+(`search.length > 0`) — before that, `options` is empty and there is
+genuinely nothing to fetch. This has two visible consequences worth being
+deliberate about, not accidental:
+
+- **"No results" never shows before the first keystroke**, because no query
+  has run yet — showing a generic "No {label} found" in that state is
+  misleading (it reads as "there are zero clients," not "you haven't
+  searched yet"). `AutoComplete` distinguishes the two states in its empty
+  message when `onSearch` is set and `search` is empty:
+  `"Type to search..."` vs. the real not-found message.
+- **"Load more" never shows before the first keystroke**, for the same
+  reason — there's no fetched page to paginate from yet. This is expected,
+  not a bug, under type-to-search.
+
+**If you want a picker to show a first page immediately on open** (browse-all
+default, common for pickers where the full list isn't huge), set
+`fetchOnOpen: true` in the config. This wires `AutoComplete`'s
+`onOpenChange` through to the hook and drops the `search.length > 0` gate in
+favor of `enabled: !isLocal && !!listConfig && isOpen`. Confirm your list
+endpoint treats `search: ""` as "unfiltered" before relying on this — most
+do, but it's worth checking rather than assuming.
 
 ### Return shape
 
 ```tsx
 {
-  search, searchParams, setSearch, updateSearchParams, isFetchingMore,
+  search, searchParams, setSearch,
+  fetchMore, isFetchingMore, hasMore,
   filterFn, options, isFetching, resolved, isResolving,
   isSelected(option),
   canCreate, triggerCreate, createDialog: { open, setOpen, prefill, submitting, submit },
@@ -229,72 +219,123 @@ server says there's nothing left.
 
 ## Layer 3 — `createEntityPicker` (factory)
 
-Lives at `lib/create-entity-picker.tsx`. Takes an `EntityPickerConfig` +
-render functions, returns three things:
+Lives at `components/entity-picker/entity-picker-builder.tsx`.
 
 ```tsx
 const { Picker, PickerField, usePicker } = createEntityPicker<Client>({ ...config })
 ```
 
 - **`Picker`** — `AutoComplete` wired to `useEntityPicker`, plus the create
-  dialog when `createMutation`/`CreateForm` are configured. Accepts
-  per-instance overrides: `renderOption`, `renderValue`, `staticOptions`,
-  `filterFn` — falls back to the config's defaults when omitted, so most call
-  sites need zero extra props, but a compact table-row usage can override
-  just what it needs.
+  dialog when `createMutation`/`CreateForm` are configured. Forwards
+  `hasMore`/`onLoadMore`/`loadingMore`/`triggerLoading` from the hook into
+  `AutoComplete` — **all four must be wired**, a common mistake is adding a
+  new hook return value and forgetting to thread it through here, which
+  silently disables the feature at the `AutoComplete` layer while the hook
+  itself works correctly. Accepts per-instance overrides: `renderOption`,
+  `renderValue`, `staticOptions`, `filterFn` — falls back to the config's
+  defaults when omitted.
 - **`PickerField`** — RHF wrapper via `useController`. **`control` is a
   required prop, not read from `useFormContext`** — no `<FormProvider>`
-  dependency by design; every usage explicitly states which form it belongs
-  to, at the cost of threading `control` down through nested sections
-  yourself where needed.
-- **`usePicker`** — the config-bound `useEntityPicker`, for building custom
-  UI on top of this entity without `AutoComplete`.
+  dependency by design. Every usage explicitly states which form it belongs
+  to; the cost is threading `control` down through nested sections yourself
+  where needed.
+- **`usePicker`** — the config-bound `useEntityPicker`, for custom UI on top
+  of this entity without `AutoComplete`.
 
 ### Why a factory, not one generic `<EntityPicker entity="client">` component
 
 A single generic component would need every call site to repeat the entire
-config (`search`, `fetchById`, render fns, …) at every usage. The factory
-computes config once, at module scope; call sites just import the ready-made
-`ClientPicker` — no repetition, and `T` is inferred once at the factory call.
+config at every usage. The factory computes config once, at module scope;
+call sites just import the ready-made `ClientPicker` — no repetition, `T`
+inferred once at the factory call.
 
 ---
 
-## Concrete example — `ClientPicker` (remote, paginated)
+## Query key pattern — separate factories for tables vs. pickers
+
+A data table and an entity picker are both "list clients," but they have
+genuinely different shapes and lifecycles — don't share one `queryOptions`
+factory between them.
+
+| | Table | Picker (search) |
+|---|---|---|
+| Params | page, perPage, sort, column filters | debounced `search` + small `perPage` |
+| Result size | large pages, sortable | small pages, no sorting |
+| Fields needed | many columns | just enough for `renderOption`/`renderValue` |
+| Query style | `useQuery`, replace-on-page-change | `useInfiniteQuery`, accumulate-on-scroll |
+| Triggered by | pagination/sort/filter UI | debounced keystrokes |
+
+**Pattern: separate leaf factories, shared root key namespace** (so a single
+`invalidateQueries` after a mutation refreshes both, without having to
+remember two separate invalidation calls):
 
 ```tsx
-// queries/clients.ts
 export const clientsQueryKeys = {
   all: () => ["clients"] as const,
-  list: () => [...clientsQueryKeys.all(), "list"] as const,
   details: () => [...clientsQueryKeys.all(), "detail"] as const,
   detail: (id: string) => [...clientsQueryKeys.details(), id] as const,
+
+  table: () => [...clientsQueryKeys.all(), "table"] as const,
+  tableList: (params: ClientTableParams) => [...clientsQueryKeys.table(), params] as const,
+
+  search: () => [...clientsQueryKeys.all(), "search"] as const,
+  searchList: (params: ClientSearchParams) =>
+    [...clientsQueryKeys.search(), params.search, params.perPage] as const, // no page — infinite query owns that
 }
 
-// components/pickers/client-picker.tsx
-interface ClientSearchParams { search: string; perPage: number }
+// table
+interface ClientTableParams { page: number; perPage: number; sortBy?: string; sortDir?: "asc" | "desc"; status?: string }
 
-const clientListQueryOptions = ({ search, perPage }: ClientSearchParams) =>
+export const clientTableQueryOptions = (params: ClientTableParams) =>
   queryOptions({
-    queryKey: [...clientsQueryKeys.list(), search, perPage],
-    queryFn: () => getClientsFn({ search, perPage }),
+    queryKey: clientsQueryKeys.tableList(params),
+    queryFn: () => getClientsTableFn(params), // full ListResponse<Client>, all columns
   })
 
-const clientDetailQueryOptions = (id: string) =>
+// picker
+export interface ClientSearchParams { search: string; perPage: number }
+
+export const clientSearchQueryOptions = (params: ClientSearchParams) => ({
+  queryKey: clientsQueryKeys.searchList(params),
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getClientsSearchFn({ search: params.search, perPage: params.perPage, page: pageParam }),
+  initialPageParam: 1,
+})
+```
+
+`queryClient.invalidateQueries({ queryKey: clientsQueryKeys.all() })` after
+any client mutation refreshes `table`, `search`, and `details` together.
+Only split the actual **API endpoint** too (not just the client-side
+factory) if the picker genuinely benefits from a lighter payload (e.g. a
+`?fields=id,name` projection) — not required just to have separate
+factories.
+
+---
+
+## Concrete example — `ClientPicker` (remote, infinite scroll)
+
+```tsx
+export const clientDetailQueryOptions = (id: string) =>
   queryOptions({
     queryKey: clientsQueryKeys.detail(id),
-    queryFn: () => getClientFn({ id }),
+    queryFn: () => getClientFn({ id }), // -> DetailResponse<Client>
   })
+
+export const createClientFn = (data: { name: string; email: string; phone?: string }) =>
+  fetch("/api/clients", { method: "POST", body: JSON.stringify(data) })
+    .then((r) => r.json()) // -> DetailResponse<Client>, same shape as getClientFn
 
 export const { Picker: ClientPicker, PickerField: ClientPickerField } =
   createEntityPicker<Client, ClientSearchParams>({
     entityName: "client",
-    listQueryOptions: clientListQueryOptions,
+    listQueryOptions: clientSearchQueryOptions,
     detailQueryOptions: clientDetailQueryOptions,
-    defaultSearchParams: { search: "", perPage: 50 },
+    defaultSearchParams: { search: "", perPage: 20 },
     getOptionValue: (c) => c.id,
     renderOption: (c) => c.name,
     renderValue: (c) => c.name,
-    createRoute: "/clients/new",       // OR createMutation + CreateForm — see below
+    createMutation: createClientFn,
+    CreateForm: ClientQuickForm,
   })
 ```
 
@@ -323,7 +364,7 @@ export const { Picker: VehicleTypePicker, PickerField: VehicleTypePickerField } 
     getOptionValue: (t) => t.id,
     renderOption: (t) => t.name,
     mode: "local",
-    staticOptions: () => getVehicleTypesFn({ perPage: 200 }),
+    staticOptions: () => getVehicleTypesFn({ perPage: 200 }).then((res) => res.data),
     filterFn: (t, q) => t.name.toLowerCase().includes(q.toLowerCase()),
   })
 ```
@@ -343,26 +384,17 @@ Per-instance override (e.g. compact usage in a table row):
 
 ## Using `useEntityPicker` without `Picker` (headless, custom UI)
 
-`useEntityPicker` has zero JSX — it's fully usable on its own for a custom
-UI (chips, cards, a command palette, anything that isn't `AutoComplete`).
-Two ways to reach it:
+`useEntityPicker` has zero JSX. Two ways to reach it:
 
 - **`usePicker`** (returned by `createEntityPicker`) — same config as the
-  entity's `Picker`/`PickerField`, so it shares cache keys, create-flow
-  behavior, etc. Use this when you already have (or want) a named
-  `ClientPicker`-style config and just want different UI on top of it.
-- **`useEntityPicker` directly** — pass a config inline, for a one-off
-  picker that doesn't warrant its own `create*Picker` export at all.
-
-### Example: chip-style selector instead of a dropdown
+  entity's `Picker`/`PickerField`, shares cache keys and create-flow
+  behavior. Use when you want different UI on an entity you've already
+  configured.
+- **`useEntityPicker` directly** — inline config, for a one-off picker that
+  doesn't warrant its own `create*Picker` export.
 
 ```tsx
-import { useEntityPicker } from "@/lib/use-entity-picker"
-
-function VehicleTypeChips({
-  value,
-  onChange,
-}: {
+function VehicleTypeChips({ value, onChange }: {
   value: VehicleType | string | null
   onChange: (v: VehicleType | null) => void
 }) {
@@ -373,7 +405,7 @@ function VehicleTypeChips({
       defaultSearchParams: { search: "" },
       getOptionValue: (t) => t.id,
       mode: "local",
-      staticOptions: () => getVehicleTypesFn({ perPage: 200 }),
+      staticOptions: () => getVehicleTypesFn({ perPage: 200 }).then((res) => res.data),
     },
     value,
     onChange
@@ -387,10 +419,7 @@ function VehicleTypeChips({
         <button
           key={type.id}
           onClick={() => onChange(p.isSelected(type) ? null : type)}
-          className={cn(
-            "rounded-full px-3 py-1 text-sm border",
-            p.isSelected(type) && "bg-primary text-primary-foreground"
-          )}
+          className={cn("rounded-full px-3 py-1 text-sm border", p.isSelected(type) && "bg-primary text-primary-foreground")}
         >
           {type.name}
         </button>
@@ -400,74 +429,38 @@ function VehicleTypeChips({
 }
 ```
 
-### Example: reusing an existing config's hook via `usePicker`
-
-```tsx
-// client-picker.tsx already exports:
-export const { Picker: ClientPicker, PickerField: ClientPickerField, usePicker: useClientPicker } =
-  createEntityPicker<Client, ClientSearchParams>({ ...config })
-
-// elsewhere — a custom "recent clients" rail, same cache/search/create
-// behavior as ClientPicker, totally different UI
-function RecentClientsRail({ value, onChange }: { value: Client | string | null; onChange: (c: Client | null) => void }) {
-  const p = useClientPicker(value, onChange)
-
-  return (
-    <div className="flex gap-3 overflow-x-auto">
-      {p.options.slice(0, 8).map((client) => (
-        <ClientCard key={client.id} client={client} selected={p.isSelected(client)} onClick={() => onChange(client)} />
-      ))}
-      {p.canCreate && <NewClientCard onClick={() => p.triggerCreate("")} />}
-    </div>
-  )
-}
-```
-
-### What you get without `AutoComplete`
-
-`p` exposes everything a custom UI needs, with no rendering assumptions:
-
-- `options`, `isFetching`, `resolved` — the resolved list + loading state
-- `isSelected(option)` — selection check, handles the `T | string` value
-  duality for you
-- `search`, `setSearch`, `updateSearchParams`, `isFetchingMore` — for a
-  custom search box / load-more control, if you build one
-- `canCreate`, `triggerCreate`, `createDialog` — same create-flow plumbing;
-  `createDialog` gives you `{ open, setOpen, prefill, submitting, submit }`
-  to build your own dialog/panel instead of the default one `Picker` renders
-
-What you **don't** get for free: any actual markup. `p.isResolving` (trigger
-loading) also applies here — a custom UI resolving a bare id should account
-for it the same way `Picker` does, e.g. show a skeleton instead of leaking
-the raw id.
+What you get without `AutoComplete`: `options`, `isFetching`, `resolved`,
+`isSelected(option)`, `search`/`setSearch`, `fetchMore`/`hasMore`/`isFetchingMore`,
+`canCreate`/`triggerCreate`/`createDialog`. What you don't get: any markup —
+including the `isResolving` (trigger loading) handling, which a custom UI
+needs to account for itself (e.g. a skeleton instead of leaking a raw id).
 
 ---
 
 ## Create flow — dialog vs. page
 
-Config takes **one of two shapes** — pick based on how much the create form
-needs:
+Config takes **one of two shapes**:
 
 | | `createMutation` + `CreateForm` (dialog) | `createRoute` (page) |
 |---|---|---|
 | Use when | short form, few fields | long/multi-step form, needs its own URL |
 | Navigation | none — stays on the same page | full route change |
-| Mechanism | mutation `onSuccess` calls `onChange` directly | search-param round trip (below) |
+| Mechanism | mutation `onSuccess` calls `onChange` directly | search-param round trip |
 
-**Both converge on the same event: exactly one call to `onChange(created)`.**
+Both converge on the same event: exactly one call to `onChange(created)`.
 Nothing downstream cares which mode produced it.
 
 ### Dialog mode
 
 ```tsx
-createMutation: createClientFn,
-CreateForm: ClientQuickForm, // (prefill, onCreated, submitting) => JSX
+createMutation: createClientFn, // -> DetailResponse<Client>
+CreateForm: ClientQuickForm,    // (prefill, onCreated, submitting) => JSX
 ```
 
-`ClientQuickForm`'s `onSubmit` calls `onCreated(formData)`, which the hook
-wires straight to `mutation.mutate`. On success: cache is seeded at
-`detailQueryOptions(created.id).queryKey`, `onChange(created)` fires, dialog
-closes. No routing involved — the component tree never unmounts.
+`onCreated` wires to `mutation.mutate`. On success: cache seeded at
+`detailQueryOptions(created.data.id).queryKey` with the **envelope as-is**
+(no manual re-wrapping needed now that `createMutation` matches
+`DetailResponse<T>`), `onChange(created.data)` fires, dialog closes.
 
 ### Page mode
 
@@ -476,115 +469,101 @@ createRoute: "/clients/new",
 ```
 
 Flow:
-1. User clicks "+ Create" → `triggerCreate` navigates to
-   `/clients/new?prefill=...&returnTo=<current path>&field=client`.
-2. The `/clients/new` route reads those search params, renders the full
-   form, and on success:
-   - Seeds the cache: `queryClient.setQueryData(detailQueryOptions(id).queryKey, created)`
-     — **must use the exact same `queryOptions` factory** as the picker, or
-     the picker's resolve-by-id query won't hit this cache entry.
-   - Navigates back to `returnTo` with `?created_client=<id>` appended.
-3. Back on the original page, `useEntityPicker`'s effect reads
-   `created_${entityName}` from the route's search params, reads the
-   (already seeded, so instant) cache entry, calls `onChange(cached)`, then
-   **strips the param** from the URL (one-shot signal — prevents a page
-   refresh or back/forward navigation from re-triggering selection with a
+1. `triggerCreate` navigates to `/clients/new?prefill=...&returnTo=<path>&field=client`.
+2. The route reads those params, renders the full form, and on success:
+   ```tsx
+   queryClient.setQueryData(clientsQueryKeys.detail(created.data.id), created)
+   navigate({ to: returnTo, search: { [`created_client`]: created.data.id } })
+   ```
+   — must use the **same** `detailQueryOptions`/key and the **same envelope
+   shape** as the picker reads, or the picker's resolve-by-id query won't
+   hit this seeded entry.
+3. Back on the original page, the hook reads `created_${entityName}` from
+   route search params, reads the (already seeded, so instant) cache entry,
+   unwraps `.data`, calls `onChange`, then **strips the param** (one-shot
+   signal — prevents refresh/back-nav from re-triggering selection with a
    stale id).
 
-**TanStack Router specifics:**
-- Requires `validateSearch` (zod schema) on both the picker's host route and
-  the create route, for `created_${entityName}`/`prefill`/`returnTo`/`field`.
-- `useSearch({ strict: false })` is used inside the (route-agnostic, reusable)
-  picker components, since they can't bind to one specific `from` route. This
-  is a deliberate trade-off — see "Known limitations" below.
+**TanStack Router specifics:** requires `validateSearch` (zod) on both the
+picker's host route and the create route. Picker components use
+`useSearch({ strict: false })` since they're reusable across routes and
+can't bind to one specific `from` — see Known Limitations.
 
 ### Hybrid (optional escalation)
 
-Nothing stops `ClientQuickForm` (dialog) from containing a "need more
-fields? →" link that navigates to `/clients/new` with the same
-`prefill`/`returnTo`/`field` params, closing the dialog as it does. The page
-route's `onSuccess` handler doesn't care whether it was reached via the
-dialog's escape hatch or a direct link — same contract either way.
+`ClientQuickForm` (dialog) can contain a "need more fields? →" link that
+navigates to `/clients/new` with the same `prefill`/`returnTo`/`field`
+params, closing the dialog as it does. The page route's `onSuccess` doesn't
+care whether it was reached via the dialog's escape hatch or a direct link.
 
 ---
 
-## Trigger loading state (don't show a raw id)
+## Trigger loading state (never show a raw id)
 
-`AutoComplete.value` must **never** be a bare id string — `Picker` always
-passes `p.resolved ?? null` down, never the raw `T | string` value. While a
-string `value` is being resolved, `Picker` passes `triggerLoading={p.isResolving}`
-so the trigger shows a spinner instead of an id, a blank field, or (worse) a
-flash of the "Select..." placeholder that implies nothing is chosen.
+`AutoComplete.value` must never be a bare id string. `Picker` always passes
+`p.resolved ?? null`, never the raw `T | string` value, with
+`triggerLoading={p.isResolving}` so the trigger shows a spinner instead of
+an id, a blank field, or a misleading "Select..." placeholder.
 
-```tsx
-<AutoComplete
-  value={p.resolved ?? null}
-  triggerLoading={p.isResolving}
-  ...
-/>
-```
+`isResolving` is `!!idToResolve && isLoading` — deliberately `isLoading`
+(first fetch only), not `isFetching` (which also covers background
+revalidation), so an already-cached value silently revalidating doesn't get
+hidden behind a spinner it doesn't need.
 
-`isResolving` is `!!idToResolve && isLoading` (first-fetch only — not background
-revalidation) — deliberately uses `isLoading`, not `isFetching`, so an
-already-cached, silently-revalidating value doesn't get hidden behind a
-spinner it doesn't need.
-
-**If the spinner isn't visible on a hard reload:** this is usually correct
-behavior, not a bug. Check, in order:
-1. Is a network request actually firing (Network tab)? If not, a router
-   loader is likely prefetching this query and seeding the cache before the
-   component ever mounts as "loading" — there's genuinely nothing to show a
-   spinner for.
-2. Is the fetch just fast enough to be imperceptible? If so and you still
-   want a perceivable state, wrap `isResolving` in a minimum-display-duration
-   hook (~300ms floor) rather than trying to make the real fetch slower.
+**If the spinner isn't visible on a hard reload**, check in order:
+1. Does a network request actually fire (Network tab)? If not, a router
+   loader is likely prefetching and seeding the cache before the component
+   mounts as "loading" — nothing to show a spinner for, this is correct.
+2. Is the fetch just fast enough to be imperceptible? Wrap `isResolving` in
+   a minimum-display-duration hook (~300ms floor) if a perceivable state
+   matters more than fetch speed.
 
 ---
 
 ## Known limitations / things to revisit
 
-- **No true infinite-scroll accumulation** — "load more" grows `perPage` and
-  refetches (now gated correctly by the server's `pagination.hasMore`), but it
-  still doesn't concatenate distinct pages. Switch to `useInfiniteQuery` if
-  real cursor/page accumulation is needed.
-- **Envelope unwrap is manual per query** — `select` unwraps `detailQueryOptions`
-  to `T` and pulls `data`/`pagination` apart for list queries. If any entity's
-  API deviates from the `{ data, pagination? }` / `{ data, message? }`
-  envelope shape, its config needs a bespoke `select`, not the shared one.
 - **`useSearch({ strict: false })` in shared components is a real trade-off**
   — reusable pickers can't type-bind to one route's search schema. If a
-  picker is only ever used on a small, known set of routes, consider having
-  each *route* read its own `created_*` param (with a proper `from`) and pass
-  it into the picker as a plain prop instead, keeping the picker fully
-  router-agnostic.
-- **Config isn't a discriminated union yet** — nothing stops someone from
-  configuring both `createRoute` and `createMutation` (page silently wins) or
-  neither (create button silently does nothing). Worth tightening to a
+  picker is only used on a small, known set of routes, consider having each
+  *route* read its own `created_*` param (with a proper `from`) and pass it
+  into the picker as a plain prop instead.
+- **Config isn't a discriminated union yet** — nothing stops configuring
+  both `createRoute` and `createMutation` (page silently wins) or neither
+  (create button silently does nothing). Worth tightening to a
   `{ mode: "page"; createRoute } | { mode: "dialog"; createMutation; CreateForm }`
   union so misconfiguration fails at compile time.
-- **Shape mismatches between `detailQueryOptions` and `listQueryOptions`
-  results** — if your search endpoint returns a slimmer projection than your
-  detail endpoint (e.g. no `email` field), a `renderOption`/`renderValue`
-  that reaches for a detail-only field will render inconsistently between a
-  pinned/resolved row and a plain search-result row. Keep render functions
-  scoped to fields both endpoints guarantee, or make the two endpoints return
-  matching shapes.
-- **`listQueryOptions` is required by the config type even in pure local
-  mode**, where it's never called. Should be made optional
-  (`listQueryOptions?:`) with the remote-mode `useQuery` call guarded
-  accordingly.
+- **Shape mismatches between detail and search/list results** — if your
+  search endpoint returns a slimmer projection than your detail endpoint,
+  keep `renderOption`/`renderValue` scoped to fields both guarantee, or make
+  the shapes match.
+- **`Picker` must forward every relevant hook return value into
+  `AutoComplete`** (`hasMore`, `onLoadMore`, `loadingMore`, `triggerLoading`,
+  `onOpenChange` if using `fetchOnOpen`) — the hook computing a value
+  correctly does not mean the feature works if `Picker` forgot to pass it
+  through. Double-check this list whenever a new capability is added to the
+  hook.
+- **`IntersectionObserver` root must be the list's own scroll container**,
+  not the default viewport, or "load more" never fires. `CommandList` needs
+  an explicit bounded height + `overflow-y-auto`.
+- **`fetchOnOpen` assumes the backend treats `search: ""` as unfiltered.**
+  Confirm this per entity before enabling — some endpoints may reject or
+  error on an empty search term.
 
 ---
 
 ## Adding a new entity — checklist
 
-1. Do you already have `queryOptions` factories for detail + list? Reuse them
-   verbatim as `detailQueryOptions` / `listQueryOptions`.
-2. Decide **remote** (server search) vs. **local** (small fixed list) mode.
-3. Decide create flow: **dialog** (short form) or **page** (long form) — not
-   both.
-4. Write `getOptionValue`, `renderOption`, optionally `renderValue`.
-5. Call `createEntityPicker<YourType, YourSearchParams>({ ...})`, export
-   `Picker`/`PickerField` (and `usePicker` if you anticipate custom UI needs).
-6. Use `<YourEntityPickerField name="..." control={control} />` in forms —
+1. Do you have (or need to write) `detailQueryOptions` and a search-specific
+   `listQueryOptions` (infinite-query shaped, separate from any table
+   factory for the same entity)? Confirm both return `DetailResponse<T>` /
+   `ListResponse<T>` envelopes, matching every other entity.
+2. Decide **remote** (server search) vs. **local** (small fixed list).
+3. Decide **`fetchOnOpen`**: browse-all-on-open, or type-to-search only.
+4. Decide create flow: **dialog** (short form) or **page** (long form) — not
+   both. Ensure `createMutation` (if used) returns `DetailResponse<T>`, same
+   as `detailQueryOptions`.
+5. Write `getOptionValue`, `renderOption`, optionally `renderValue`.
+6. Call `createEntityPicker<YourType, YourSearchParams>({ ...config })`,
+   export `Picker`/`PickerField` (and `usePicker` if custom UI is likely).
+7. Use `<YourEntityPickerField name="..." control={control} />` in forms —
    `control` is always required, no `FormProvider` needed anywhere.

@@ -11,10 +11,12 @@ import {
 export const driverQueryKeys = {
   all: () => ["drivers"],
   list: () => [...driverQueryKeys.all(), "list"],
-  edit: (id: EntityId) => [...driverQueryKeys.all(), "edit", id],
-  profile: (id: EntityId) => [...driverQueryKeys.all(), "profile", id],
+  details: () => [...driverQueryKeys.all(), "details"],
+  detail: (id: EntityId) => [...driverQueryKeys.all(), "details", id],
+  edit: (id: EntityId) => [...driverQueryKeys.detail(id), "edit"],
+  profile: (id: EntityId) => [...driverQueryKeys.detail(id), "profile"],
   search: (query?: string) => [...driverQueryKeys.all(), "search-list", query],
-}
+} as const
 
 export function createDriverListQueryOptions(input: DriverListSearchParams) {
   return queryOptions({

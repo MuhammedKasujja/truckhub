@@ -16,7 +16,7 @@ export const invoiceQueryKeys = {
     search,
   ],
   detail: (id: EntityId) => [...invoiceQueryKeys.all(), "detail", id],
-}
+} as const
 
 export const invoiceQueryOptions = (search: InvoiceListSearchParams) =>
   queryOptions({

@@ -11,7 +11,7 @@ export const serviceQueryKeys = {
   all: () => ["services"],
   list: () => [...serviceQueryKeys.all(), "list"],
   details: () => [...serviceQueryKeys.all(), "detail"],
-  search: () => [...serviceQueryKeys.all(), "search"],
+  search: () => [...serviceQueryKeys.list(), "search"],
   detail: (id: EntityId) => [...serviceQueryKeys.details(), id],
 } as const
 

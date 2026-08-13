@@ -8,7 +8,7 @@ export const paymentsQueryKeys = {
   details: () => [...paymentsQueryKeys.all(), "detail"],
   statistics: () => [...paymentsQueryKeys.all(), "statistics"],
   detail: (id: string) => [...paymentsQueryKeys.details(), id],
-}
+} as const
 
 export const paymentsQueryOptions = (search: PaymentListSearchParams) =>{
   

@@ -9,13 +9,14 @@ import {
 import { SearchQuery } from "@/types"
 
 export const bookingsQueryKeys = {
-  all: () => ["bookings"],
-  list: () => [...bookingsQueryKeys.all(), "list"],
-  details: () => [...bookingsQueryKeys.all(), "detail"],
-  statistics: () => [...bookingsQueryKeys.all(), "statistics"],
-  search: (search?: string) => [...bookingsQueryKeys.all(), "search", search],
-  detail: (id: string) => [...bookingsQueryKeys.details(), id],
-}
+  all: () => ["bookings"] as const,
+  list: () => [...bookingsQueryKeys.all(), "list"] as const,
+  details: () => [...bookingsQueryKeys.all(), "detail"] as const,
+  statistics: () => [...bookingsQueryKeys.all(), "statistics"] as const,
+  search: (search?: string) =>
+    [...bookingsQueryKeys.list(), "search", search] as const,
+  detail: (id: string) => [...bookingsQueryKeys.details(), id] as const,
+} as const
 
 export const createBookingQueryOptions = (search: BookingListSearchParams) => {
   return queryOptions({
