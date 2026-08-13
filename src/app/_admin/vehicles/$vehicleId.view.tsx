@@ -1,4 +1,5 @@
 import { VehicleDetails } from "@/features/vehicles/components/vehicle-details"
+import { useVehicleDetailsQuery } from "@/features/vehicles/hooks/use-vehicle"
 import { vehicleDetailsQueryOptions } from "@/features/vehicles/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { createFileRoute } from "@tanstack/react-router"
@@ -12,7 +13,8 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/view")({
 })
 
 function RouteComponent() {
-  const { data, error } = Route.useLoaderData()
+  const { vehicleId } = Route.useParams()
+  const { data, error } = useVehicleDetailsQuery(vehicleId)
   useFetchEror(error)
   if (!data) return <div>Failed to load vehicle details</div>
 

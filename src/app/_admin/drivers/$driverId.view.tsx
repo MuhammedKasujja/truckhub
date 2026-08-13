@@ -1,4 +1,5 @@
 import { DriverDetails } from "@/features/drivers/components/driver-details"
+import { useDriverProfileQuery } from "@/features/drivers/hooks/user-driver"
 import { driverProfileQueryOptions } from "@/features/drivers/queries"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requirePermission } from "@/lib/auth"
@@ -14,7 +15,8 @@ export const Route = createFileRoute("/_admin/drivers/$driverId/view")({
 })
 
 function RouteComponent() {
-  const { data, error } = Route.useLoaderData()
+  const { driverId } = Route.useParams()
+  const { data, error } = useDriverProfileQuery(driverId)
   useFetchEror(error)
   if (!data) return <div>Failed to load Driver details</div>
   return <DriverDetails driver={data} />

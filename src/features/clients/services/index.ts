@@ -60,7 +60,7 @@ export const getClientByIdFn = createServerFn()
 export const getClientProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getCustomerDetailsById(data.id)
+    return apiResponseTransform(getCustomerDetailsById(data.id))
   })
 
 export const deleteClientFn = createServerFn({ method: "POST" })

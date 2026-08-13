@@ -7,6 +7,7 @@ import {
   QuotationDetailsPageHeader,
 } from "@/features/quotations/components"
 import { QuotationStatus } from "@/features/quotations/enums"
+import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
 import { QuotationVersion } from "@/features/quotations/types"
 import { formatMoney } from "@/lib/format"
@@ -94,7 +95,8 @@ const fullDate = (iso: string | Date): string =>
 // ---------------------------------------------------------------------------
 function RouteComponent() {
   const [activeVersion, setActiveVersion] = useState<QuotationVersion>()
-  const { data: quotation } = Route.useLoaderData()
+  const { quotationId } = Route.useParams()
+  const { data: quotation } = useQuotaionDetailsSuspenseQuery(quotationId)
 
   const versions = quotation.versions
 

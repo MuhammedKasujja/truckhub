@@ -27,17 +27,17 @@ import {
 } from "@/components/ui/empty"
 import { Can } from "@/components/has-permission"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useQueries, useSuspenseQuery } from "@tanstack/react-query"
+import { useQueries } from "@tanstack/react-query"
 import { EntityId } from "@/schemas"
 import {
   clientBookingsQueryOptions,
   clientPaymentsQueryOptions,
-  clientProfileQueryOptions,
   clientRidesQueryOptions,
 } from "../query-options"
 import { useTranslation } from "@/i18n"
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useState } from "react"
+import { useClientProfileSuspenseQuery } from "../hooks/use-client"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -46,9 +46,7 @@ type CustomerDetailsWrapperProps = {
 export function CustomerDetailsWrapper({
   clientId,
 }: CustomerDetailsWrapperProps) {
-  const {
-    data: { data: client },
-  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
+  const { data: client } = useClientProfileSuspenseQuery(clientId)
 
   const [openModal, setOpenModal] = useState(false)
 

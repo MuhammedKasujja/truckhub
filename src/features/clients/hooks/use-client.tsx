@@ -3,8 +3,12 @@ import { EntityId } from "@/schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import { ClientCreateInput, ClientUpdateInput } from "../schemas"
 import { useNavigate, useSearch } from "@tanstack/react-router"
-import { useQueryClient } from "@tanstack/react-query"
-import { clientQueryKeys } from "../query-options"
+import {
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
+import { clientProfileQueryOptions, clientQueryKeys } from "../query-options"
 
 const useCreateClientBase = createEntityActionHook(
   createClientFn,
@@ -35,7 +39,10 @@ export function useCreateClient() {
       { data: input },
       {
         onSuccess: (result) => {
-          queryClient.setQueryData(clientQueryKeys.profile(result.data!.id), result)
+          queryClient.setQueryData(
+            clientQueryKeys.profile(result.data!.id),
+            result
+          )
           if (returnTo) {
             const [pathname, qs] = returnTo.split("?")
             const existing = qs
@@ -88,4 +95,23 @@ export function useChangeClientType() {
     return execute({ data: { id: clientId } })
   }
   return { isLoading: isPending, changeClientType, isSuccess, error }
+}
+
+export function useClientProfileQuery(clientId: EntityId) {
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery(clientProfileQueryOptions(clientId))
+
+  return { data: response?.data, error: error, isLoading }
+}
+export function useClientProfileSuspenseQuery(clientId: EntityId) {
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useSuspenseQuery(clientProfileQueryOptions(clientId))
+
+  return { data: response.data!, error, isLoading }
 }

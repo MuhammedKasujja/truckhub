@@ -13,6 +13,7 @@ import {
   ClientRouteTonnagePricingModal,
   CustomerDetailsWrapper,
 } from "@/features/clients/components"
+import { useClientProfileSuspenseQuery } from "@/features/clients/hooks/use-client"
 import {
   clientBookingsQueryOptions,
   clientPaymentsQueryOptions,
@@ -21,7 +22,6 @@ import {
 } from "@/features/clients/query-options"
 import { requirePermission } from "@/lib/auth"
 import { IconShieldStar } from "@tabler/icons-react"
-import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 
@@ -40,10 +40,7 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 
 function RouteComponent() {
   const { clientId } = Route.useParams()
-  const { data: response } = useSuspenseQuery(
-    clientProfileQueryOptions(clientId)
-  )
-  const { data } = response
+  const { data } = useClientProfileSuspenseQuery(clientId)
   return (
     <div>
       <PageHeader>
