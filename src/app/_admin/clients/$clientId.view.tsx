@@ -11,8 +11,8 @@ import { ButtonGroup } from "@/components/ui/button-group"
 import {
   ClientLoadingFeesModal,
   ClientRouteTonnagePricingModal,
+  CustomerDetailsWrapper,
 } from "@/features/clients/components"
-import { CustomerDetailsWrapper } from "@/features/clients/components/customer-details-wrapper"
 import {
   clientBookingsQueryOptions,
   clientPaymentsQueryOptions,
@@ -21,6 +21,7 @@ import {
 } from "@/features/clients/query-options"
 import { requirePermission } from "@/lib/auth"
 import { IconShieldStar } from "@tabler/icons-react"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 
@@ -38,8 +39,11 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 })
 
 function RouteComponent() {
-  const { data } = Route.useLoaderData()
   const { clientId } = Route.useParams()
+  const { data: response } = useSuspenseQuery(
+    clientProfileQueryOptions(clientId)
+  )
+  const { data } = response
   return (
     <div>
       <PageHeader>

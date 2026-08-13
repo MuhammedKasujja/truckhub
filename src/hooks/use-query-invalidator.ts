@@ -92,7 +92,7 @@ export class QueryInvalidator {
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({
-          queryKey: queryKeys.services.list(),
+          queryKey: queryKeys.services.all(),
         }),
     },
     details: (id: EntityId) =>
