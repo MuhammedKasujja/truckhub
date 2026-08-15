@@ -1,11 +1,11 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import { DefaultSearchParamsSchema, plateNumberSchema } from "@/common/schemas"
 
 export const VehicleCreateSchema = z.object({
-  plate_number: z.string(),
+  plate_number: plateNumberSchema,
   color: z.string("Exteria color is needed"),
   interior_color: z.string().optional().nullable(),
   cylinders: z.string(),

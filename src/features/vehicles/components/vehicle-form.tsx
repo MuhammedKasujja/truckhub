@@ -10,6 +10,7 @@ import {
   AutoCompleteField,
   ColorPickerField,
   NumberField,
+  PlateNumberField,
   SelectField,
   TextField,
 } from "@/components/ui/form-fields"
@@ -155,7 +156,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
             <CardContent className="pb-6">
               <div className="grid grid-cols-1 gap-5 pb-6 md:grid-cols-2">
                 <FieldGroup>
-                  <TextField
+                  <PlateNumberField
                     label={tr("plate_number")}
                     name={"plate_number"}
                     control={form.control}

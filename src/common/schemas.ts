@@ -17,3 +17,10 @@ export const EntityPickerSearchParams = z.object({
 export type EntityPickerSearchParamsInput = z.infer<
   typeof EntityPickerSearchParams
 >
+
+export const plateNumberSchema = z
+  .string()
+  .refine(
+    (v) => /^[A-Z]{2}\d{3}[A-Z]{2}$/.test(v) || /^[A-Z]{3}\d{3}[A-Z]$/.test(v),
+    "Invalid plate number"
+  )
