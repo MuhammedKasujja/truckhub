@@ -86,7 +86,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     isEdit,
     carModels,
   } = useVehicleForm(vehicleCofig, initialData)
-  const [step, setStep] = useState("details")
+  const [step, setStep] = useState<"details"| "features">("details")
 
   const stepIndex = steps.findIndex((s) => s.value === step)
 
@@ -118,6 +118,8 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.vehicles.list.invalidate()
+      setStep("details")
+      form.reset()
     } else {
       toast.error(error?.message)
     }
@@ -129,7 +131,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
         console.log(errors)
       })}
     >
-      <Stepper value={step} onValueChange={setStep} onValidate={onValidate}>
+      <Stepper value={step} onValueChange={(val)=>setStep(val)} onValidate={onValidate}>
         <StepperList>
           {steps.map((step) => (
             <StepperItem key={step.value} value={step.value}>

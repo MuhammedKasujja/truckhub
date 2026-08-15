@@ -11,6 +11,7 @@ export function useVehicleDetailsQuery(vehicleId: EntityId) {
 
   return { data: response?.data, error: error, isLoading }
 }
+
 export function useVehicleDetailsSuspenseQuery(vehicleId: EntityId) {
   const {
     data: response,
