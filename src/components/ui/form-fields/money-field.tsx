@@ -14,6 +14,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { useSettings } from "@/features/settings/hooks/use-settings";
+import { MaskInput } from "../mask-input";
 
 type MoneyFieldProps<F extends FieldValues> = Omit<TextFieldProps<F>, "type">;
 
@@ -36,7 +37,18 @@ export function MoneyField<T extends FieldValues>({
             {label}
             {required && <RequiredLabelIcon />}
           </FieldLabel>
-          <InputGroup>
+          <MaskInput
+            id={field.name}
+            mask="currency"
+            currency="UGX"
+            locale="en-UG"
+            placeholder="USh"
+            value={field.value}
+            onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
+            onBlur={field.onBlur}
+            invalid={!!fieldState.error}
+          />
+          {/* <InputGroup>
             <InputGroupInput
               {...field}
               type={"text"}
@@ -53,7 +65,7 @@ export function MoneyField<T extends FieldValues>({
             <InputGroupAddon align="inline-start">
               <InputGroupButton variant="secondary">{settings?.currency_code}</InputGroupButton>
             </InputGroupAddon>
-          </InputGroup>
+          </InputGroup> */}
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

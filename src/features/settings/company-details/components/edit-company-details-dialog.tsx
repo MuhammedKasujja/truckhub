@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { TextField } from "@/components/ui/form-fields"
+import { TelephoneField, TextField } from "@/components/ui/form-fields"
 import { useForm } from "react-hook-form"
 import { Company, CompanySchema } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -64,7 +64,7 @@ export function EditCompanyDetailsDialog({
               control={form.control}
               name="name"
             />
-            <TextField label="Phone" control={form.control} name="phone" />
+            <TelephoneField label="Phone" control={form.control} name="phone" />
             <TextField label="Email" control={form.control} name="email" />
             <TextField
               label="Address"
