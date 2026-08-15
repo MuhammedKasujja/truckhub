@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { EmailField, TextField } from "@/components/ui/form-fields"
+import { EmailField, TelephoneField, TextField } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
   ClientCreateInput,
@@ -73,7 +73,7 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
               />
             </Field>
             <Field orientation={"horizontal"} className="gap-4">
-              <TextField
+              <TelephoneField
                 label={tr("common.form.phone")}
                 name={"phone"}
                 control={form.control}
