@@ -15,6 +15,7 @@ import {
 import {
   EmailField,
   PasswordField,
+  TelephoneField,
   TextField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
@@ -86,7 +87,7 @@ export function UserForm({ initialData }: UserFormProps) {
               name={"last_name"}
               control={form.control}
             />
-            <TextField
+            <TelephoneField
               label={tr("common.form.phone")}
               name={"phone"}
               control={form.control}

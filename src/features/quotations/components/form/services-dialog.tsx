@@ -14,7 +14,6 @@ import {
   SmallLineItemRequest,
 } from "@/features/quotations/schemas"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
-import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import {
   MoneyField,
   NumberField,
@@ -161,7 +160,7 @@ export function ServicesDialog({
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
               <Field
                 orientation={"horizontal"}
-                className="grid gap-4 md:grid-cols-3"
+                className="grid gap-4 md:grid-cols-2"
               >
                 <ServicePickerField
                   label={"Service"}
@@ -176,7 +175,7 @@ export function ServicesDialog({
                     )
                   }}
                 />
-                <CarBrandPickerField
+                {/* <CarBrandPickerField
                   label={"Car Brand"}
                   name={"car_brand_id"}
                   control={form.control}
@@ -189,11 +188,11 @@ export function ServicesDialog({
                     )
                     form.setValue("vehicle_year", "")
                   }}
-                />
+                /> */}
                 <CarModelPickerField
                   label={"Car Model"}
                   name={"car_model_id"}
-                  carBrandId={form.watch("car_brand_id")}
+                  // carBrandId={form.watch("car_brand_id")}
                   control={form.control}
                   required={false}
                   onSelected={(model) => {

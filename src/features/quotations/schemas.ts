@@ -61,7 +61,7 @@ export const createCarQuotationLineItemSchema = z.object({
   item_type: z.literal("small"),
   vehicle_year: z.string().optional().nullable(),
   service_id: IDSchema.optional().nullable(),
-  car_brand_id: IDSchema.optional().nullable(),
+  // car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
   estimated_consumption_rate_km: z.number().optional(),
   ...lineItemBase.shape,

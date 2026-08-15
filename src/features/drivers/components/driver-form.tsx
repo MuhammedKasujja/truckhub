@@ -11,6 +11,7 @@ import { FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
   PasswordField,
+  TelephoneField,
   TextField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
@@ -80,7 +81,7 @@ export function DriverForm({ initialData }: DriverFormProps) {
               name={"last_name"}
               control={form.control}
             />
-            <TextField
+            <TelephoneField
               label={tr("common.form.phone")}
               name={"phone"}
               control={form.control}
