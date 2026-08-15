@@ -24,3 +24,11 @@ export const plateNumberSchema = z
     (v) => /^[A-Z]{2}\d{3}[A-Z]{2}$/.test(v) || /^[A-Z]{3}\d{3}[A-Z]$/.test(v),
     "Invalid plate number"
   )
+
+export const tinNumberSchema = z
+  .string()
+  .regex(/^\d{10}$/, "TIN must be 10 digits")
+
+export const telephoneNumberSchema = z
+  .string()
+  .regex(/^0\d{9}$/, "Invalid phone number")

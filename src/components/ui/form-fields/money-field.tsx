@@ -40,6 +40,7 @@ export function MoneyField<T extends FieldValues>({
           <MaskInput
             id={field.name}
             mask="currency"
+            inputMode="decimal"
             currency="UGX"
             locale="en-UG"
             placeholder="USh"
