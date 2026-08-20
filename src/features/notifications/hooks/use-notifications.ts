@@ -64,7 +64,7 @@ export function useNotifications() {
         notificationsKey(userId),
         (old) =>
           old?.map((n) =>
-            n.id === notificationId ? { ...n, is_read: true } : n
+            n.notification_id === notificationId ? { ...n, is_read: true } : n
           ) ?? old
       )
     },
@@ -166,7 +166,7 @@ export function useNotifications() {
   }, [userId, queryClient])
 
   const markRead = useCallback(
-    (recipientRowId: EntityId) => markReadMutation.mutate(recipientRowId),
+    (notificationId: EntityId) => markReadMutation.mutate(notificationId),
     [markReadMutation]
   )
 

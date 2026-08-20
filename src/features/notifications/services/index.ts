@@ -15,8 +15,17 @@ import {
 export const listNotificationsFn = createServerFn({ method: "GET" })
   .inputValidator(listNotificationSchema)
   .handler(async ({ data }) => {
-    const res = await getNotifications(data.userId, data.unreadOnly)
-    return res
+    const { isSuccess, ...res } = await getNotifications(
+      data.userId,
+      data.unreadOnly
+    )
+    if (isSuccess) {
+      return res.data
+    }
+    throw new ApiError(
+      res.error?.message ?? "Could not fetch notification",
+      400
+    )
   })
 
 export const markNotificationReadFn = createServerFn({ method: "POST" })
