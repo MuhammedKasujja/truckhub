@@ -10,10 +10,11 @@ import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { useNotifications } from "@/features/notifications/hooks/use-notifications"
 import { useAuth } from "./providers/auth-context"
+import { formatDateTime } from "@/lib/format"
 
 export function NotificationDropdown() {
   const { user } = useAuth()
-  const { unreadCount, isConnected, notifications } = useNotifications(user?.id)
+  const { unreadCount, notifications, markAllRead } = useNotifications(user?.id)
 
   return (
     <DropdownMenu>
@@ -52,11 +53,16 @@ export function NotificationDropdown() {
           <p className="text-sm font-semibold">
             Notifications
             <span className="ml-2 rounded-lg bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-              {unreadCount} new {isConnected ? "Yap" : "Off"}
+              {unreadCount} new
             </span>
           </p>
           {unreadCount > 0 && (
-            <Button type="button" variant="ghost" size="sm">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => markAllRead()}
+            >
               Mark all read
             </Button>
           )}
@@ -77,7 +83,7 @@ export function NotificationDropdown() {
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{n.title}</p>
                   <span className="text-[10px] text-muted-foreground">
-                    {n.created_at}
+                    {formatDateTime(n.created_at)}
                   </span>
                 </div>
 

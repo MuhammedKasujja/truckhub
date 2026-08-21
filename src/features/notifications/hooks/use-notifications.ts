@@ -128,6 +128,7 @@ export function useNotifications(userId: EntityId | undefined) {
               title: data.title,
               body: data.body,
               created_at: data.created_at,
+              source: data.source,
               is_read: false,
               read_at: null,
             },
