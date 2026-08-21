@@ -8,7 +8,6 @@ import {
 } from "../services"
 import { EntityId } from "@/schemas"
 import { NotificationItem } from "../types"
-import { useAuth } from "@/components/providers/auth-context"
 
 const WEBSOCKET_CONECTION_RETRY_DELAY = 1000
 
@@ -16,7 +15,8 @@ const WEBSOCKET_CONECTION_RETRY_DELAY = 1000
 // only the token is kept off the client. This just needs to be a public
 // env var pointing at your FastAPI host (VITE_API_URL, not FASTAPI_URL —
 // that server-only one lives in server/notifications.functions.ts).
-const WS_BASE = import.meta.env.BACKEND_URL.replace(/^http/, "ws")
+// const WS_BASE = import.meta.env.BACKEND_URL.replace(/^http/, "ws")
+const WS_BASE = "http://127.0.0.1:8000".replace(/^http/, "ws")
 
 function notificationsKey(userId: EntityId) {
   return ["notifications", userId] as const
@@ -35,17 +35,13 @@ function notificationsKey(userId: EntityId) {
  * Reconnects with exponential backoff (capped at 30s) if the socket drops,
  * fetching a brand new ticket on every attempt since each one is single-use.
  */
-export function useNotifications() {
-  const { user } = useAuth()
-
+export function useNotifications(userId: EntityId | undefined) {
   const queryClient = useQueryClient()
   const [isConnected, setIsConnected] = useState(false)
   const [authError, setAuthError] = useState(false)
   const retryDelay = useRef(WEBSOCKET_CONECTION_RETRY_DELAY)
   const socketRef = useRef<WebSocket | null>(null)
   const retryTimeout = useRef<ReturnType<typeof setTimeout>>()
-
-  const userId = user?.id
 
   const query = useQuery({
     queryKey: userId ? notificationsKey(userId) : ["notifications", "disabled"],
@@ -91,17 +87,18 @@ export function useNotifications() {
       try {
         const result = await getWsTicketFn()
         ticket = result.ticket
-      } catch {
+      } catch (error){
         // Session cookie missing/expired server-side — no point retrying
         // with the same (non-existent) session. Surface it and stop.
+        console.log("WS_BASE_Error", WS_BASE, "error", error?.toString())
         if (!cancelled) setAuthError(true)
         return
       }
-
       if (cancelled) return
+      console.log("Connecting to socket...")
 
       const ws = new WebSocket(
-        `${WS_BASE}/ws/${userId}?ticket=${encodeURIComponent(ticket)}`
+        `${WS_BASE}/v1/ws/${userId}?ticket=${encodeURIComponent(ticket)}`
       )
       socketRef.current = ws
 
@@ -115,6 +112,8 @@ export function useNotifications() {
       ws.onmessage = (event) => {
         const payload = JSON.parse(event.data)
         if (payload.type !== "notification") return
+        console.log("payload", payload)
+        const data = payload.data
 
         // Prepend the new notification into the cached list without
         // waiting for a refetch. Server sends the Notification, not the
@@ -124,11 +123,11 @@ export function useNotifications() {
           notificationsKey(userId),
           (old = []) => [
             {
-              id: -payload.id, // placeholder, replaced on next refetch
-              notification_id: payload.id,
-              title: payload.title,
-              body: payload.body,
-              created_at: payload.created_at,
+              id: -Number(data.id), // placeholder, replaced on next refetch
+              notification_id: data.id,
+              title: data.title,
+              body: data.body,
+              created_at: data.created_at,
               is_read: false,
               read_at: null,
             },

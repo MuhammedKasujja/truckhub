@@ -48,10 +48,10 @@ export const markAllNotificationsReadFn = createServerFn({
 
 export const getWsTicketFn = createServerFn({ method: "POST" }).handler(
   async () => {
-    const { isSuccess, data } = await websocketConnect()
+    const { isSuccess, data, error } = await websocketConnect()
     if (isSuccess && data) {
       return { ticket: data.ticket, expiresInSec: data.expires_in }
     }
-    throw new ApiError("Failed to connect to socket", 401)
+    throw new ApiError(error?.message ?? "Failed to connect to socket", 401)
   }
 )

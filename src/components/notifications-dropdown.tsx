@@ -8,33 +8,12 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-
-const notifications = [
-  {
-    id: 1,
-    title: "New booking request",
-    description: "John created a booking to Malaba",
-    time: "2m ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    title: "Payment succeeded",
-    description: "Complete new payment",
-    time: "10m ago",
-    unread: true,
-  },
-  {
-    id: 3,
-    title: "New Invoice",
-    description: "Anna accepted the quotation",
-    time: "1h ago",
-    unread: false,
-  },
-]
+import { useNotifications } from "@/features/notifications/hooks/use-notifications"
+import { useAuth } from "./providers/auth-context"
 
 export function NotificationDropdown() {
-  const unreadCount = notifications.filter((n) => n.unread).length
+  const { user } = useAuth()
+  const { unreadCount, isConnected, notifications } = useNotifications(user?.id)
 
   return (
     <DropdownMenu>
@@ -73,14 +52,15 @@ export function NotificationDropdown() {
           <p className="text-sm font-semibold">
             Notifications
             <span className="ml-2 rounded-lg bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-              2 new
+              {unreadCount} new {isConnected ? "Yap" : "Off"}
             </span>
           </p>
-          <Button variant="ghost" size="sm">
-            Mark all read
-          </Button>
+          {unreadCount > 0 && (
+            <Button type="button" variant="ghost" size="sm">
+              Mark all read
+            </Button>
+          )}
         </div>
-
         <Separator />
 
         {/* List */}
@@ -91,17 +71,17 @@ export function NotificationDropdown() {
                 key={n.id}
                 className={cn(
                   "border-b px-3 py-2 text-left transition hover:bg-muted",
-                  n.unread ? "bg-muted/40" : ""
+                  n.is_read && "bg-muted/40"
                 )}
               >
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{n.title}</p>
                   <span className="text-[10px] text-muted-foreground">
-                    {n.time}
+                    {n.created_at}
                   </span>
                 </div>
 
-                <p className="text-xs text-muted-foreground">{n.description}</p>
+                <p className="text-xs text-muted-foreground">{n.body}</p>
               </button>
             ))}
           </div>

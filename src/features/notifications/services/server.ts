@@ -2,9 +2,11 @@ import { EntityId } from "@/schemas"
 import { NotificationItem } from "../types"
 import * as apiClient from "@/lib/api-client"
 
+const endpoint = "v1/notifications"
+
 export function getNotifications(userId: EntityId, unreadOnly?: boolean) {
   return apiClient.getFn<NotificationItem[]>(
-    `/users/${userId}/notifications?unread_only=${unreadOnly ?? false}`
+    `${endpoint}?unread_only=${unreadOnly ?? false}`
   )
 }
 
@@ -13,16 +15,13 @@ export function markNotificationRead(
   notificationId: EntityId
 ) {
   return apiClient.postFn<NotificationItem>(
-    `/users/${userId}/notifications/${notificationId}/read`,
+    `${endpoint}/${notificationId}/read`,
     {}
   )
 }
 
 export async function markAllNotificationsRead(userId: EntityId) {
-  return await apiClient.postFn<NotificationItem[]>(
-    `/users/${userId}/notifications/read-all`,
-    {}
-  )
+  return await apiClient.postFn<NotificationItem[]>(`${endpoint}/read-all`, {})
 }
 
 /**
@@ -34,7 +33,7 @@ export async function markAllNotificationsRead(userId: EntityId) {
 
 export async function websocketConnect() {
   return await apiClient.postFn<{ ticket: string; expires_in: number }>(
-    "/auth/ws-ticket",
+    "v1/auth/ws-ticket",
     {}
   )
 }
