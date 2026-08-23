@@ -40,15 +40,14 @@ type ShipmentDialogProps = {
 }
 
 export function ShipmentDetailsDialog({
-  shipment,
   open,
   onOpenChange,
+  ...rest
 }: ShipmentDialogProps) {
   const [openModal, setOpenModal] = useState<
     "dispatch" | "record" | "assign-vehicle" | "asign-driver" | "end-shipment"
   >()
-  const {} = useShipmentDetails(shipment?.id)
-  const trip = shipment
+  const { shipment } = useShipmentDetails(rest.shipment)
 
   return (
     <>
@@ -266,10 +265,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
         <Card className="bg-background/15">
           <CardContent className="pt-4">
             <SectionLabel>Odometer &amp; Consumption</SectionLabel>
-            <div
-              className="mb-5 flex items-center justify-center gap-5 rounded-md p-5"
-              // style={{ background: PANEL_ALT, border: `1px solid ${LINE}` }}
-            >
+            <div className="mb-5 flex items-center justify-center gap-5 rounded-md bg-accent p-5">
               <div className="text-center">
                 <div className="rounded border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.start_mileage.toLocaleString()}
@@ -363,10 +359,7 @@ function BillLine({ label, value, total }) {
 
 function SectionLabel({ children }) {
   return (
-    <p
-      className="mb-4 text-[11px] font-medium tracking-widest uppercase"
-      // style={{ color: TEXT_FAINT }}
-    >
+    <p className="mb-4 text-[11px] font-medium tracking-widest text-muted-foreground uppercase">
       {children}
     </p>
   )
