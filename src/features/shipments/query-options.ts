@@ -1,7 +1,7 @@
 import { EntityId } from "@/schemas"
-import { getShipmentsFn } from "./services"
 import { queryOptions } from "@tanstack/react-query"
 import { ShipmentSearchParamsInput } from "./schemas"
+import { getShipmentByIdFn, getShipmentsFn } from "./services"
 
 export const shipmentsQueryKeys = {
   all: () => ["shipments"],
@@ -43,6 +43,12 @@ export const shipmentsRequestsQueryOptions = (
   queryOptions({
     queryKey: [...shipmentsQueryKeys.requested()],
     queryFn: () => getShipmentsFn({ data: search }),
+  })
+
+export const shipmentsDetailsQueryOptions = (shipmentId: EntityId) =>
+  queryOptions({
+    queryKey: [...shipmentsQueryKeys.detail(shipmentId)],
+    queryFn: () => getShipmentByIdFn({ data: { id: shipmentId } }),
   })
 
 export const shipmentsCompletedQueryOptions = (

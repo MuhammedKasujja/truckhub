@@ -52,9 +52,11 @@ export function NotificationDropdown() {
         <div className="flex items-center justify-between p-3">
           <p className="text-sm font-semibold">
             Notifications
-            <span className="ml-2 rounded-lg bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-              {unreadCount} new
-            </span>
+            {unreadCount > 0 && (
+              <span className="ml-2 rounded-lg bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
+                {unreadCount} new
+              </span>
+            )}
           </p>
           {unreadCount > 0 && (
             <Button
