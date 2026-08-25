@@ -64,7 +64,7 @@ export function getInvoiceTableColumns({
       accessorKey: "due_date",
       header: () => <p className="uppercase">Due Date</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.due_date)}</p>
+        return <p>{formatDate(row.original.due_date, {timeStyle: undefined})}</p>
       },
     },
     {

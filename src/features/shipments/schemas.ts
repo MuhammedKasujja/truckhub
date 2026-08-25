@@ -1,7 +1,7 @@
 import z from "zod"
 import { Shipment } from "./types"
-import { IDSchema } from "@/schemas"
 import { shipmentStatuses } from "./enums"
+import { IDSchema, MoneySchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -14,7 +14,7 @@ export const ShipmentSearchParams = z.object({
 })
 
 const consumedFuelRateSchema = z.object({
-  value: z.number().optional().nullable(),
+  value: MoneySchema.optional().nullable(),
 })
 
 export const dispatchShipmentSchema = z.object({
@@ -37,10 +37,10 @@ export const finishShipmentSchema = z.object({
   startMileage: z.number(),
   endMileage: z.number(),
   distanceKm: z.number(),
-  vehicleConsumptionRate: z.number(),
-  fuelUsedLitres: z.number(),
-  fuelRate: z.number(),
-  actualFuelConsumed: z.number(),
+  vehicleConsumptionRate: MoneySchema,
+  fuelUsedLitres: z.number().optional(),
+  fuelRate: MoneySchema.optional(),
+  actualFuelConsumed: MoneySchema,
   notes: z.string().optional().nullable(),
   consumedFuelRates: z.array(consumedFuelRateSchema),
 })

@@ -37,7 +37,7 @@ export type Shipment = {
     id: EntityId
     number: string
     plate_number: string
-    fuel_consumption_rate: string | number
+    fuel_consumption_rate: string
   }
   item: ShipmentLineItem
   consumption: ShipmentVehicleConsumption | null

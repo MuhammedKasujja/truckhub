@@ -1,6 +1,16 @@
 import { EntityId } from "@/schemas"
 import { DataTableRowAction } from "@/types/data-table"
-import { LineItemResponse } from "../quotations/schemas"
+
+export type InvoiceLineItem = {
+  unit_price: string
+  line_total: string
+  quantity: number
+  description: string
+  service_days: number
+  fuel_surcharge: string
+  loading_charge: string | null
+  offloading_charge: string | null
+}
 
 export type Invoice = {
   id: EntityId
@@ -13,11 +23,12 @@ export type Invoice = {
   due_date: Date
   purpose: string | null
   created_at: Date
-  line_items: LineItemResponse[]
+  line_items: InvoiceLineItem[]
   client: {
     id: EntityId
     number: string
     name: string
+    short_name: string | null
   }
 }
 

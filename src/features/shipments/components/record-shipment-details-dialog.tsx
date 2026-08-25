@@ -11,13 +11,18 @@ import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { FinishShipmentInput, finishShipmentSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFinishShipment } from "../hooks/use-shipment-actions"
-import { MoneyField, NumberField, TextareaField } from "@/components/ui/form-fields"
+import {
+  MoneyField,
+  NumberField,
+  TextareaField,
+} from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { PlusIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Decimal from "@/lib/decimal-config"
 
 type Props = {
   shipment?: Shipment
@@ -38,8 +43,9 @@ export function RecordShipmentDetailsDialog({
       unitId: shipment?.id,
       startMileage: Number(shipment?.consumption?.start_mileage),
       endMileage: shipment?.consumption?.end_mileage,
-      vehicleConsumptionRate: Number(shipment?.vehicle?.fuel_consumption_rate),
-      consumedFuelRates: [{ value: null }],
+      vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
+      consumedFuelRates: [{ value: "0" }],
+      actualFuelConsumed: "0",
     },
     reValidateMode: "onChange",
   })
@@ -66,13 +72,14 @@ export function RecordShipmentDetailsDialog({
       const distance = Number(endMileage - startMileage)
       form.setValue("distanceKm", distance)
       const consumptionRate = form.getValues("vehicleConsumptionRate")
-      const litresUsed = distance / consumptionRate
-      form.setValue("fuelUsedLitres", litresUsed)
+      const litresUsed = new Decimal(distance).div(consumptionRate)
+      form.setValue("fuelUsedLitres", litresUsed.toNumber())
     }
   }, [startMileage, endMileage])
 
   useEffect(() => {
-    form.setValue("actualFuelConsumed", Number(fuelRate * litresConsumed))
+    const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
+    form.setValue("actualFuelConsumed", consumedFuel.toString())
   }, [fuelRate, litresConsumed])
 
   useEffect(() => {
@@ -80,11 +87,12 @@ export function RecordShipmentDetailsDialog({
       (rate) => rate.value != null
     )
     const rates = validFuelRates.reduce(
-      (curr, rate) => curr + Number(rate.value),
-      0
+      (curr, rate) => curr.plus(new Decimal(rate.value?.toString() ?? 0)),
+      new Decimal(0)
     )
+    const averageFuelRate = rates.dividedBy(validFuelRates.length)
 
-    form.setValue("fuelRate", Number(rates / validFuelRates.length))
+    form.setValue("fuelRate", averageFuelRate.toString())
   }, [fuelConsumptionRates])
 
   return (
@@ -92,7 +100,7 @@ export function RecordShipmentDetailsDialog({
       <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
         <form
           onSubmit={form.handleSubmit(finishShipment, (errors) => {
-            console.log(errors)
+            console.log(errors.consumedFuelRates)
           })}
           className="flex flex-col gap-4"
         >
@@ -160,7 +168,7 @@ export function RecordShipmentDetailsDialog({
                       <Input
                         {...field}
                         type={"number"}
-                        inputMode="numeric"
+                        inputMode="decimal"
                         id={field.name}
                         aria-invalid={fieldState.invalid}
                         autoComplete="off"
@@ -171,8 +179,7 @@ export function RecordShipmentDetailsDialog({
                           }
                         }}
                         onChange={(e) => {
-                          const number = e.target.valueAsNumber
-                          field.onChange(isNaN(number) ? null : number)
+                          field.onChange(e.target.value)
                         }}
                       />
                     )}
