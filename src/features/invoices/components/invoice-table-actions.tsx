@@ -78,6 +78,18 @@ export function InvoiceTableActions({
             )}
           </Can>
           <DropdownMenuSeparator />
+          <Can permission={"invoices:pdf"}>
+            <DropdownMenuItem asChild>
+              <Link
+                to={"/billing/invoices/$invoiceId/pdf"}
+                params={{ invoiceId: invoice.id }}
+              >
+                <EyeIcon />
+                Pdf
+              </Link>
+            </DropdownMenuItem>
+          </Can>
+          <DropdownMenuSeparator />
           <Can permission={"invoices:email"}>
             <DropdownMenuItem>
               <MailIcon />

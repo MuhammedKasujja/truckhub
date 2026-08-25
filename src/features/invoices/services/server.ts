@@ -1,3 +1,4 @@
+import { api } from "@/lib/api"
 import { Invoice } from "../types"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
@@ -38,4 +39,11 @@ export async function getInvoiceDetails(invoiceId: EntityId) {
 
 export async function createInvoice(data: InvoiceCreateInput) {
   return await apiClient.postFn<Invoice>(endpoint, data)
+}
+
+export async function getInvoicePdf(invoiceId: EntityId) {
+  return await api.get(`${endpoint}/${invoiceId}/pdf`, {
+    responseType: "arraybuffer",
+    timeout: 30000,
+  })
 }

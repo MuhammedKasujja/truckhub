@@ -89,6 +89,7 @@ import { Route as AdminSettingsUserManagementUsersIndexRouteImport } from './app
 import { Route as AdminSettingsUserManagementRolesIndexRouteImport } from './app/_admin/settings/user-management/roles/index'
 import { Route as AdminSettingsUserManagementPermissionsIndexRouteImport } from './app/_admin/settings/user-management/permissions/index'
 import { Route as AdminBillingInvoicesInvoiceIdViewRouteImport } from './app/_admin/billing/invoices/$invoiceId.view'
+import { Route as AdminBillingInvoicesInvoiceIdPdfRouteImport } from './app/_admin/billing/invoices/$invoiceId.pdf'
 import { Route as AdminSettingsUserManagementUsersNewIndexRouteImport } from './app/_admin/settings/user-management/users/new/index'
 import { Route as AdminSettingsUserManagementUsersUserIdViewRouteImport } from './app/_admin/settings/user-management/users/$userId.view'
 import { Route as AdminSettingsUserManagementUsersUserIdEditRouteImport } from './app/_admin/settings/user-management/users/$userId.edit'
@@ -538,6 +539,12 @@ const AdminBillingInvoicesInvoiceIdViewRoute =
     path: '/invoices/$invoiceId/view',
     getParentRoute: () => AdminBillingRouteRoute,
   } as any)
+const AdminBillingInvoicesInvoiceIdPdfRoute =
+  AdminBillingInvoicesInvoiceIdPdfRouteImport.update({
+    id: '/invoices/$invoiceId/pdf',
+    path: '/invoices/$invoiceId/pdf',
+    getParentRoute: () => AdminBillingRouteRoute,
+  } as any)
 const AdminSettingsUserManagementUsersNewIndexRoute =
   AdminSettingsUserManagementUsersNewIndexRouteImport.update({
     id: '/users/new/',
@@ -628,6 +635,7 @@ export interface FileRoutesByFullPath {
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/billing/invoices/$invoiceId/pdf': typeof AdminBillingInvoicesInvoiceIdPdfRoute
   '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -712,6 +720,7 @@ export interface FileRoutesByTo {
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
+  '/billing/invoices/$invoiceId/pdf': typeof AdminBillingInvoicesInvoiceIdPdfRoute
   '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -798,6 +807,7 @@ export interface FileRoutesById {
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/_admin/billing/invoices/$invoiceId/pdf': typeof AdminBillingInvoicesInvoiceIdPdfRoute
   '/_admin/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/_admin/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
@@ -884,6 +894,7 @@ export interface FileRouteTypes {
     | '/shipments/confirmed/'
     | '/shipments/requests/'
     | '/vehicles/new/'
+    | '/billing/invoices/$invoiceId/pdf'
     | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions/'
     | '/settings/user-management/roles/'
@@ -968,6 +979,7 @@ export interface FileRouteTypes {
     | '/shipments/confirmed'
     | '/shipments/requests'
     | '/vehicles/new'
+    | '/billing/invoices/$invoiceId/pdf'
     | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions'
     | '/settings/user-management/roles'
@@ -1053,6 +1065,7 @@ export interface FileRouteTypes {
     | '/_admin/shipments/confirmed/'
     | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
+    | '/_admin/billing/invoices/$invoiceId/pdf'
     | '/_admin/billing/invoices/$invoiceId/view'
     | '/_admin/settings/user-management/permissions/'
     | '/_admin/settings/user-management/roles/'
@@ -1638,6 +1651,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBillingInvoicesInvoiceIdViewRouteImport
       parentRoute: typeof AdminBillingRouteRoute
     }
+    '/_admin/billing/invoices/$invoiceId/pdf': {
+      id: '/_admin/billing/invoices/$invoiceId/pdf'
+      path: '/invoices/$invoiceId/pdf'
+      fullPath: '/billing/invoices/$invoiceId/pdf'
+      preLoaderRoute: typeof AdminBillingInvoicesInvoiceIdPdfRouteImport
+      parentRoute: typeof AdminBillingRouteRoute
+    }
     '/_admin/settings/user-management/users/new/': {
       id: '/_admin/settings/user-management/users/new/'
       path: '/users/new'
@@ -1666,6 +1686,7 @@ interface AdminBillingRouteRouteChildren {
   AdminBillingInvoicesIndexRoute: typeof AdminBillingInvoicesIndexRoute
   AdminBillingOverviewIndexRoute: typeof AdminBillingOverviewIndexRoute
   AdminBillingQuotationsIndexRoute: typeof AdminBillingQuotationsIndexRoute
+  AdminBillingInvoicesInvoiceIdPdfRoute: typeof AdminBillingInvoicesInvoiceIdPdfRoute
   AdminBillingInvoicesInvoiceIdViewRoute: typeof AdminBillingInvoicesInvoiceIdViewRoute
 }
 
@@ -1673,6 +1694,7 @@ const AdminBillingRouteRouteChildren: AdminBillingRouteRouteChildren = {
   AdminBillingInvoicesIndexRoute: AdminBillingInvoicesIndexRoute,
   AdminBillingOverviewIndexRoute: AdminBillingOverviewIndexRoute,
   AdminBillingQuotationsIndexRoute: AdminBillingQuotationsIndexRoute,
+  AdminBillingInvoicesInvoiceIdPdfRoute: AdminBillingInvoicesInvoiceIdPdfRoute,
   AdminBillingInvoicesInvoiceIdViewRoute:
     AdminBillingInvoicesInvoiceIdViewRoute,
 }
