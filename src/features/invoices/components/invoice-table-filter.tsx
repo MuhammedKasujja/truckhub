@@ -9,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Link } from "@tanstack/react-router"
+import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 const DATE_FILTERS = [
@@ -34,7 +36,7 @@ export function InvoiceTableFilter() {
   const [type, setType] = useState("last7")
   const [exportType, setExportType] = useState("")
   return (
-    <div className="flex flex-row justify-between gap-4">
+    <div className="flex flex-row justify-between gap-4 w-full">
       <div className="flex flex-row gap-2">
         <ButtonGroup>
           <Select value={type} onValueChange={setType}>
@@ -78,19 +80,26 @@ export function InvoiceTableFilter() {
           </Button>
         </ButtonGroup>
       </div>
-      <Field className="max-w-30">
-        <Select value={exportType} onValueChange={setExportType}>
-          <SelectTrigger>
-            <SelectValue placeholder={"Export"} />
-          </SelectTrigger>
-          <SelectContent>
-            {EXPORT_TYPES.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                <span className="text-xs">{o.label}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <Field className="w-full" orientation={"horizontal"}>
+        <Button asChild>
+          <Link to="/billing/invoices/new">
+            <PlusIcon />
+          </Link>
+        </Button>
+        <div className="max-w-30">
+          <Select value={exportType} onValueChange={setExportType}>
+            <SelectTrigger>
+              <SelectValue placeholder={"Export"} />
+            </SelectTrigger>
+            <SelectContent>
+              {EXPORT_TYPES.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  <span className="text-xs">{o.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </Field>
     </div>
   )

@@ -38,7 +38,11 @@ export async function getInvoiceDetails(invoiceId: EntityId) {
 }
 
 export async function createInvoice(data: InvoiceCreateInput) {
-  return await apiClient.postFn<Invoice>(endpoint, data)
+  return await apiClient.postFn<Invoice>(endpoint, {
+    quotation_id: data.quotationId,
+    unit_ids: data.unitIds,
+    due_date: data.dueDate,
+  })
 }
 
 export async function getInvoicePdf(invoiceId: EntityId) {

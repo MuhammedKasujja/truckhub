@@ -15,6 +15,6 @@ export const Route = createFileRoute("/_admin/billing/quotations/")({
 function RouteComponent() {
   const search = Route.useSearch()
 
-  const { data, error } = useQuery(quotationQueryOptions(search))
+  const { data } = useQuery(quotationQueryOptions(search))
   return <QuotationTable data={data?.data} pagination={data?.pagination} />
 }

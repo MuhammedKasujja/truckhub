@@ -80,6 +80,7 @@ import { Route as AdminClientsClientIdPdfRouteImport } from './app/_admin/client
 import { Route as AdminClientsClientIdEditRouteImport } from './app/_admin/clients/$clientId.edit'
 import { Route as AdminBookingsBookingIdViewRouteImport } from './app/_admin/bookings/$bookingId.view'
 import { Route as AdminBookingsBookingIdEditRouteImport } from './app/_admin/bookings/$bookingId.edit'
+import { Route as AdminBillingInvoicesNewRouteImport } from './app/_admin/billing/invoices/new'
 import { Route as AdminSettingsVehicleConfigVehicleTypesIndexRouteImport } from './app/_admin/settings/vehicle-config/vehicle-types/index'
 import { Route as AdminSettingsVehicleConfigTonnagesIndexRouteImport } from './app/_admin/settings/vehicle-config/tonnages/index'
 import { Route as AdminSettingsVehicleConfigDriveTrainsIndexRouteImport } from './app/_admin/settings/vehicle-config/drive-trains/index'
@@ -485,6 +486,11 @@ const AdminBookingsBookingIdEditRoute =
     path: '/bookings/$bookingId/edit',
     getParentRoute: () => AdminRouteRoute,
   } as any)
+const AdminBillingInvoicesNewRoute = AdminBillingInvoicesNewRouteImport.update({
+  id: '/invoices/new',
+  path: '/invoices/new',
+  getParentRoute: () => AdminBillingRouteRoute,
+} as any)
 const AdminSettingsVehicleConfigVehicleTypesIndexRoute =
   AdminSettingsVehicleConfigVehicleTypesIndexRouteImport.update({
     id: '/vehicle-types/',
@@ -593,6 +599,7 @@ export interface FileRoutesByFullPath {
   '/rides/': typeof AdminRidesIndexRoute
   '/services/': typeof AdminServicesIndexRoute
   '/vehicles/': typeof AdminVehiclesIndexRoute
+  '/billing/invoices/new': typeof AdminBillingInvoicesNewRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
@@ -678,6 +685,7 @@ export interface FileRoutesByTo {
   '/rides': typeof AdminRidesIndexRoute
   '/services': typeof AdminServicesIndexRoute
   '/vehicles': typeof AdminVehiclesIndexRoute
+  '/billing/invoices/new': typeof AdminBillingInvoicesNewRoute
   '/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
@@ -765,6 +773,7 @@ export interface FileRoutesById {
   '/_admin/rides/': typeof AdminRidesIndexRoute
   '/_admin/services/': typeof AdminServicesIndexRoute
   '/_admin/vehicles/': typeof AdminVehiclesIndexRoute
+  '/_admin/billing/invoices/new': typeof AdminBillingInvoicesNewRoute
   '/_admin/bookings/$bookingId/edit': typeof AdminBookingsBookingIdEditRoute
   '/_admin/bookings/$bookingId/view': typeof AdminBookingsBookingIdViewRoute
   '/_admin/clients/$clientId/edit': typeof AdminClientsClientIdEditRoute
@@ -852,6 +861,7 @@ export interface FileRouteTypes {
     | '/rides/'
     | '/services/'
     | '/vehicles/'
+    | '/billing/invoices/new'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
     | '/clients/$clientId/edit'
@@ -937,6 +947,7 @@ export interface FileRouteTypes {
     | '/rides'
     | '/services'
     | '/vehicles'
+    | '/billing/invoices/new'
     | '/bookings/$bookingId/edit'
     | '/bookings/$bookingId/view'
     | '/clients/$clientId/edit'
@@ -1023,6 +1034,7 @@ export interface FileRouteTypes {
     | '/_admin/rides/'
     | '/_admin/services/'
     | '/_admin/vehicles/'
+    | '/_admin/billing/invoices/new'
     | '/_admin/bookings/$bookingId/edit'
     | '/_admin/bookings/$bookingId/view'
     | '/_admin/clients/$clientId/edit'
@@ -1588,6 +1600,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsBookingIdEditRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/billing/invoices/new': {
+      id: '/_admin/billing/invoices/new'
+      path: '/invoices/new'
+      fullPath: '/billing/invoices/new'
+      preLoaderRoute: typeof AdminBillingInvoicesNewRouteImport
+      parentRoute: typeof AdminBillingRouteRoute
+    }
     '/_admin/settings/vehicle-config/vehicle-types/': {
       id: '/_admin/settings/vehicle-config/vehicle-types/'
       path: '/vehicle-types'
@@ -1683,6 +1702,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminBillingRouteRouteChildren {
+  AdminBillingInvoicesNewRoute: typeof AdminBillingInvoicesNewRoute
   AdminBillingInvoicesIndexRoute: typeof AdminBillingInvoicesIndexRoute
   AdminBillingOverviewIndexRoute: typeof AdminBillingOverviewIndexRoute
   AdminBillingQuotationsIndexRoute: typeof AdminBillingQuotationsIndexRoute
@@ -1691,6 +1711,7 @@ interface AdminBillingRouteRouteChildren {
 }
 
 const AdminBillingRouteRouteChildren: AdminBillingRouteRouteChildren = {
+  AdminBillingInvoicesNewRoute: AdminBillingInvoicesNewRoute,
   AdminBillingInvoicesIndexRoute: AdminBillingInvoicesIndexRoute,
   AdminBillingOverviewIndexRoute: AdminBillingOverviewIndexRoute,
   AdminBillingQuotationsIndexRoute: AdminBillingQuotationsIndexRoute,

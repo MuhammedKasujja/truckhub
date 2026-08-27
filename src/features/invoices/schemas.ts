@@ -17,8 +17,9 @@ export const InvoiceSearchParams = z.object({
 export type InvoiceListSearchParams = z.infer<typeof InvoiceSearchParams>
 
 export const createInvoiceSchema = z.object({
-  booking_id: IDSchema,
-  due_date: z.string(),
+  quotationId: IDSchema,
+  unitIds: z.array(IDSchema).min(1),
+  dueDate: z.string(),
 })
 
 export type InvoiceCreateInput = z.infer<typeof createInvoiceSchema>
