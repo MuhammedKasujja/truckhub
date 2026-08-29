@@ -65,7 +65,7 @@ export const shipmentsCompletedQueryOptions = (
   queryOptions({
     queryKey: shipmentsQueryKeys.completed(),
     queryFn: () =>
-      getShipmentsFn({ data: { ...search, status: "captured_details" } }),
+      getShipmentsFn({ data: { ...search, status: ["invoiced", "captured_details"] } }),
   })
 
 export const quotationShipmentsQueryOptions = (

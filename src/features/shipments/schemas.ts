@@ -8,7 +8,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const ShipmentSearchParams = z.object({
   sort: getSortingStateSchema<Shipment>().default([]),
   // advanced filter
-  status: z.enum(shipmentStatuses).optional(),
+  status: z.array(z.enum(shipmentStatuses)).optional(),
   filters: getFiltersStateSchema<Shipment>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })

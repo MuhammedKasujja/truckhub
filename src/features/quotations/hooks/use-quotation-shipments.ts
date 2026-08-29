@@ -13,7 +13,7 @@ export function useQuotationShipments(
       perPage: 20,
       sort: [],
       quotation_id: quotationId!,
-      status: status?.status,
+      status: status?.status ? [status?.status] : undefined,
     }),
     enabled: !!quotationId,
   })
