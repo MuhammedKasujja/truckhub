@@ -130,7 +130,7 @@ export function ShipmentDetailsDialog({
                         <PanelField
                           icon={Fuel}
                           label="Rated Consumption"
-                          value={`${shipment.vehicle.fuel_consumption_rate} L / 100km`}
+                          value={`${shipment.vehicle.fuel_consumption_rate} KM/L`}
                         />
                       </div>
                     ) : (

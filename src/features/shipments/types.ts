@@ -6,6 +6,7 @@ import { LineItemResponse } from "../quotations/schemas"
 export type ShipmentLineItem = LineItemResponse & {
   scheduled_start: string
   scheduled_end: string
+  car_brand_id: EntityId
   car_brand: { id: EntityId; name: string } | null
   car_model: { id: EntityId; name: string } | null
   vehicle_category: { id: EntityId; name: string; is_truck: boolean } | null
@@ -37,6 +38,7 @@ export type Shipment = {
     id: EntityId
     number: string
     plate_number: string
+    vehicle_year: string
     fuel_consumption_rate: string
   }
   item: ShipmentLineItem

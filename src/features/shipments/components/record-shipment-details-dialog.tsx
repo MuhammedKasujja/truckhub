@@ -8,7 +8,10 @@ import {
 } from "@/components/ui/dialog"
 import { Shipment } from "../types"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { RecordShipmentDetailsInput, recordShipmentDetailsSchema } from "../schemas"
+import {
+  RecordShipmentDetailsInput,
+  recordShipmentDetailsSchema,
+} from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
 import {
@@ -73,13 +76,13 @@ export function RecordShipmentDetailsDialog({
       form.setValue("distanceKm", distance)
       const consumptionRate = form.getValues("vehicleConsumptionRate")
       const litresUsed = new Decimal(distance).div(consumptionRate)
-      form.setValue("fuelUsedLitres", litresUsed.toNumber())
+      form.setValue("fuelUsedLitres", litresUsed.toFixed(2))
     }
   }, [startMileage, endMileage])
 
   useEffect(() => {
     const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
-    form.setValue("actualFuelConsumed", consumedFuel.toString())
+    form.setValue("actualFuelConsumed", consumedFuel.toFixed(2))
   }, [fuelRate, litresConsumed])
 
   useEffect(() => {
@@ -132,7 +135,7 @@ export function RecordShipmentDetailsDialog({
             />
 
             <Field orientation={"horizontal"}>
-              <MoneyField
+              <NumberField
                 readOnly
                 required={false}
                 label="Vehicle Consumption Rate (km/l)"
@@ -171,6 +174,7 @@ export function RecordShipmentDetailsDialog({
                         inputMode="decimal"
                         id={field.name}
                         aria-invalid={fieldState.invalid}
+                        value={field.value}
                         autoComplete="off"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {

@@ -38,7 +38,7 @@ export const recordShipmentDetailsSchema = z.object({
   endMileage: z.number(),
   distanceKm: z.number(),
   vehicleConsumptionRate: MoneySchema,
-  fuelUsedLitres: z.number().optional(),
+  fuelUsedLitres: MoneySchema.optional(),
   fuelRate: MoneySchema.optional(),
   actualFuelConsumed: MoneySchema,
   notes: z.string().optional().nullable(),
