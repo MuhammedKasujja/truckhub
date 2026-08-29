@@ -10,7 +10,7 @@ export function VehicleStatusIndicator({
   status,
 }: VehicleStatusIndicatorProps) {
   return (
-    <Status>
+    <Status className="gap-1 py-0.5">
       <StatIndicator color={"success"}>•</StatIndicator>
       <StatusLabel>{status}</StatusLabel>
     </Status>

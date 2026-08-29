@@ -1,23 +1,31 @@
 import { EntityId } from "@/schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { ShipmentSearchParamsInput } from "./schemas"
 import { getShipmentByIdFn, getShipmentsFn } from "./services"
+import {
+  ShipmentSearchParamsInput,
+  QuotationShipmentSearchParams,
+} from "./schemas"
 
 export const shipmentsQueryKeys = {
   all: () => ["shipments"],
   list: () => [...shipmentsQueryKeys.all(), "list"],
-  active: () => [...shipmentsQueryKeys.all(), "active"],
-  confirmed: () => [...shipmentsQueryKeys.all(), "confirmed"],
-  requested: () => [...shipmentsQueryKeys.all(), "requested"],
-  completed: () => [...shipmentsQueryKeys.all(), "completed"],
+  active: () => [...shipmentsQueryKeys.list(), "active"],
+  confirmed: () => [...shipmentsQueryKeys.list(), "confirmed"],
+  requested: () => [...shipmentsQueryKeys.list(), "requested"],
+  completed: () => [...shipmentsQueryKeys.list(), "completed"],
   details: () => [...shipmentsQueryKeys.all(), "detail"],
   search: () => [...shipmentsQueryKeys.all(), "search"],
   detail: (id: EntityId) => [...shipmentsQueryKeys.details(), id],
+  quotation: (quotationId: EntityId) => [
+    ...shipmentsQueryKeys.all(),
+    "quotation",
+    quotationId,
+  ],
 } as const
 
 export const shipmentsQueryOptions = (search: ShipmentSearchParamsInput) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.list()],
+    queryKey: shipmentsQueryKeys.list(),
     queryFn: () => getShipmentsFn({ data: search }),
   })
 
@@ -25,7 +33,7 @@ export const shipmentsConfirmedQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.confirmed()],
+    queryKey: shipmentsQueryKeys.confirmed(),
     queryFn: () => getShipmentsFn({ data: search }),
   })
 
@@ -33,7 +41,7 @@ export const shipmentsActiveQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.active()],
+    queryKey: shipmentsQueryKeys.active(),
     queryFn: () => getShipmentsFn({ data: search }),
   })
 
@@ -41,13 +49,13 @@ export const shipmentsRequestsQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.requested()],
+    queryKey: shipmentsQueryKeys.requested(),
     queryFn: () => getShipmentsFn({ data: search }),
   })
 
 export const shipmentsDetailsQueryOptions = (shipmentId: EntityId) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.detail(shipmentId)],
+    queryKey: shipmentsQueryKeys.detail(shipmentId),
     queryFn: () => getShipmentByIdFn({ data: { id: shipmentId } }),
   })
 
@@ -55,6 +63,15 @@ export const shipmentsCompletedQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: [...shipmentsQueryKeys.completed()],
-    queryFn: () => getShipmentsFn({ data: search }),
+    queryKey: shipmentsQueryKeys.completed(),
+    queryFn: () =>
+      getShipmentsFn({ data: { ...search, status: "captured_details" } }),
+  })
+
+export const quotationShipmentsQueryOptions = (
+  search: QuotationShipmentSearchParams
+) =>
+  queryOptions({
+    queryKey: shipmentsQueryKeys.quotation(search.quotation_id),
+    queryFn: () => getShipmentsFn({ data: { ...search } }),
   })

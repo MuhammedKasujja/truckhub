@@ -5,6 +5,7 @@ import {
   createQuotationSchema,
   QuotationSearchParams,
   updateQuotationSchema,
+  quotationShipmentParams,
 } from "../schemas"
 import {
   getQuotations,
@@ -15,6 +16,7 @@ import {
   markQuotationAccepted,
   markQuotationRejected,
   getQuotationReportPdf,
+  getQuotationShipments,
 } from "./server"
 
 export const getQuotationsFn = createServerFn()
@@ -109,4 +111,15 @@ export const getQuotationReportPdfFn = createServerFn({ method: "GET" })
       console.error("PDF generation error:", error?.response?.data || error)
       throw new Error(`Failed to generate PDF: ${error.message}`)
     }
+  })
+
+export const getQuotationShipmentsFn = createServerFn()
+  .inputValidator(quotationShipmentParams)
+  .handler(async ({ data }) => {
+    const response = await getQuotationShipments(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })

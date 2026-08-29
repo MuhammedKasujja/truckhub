@@ -1,7 +1,7 @@
-import qs from "query-string";
-import type { ParserMap } from "nuqs/server";
-import { getValidFilters } from "@/lib/data-table";
-import { createSearchParamsCache } from "nuqs/server";
+import qs from "query-string"
+import type { ParserMap } from "nuqs/server"
+import { getValidFilters } from "@/lib/data-table"
+import { createSearchParamsCache } from "nuqs/server"
 
 /**
  * Generic helper to:
@@ -12,31 +12,31 @@ import { createSearchParamsCache } from "nuqs/server";
 
 export function generatePageSearchParams<Parsers extends ParserMap>(
   searchParamsPromise: Record<string, string | string[] | undefined>,
-  cache: ReturnType<typeof createSearchParamsCache<Parsers>>, // ← infer from the factory
+  cache: ReturnType<typeof createSearchParamsCache<Parsers>> // ← infer from the factory
 ) {
-  const raw = searchParamsPromise;
-  const parsed = cache.parse(raw);
+  const raw = searchParamsPromise
+  const parsed = cache.parse(raw)
 
   // If your parsers object always includes 'filters' (or make it conditional)
-  const rawFilters = "filters" in parsed ? parsed.filters : undefined;
-  const filters = getValidFilters(rawFilters);
+  const rawFilters = "filters" in parsed ? parsed.filters : undefined
+  const filters = getValidFilters(rawFilters)
 
   return {
     ...parsed,
     filters,
-  };
+  }
 }
 
 export const generateApiSearchParams = (input: Record<string, unknown>) => {
-  const { sort, ...rest } = input;
-  let normalized = { ...rest };
+  const { sort, ...rest } = input
+  let normalized = { ...rest }
 
   if (sort && sort instanceof Array) {
     normalized = {
       ...normalized,
       // make sort of structure sortBy=-created_at&sortBy=name where - means desc
       sortBy: generateParams(sort),
-    };
+    }
   }
 
   return qs.stringify(normalized, {
@@ -44,12 +44,17 @@ export const generateApiSearchParams = (input: Record<string, unknown>) => {
     skipNull: true,
     encode: true,
     // allowDots: false, // API prefers dots
-  });
-};
+  })
+}
 
+/**
+ * Make sort of structure sortBy=-created_at&sortBy=name where - means desc
+ * @param sortArray
+ * @returns
+ */
 const generateParams = (sortArray: Array<{ id: string; desc: boolean }>) => {
   if (sortArray.length > 0) {
-    return sortArray.map((s) => (s.desc ? `-${s.id}` : s.id));
+    return sortArray.map((s) => (s.desc ? `-${s.id}` : s.id))
   }
-  return undefined;
-};
+  return undefined
+}

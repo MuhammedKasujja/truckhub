@@ -2,6 +2,7 @@ import z from "zod"
 import { Quotation } from "./types"
 import { ENGINE_MODES } from "@/common/config"
 import { IDSchema, MoneySchema } from "@/schemas"
+import { ShipmentSearchParams } from "../shipments/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -207,3 +208,10 @@ const locationServiceSchema = z.discriminatedUnion("source", [
 const locationSourceSchema = z.array(locationServiceSchema)
 
 export type LocationSourceResponse = z.infer<typeof locationSourceSchema>
+
+export const quotationShipmentParams = z.object({
+  quotation_id: IDSchema,
+  ...ShipmentSearchParams.shape,
+})
+
+export type QuotationShipmentInput = z.infer<typeof quotationShipmentParams>

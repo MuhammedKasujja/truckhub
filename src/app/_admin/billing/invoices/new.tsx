@@ -2,11 +2,10 @@ import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/form-fields"
 import { useCreateInvoice } from "@/features/invoices/hooks/use-edit-invoice"
 import { QuotationPicker } from "@/features/quotations/components"
+import { useQuotationCompletedShipments } from "@/features/quotations/hooks/use-quotation-shipments"
 import { Quotation } from "@/features/quotations/types"
-import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { formatDate } from "@/lib/format"
 import { EntityId } from "@/schemas"
-import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 
@@ -15,10 +14,10 @@ export const Route = createFileRoute("/_admin/billing/invoices/new")({
 })
 
 function RouteComponent() {
-  const { data } = useQuery(
-    shipmentsActiveQueryOptions({ page: 1, perPage: 20, sort: [] })
-  )
   const [quotation, setQuotation] = useState<Quotation | null>()
+
+  const { data } = useQuotationCompletedShipments(quotation?.id)
+
   const [dueDate, setDueDate] = useState<Date | null>()
   const [lineItems, setLineItems] = useState<EntityId[]>([])
   const { createInvoice } = useCreateInvoice()

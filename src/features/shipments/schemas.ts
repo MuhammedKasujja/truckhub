@@ -1,7 +1,7 @@
 import z from "zod"
 import { Shipment } from "./types"
 import { shipmentStatuses } from "./enums"
-import { IDSchema, MoneySchema } from "@/schemas"
+import { EntityId, IDSchema, MoneySchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -52,7 +52,9 @@ export const endShipmentSchema = z.object({
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>
 
-export type RecordShipmentDetailsInput = z.infer<typeof recordShipmentDetailsSchema>
+export type RecordShipmentDetailsInput = z.infer<
+  typeof recordShipmentDetailsSchema
+>
 
 export type DispatchShipmentInput = z.infer<typeof dispatchShipmentSchema>
 
@@ -65,3 +67,7 @@ export type AssignShipmentDriverInput = z.infer<
 >
 
 export type ShipmentSearchParamsInput = z.infer<typeof ShipmentSearchParams>
+
+export type QuotationShipmentSearchParams = ShipmentSearchParamsInput & {
+  quotation_id: EntityId
+}

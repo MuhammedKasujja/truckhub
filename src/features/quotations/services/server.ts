@@ -5,9 +5,11 @@ import { generateApiSearchParams } from "@/lib/search-params"
 import {
   CreateQuotationRequest,
   UpdateQuotationRequest,
+  QuotationShipmentInput,
   QuotationListSearchParams,
 } from "../schemas"
 import { api } from "@/lib/api"
+import { Shipment } from "@/features/shipments/types"
 
 const endpoint = "/v1/quotations"
 
@@ -56,4 +58,17 @@ export async function getQuotationReportPdf(quotationId: EntityId) {
     responseType: "arraybuffer",
     timeout: 30000,
   })
+}
+
+export async function getQuotationShipments(input: QuotationShipmentInput) {
+  const params = generateApiSearchParams(input)
+  const response = await apiClient.getPaginatedFn<Shipment[]>(
+    `/v1/trips?${params}`
+  )
+
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
