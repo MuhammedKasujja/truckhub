@@ -34,7 +34,10 @@ export const shipmentsConfirmedQueryOptions = (
 ) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.confirmed(),
-    queryFn: () => getShipmentsFn({ data: search }),
+    queryFn: () =>
+      getShipmentsFn({
+        data: { ...search, status: ["assigned", "vehicle_assigned"] },
+      }),
   })
 
 export const shipmentsActiveQueryOptions = (
@@ -42,7 +45,10 @@ export const shipmentsActiveQueryOptions = (
 ) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.active(),
-    queryFn: () => getShipmentsFn({ data: search }),
+    queryFn: () =>
+      getShipmentsFn({
+        data: { ...search, status: ["in_progress", "dispatched"] },
+      }),
   })
 
 export const shipmentsRequestsQueryOptions = (
@@ -50,7 +56,8 @@ export const shipmentsRequestsQueryOptions = (
 ) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.requested(),
-    queryFn: () => getShipmentsFn({ data: search }),
+    queryFn: () =>
+      getShipmentsFn({ data: { ...search, status: ["unassigned"] } }),
   })
 
 export const shipmentsDetailsQueryOptions = (shipmentId: EntityId) =>
@@ -65,7 +72,9 @@ export const shipmentsCompletedQueryOptions = (
   queryOptions({
     queryKey: shipmentsQueryKeys.completed(),
     queryFn: () =>
-      getShipmentsFn({ data: { ...search, status: ["invoiced", "captured_details"] } }),
+      getShipmentsFn({
+        data: { ...search, status: ["invoiced", "captured_details"] },
+      }),
   })
 
 export const quotationShipmentsQueryOptions = (

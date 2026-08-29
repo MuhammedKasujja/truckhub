@@ -20,16 +20,16 @@ import { useBackNavigation } from "@/hooks/use-back-navigation"
 
 const shipmentTabs = [
   {
+    name: "requests",
+    route: RequestedShipmentsRoute.to,
+  },
+  {
     name: "active",
     route: ActiveShipmentsRoute.to,
   },
   {
     name: "confirmed",
     route: ConfirmedShipmentsRoute.to,
-  },
-  {
-    name: "requests",
-    route: RequestedShipmentsRoute.to,
   },
   {
     name: "completed",
