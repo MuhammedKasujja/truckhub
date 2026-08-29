@@ -24,8 +24,7 @@ import { Field } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { formatNumber } from "@/lib/format"
-import { Status, StatusLabel } from "@/components/ui/status"
-import { StatIndicator } from "@/components/ui/stat"
+import { VehicleStatusIndicator } from "./vehicle-status-indicator"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -68,10 +67,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             <div>
               {vehicle.number} • {vehicle.plate_number}
             </div>
-            <Status>
-              <StatIndicator color={"success"}>•</StatIndicator>
-              <StatusLabel>{vehicle.status}</StatusLabel>
-            </Status>
+            <VehicleStatusIndicator status={vehicle.status}/>
           </div>
         </div>
         <div className="flex items-center gap-2">

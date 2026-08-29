@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas"
+import { VehicleStatus } from "./enums"
 
 export const EngineTypes = ["petrol", "desel"] as const
 export const Gearboxes = ["manual", "automatic"] as const
@@ -26,7 +27,7 @@ export interface VehicleBase {
   engine_type: Engine
   gearbox: Gearbox
   year: string
-  status: string
+  status: VehicleStatus
   seats: number
   vehicle_category_id: EntityId
   car_model_id: EntityId

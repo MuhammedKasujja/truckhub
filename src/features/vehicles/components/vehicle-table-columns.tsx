@@ -8,6 +8,7 @@ import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
+import { VehicleStatusIndicator } from "./vehicle-status-indicator"
 
 export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
   return [
@@ -59,10 +60,10 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       },
     },
     {
-      accessorKey: "year",
-      header: "Year",
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }) => {
-        return <p>{row.original.year}</p>
+        return <VehicleStatusIndicator status={row.original.status} />
       },
     },
     {
