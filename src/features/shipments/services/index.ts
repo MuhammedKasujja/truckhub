@@ -2,19 +2,19 @@ import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import {
   endShipmentSchema,
-  finishShipmentSchema,
   ShipmentSearchParams,
   dispatchShipmentSchema,
   assignShipmentDriverSchema,
+  recordShipmentDetailsSchema,
   assignShipmentVehicleSchema,
 } from "../schemas"
 import {
   endShipment,
   getShipments,
-  finishShipment,
   getShipmentById,
   dispatchShipment,
   shipmentAssignDriver,
+  recordShipmentDetails,
   shipmentAssignVehicle,
 } from "./server"
 import { ApiError } from "@/types"
@@ -60,10 +60,10 @@ export const dispatchShipmentFn = createServerFn()
     return { data: result.data, message: result.message }
   })
 
-export const finishShipmentFn = createServerFn()
-  .inputValidator(finishShipmentSchema)
+export const recordShipmentDetailsFn = createServerFn()
+  .inputValidator(recordShipmentDetailsSchema)
   .handler(async ({ data }) => {
-    const result = await finishShipment(data)
+    const result = await recordShipmentDetails(data)
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }

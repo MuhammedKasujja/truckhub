@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/dialog"
 import { Shipment } from "../types"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { FinishShipmentInput, finishShipmentSchema } from "../schemas"
+import { RecordShipmentDetailsInput, recordShipmentDetailsSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFinishShipment } from "../hooks/use-shipment-actions"
+import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
 import {
   MoneyField,
   NumberField,
@@ -35,10 +35,10 @@ export function RecordShipmentDetailsDialog({
   onOpenChange,
   open,
 }: Props) {
-  const { finishShipment, isPending } = useFinishShipment()
+  const { saveShipmentDetails, isPending } = useRecordShipmentDetails()
 
-  const form = useForm<FinishShipmentInput>({
-    resolver: zodResolver(finishShipmentSchema),
+  const form = useForm<RecordShipmentDetailsInput>({
+    resolver: zodResolver(recordShipmentDetailsSchema),
     defaultValues: {
       unitId: shipment?.id,
       startMileage: Number(shipment?.consumption?.start_mileage),
@@ -99,7 +99,7 @@ export function RecordShipmentDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
         <form
-          onSubmit={form.handleSubmit(finishShipment, (errors) => {
+          onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
             console.log(errors.consumedFuelRates)
           })}
           className="flex flex-col gap-4"

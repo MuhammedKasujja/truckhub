@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import { DatePicker } from "@/components/ui/form-fields"
 import { useCreateInvoice } from "@/features/invoices/hooks/use-edit-invoice"
 import { QuotationPicker } from "@/features/quotations/components"
 import { Quotation } from "@/features/quotations/types"
@@ -18,6 +19,7 @@ function RouteComponent() {
     shipmentsActiveQueryOptions({ page: 1, perPage: 20, sort: [] })
   )
   const [quotation, setQuotation] = useState<Quotation | null>()
+  const [dueDate, setDueDate] = useState<Date | null>()
   const [lineItems, setLineItems] = useState<EntityId[]>([])
   const { createInvoice } = useCreateInvoice()
   return (
@@ -30,13 +32,14 @@ function RouteComponent() {
           }}
         />
       </div>
+      <DatePicker onDateChanged={setDueDate} />
       <Button
         onClick={() => {
-          if (quotation)
+          if (quotation && dueDate)
             createInvoice({
               quotationId: quotation?.id,
               unitIds: lineItems,
-              dueDate: "30/01/2026",
+              dueDate: dueDate.toLocaleDateString("en-CA"),
             })
         }}
       >

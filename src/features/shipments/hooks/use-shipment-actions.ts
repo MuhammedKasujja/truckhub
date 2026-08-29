@@ -1,16 +1,16 @@
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import {
   EndShipmentInput,
-  FinishShipmentInput,
   DispatchShipmentInput,
   AssignShipmentDriverInput,
+  RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
 } from "../schemas"
 import {
   endShipmentFn,
-  finishShipmentFn,
   dispatchShipmentFn,
   shipmentAssignDriverFn,
+  recordShipmentDetailsFn,
   shipmentAssignVehicleFn,
 } from "../services"
 
@@ -48,21 +48,21 @@ export function useEndShipment() {
   return { isPending, endShipment }
 }
 
-const useFinishShipmentBase = createEntityActionHook(
-  finishShipmentFn,
+const useRecordShipmentDetailsBase = createEntityActionHook(
+  recordShipmentDetailsFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
     invalidator.shipments.details(input.data.unitId)
   }
 )
 
-export function useFinishShipment() {
-  const { isPending, execute } = useFinishShipmentBase()
+export function useRecordShipmentDetails() {
+  const { isPending, execute } = useRecordShipmentDetailsBase()
 
-  function finishShipment(data: FinishShipmentInput) {
+  function saveShipmentDetails(data: RecordShipmentDetailsInput) {
     return execute({ data })
   }
-  return { isPending, finishShipment }
+  return { isPending, saveShipmentDetails }
 }
 
 const useAssignShipmentDriverBase = createEntityActionHook(

@@ -32,7 +32,7 @@ export const assignShipmentDriverSchema = z.object({
   driverId: IDSchema,
 })
 
-export const finishShipmentSchema = z.object({
+export const recordShipmentDetailsSchema = z.object({
   unitId: IDSchema,
   startMileage: z.number(),
   endMileage: z.number(),
@@ -52,7 +52,7 @@ export const endShipmentSchema = z.object({
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>
 
-export type FinishShipmentInput = z.infer<typeof finishShipmentSchema>
+export type RecordShipmentDetailsInput = z.infer<typeof recordShipmentDetailsSchema>
 
 export type DispatchShipmentInput = z.infer<typeof dispatchShipmentSchema>
 

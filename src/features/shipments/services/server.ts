@@ -4,10 +4,10 @@ import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
 import {
   EndShipmentInput,
-  FinishShipmentInput,
   DispatchShipmentInput,
   ShipmentSearchParamsInput,
   AssignShipmentDriverInput,
+  RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
 } from "../schemas"
 
@@ -39,18 +39,18 @@ export async function dispatchShipment(data: DispatchShipmentInput) {
 }
 
 export async function endShipment(data: EndShipmentInput) {
-  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/end`, {
+  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/complete`, {
     end_mileage: data.endMileage,
   })
 }
 
-export async function finishShipment(data: FinishShipmentInput) {
+export async function recordShipmentDetails(data: RecordShipmentDetailsInput) {
   const { unitId, consumedFuelRates, notes, endMileage } = data
   const fuelRates = consumedFuelRates
     .filter((r) => r.value)
     .map((rate) => rate.value)
 
-  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/complete`, {
+  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/details`, {
     notes,
     end_mileage: endMileage,
     consumed_fuel_rates: fuelRates,
