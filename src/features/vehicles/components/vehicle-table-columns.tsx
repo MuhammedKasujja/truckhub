@@ -9,6 +9,7 @@ import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { VehicleStatusIndicator } from "./vehicle-status-indicator"
+import { vehicleStatuses } from "../enums"
 
 export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
   return [
@@ -65,6 +66,15 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       cell: ({ row }) => {
         return <VehicleStatusIndicator status={row.original.status} />
       },
+      meta: {
+        label: "Status",
+        variant: "select",
+        options: vehicleStatuses.map((status) => ({
+          label: status,
+          value: `${status}`,
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
       id: "driver",

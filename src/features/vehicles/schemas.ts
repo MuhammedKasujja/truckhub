@@ -1,5 +1,6 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
+import { vehicleStatuses } from "./enums"
 import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { DefaultSearchParamsSchema, plateNumberSchema } from "@/common/schemas"
@@ -40,7 +41,8 @@ export const VehicleSearchParamsCache = z.object({
   sort: getSortingStateSchema<Vehicle>().default([
     { id: "created_at", desc: true },
   ]),
-  // advanced filter
+  status: z.enum(vehicleStatuses).optional(),
+  // advanced table filter
   filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,
 })

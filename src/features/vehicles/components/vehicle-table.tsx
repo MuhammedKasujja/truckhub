@@ -18,7 +18,8 @@ import { createVehiclesListQueryOptions } from "../query-options"
 export function VehicleTable() {
   const search = useSearch({ from: "/_admin/vehicles/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createVehiclesListQueryOptions(search))
   const columns = React.useMemo(() => getVehicleTableColumns(), [])
 
@@ -57,7 +58,7 @@ export function VehicleTable() {
 export function VehicleTableSkeleton() {
   return (
     <DataTableSkeleton
-      columnCount={getVehicleTableColumns().length}
+      columnCount={8}
       filterCount={1}
       shrinkZero
     />

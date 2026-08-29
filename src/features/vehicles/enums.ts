@@ -1,4 +1,4 @@
-export const vehicleStatues = [
+export const vehicleStatuses = [
   "available",
   "reserved",
   "rented",
@@ -6,4 +6,4 @@ export const vehicleStatues = [
   "on_trip",
 ] as const
 
-export type VehicleStatus = (typeof vehicleStatues)[number]
+export type VehicleStatus = (typeof vehicleStatuses)[number]

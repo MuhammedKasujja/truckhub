@@ -47,7 +47,7 @@ export const shipmentsActiveQueryOptions = (
     queryKey: shipmentsQueryKeys.active(),
     queryFn: () =>
       getShipmentsFn({
-        data: { ...search, status: ["in_progress", "dispatched"] },
+        data: { ...search, status: ["in_progress", "dispatched", "delayed"] },
       }),
   })
 

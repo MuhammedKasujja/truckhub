@@ -12,6 +12,7 @@ import { VehicleSearchParamsCache } from "@/features/vehicles/schemas"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
+  pendingComponent: VehicleTableSkeleton,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("vehicles:module"),
