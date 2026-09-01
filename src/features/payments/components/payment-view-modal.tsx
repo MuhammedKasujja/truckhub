@@ -59,16 +59,16 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
           <Card>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-3">
-                <Label htmlFor="header">{tr("payments.amount")}</Label>
+                <Label htmlFor="header" className="text-muted-foreground">{tr("payments.amount")}</Label>
                 {formatMoney(payment.amount)}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-3">
-                  <Label htmlFor="type">{tr("payments.applied")}</Label>
+                  <Label htmlFor="type" className="text-muted-foreground">{tr("payments.applied")}</Label>
                   {formatMoney(payment.applied)}
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Label htmlFor="status">{tr("payments.status")}</Label>
+                  <Label htmlFor="status" className="text-muted-foreground">{tr("payments.status")}</Label>
                   {tr(`payments.statuses.${payment.status}`)}
                 </div>
               </div>

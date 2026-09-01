@@ -38,7 +38,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
-import { DistanceTonnagePricingResponse } from "@/features/settings/pricing/types"
+import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 
@@ -64,7 +64,9 @@ export function DistancePricingSelectDialog({
   onOpenChange,
   onLineItemAdded,
 }: DistancePricingDialogProps) {
-  const { data, isLoading } = useDistanceTonnagePricing()
+  const { data: response, isLoading } = useDistanceTonnagePricing()
+
+  const data= response?.pricings ??[]
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -112,7 +114,7 @@ export function DistancePricingSelectDialog({
   const isSelected = (pricingId: EntityId) =>
     (data ?? []).find((r) => r.id === pricingId)
 
-  function handleSelect(pricing: DistanceTonnagePricingResponse) {
+  function handleSelect(pricing: DistanceTonnagePricingItem) {
     form.setValue("unit_price", pricing.max_price)
   }
 
