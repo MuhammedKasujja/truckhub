@@ -18,7 +18,11 @@ function RouteComponent() {
   const { data } = Route.useLoaderData()
   return (
     <LoadingOffloadingPricingForm
-      initialData={data ? { pricings: data.pricings, effective_date: data.effective_date } : undefined}
+      initialData={
+        data
+          ? { pricings: data.pricings, effective_date: data.effective_date }
+          : undefined
+      }
       onSubmit={async (data) => {
         const { message, error } = await createBatchLoadingPricingFn({ data })
         if (error) {

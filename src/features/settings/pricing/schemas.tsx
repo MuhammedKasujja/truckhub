@@ -123,6 +123,7 @@ export const islandPricingSchema = z.object({
     .array(z.object({ value: z.string('Required').trim().min(2, "Too Short") }))
     .min(1, "Locations cannot be empty"),
   priceRate: z.number().positive("Required"),
+  // priceRate: MoneySchema.min(1, "Required"),
   newPriceRate: z.number().positive().optional().nullable(),
 })
 

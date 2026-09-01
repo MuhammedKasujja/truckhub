@@ -51,7 +51,7 @@ export type IslandPricingResponse = {
   pricings: IslandPricingItem[]
 }
 
-export type DistanceTonnagePricingResponse = {
+export type DistanceTonnagePricingItem = {
   id: EntityId
   distance_min_km: number
   distance_max_km: number | null
@@ -60,6 +60,11 @@ export type DistanceTonnagePricingResponse = {
   tonnage_max: number
   min_price: string
   max_price: string
+}
+
+export type DistanceTonnagePricingResponse = {
+  effective_date: Date
+  pricings: DistanceTonnagePricingItem[]
 }
 
 export type LoadingOffloadingPricingItem = {

@@ -37,7 +37,7 @@ export async function createBatchDistancePricing(
   )
 }
 export async function getDistanceTonnagePricing() {
-  return await apiClient.getFn<DistanceTonnagePricingResponse[]>(
+  return await apiClient.getFn<DistanceTonnagePricingResponse>(
     "/v1/pricing/distance-tonnage"
   )
 }

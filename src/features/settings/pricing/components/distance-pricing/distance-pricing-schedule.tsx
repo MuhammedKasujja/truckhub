@@ -107,6 +107,9 @@ import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Can } from "@/components/has-permission"
+import { DatePicker } from "@/components/ui/form-fields"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
 const gridColumnHelper = createColumnHelper<GridRow>()
 const listColumnHelper = createColumnHelper<RateEntry>()
@@ -115,14 +118,19 @@ const listColumnHelper = createColumnHelper<RateEntry>()
 // Component
 // ---------------------------------------------------------------------------
 
+type DistancePricingScheduleFormProps = PriceScheduleFormProps & {
+  initialDate?: Date
+}
+
 export function DistancePricingScheduleForm({
   initialSchedule = {
     tonnageRanges: [],
     distanceRanges: [],
     rates: [],
   },
+  initialDate,
   onSave,
-}: PriceScheduleFormProps) {
+}: DistancePricingScheduleFormProps) {
   const [mode, setMode] = useState<"view" | "edit">("view")
   const [submittedSchedule, setSubmittedSchedule] =
     useState<PriceSchedule>(initialSchedule)
@@ -130,6 +138,7 @@ export function DistancePricingScheduleForm({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
+  const [pricingDate, setPricingDate] = useState<Date | undefined>(initialDate)
 
   const {
     register,
@@ -256,10 +265,14 @@ export function DistancePricingScheduleForm({
 
   const onSubmit = (data: FormValues) => {
     if (hasBlockingErrors) return
+    if (!pricingDate) {
+      toast.error("Pricing date is required")
+      return
+    }
     const schedule = buildScheduleFromForm(data)
     setSubmittedSchedule(schedule)
     setMode("view")
-    if (onSave) onSave(toDbRows(schedule), schedule)
+    if (onSave) onSave(toDbRows(schedule), schedule, pricingDate)
   }
 
   const handleEditClick = () => {
@@ -423,6 +436,15 @@ export function DistancePricingScheduleForm({
           </Can>
         )}
       </header>
+      <div className="w-80 space-y-2.5">
+        <Label>Effective Date</Label>
+        <DatePicker
+          initialDate={pricingDate}
+          onDateChanged={(date) => {
+            setPricingDate(date)
+          }}
+        />
+      </div>
 
       {mode === "view" && (
         <SchedulePanel
@@ -607,7 +629,9 @@ function NumberField({ label, error, inputProps, disabled }: NumberFieldProps) {
         }`}
       />
       {error && (
-        <p className="mt-0.5 text-[10px] text-destructive-foreground">{error.message}</p>
+        <p className="mt-0.5 text-[10px] text-destructive-foreground">
+          {error.message}
+        </p>
       )}
     </div>
   )
