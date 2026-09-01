@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/input-group"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
+import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -93,7 +94,16 @@ export function RoutePricingSelectDialog({
   onLiveChange,
   onLineItemAdded,
 }: RoutePricingDialogProps) {
-  const { data, isLoading } = useClientRoutingPricing(clientId)
+  const { data: clientPricings, isLoading } = useClientRoutingPricing(clientId)
+  const { data: companyPricings } = useRouteTonnagePricing()
+
+  const pricings = useMemo(() => {
+    // if (isFetching) return undefined
+
+    if (clientPricings) return clientPricings
+
+    return companyPricings
+  }, [clientPricings, companyPricings])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -121,7 +131,7 @@ export function RoutePricingSelectDialog({
   const [query, setQuery] = useState("")
 
   const filteredRoutes = useMemo(() => {
-    return (data?.routes ?? []).filter((route) => {
+    return (pricings?.routes ?? []).filter((route) => {
       const q = query.toLowerCase()
 
       // if (tonnage) {
@@ -137,7 +147,7 @@ export function RoutePricingSelectDialog({
         route.destination.toLowerCase().includes(q)
       )
     })
-  }, [query, data, tonnage])
+  }, [query, pricings, tonnage])
 
   useEffect(() => {
     const unitPrice = routes.reduce(
@@ -302,7 +312,7 @@ export function RoutePricingSelectDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {data?.tonnages?.map((item) => (
+                    {pricings?.tonnages?.map((item) => (
                       <SelectItem
                         key={item.min_tons}
                         value={item.min_tons.toString()}

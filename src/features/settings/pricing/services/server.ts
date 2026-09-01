@@ -7,6 +7,7 @@ import {
   LoadingOffloadingPricingRequest,
 } from "../schemas"
 import {
+  RoutePricingResponse,
   IslandPricingResponse,
   IslandPricingCreateDto,
   DistanceTonnagePricingResponse,
@@ -69,4 +70,8 @@ export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
     "/v1/pricing/islands",
     data
   )
+}
+
+export async function getRouteTonnagePricing() {
+  return await apiClient.getFn<RoutePricingResponse>(`${endpoint}/view`)
 }

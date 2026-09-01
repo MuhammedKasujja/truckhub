@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getIslandsPricings,
+  getRouteTonnagePricing,
   createBatchIslandPricing,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
@@ -49,6 +50,14 @@ export const getDistanceTonnagePricingFn = createServerFn().handler(
     return { data: result.data!, message: result.message }
   }
 )
+
+export const getRouteTonnagePricingFn = createServerFn().handler(async () => {
+  const result = await getRouteTonnagePricing()
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+  return { data: result.data!, message: result.message }
+})
 
 export const createBatchLoadingPricingFn = createServerFn()
   .inputValidator(LoadingOffloadingPricingSchema)

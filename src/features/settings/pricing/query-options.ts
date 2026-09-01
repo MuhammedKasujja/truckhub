@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 import {
   getIslandPricingsFn,
+  getRouteTonnagePricingFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
 } from "./services"
@@ -24,7 +25,7 @@ export const distancePricingQueryOptions = () =>
 export const companyRoutePricingQueryOptions = () =>
   queryOptions({
     queryKey: pricingQueryKeys.routes(),
-    queryFn: getDistanceTonnagePricingFn,
+    queryFn: getRouteTonnagePricingFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 

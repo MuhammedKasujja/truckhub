@@ -1,11 +1,20 @@
 import { useQuery } from "@tanstack/react-query"
 import { ListDistancePricingRequest } from "../schemas"
 import { createBatchDistancePricingFn } from "../services"
-import { distancePricingQueryOptions } from "../query-options"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
+import {
+  distancePricingQueryOptions,
+  companyRoutePricingQueryOptions,
+} from "../query-options"
 
 export function useDistanceTonnagePricing() {
   const { data, isLoading, error } = useQuery(distancePricingQueryOptions())
+
+  return { isLoading, data: data?.data, error }
+}
+
+export function useRouteTonnagePricing() {
+  const { data, isLoading, error } = useQuery(companyRoutePricingQueryOptions())
 
   return { isLoading, data: data?.data, error }
 }
