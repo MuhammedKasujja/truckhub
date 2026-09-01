@@ -21,7 +21,10 @@ function RouteComponent() {
       initialSchedule={fromDbRows(data.pricings)}
       initialDate={data.effective_date}
       onSave={async (pricings, _, effectiveDate) => {
-        await createDistanceTonnage(pricings)
+        await createDistanceTonnage({
+          pricings,
+          effectiveDate: effectiveDate.toLocaleDateString("en-CA"),
+        })
       }}
     />
   )

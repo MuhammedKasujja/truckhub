@@ -31,11 +31,13 @@ export async function createBatchRouteTonnagePricing(
 export async function createBatchDistancePricing(
   data: ListDistancePricingRequest
 ) {
-  return await apiClient.postFn<BatchPayload>(
-    "/v1/pricing/distance-tonnage",
-    data.pricings
-  )
+  const { pricings, effectiveDate: valid_from } = data
+  return await apiClient.postFn<BatchPayload>("/v1/pricing/distance-tonnage", {
+    valid_from,
+    pricings,
+  })
 }
+
 export async function getDistanceTonnagePricing() {
   return await apiClient.getFn<DistanceTonnagePricingResponse>(
     "/v1/pricing/distance-tonnage"
