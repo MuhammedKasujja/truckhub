@@ -59,7 +59,7 @@ export function EditIslandsPricingForm({
         <DatePickerField
           control={form.control}
           name="validFromDate"
-          label="Valid From"
+          label="Effective Date"
         />
         <Button
           type="button"

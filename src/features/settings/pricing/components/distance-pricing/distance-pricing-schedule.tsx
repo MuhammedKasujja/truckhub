@@ -436,8 +436,8 @@ export function DistancePricingScheduleForm({
           </Can>
         )}
       </header>
-      <div className="w-80 space-y-2.5">
-        <Label>Effective Date</Label>
+      <div className="w-full md:w-80 space-y-2.5">
+        <Label>Effective Date *</Label>
         <DatePicker
           initialDate={pricingDate}
           onDateChanged={(date) => {

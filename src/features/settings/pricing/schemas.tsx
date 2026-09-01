@@ -106,7 +106,7 @@ const loadingOffloadingPricingSchema = z.object({
 export const LoadingOffloadingPricingSchema = z.object({
   client_id: IDSchema.optional().nullable(),
   pricings: z.array(loadingOffloadingPricingSchema),
-  effective_date: z.date().optional()
+  effective_date: z.string().min(1, "Required")
 })
 
 export type LoadingOffloadingPricing = z.infer<

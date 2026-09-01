@@ -9,7 +9,7 @@ import {
   LoadingOffloadingPricingSchema,
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TextField } from "@/components/ui/form-fields"
+import { DatePickerField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/providers/auth-context"
@@ -83,8 +83,8 @@ const emptyPricing = {
 }
 
 interface LoadingOffloadingPricingSchemaProp {
-  initialData?: LoadingOffloadingPricingRequest,
-  isSubmitting?: boolean,
+  initialData?: LoadingOffloadingPricingRequest
+  isSubmitting?: boolean
   onSubmit: (data: LoadingOffloadingPricingRequest) => Promise<void>
 }
 
@@ -102,6 +102,7 @@ export function LoadingOffloadingPricingForm({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
       client_id: initialData?.client_id,
+      effective_date: initialData?.effective_date,
       pricings:
         initialData?.pricings && initialData?.pricings.length > 0
           ? initialData?.pricings
@@ -120,9 +121,12 @@ export function LoadingOffloadingPricingForm({
 
   // Tonnage  Ranges should not overlap
   return (
-    <Card>
-      <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmitData)}>
+    <form onSubmit={form.handleSubmit(onSubmitData)} className="space-y-4">
+      <div className="w-full space-y-2.5 md:w-80">
+        <DatePickerField label="Effective Date" name={"effective_date"} control={form.control} />
+      </div>
+      <Card>
+        <CardContent>
           <FieldGroup className="space-y-1">
             <Field orientation={"horizontal"} className="grid grid-cols-6">
               <div>TONS Min</div>
@@ -177,8 +181,8 @@ export function LoadingOffloadingPricingForm({
               <SubmitButton isSubmitting={isSubmitting} />
             </Field>
           )}
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </form>
   )
 }
