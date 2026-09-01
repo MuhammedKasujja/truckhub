@@ -82,7 +82,7 @@ export const createDistanceTonnageLineItemSchema = z.object({
   source: z.literal("distance"),
   locations: z.array(createDistancePricingSchema),
   item_type: z.literal("truck"),
-  distance_km: z.number(),
+  distance_km: z.number("Required").positive("Required").min(0.1),
   with_loaders: z.boolean(),
   estimated_consumption_rate_km: z.number().min(1, "Required"),
   tonnage: z.number("Required").min(0.1, "Required"),
