@@ -46,7 +46,7 @@ export function UserForm({ initialData }: UserFormProps) {
   const tr = useTranslation()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: { ...initialData, phone: initialData?.phone ?? "" },
   })
 
   async function handleSubmit(values: z.infer<typeof formSchema>) {
