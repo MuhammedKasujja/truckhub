@@ -107,9 +107,10 @@ export async function getClientLoadingOffloadingFrees(clientId: EntityId) {
 export async function createClientLoadingOffloadingPricing(
   data: LoadingOffloadingPricingRequest
 ) {
+  const { pricings, effective_date: valid_from, client_id } = data
   return await apiClient.postFn<DistancePricingRequest[]>(
-    `${endpoint}/${data.client_id}/loading-offloading/pricing`,
-    data.pricings
+    `${endpoint}/${client_id}/loading-offloading/pricing`,
+    { valid_from, pricings }
   )
 }
 

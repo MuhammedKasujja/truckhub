@@ -47,9 +47,10 @@ export async function getDistanceTonnagePricing() {
 export async function createBatchLoadingPricing(
   data: LoadingOffloadingPricingRequest
 ) {
+  const { pricings, effective_date } = data
   return await apiClient.postFn<DistancePricingRequest[]>(
     "/v1/pricing/loading-offloading",
-    data.pricings
+    { pricings, valid_from: effective_date }
   )
 }
 

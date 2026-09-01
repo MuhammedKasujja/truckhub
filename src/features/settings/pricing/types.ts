@@ -47,7 +47,7 @@ export type IslandPricingItem = {
 }
 
 export type IslandPricingResponse = {
-  effective_date: Date
+  effective_date: string
   pricings: IslandPricingItem[]
 }
 
@@ -78,6 +78,6 @@ export type LoadingOffloadingPricingItem = {
 }
 
 export type LoadingOffloadingPricingResponse = {
-  effective_date: Date
+  effective_date: Date | string
   pricings: LoadingOffloadingPricingItem[]
 }

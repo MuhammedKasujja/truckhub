@@ -20,9 +20,11 @@ function RouteComponent() {
     <EditIslandsPricingForm
       initialData={{
         pricings: data?.pricings ?? [],
-        validFromDate: data?.validFromDate ?? new Date(),
+        validFromDate:
+          data?.validFromDate ?? new Date().toLocaleDateString("en-CA"),
       }}
       onSubmit={async (data) => {
+        console.log("Validated Data", data)
         const { message, error } = await createBatchIslandPricingsFn({ data })
         if (error) {
           toast.error(error.message)

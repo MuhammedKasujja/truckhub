@@ -53,7 +53,11 @@ export function EditIslandsPricingForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmitData)}>
+    <form
+      onSubmit={form.handleSubmit(onSubmitData, (errors) => {
+        console.error("IslandPricingForm errors", errors)
+      })}
+    >
       <div className="mb-4 flex flex-row gap-4">
         {/* <div className="uppercase">Islands {pricingFields.fields.length} </div> */}
         <DatePickerField

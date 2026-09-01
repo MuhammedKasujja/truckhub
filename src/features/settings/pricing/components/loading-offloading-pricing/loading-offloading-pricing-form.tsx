@@ -121,9 +121,18 @@ export function LoadingOffloadingPricingForm({
 
   // Tonnage  Ranges should not overlap
   return (
-    <form onSubmit={form.handleSubmit(onSubmitData)} className="space-y-4">
+    <form
+      onSubmit={form.handleSubmit(onSubmitData, (errors) => {
+        console.log("Errors Data", errors)
+      })}
+      className="space-y-4"
+    >
       <div className="w-full space-y-2.5 md:w-80">
-        <DatePickerField label="Effective Date" name={"effective_date"} control={form.control} />
+        <DatePickerField
+          label="Effective Date"
+          name={"effective_date"}
+          control={form.control}
+        />
       </div>
       <Card>
         <CardContent>

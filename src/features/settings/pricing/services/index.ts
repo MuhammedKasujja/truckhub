@@ -72,7 +72,7 @@ export const createBatchIslandPricingsFn = createServerFn()
     }))
     return createBatchIslandPricing({
       pricings,
-      valid_from: data.validFromDate.toISOString().split("T")[0],
+      valid_from: data.validFromDate,
     })
   })
 

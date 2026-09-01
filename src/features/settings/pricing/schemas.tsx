@@ -132,7 +132,7 @@ export type IslandPricingRequest = z.infer<typeof islandPricingSchema>
 
 export const IslandsListPricingSchema = z.object({
   pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
-  validFromDate: z.date()
+  validFromDate: z.string("Date is required")
 })
 
 export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>
