@@ -46,7 +46,7 @@ export const getDistanceTonnagePricingFn = createServerFn().handler(
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }
-    return { data: result.data ??[], message: result.message }
+    return { data: result.data ?? [], message: result.message }
   }
 )
 
@@ -79,12 +79,12 @@ export const createBatchIslandPricingsFn = createServerFn()
 export const getIslandPricingsFn = createServerFn().handler(async () => {
   const { data } = await getIslandsPricings()
   if (data) {
-    const pricings: IslandPricingRequest[] = data.map((p) => ({
+    const pricings: IslandPricingRequest[] = data.pricings.map((p) => ({
       name: p.name,
       priceRate: Number(p.general_price),
       locations: p.locations.map((l) => ({ value: l })),
     }))
-    return pricings
+    return { pricings, validFromDate: data.effective_date }
   }
   return undefined
 })

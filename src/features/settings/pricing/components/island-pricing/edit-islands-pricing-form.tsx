@@ -28,7 +28,7 @@ interface EditIslandsPricingProp {
   onSubmit: (data: IslandsListPricingRequest) => Promise<void>
 }
 
-export function EditIslandsPricing({
+export function EditIslandsPricingForm({
   onSubmit,
   initialData,
 }: EditIslandsPricingProp) {

@@ -328,7 +328,15 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   )
 }
 
-function BillLine({ label, value, total }) {
+function BillLine({
+  label,
+  value,
+  total,
+}: {
+  label: string
+  value: string
+  total?: string | number
+}) {
   return (
     <div
       className={cn(
@@ -357,7 +365,7 @@ function BillLine({ label, value, total }) {
   )
 }
 
-function SectionLabel({ children }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="mb-4 text-[11px] font-medium tracking-widest text-muted-foreground uppercase">
       {children}
@@ -365,7 +373,15 @@ function SectionLabel({ children }) {
   )
 }
 
-function StatBox({ label, value, note }) {
+function StatBox({
+  label,
+  value,
+  note,
+}: {
+  label: string
+  value: string
+  note?: string
+}) {
   return (
     <div
       className="rounded-md bg-muted px-4 py-3"
@@ -380,7 +396,13 @@ function StatBox({ label, value, note }) {
   )
 }
 
-function RouteRow({ origin, destination }) {
+function RouteRow({
+  origin,
+  destination,
+}: {
+  origin: string
+  destination: string
+}) {
   return (
     <div className="flex items-center gap-4 border-t py-3">
       <div

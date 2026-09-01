@@ -39,10 +39,16 @@ export type IslandPricingCreateDto = {
   valid_from: string | Date
 }
 
-export type IslandPricingResponse = {
+export type IslandPricingItem = {
+  id: EntityId
   name: string
   locations: string[]
   general_price: number | string
+}
+
+export type IslandPricingResponse = {
+  effective_date: Date
+  pricings: IslandPricingItem[]
 }
 
 export type DistanceTonnagePricingResponse = {
@@ -54,4 +60,19 @@ export type DistanceTonnagePricingResponse = {
   tonnage_max: number
   min_price: string
   max_price: string
+}
+
+export type LoadingOffloadingPricingItem = {
+  id: EntityId
+  tonnage_min: string
+  tonnage_max: string
+  cbm_min: string
+  cbm_max: string
+  loading_fees: string
+  offloading_fees: string
+}
+
+export type LoadingOffloadingPricingResponse = {
+  effective_date: Date
+  pricings: LoadingOffloadingPricingItem[]
 }

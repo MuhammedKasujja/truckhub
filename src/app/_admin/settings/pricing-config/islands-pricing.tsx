@@ -1,4 +1,4 @@
-import { EditIslandsPricing } from "@/features/settings/pricing/components"
+import { EditIslandsPricingForm } from "@/features/settings/pricing/components"
 import { createCompanyIslandPricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { createBatchIslandPricingsFn } from "@/features/settings/pricing/services"
 import { createFileRoute } from "@tanstack/react-router"
@@ -15,10 +15,13 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const pricings = Route.useLoaderData()
+  const data = Route.useLoaderData()
   return (
-    <EditIslandsPricing
-      initialData={{ pricings: pricings ?? [], validFromDate: new Date() }}
+    <EditIslandsPricingForm
+      initialData={{
+        pricings: data?.pricings ?? [],
+        validFromDate: data?.validFromDate ?? new Date(),
+      }}
       onSubmit={async (data) => {
         const { message, error } = await createBatchIslandPricingsFn({ data })
         if (error) {
