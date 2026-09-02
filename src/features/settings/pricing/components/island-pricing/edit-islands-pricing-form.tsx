@@ -1,4 +1,4 @@
-import { Control, useFieldArray, useForm } from "react-hook-form"
+import { Control, useFieldArray, useForm, useWatch } from "react-hook-form"
 import {
   IslandsListPricingRequest,
   IslandsListPricingSchema,
@@ -16,9 +16,11 @@ import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Plus } from "lucide-react"
+import { IslandSelectorField } from "@/features/settings/islands/components"
+import { useEffect } from "react"
 
 const emptyIslandPricing = {
-  name: "",
+  island_id: "",
   locations: [{ value: "" }],
   priceRate: 0,
   newPriceRate: null,
@@ -82,10 +84,11 @@ export function EditIslandsPricingForm({
             <Card key={pricing.id}>
               <CardContent>
                 <Field orientation={"horizontal"} className="gap-4">
-                  <TextField
-                    label="Island Name"
+                  <IslandSelectorField
+                    label="Island"
                     control={form.control}
-                    name={`pricings.${pricingIndex}.name`}
+                    name={`pricings.${pricingIndex}.island_id`}
+                    onChange={(island) => {}}
                   />
                   <NumberField
                     label="Price"
@@ -121,10 +124,17 @@ function PricingRow({
   pricingIndex: number
   control: Control<IslandsListPricingRequest>
 }) {
+  const selectedIsland = useWatch({
+    name: `pricings.${pricingIndex}.island_id`,
+    control,
+  })
+
   const { fields: locationFields } = useFieldArray({
     control,
     name: `pricings.${pricingIndex}.locations`,
   })
+
+  useEffect(() => {}, [selectedIsland])
 
   return (
     <div className="mt-4 space-y-4">

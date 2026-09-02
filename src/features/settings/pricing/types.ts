@@ -29,7 +29,7 @@ export type RoutePricingResponse = {
 }
 
 type IslandPricingDto = {
-  name: string
+  island_id: EntityId
   locations: string[]
   price: number | string
 }
@@ -41,6 +41,7 @@ export type IslandPricingCreateDto = {
 
 export type IslandPricingItem = {
   id: EntityId
+  island_id: string
   name: string
   locations: string[]
   general_price: number | string

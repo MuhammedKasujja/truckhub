@@ -86,7 +86,7 @@ export const DistancePricingSchema = z.object({
 
 export const ListDistancePricingSchema = z.object({
   pricings: z.array(DistancePricingSchema),
-  effectiveDate: z.string().min(1, "Required")
+  effectiveDate: z.string().min(1, "Required"),
 })
 
 export type ListDistancePricingRequest = z.infer<
@@ -107,7 +107,7 @@ const loadingOffloadingPricingSchema = z.object({
 export const LoadingOffloadingPricingSchema = z.object({
   client_id: IDSchema.optional().nullable(),
   pricings: z.array(loadingOffloadingPricingSchema),
-  effective_date: z.string().min(1, "Required")
+  effective_date: z.string().min(1, "Required"),
 })
 
 export type LoadingOffloadingPricing = z.infer<
@@ -119,10 +119,8 @@ export type LoadingOffloadingPricingRequest = z.infer<
 >
 
 export const islandPricingSchema = z.object({
-  name: z.string().min(3, "Required"),
-  locations: z
-    .array(z.object({ value: z.string('Required').trim().min(2, "Too Short") }))
-    .min(1, "Locations cannot be empty"),
+  island_id: IDSchema,
+  locations: z.array(z.object({ value: z.string().default("").optional() })),
   priceRate: z.number().positive("Required"),
   // priceRate: MoneySchema.min(1, "Required"),
   newPriceRate: z.number().positive().optional().nullable(),
@@ -132,7 +130,7 @@ export type IslandPricingRequest = z.infer<typeof islandPricingSchema>
 
 export const IslandsListPricingSchema = z.object({
   pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
-  validFromDate: z.string("Date is required")
+  validFromDate: z.string("Date is required"),
 })
 
 export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>

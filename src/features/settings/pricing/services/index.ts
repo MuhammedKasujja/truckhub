@@ -75,9 +75,9 @@ export const createBatchIslandPricingsFn = createServerFn()
   .inputValidator(IslandsListPricingSchema)
   .handler(async ({ data }) => {
     const pricings = data.pricings.map((p) => ({
-      name: p.name,
+      island_id: p.island_id,
       price: p.priceRate,
-      locations: p.locations.map((l) => l.value),
+      locations: p.locations.map((l) => l.value ??""),
     }))
     return createBatchIslandPricing({
       pricings,
@@ -89,6 +89,7 @@ export const getIslandPricingsFn = createServerFn().handler(async () => {
   const { data } = await getIslandsPricings()
   if (data) {
     const pricings: IslandPricingRequest[] = data.pricings.map((p) => ({
+      island_id: p.island_id,
       name: p.name,
       priceRate: p.general_price,
       locations: p.locations.map((l) => ({ value: l })),
