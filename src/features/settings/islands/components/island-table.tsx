@@ -4,22 +4,23 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { getCarBrandColumns } from "./island-table-columns"
-import { CarBrandForm } from "./island-edit-form"
+import { getIslandColumns } from "./island-table-columns"
+import { IslandEditForm } from "./island-edit-form"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { createCarBrandsQueryOptions } from "../query-options"
-import { useSearch } from "@tanstack/react-router"
+import { islandsQueryOptions } from "../query-options"
 import { Can } from "@/components/has-permission"
 
-export function CarBrandTable() {
-  const search = useSearch({
-    from: "/_admin/settings/vehicle-config/car-brands/",
-  })
+export function IslandsTable() {
   const {
     data: { data, error },
-  } = useSuspenseQuery(createCarBrandsQueryOptions(search))
-  const columns = React.useMemo(() => getCarBrandColumns(), [])
+  } = useSuspenseQuery(
+    islandsQueryOptions({
+      search: "",
+      perPage: 200,
+    })
+  )
+  const columns = React.useMemo(() => getIslandColumns(), [])
 
   useFetchEror(error)
 
@@ -42,7 +43,7 @@ export function CarBrandTable() {
     <DataTable table={table}>
       <DataTableToolbar table={table}>
         <Can permission="config:car_brand:create">
-          <CarBrandForm />
+          <IslandEditForm />
         </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
@@ -51,11 +52,5 @@ export function CarBrandTable() {
 }
 
 export function CarBrandTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getCarBrandColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={4} filterCount={1} shrinkZero />
 }

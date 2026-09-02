@@ -8,6 +8,7 @@ import {
   deleteIslandById,
   getIslandDetails,
 } from "./server"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getIslandListFn = createServerFn().handler(async () => {
   return await getIslandList()
@@ -16,7 +17,7 @@ export const getIslandListFn = createServerFn().handler(async () => {
 export const getIslandDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getIslandDetails(data.id)
+    return apiResponseTransform(getIslandDetails(data.id))
   })
 
 export const deleteIslandByIdFn = createServerFn()

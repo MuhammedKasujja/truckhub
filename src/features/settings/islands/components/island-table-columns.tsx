@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { CarBrand } from "@/features/settings/car-brand/types"
+import { Island } from "@/features/settings/islands/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon } from "lucide-react"
-import { CarBrandForm } from "./island-edit-form"
+import { IslandEditForm } from "./island-edit-form"
 import { Can } from "@/components/has-permission"
 
-export function getCarBrandColumns(): ColumnDef<CarBrand>[] {
+export function getIslandColumns(): ColumnDef<Island>[] {
   return [
     {
       accessorKey: "id",
@@ -22,6 +22,13 @@ export function getCarBrandColumns(): ColumnDef<CarBrand>[] {
       },
     },
     {
+      accessorKey: "locations",
+      header: "Locations",
+      cell: ({ row }) => {
+        return <p>{row.original.locations.length}</p>
+      },
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const brand = row.original
@@ -31,7 +38,7 @@ export function getCarBrandColumns(): ColumnDef<CarBrand>[] {
               <EyeIcon />
             </Button>
             <Can permission="config:car_brand:edit">
-              <CarBrandForm
+              <IslandEditForm
                 initialData={{ ...brand }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>

@@ -15,6 +15,7 @@ import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { quotationQueryKeys } from "@/features/quotations/query-options"
 import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
 import { pricingQueryKeys } from "@/features/settings/pricing/query-options"
+import { islandsQueryKeys } from "@/features/settings/islands/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
 import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
 import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
@@ -38,6 +39,7 @@ export const queryKeys = {
   vehiclesTypes: vehicleTypesQueryKeys,
   services: serviceQueryKeys,
   numberPatterns: entityNumberPattensQueryKeys,
+  islands: islandsQueryKeys,
 
   settings: {
     app: () => settingsQueryKeys.list(),

@@ -9,56 +9,60 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
-import { useForm } from "react-hook-form"
+import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
+import { PlusIcon, Trash2 } from "lucide-react"
 import z from "zod"
-import {
-  CarBrandCreateSchema,
-  CarBrandUpdateSchema,
-  CarBrandUpdateSchemaType,
-} from "@/features/settings/car-brand/schemas"
-import {
-  createCarBrandFn,
-  updateCarBrandFn,
-} from "@/features/settings/car-brand/services"
 import { TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import {
+  islandCreateSchema,
+  islandUpdateSchema,
+  IslandUpdateSchemaType,
+} from "../schemas"
+import { createIslandFn, updateIslandFn } from "../services"
+import { Label } from "@/components/ui/label"
+import { Field } from "@/components/ui/field"
 
 type Props = {
   trigger?: React.ReactNode
-  initialData?: CarBrandUpdateSchemaType
+  initialData?: IslandUpdateSchemaType
 }
 
-export function CarBrandForm({ trigger, initialData }: Props) {
+export function IslandEditForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
 
   const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
 
-  const formSchema = isEdit ? CarBrandUpdateSchema : CarBrandCreateSchema
+  const formSchema = isEdit ? islandUpdateSchema : islandCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ? { ...initialData } : { locations: [] },
+  })
+
+  const locationFields = useFieldArray({
+    control: form.control,
+    name: "locations",
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
       "id" in values
-        ? updateCarBrandFn({ data: values })
-        : createCarBrandFn({ data: values })
+        ? updateIslandFn({ data: values })
+        : createIslandFn({ data: values })
 
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
       toast.success(message)
       form.reset()
-      queryInvalidator.settings.carBrands.list()
+      queryInvalidator.islands.list()
     } else {
       toast.error(error?.message)
     }
@@ -70,7 +74,7 @@ export function CarBrandForm({ trigger, initialData }: Props) {
         {trigger ?? (
           <Button size="sm" className="font-normal">
             <PlusIcon />
-            Car Brand
+            Island
           </Button>
         )}
       </DialogTrigger>
@@ -78,13 +82,46 @@ export function CarBrandForm({ trigger, initialData }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle>
-              {isEdit ? "Edit Car Brand" : "Add Car Brand"}
+              {isEdit ? "Edit Island details" : "Add Island details"}
             </DialogTitle>
-            <DialogDescription>Create new car brand</DialogDescription>
+            <DialogDescription>Create island</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <div className="grid flex-1 gap-4">
               <TextField label="Name" control={form.control} name={"name"} />
+              <Label htmlFor={`location`}>
+                Locations {locationFields.fields.length}
+              </Label>
+              {locationFields.fields.map((field, locationIndex) => (
+                <Field key={field.id} orientation={"horizontal"}>
+                  <TextField
+                    control={form.control}
+                    name={`locations.${locationIndex}.value`}
+                  />
+                  {locationFields.fields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant={"destructive"}
+                      size={"icon-sm"}
+                      onClick={() => {
+                        if (locationFields.fields.length > 1)
+                          locationFields.remove(locationIndex)
+                      }}
+                    >
+                      <Trash2 />
+                    </Button>
+                  )}
+                </Field>
+              ))}
+              <Field>
+                <Button
+                  type="button"
+                  variant={"secondary"}
+                  onClick={() => locationFields.append({ value: "" })}
+                >
+                  Add Location
+                </Button>
+              </Field>
             </div>
           </div>
           <DialogFooter className="sm:justify-end">

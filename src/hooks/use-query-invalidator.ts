@@ -38,7 +38,20 @@ export class QueryInvalidator {
         }),
     },
     details: (id: EntityId) =>
-      this.queryClient.invalidateQueries({ queryKey: queryKeys.rides.detail(id) }),
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.rides.detail(id),
+      }),
+  }
+
+  islands = {
+    list: () =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.islands.list(),
+      }),
+    details: (id: EntityId) =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.rides.detail(id),
+      }),
   }
 
   quotations = {
