@@ -90,7 +90,7 @@ export const getIslandPricingsFn = createServerFn().handler(async () => {
   if (data) {
     const pricings: IslandPricingRequest[] = data.pricings.map((p) => ({
       name: p.name,
-      priceRate: Number(p.general_price),
+      priceRate: p.general_price,
       locations: p.locations.map((l) => ({ value: l })),
     }))
     return { pricings, validFromDate: data.effective_date }

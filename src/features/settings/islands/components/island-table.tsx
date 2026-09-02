@@ -52,5 +52,5 @@ export function IslandsTable() {
 }
 
 export function CarBrandTableSkeleton() {
-  return <DataTableSkeleton columnCount={4} filterCount={1} shrinkZero />
+  return <DataTableSkeleton columnCount={3} filterCount={1} shrinkZero />
 }

@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   DatePickerField,
+  MoneyField,
   NumberField,
   TextField,
 } from "@/components/ui/form-fields"
@@ -14,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { Plus, Trash2 } from "lucide-react"
+import { Plus } from "lucide-react"
 
 const emptyIslandPricing = {
   name: "",
@@ -120,11 +121,7 @@ function PricingRow({
   pricingIndex: number
   control: Control<IslandsListPricingRequest>
 }) {
-  const {
-    fields: locationFields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { fields: locationFields } = useFieldArray({
     control,
     name: `pricings.${pricingIndex}.locations`,
   })
@@ -132,39 +129,19 @@ function PricingRow({
   return (
     <div className="mt-4 space-y-4">
       <Label htmlFor={`pricings.${pricingIndex}.locations.${0}.value`}>
-        Locations {locationFields.length}
+        Locations ({locationFields.length})
       </Label>
       <div className="space-y-4">
         {locationFields.map((field, locationIndex) => (
           <Field key={field.id} orientation={"horizontal"}>
             <TextField
+              readOnly
               control={control}
               name={`pricings.${pricingIndex}.locations.${locationIndex}.value`}
             />
-            {locationFields.length > 1 && (
-              <Button
-                type="button"
-                variant={"destructive"}
-                size={"icon-sm"}
-                onClick={() => {
-                  if (locationFields.length > 1) remove(locationIndex)
-                }}
-              >
-                <Trash2 />
-              </Button>
-            )}
           </Field>
         ))}
       </div>
-      <Field>
-        <Button
-          type="button"
-          variant={"secondary"}
-          onClick={() => append({ value: "" })}
-        >
-          Add Location
-        </Button>
-      </Field>
     </div>
   )
 }

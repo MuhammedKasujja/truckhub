@@ -31,7 +31,7 @@ export function getIslandColumns(): ColumnDef<Island>[] {
     {
       id: "actions",
       cell: ({ row }) => {
-        const brand = row.original
+        const island = row.original
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
@@ -39,7 +39,10 @@ export function getIslandColumns(): ColumnDef<Island>[] {
             </Button>
             <Can permission="config:car_brand:edit">
               <IslandEditForm
-                initialData={{ ...brand }}
+                initialData={{
+                  ...island,
+                  locations: island.locations.map((loc) => ({ value: loc })),
+                }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
                     <EditIcon />
