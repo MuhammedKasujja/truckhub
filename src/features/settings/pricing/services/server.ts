@@ -14,7 +14,7 @@ import {
   LoadingOffloadingPricingResponse,
 } from "../types"
 
-const endpoint = "/v1/routes/pricing"
+const endpoint = "/v1/pricing/routes "
 
 export async function updateBatchRouteTonnagePricing(
   data: BatchPricingPayload

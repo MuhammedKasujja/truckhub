@@ -1,0 +1,100 @@
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { PlusIcon } from "lucide-react"
+import z from "zod"
+import {
+  CarBrandCreateSchema,
+  CarBrandUpdateSchema,
+  CarBrandUpdateSchemaType,
+} from "@/features/settings/car-brand/schemas"
+import {
+  createCarBrandFn,
+  updateCarBrandFn,
+} from "@/features/settings/car-brand/services"
+import { TextField } from "@/components/ui/form-fields"
+import React from "react"
+import { useTranslation } from "@/i18n"
+import { SubmitButton } from "@/components/ui/submit-button"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+
+type Props = {
+  trigger?: React.ReactNode
+  initialData?: CarBrandUpdateSchemaType
+}
+
+export function CarBrandForm({ trigger, initialData }: Props) {
+  const tr = useTranslation()
+  const queryInvalidator = useQueryInvalidator()
+
+  const [open, setOpen] = React.useState(false)
+  const isEdit = !!initialData
+
+  const formSchema = isEdit ? CarBrandUpdateSchema : CarBrandCreateSchema
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: initialData,
+  })
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const promise =
+      "id" in values
+        ? updateCarBrandFn({ data: values })
+        : createCarBrandFn({ data: values })
+
+    const { isSuccess, error, message } = await promise
+    if (isSuccess) {
+      toast.success(message)
+      form.reset()
+      queryInvalidator.settings.carBrands.list()
+    } else {
+      toast.error(error?.message)
+    }
+  }
+
+  return (
+    <Dialog onOpenChange={setOpen} open={open}>
+      <DialogTrigger asChild>
+        {trigger ?? (
+          <Button size="sm" className="font-normal">
+            <PlusIcon />
+            Car Brand
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <DialogHeader>
+            <DialogTitle>
+              {isEdit ? "Edit Car Brand" : "Add Car Brand"}
+            </DialogTitle>
+            <DialogDescription>Create new car brand</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center gap-2">
+            <div className="grid flex-1 gap-4">
+              <TextField label="Name" control={form.control} name={"name"} />
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-end">
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={form.formState.isSubmitting}
+            />
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
