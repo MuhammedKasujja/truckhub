@@ -1,4 +1,3 @@
-"use client"
 import {
   Bell,
   Globe,
@@ -36,6 +35,7 @@ import { Route as PdfTemplatesRoute } from "@/app/_admin/settings/pdf-templates"
 import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-numbers"
 import { Route as NotificationsRoute } from "@/app/_admin/settings/notifications"
 import { Route as ProfileRoute } from "@/app/_admin/settings/user-profile"
+import { Route as IslandListRoute } from "@/app/_admin/settings/islands"
 import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
 import { Can } from "@/components/has-permission"
@@ -71,6 +71,12 @@ const data: Navbar = {
       name: "Routes",
       icon: LocateFixed,
       route: BookingRoutes.to,
+      permission: "config:routes:read",
+    },
+    {
+      name: "Islands",
+      icon: LocateFixed,
+      route: IslandListRoute.to,
       permission: "config:routes:read",
     },
     {

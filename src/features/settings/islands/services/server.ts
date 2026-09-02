@@ -19,10 +19,18 @@ export async function deleteIslandById(islandId: EntityId) {
 }
 
 export async function updateIsland(data: IslandUpdateSchemaType) {
-  const { id: carBrandId, ...rest } = data
-  return await apiClient.putFn<Island>(`${endpoint}/${carBrandId}`, rest)
+  const { id: islandId, name, ...rest } = data
+  const locations = rest.locations?.map((loc) => loc.value)
+  return await apiClient.putFn<Island>(`${endpoint}/${islandId}`, {
+    name,
+    locations,
+  })
 }
 
 export async function createIsland(data: IslandCreateSchemaType) {
-  return await apiClient.postFn<Island>(endpoint, data)
+  const locations = data.locations.map((loc) => loc.value)
+  return await apiClient.postFn<Island>(endpoint, {
+    name: data.name,
+    locations,
+  })
 }
