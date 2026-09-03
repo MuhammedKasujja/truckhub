@@ -12,7 +12,6 @@ import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { EntityId } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
-import { Badge } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
