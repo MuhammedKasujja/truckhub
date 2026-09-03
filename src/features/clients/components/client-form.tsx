@@ -7,7 +7,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { EmailField, TelephoneField, TextField, TinNumberField } from "@/components/ui/form-fields"
+import {
+  EmailField,
+  TelephoneField,
+  TextField,
+  TinNumberField,
+} from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
   ClientCreateInput,
@@ -90,6 +95,20 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
               control={form.control}
               required={false}
             />
+            <Field orientation={"horizontal"} className="w-full">
+              <TextField
+                label={"City"}
+                name={"city"}
+                control={form.control}
+                required={false}
+              />
+              <TextField
+                label={"Country"}
+                name={"country"}
+                control={form.control}
+                required={false}
+              />
+            </Field>
             <EmailField
               label={tr("common.form.email")}
               name={"email"}

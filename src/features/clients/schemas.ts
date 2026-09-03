@@ -8,6 +8,9 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const ClientCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
   short_name: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  // state: z.string().optional().nullable(),
+  country: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
   phone: z.string().trim().min(3, "Required"),
   email: z.email().trim().min(3, "Required"),
