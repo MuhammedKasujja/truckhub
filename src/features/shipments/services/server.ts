@@ -42,6 +42,7 @@ export async function dispatchShipment(data: DispatchShipmentInput) {
 export async function endShipment(data: EndShipmentInput) {
   return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/complete`, {
     end_mileage: data.endMileage,
+    ended_at: data.endedAt
   })
 }
 

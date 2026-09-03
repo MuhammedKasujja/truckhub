@@ -48,6 +48,7 @@ export const recordShipmentDetailsSchema = z.object({
 export const endShipmentSchema = z.object({
   unitId: IDSchema,
   endMileage: z.number(),
+  endedAt: z.date(),
 })
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>

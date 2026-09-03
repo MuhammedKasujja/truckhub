@@ -14,7 +14,7 @@ import {
   LoadingOffloadingPricingResponse,
 } from "../types"
 
-const endpoint = "/v1/pricing/routes "
+const endpoint = "/v1/pricing/routes"
 
 export async function updateBatchRouteTonnagePricing(
   data: BatchPricingPayload
@@ -73,5 +73,5 @@ export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
 }
 
 export async function getRouteTonnagePricing() {
-  return await apiClient.getFn<RoutePricingResponse>(`${endpoint}/view`)
+  return await apiClient.getFn<RoutePricingResponse>(endpoint)
 }
