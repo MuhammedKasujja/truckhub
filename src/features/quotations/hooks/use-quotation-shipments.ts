@@ -24,5 +24,8 @@ export function useQuotationShipments(
 export function useQuotationCompletedShipments(
   quotationId: EntityId | undefined
 ) {
-  return useQuotationShipments(quotationId, { status: "captured_details" })
+  const { isLoading, data, error } = useQuotationShipments(quotationId, {
+    status: "captured_details",
+  })
+  return { isLoading, error, data: data?.data }
 }

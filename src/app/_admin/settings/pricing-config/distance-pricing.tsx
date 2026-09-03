@@ -23,7 +23,7 @@ function RouteComponent() {
       onSave={async (pricings, _, effectiveDate) => {
         await createDistanceTonnage({
           pricings,
-          effectiveDate: effectiveDate.toLocaleDateString("en-CA"),
+          effectiveDate: effectiveDate.toString(),
         })
       }}
     />
