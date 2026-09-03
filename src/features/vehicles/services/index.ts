@@ -31,9 +31,9 @@ export const getVehiclesFn = createServerFn()
   })
 
 export const getVehiclesByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .inputValidator(VehicleSearchParamsCache)
   .handler(async ({ data }) => {
-    const response = await getVehiclesByQuery(data)
+    const response = await getVehicles(data)
     if (response.error) {
       const { message, erroCode, statusCode } = response.error
       throw new ApiError(message, statusCode, erroCode)

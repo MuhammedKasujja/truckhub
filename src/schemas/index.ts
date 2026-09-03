@@ -17,3 +17,4 @@ export const SearchQuerySchema = z.object({
 })
 
 export type SearchQuery = z.infer<typeof SearchQuerySchema>
+export type DefaultSearchQuery = SearchQuery

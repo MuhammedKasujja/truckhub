@@ -40,7 +40,7 @@ export type VehicleUpdateSchemaType = z.infer<typeof VehicleUpdateSchema>
 export const VehicleSearchParamsCache = z.object({
   sort: getSortingStateSchema<Vehicle>().default([
     { id: "created_at", desc: true },
-  ]),
+  ]).optional(),
   status: z.enum(vehicleStatuses).optional(),
   // advanced table filter
   filters: getFiltersStateSchema().optional(),

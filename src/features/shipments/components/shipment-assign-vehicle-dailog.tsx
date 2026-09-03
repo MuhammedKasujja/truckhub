@@ -95,6 +95,7 @@ export function ShipmentAssignVehicleDialog({
               label="Vehicle"
               name="vehicleId"
               control={form.control}
+              filters={{ status: "available" }}
             />
           </div>
           <DialogFooter>

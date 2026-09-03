@@ -11,7 +11,11 @@ export const vehicleQueryKeys = {
   list: () => [...vehicleQueryKeys.all(), "list"],
   details: () => [...vehicleQueryKeys.all(), "detail"],
   detail: (id: string) => [...vehicleQueryKeys.details(), id],
-  search: (search?: string) => [...vehicleQueryKeys.all(), "search", search],
+  search: (params: VehicleListSearchParams) => [
+    ...vehicleQueryKeys.all(),
+    "search",
+    params,
+  ],
 } as const
 
 export const createVehiclesListQueryOptions = (
@@ -28,8 +32,11 @@ export const vehicleDetailsQueryOptions = (vehicleId: string) =>
     queryFn: () => getVehicleDetailsByIdFn({ data: { id: vehicleId } }),
   })
 
-export const vehicleSearchQueryOptions = (search?: string) =>
-  queryOptions({
-    queryKey: vehicleQueryKeys.search(search),
-    queryFn: () => getVehiclesByQueryFn({ data: { search } }),
-  })
+export const vehicleSearchQueryOptions = (params: VehicleListSearchParams) => ({
+  queryKey: vehicleQueryKeys.search(params), // no page here
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getVehiclesByQueryFn({
+      data: { ...params, page: pageParam },
+    }),
+  initialPageParam: 1,
+})
