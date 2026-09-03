@@ -8,6 +8,7 @@ import {
 
 export const { Picker: QuotationPicker, PickerField: QuotationPickerField } =
   createEntityPicker<Quotation, QuotationListSearchParams>({
+    mode: "remote",
     entityName: "quotation",
     listQueryOptions: quotationQueryOptions,
     detailQueryOptions: quotationDetailsQueryOptions,

@@ -8,6 +8,7 @@ import { createEntityPicker } from "@/components/entity-picker"
 
 export const { Picker: IslandSelector, PickerField: IslandSelectorField } =
   createEntityPicker<Island, IslandSearchParams>({
+    mode: "remote",
     entityName: "island",
     listQueryOptions: islandListQueryOptions,
     detailQueryOptions: islandDetailsQueryOptions,

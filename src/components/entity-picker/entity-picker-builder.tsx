@@ -15,15 +15,22 @@ import {
 import { RequiredLabelIcon } from "@/components/required-label-icon"
 import { AutoComplete } from "./autocomplete"
 
-export interface PickerProps<T> {
+export interface PickerProps<
+  T,
+  TSearchParams extends { search: string } = { search: string },
+> {
   id?: string
   value: T | string | null | undefined
   onChange: (value: T | null | undefined) => void
   disabled?: boolean
+  /** Per-instance overrides — fall back to the config's defaults when omitted. */
   renderOption?: (item: T, selected: boolean) => React.ReactNode
   renderValue?: (item: T) => React.ReactNode
   staticOptions?: T[] | (() => Promise<T[]>)
   filterFn?: (option: T, query: string) => boolean
+  /** Extra query params alongside the search text — e.g. { status: "active" }.
+   *  Persists across keystrokes; changing it resets pagination. */
+  filters?: Partial<Omit<TSearchParams, "search">>
 }
 
 export function createEntityPicker<
@@ -50,8 +57,13 @@ export function createEntityPicker<
     renderValue,
     staticOptions,
     filterFn,
+    filters,
   }: PickerProps<T>) {
-    const overrides: UseEntityPickerOverrides<T> = { staticOptions, filterFn }
+    const overrides: UseEntityPickerOverrides<T> = {
+      staticOptions,
+      filterFn,
+      filters,
+    }
     const p = useEntityPicker(config, value, onChange, overrides)
 
     return (
@@ -69,8 +81,8 @@ export function createEntityPicker<
           onCreateNew={p.canCreate ? p.triggerCreate : undefined}
           /// Load more for infiite scroll ///
           onLoadMore={p.hasMore ? p.fetchMore : undefined}
-          hasMore={p.hasMore}  
-          loadingMore={p.isFetchingMore} 
+          hasMore={p.hasMore}
+          loadingMore={p.isFetchingMore}
           ////////////////////////
           getOptionValue={config.getOptionValue}
           renderOption={renderOption ?? config.renderOption}
@@ -105,8 +117,9 @@ export function createEntityPicker<
     renderOption,
     renderValue,
     staticOptions,
-    filterFn,
     onChange,
+    filterFn,
+    filters,
   }: {
     name: FieldPath<TFieldValues>
     control: Control<TFieldValues>
@@ -117,7 +130,8 @@ export function createEntityPicker<
     renderOption?: (item: T, selected: boolean) => React.ReactNode
     renderValue?: (item: T) => React.ReactNode
     staticOptions?: T[] | (() => Promise<T[]>)
-    filterFn?: (option: T, query: string) => boolean
+    filterFn?: (option: T, query: string, filters?: Partial<Omit<TSearchParams, "search">>) => boolean,
+    filters?: Partial<Omit<TSearchParams, "search">>
   }) {
     const { field, fieldState } = useController({ name, control })
 
@@ -142,6 +156,7 @@ export function createEntityPicker<
           renderValue={renderValue}
           staticOptions={staticOptions}
           filterFn={filterFn}
+          filters={filters}
         />
         {description && <FieldDescription>{description}</FieldDescription>}
         {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -156,7 +171,7 @@ export function createEntityPicker<
     usePicker: (
       value: T | string | null | undefined,
       onChange: (v: T | null) => void,
-      overrides?: UseEntityPickerOverrides<T>
+      overrides?: UseEntityPickerOverrides<T, TSearchParams>
     ) => useEntityPicker(config, value, onChange, overrides),
   }
 }

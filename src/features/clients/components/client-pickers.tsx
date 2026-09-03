@@ -4,6 +4,7 @@ import { clientProfileQueryOptions, ClientSearchParams, clientListQueryOptions }
 
 export const { Picker: ClientPicker, PickerField: ClientPickerField } =
   createEntityPicker<Client, ClientSearchParams>({
+    mode: "remote",
     entityName: "client",
     listQueryOptions: clientListQueryOptions,
     detailQueryOptions: clientProfileQueryOptions,

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import {
   useQuery,
   useMutation,
@@ -38,20 +38,17 @@ const getHasMore = (pagination: Pagination | null) => {
   return pagination.page < pagination.totalPages
 }
 
-export interface EntityPickerConfig<
+export interface EntityPickerBaseConfig<
   T,
   TSearchParams extends { search: string } = { search: string },
 > {
+  /** Used to build the `created_${entityName}` return-navigation param. */
   entityName: string
 
   /** Existing queryOptions factories, returning the RAW envelope —
    *  unwrapped internally via `select`, so cache entries stay identical to
    *  what the rest of the app reads/writes for this entity. */
   detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
-  /** Returns an infinite-query-shaped config: queryKey WITHOUT page, queryFn
-   *  that reads `pageParam`. Reuse your existing API call, just move `page`
-   *  from the params object into the queryFn's own argument. */
-  listQueryOptions?: (params: TSearchParams) => InfiniteListQueryConfig<T>
 
   getOptionValue: (item: T) => string
 
@@ -59,19 +56,59 @@ export interface EntityPickerConfig<
   buildSearchParams?: (defaults: TSearchParams, query: string) => TSearchParams
   searchDebounceMs?: number
 
-  mode?: "remote" | "local"
-  /** local mode: fixed list, filtered client-side */
-  staticOptions?: T[] | (() => Promise<T[]>)
-  filterFn?: (option: T, query: string) => boolean
-
   /** "create new" flow — provide createRoute (page) XOR createMutation (dialog) */
   createRoute?: string
   createMutation?: (data: any) => Promise<T> // mutation returns the bare entity, not an envelope
 }
 
-export interface UseEntityPickerOverrides<T> {
+type EntityPickerSearchConfig<T, TSearchParams extends { search: string }> =
+  | {
+      mode: "remote"
+      /** Returns an infinite-query-shaped config: queryKey WITHOUT page, queryFn
+       *  that reads `pageParam`. Reuse your existing API call, just move `page`
+       *  from the params object into the queryFn's own argument. */
+      listQueryOptions: (params: TSearchParams) => InfiniteListQueryConfig<T>
+    }
+  | {
+      mode: "local"
+      /** local mode: fixed list, filtered client-side */
+      staticOptions: T[] | (() => Promise<T[]>)
+      filterFn: (
+        option: T,
+        query: string,
+        filters?: Partial<Omit<TSearchParams, "search">>
+      ) => boolean
+    }
+
+export type EntityPickerConfig<
+  T,
+  TSearchParams extends { search: string } = { search: string },
+> = EntityPickerBaseConfig<T, TSearchParams> &
+  EntityPickerSearchConfig<T, TSearchParams>
+
+export interface UseEntityPickerOverrides<
+  T,
+  TSearchParams extends { search: string } = { search: string },
+> {
   staticOptions?: T[] | (() => Promise<T[]>)
-  filterFn?: (option: T, query: string) => boolean
+  filterFn?: (
+    option: T,
+    query: string,
+    filters?: Partial<Omit<TSearchParams, "search">>
+  ) => boolean
+  /** Extra query params beyond the search text — e.g. { status: "active" }.
+   *  Persists across keystrokes (unlike `search`, which resets on every
+   *  new typed query), but changing `filters` itself resets pagination —
+   *  a different filter value means a different result set, same as a
+   *  new search would. */
+  filters?: Partial<Omit<TSearchParams, "search">>
+}
+
+/** Stable stringified key for shallow-comparing a filters object across
+ *  renders, so the sync effect only fires when the actual VALUES change,
+ *  not on every render where a caller passes a fresh object literal. */
+function useStableFiltersKey(filters: Record<string, unknown> | undefined) {
+  return useMemo(() => JSON.stringify(filters ?? {}), [filters])
 }
 
 export function useEntityPicker<
@@ -84,14 +121,34 @@ export function useEntityPicker<
   overrides?: UseEntityPickerOverrides<T>
 ) {
   const { entityName, getOptionValue } = config
-  const [searchParams, setSearchParams] = useState<TSearchParams>(
-    config.defaultSearchParams
+
+  const filters = overrides?.filters
+  const filtersKey = useStableFiltersKey(
+    filters as Record<string, unknown> | undefined
   )
+
+  const [searchParams, setSearchParams] = useState<TSearchParams>({
+    ...config.defaultSearchParams,
+    ...filters,
+  })
+
   const debouncedSearch = useDebounce(
     searchParams.search,
     config.searchDebounceMs ?? DEFAULT_SEARCH_DEBOUNCE_MS
   )
   const queryClient = useQueryClient()
+
+  // Re-apply filters into searchParams whenever their VALUES change (not
+  // identity — filtersKey is a stable stringified comparison). Preserves
+  // whatever search text is currently typed; only the filter fields update.
+  // This is what makes changing `filters` reset pagination — it produces a
+  // new searchParams object, which (for remote mode) changes the query key.
+  const prevFiltersKeyRef = useRef(filtersKey)
+  useEffect(() => {
+    if (prevFiltersKeyRef.current === filtersKey) return
+    prevFiltersKeyRef.current = filtersKey
+    setSearchParams((prev) => ({ ...prev, ...filters }) as TSearchParams)
+  }, [filtersKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---- resolve a bare id into a full object ----
   const idToResolve = typeof value === "string" ? value : null
@@ -115,18 +172,27 @@ export function useEntityPicker<
   }, [resolved])
 
   // ---- remote (infinite) vs local options ----
-  const effectiveStaticOptions =
-    overrides?.staticOptions ?? config.staticOptions
-  const effectiveFilterFn = overrides?.filterFn ?? config.filterFn
-  const isLocal = !!effectiveStaticOptions
+  const isLocal = config.mode === "local"
 
-  const effectiveSearchParams = {
-    ...searchParams,
-    search: debouncedSearch,
-  } as TSearchParams
-  const listConfig = !isLocal
-    ? config.listQueryOptions?.(effectiveSearchParams)
-    : undefined
+  const effectiveStaticOptions = isLocal
+    ? (overrides?.staticOptions ?? config.staticOptions)
+    : overrides?.staticOptions // escape hatch: force local behavior on a remote config
+
+  const effectiveFilterFn = isLocal
+    ? (overrides?.filterFn ?? config.filterFn)
+    : overrides?.filterFn
+
+  const isEffectivelyLocal = !!effectiveStaticOptions
+
+  const listConfig =
+    !isEffectivelyLocal && config.mode === "remote"
+      ? config.listQueryOptions({
+          ...searchParams,
+          search: debouncedSearch,
+        } as TSearchParams)
+      : undefined
+
+  const shouldFetchRemote = !isEffectivelyLocal && !!listConfig //&& (config.fetchOnOpen ? isOpen : debouncedSearch.length > 0)
 
   // const remoteQuery = useQuery({
   //   ...(config.listQueryOptions?.({
@@ -143,13 +209,17 @@ export function useEntityPicker<
     queryKey: listConfig?.queryKey ?? ["__no-list-query__", entityName],
     queryFn:
       listConfig?.queryFn ??
-      (() => Promise.resolve({ data: [], pagination: null } as any)),
+      (() =>
+        Promise.resolve({
+          data: [],
+          pagination: null,
+        } as unknown as ListResponse<T>)),
     initialPageParam: listConfig?.initialPageParam ?? 1,
     getNextPageParam: (lastPage: ListResponse<T>) =>
       getHasMore(lastPage.pagination)
         ? lastPage.pagination.page + 1
         : undefined,
-    enabled: !isLocal && !!listConfig // && debouncedSearch.length > 0,
+    enabled: shouldFetchRemote,
   })
 
   const localQuery = useQuery({
@@ -158,41 +228,46 @@ export function useEntityPicker<
       typeof effectiveStaticOptions === "function"
         ? effectiveStaticOptions()
         : Promise.resolve(effectiveStaticOptions ?? []),
-    enabled: isLocal,
+    enabled: isEffectivelyLocal,
     staleTime: Infinity,
   })
 
-  const isFetching = isLocal ? localQuery.isFetching : remoteQuery.isFetching
-  const isFetchingMore = !isLocal && remoteQuery.isFetchingNextPage
-  const hasMore = !isLocal && remoteQuery.hasNextPage
+  const isFetching = isEffectivelyLocal
+    ? localQuery.isFetching
+    : remoteQuery.isFetching
+  const isFetchingMore = !isEffectivelyLocal && remoteQuery.isFetchingNextPage
+  const hasMore = !isEffectivelyLocal && remoteQuery.hasNextPage
 
   // flatten all accumulated pages into one list — this is the actual
   // "infinite scroll" part: each fetchNextPage() call appends a new page
   // rather than replacing the current one
-  const rawOptions = isLocal
+  const rawOptions = isEffectivelyLocal
     ? (localQuery.data ?? [])
     : (remoteQuery.data?.pages.flatMap((page) => page.data) ?? [])
 
   const options = useMemo(() => {
     if (!resolved) return rawOptions
-    if (!isLocal && searchParams.search.length > 0) return rawOptions
+    if (!isEffectivelyLocal && searchParams.search.length > 0) return rawOptions
     const present = rawOptions.some(
       (o) => getOptionValue(o) === getOptionValue(resolved)
     )
     // Make sure the active option is always included in the list options
     return present ? rawOptions : [resolved, ...rawOptions]
-  }, [rawOptions, resolved, searchParams.search, isLocal])
+  }, [rawOptions, resolved, searchParams.search, isEffectivelyLocal])
 
+  // typing a new query resets to defaults + swaps search, then re-applies
+  // active filters (filters must survive a text-search reset)
   const setSearch = (query: string) => {
-    setSearchParams((_prev) =>
-      config.buildSearchParams
+    setSearchParams((_prev) => {
+      const base = config.buildSearchParams
         ? config.buildSearchParams(config.defaultSearchParams, query)
         : ({ ...config.defaultSearchParams, search: query } as TSearchParams)
-    )
+      return { ...base, ...filters } as TSearchParams
+    })
   }
 
   const fetchMore = () => {
-    if (!isLocal) remoteQuery.fetchNextPage()
+    if (!isEffectivelyLocal) remoteQuery.fetchNextPage()
   }
 
   // ---- create flow: dialog (createMutation) or page (createRoute) ----
@@ -260,13 +335,15 @@ export function useEntityPicker<
     // search / pagination
     search: searchParams.search,
     searchParams,
-    setSearch: isLocal ? undefined : setSearch,
-    fetchMore: isLocal ? undefined : fetchMore,
+    setSearch: isEffectivelyLocal ? undefined : setSearch,
+    fetchMore: isEffectivelyLocal ? undefined : fetchMore,
     isFetchingMore,
     hasMore: hasMore,
 
     // options
-    filterFn: isLocal ? effectiveFilterFn : undefined,
+    filterFn: isEffectivelyLocal
+      ? (option: T, query: string) => effectiveFilterFn!(option, query, filters)
+      : undefined,
     options,
     isFetching,
     resolved,

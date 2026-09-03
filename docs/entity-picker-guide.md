@@ -327,6 +327,7 @@ export const createClientFn = (data: { name: string; email: string; phone?: stri
 
 export const { Picker: ClientPicker, PickerField: ClientPickerField } =
   createEntityPicker<Client, ClientSearchParams>({
+    mode: "remote",
     entityName: "client",
     listQueryOptions: clientSearchQueryOptions,
     detailQueryOptions: clientDetailQueryOptions,
