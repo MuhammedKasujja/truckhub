@@ -15,7 +15,7 @@ export const islandsQueryKeys = {
   detail: (id: string) => [...islandsQueryKeys.details(), id] as const,
 } as const
 
-export const islandsQueryOptions = (_: IslandSearchParams) =>
+export const islandsQueryOptions = () =>
   queryOptions({
     queryKey: islandsQueryKeys.list(),
     queryFn: () => getIslandListFn(),

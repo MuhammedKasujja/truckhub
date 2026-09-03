@@ -14,12 +14,7 @@ import { Can } from "@/components/has-permission"
 export function IslandsTable() {
   const {
     data: { data, error },
-  } = useSuspenseQuery(
-    islandsQueryOptions({
-      search: "",
-      perPage: 200,
-    })
-  )
+  } = useSuspenseQuery(islandsQueryOptions())
   const columns = React.useMemo(() => getIslandColumns(), [])
 
   useFetchEror(error)
