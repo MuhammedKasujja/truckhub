@@ -77,7 +77,6 @@ export const createBatchIslandPricingsFn = createServerFn()
     const pricings = data.pricings.map((p) => ({
       island_id: p.island_id,
       price: p.priceRate,
-      locations: p.locations.map((l) => l.value ??""),
     }))
     return createBatchIslandPricing({
       pricings,

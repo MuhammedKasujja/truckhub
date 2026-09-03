@@ -30,7 +30,6 @@ export type RoutePricingResponse = {
 
 type IslandPricingDto = {
   island_id: EntityId
-  locations: string[]
   price: number | string
 }
 
