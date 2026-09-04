@@ -31,7 +31,8 @@ function RouteComponent() {
   async function updateDefaultTaxRate() {
     if (defaultTaxRate?.id === taxRateId) return
     const { isSuccess, error, message } = await useUpdateSettings({
-      default_tax_rate_id: taxRateId,
+      // Explict set to null as Patch drops all undefined keys in the request body
+      default_tax_rate_id: taxRateId ?? null,
     })
     if (isSuccess) {
       toast.success(message)
