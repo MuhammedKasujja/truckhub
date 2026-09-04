@@ -2,7 +2,6 @@ import {
   VehicleTable,
   VehicleTableSkeleton,
 } from "@/features/vehicles/components/vehicle-table"
-import { Suspense } from "react"
 import { requirePermission } from "@/lib/auth"
 import { PageHeader, PageTitle } from "@/components/page-header"
 
@@ -23,11 +22,11 @@ export const Route = createFileRoute("/_admin/vehicles/")({
 
 function RouteComponent() {
   return (
-    <Suspense fallback={<VehicleTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>Vehicles</PageTitle>
       </PageHeader>
       <VehicleTable />
-    </Suspense>
+    </>
   )
 }

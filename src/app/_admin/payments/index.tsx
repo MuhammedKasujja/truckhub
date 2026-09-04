@@ -8,7 +8,7 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
-import { Suspense, useState } from "react"
+import { useState } from "react"
 import {
   paymentsQueryOptions,
   paymentStatisticsQueryOptions,
@@ -27,6 +27,7 @@ export const Route = createFileRoute("/_admin/payments/")({
   validateSearch: PaymentSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
+  pendingComponent: PaymentTableSkeleton,
   beforeLoad: () => requirePermission("payments:module"),
   loader: async ({ context: { queryClient }, deps: { search } }) => {
     await queryClient.ensureQueryData(paymentsQueryOptions(search))
@@ -40,7 +41,7 @@ function RouteComponent() {
   const { data: statistics } = Route.useLoaderData()
   const tr = useTranslation()
   return (
-    <Suspense fallback={<PaymentTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>
           <PageBackButton />
@@ -64,6 +65,6 @@ function RouteComponent() {
       </PageHeader>
       <PaymentStatisticsCard statistics={statistics} />
       <PaymentTable />
-    </Suspense>
+    </>
   )
 }

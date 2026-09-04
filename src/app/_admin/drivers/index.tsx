@@ -1,6 +1,5 @@
 import { createDriverListQueryOptions } from "@/features/drivers/queries"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { Suspense } from "react"
 import {
   DriverTable,
   DriverTableSkeleton,
@@ -15,6 +14,7 @@ import { DriverSearchParamsCache } from "@/features/drivers/schemas"
 export const Route = createFileRoute("/_admin/drivers/")({
   validateSearch: DriverSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
+  pendingComponent: DriverTableSkeleton,
   component: RouteComponent,
   beforeLoad: () => requirePermission("drivers:module"),
   loader: ({ context, deps: { search } }) =>
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_admin/drivers/")({
 
 function RouteComponent() {
   return (
-    <Suspense fallback={<DriverTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>Drivers</PageTitle>
         <PageAction>
@@ -38,6 +38,6 @@ function RouteComponent() {
         </PageAction>
       </PageHeader>
       <DriverTable />
-    </Suspense>
+    </>
   )
 }

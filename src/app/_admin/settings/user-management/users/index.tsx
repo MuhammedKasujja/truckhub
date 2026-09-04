@@ -6,10 +6,10 @@ import {
 import { usersQueryOprions } from "@/features/users/query-options"
 import { UserSearchParamsCache } from "@/features/users/schemas"
 import { createFileRoute } from "@tanstack/react-router"
-import { Suspense } from "react"
 
 export const Route = createFileRoute("/_admin/settings/user-management/users/")(
   {
+    pendingComponent: UserTableSkeleton,
     validateSearch: UserSearchParamsCache,
     loaderDeps: ({ search }) => ({ search }),
     component: RouteComponent,
@@ -22,11 +22,11 @@ export const Route = createFileRoute("/_admin/settings/user-management/users/")(
 
 function RouteComponent() {
   return (
-    <Suspense fallback={<UserTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>Users</PageTitle>
       </PageHeader>
       <UserTable />
-    </Suspense>
+    </>
   )
 }

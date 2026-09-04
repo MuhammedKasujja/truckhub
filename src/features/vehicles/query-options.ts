@@ -12,7 +12,7 @@ export const vehicleQueryKeys = {
   details: () => [...vehicleQueryKeys.all(), "detail"],
   detail: (id: string) => [...vehicleQueryKeys.details(), id],
   search: (params: VehicleListSearchParams) => [
-    ...vehicleQueryKeys.all(),
+    ...vehicleQueryKeys.list(),
     "search",
     params,
   ],
