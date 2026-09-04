@@ -61,6 +61,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       },
     },
     {
+      id: "status",
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {

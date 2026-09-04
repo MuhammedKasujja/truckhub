@@ -4,15 +4,14 @@ import {
   VehicleSearchParamsCache,
   AssignDriverVehicleSchema,
 } from "@/features/vehicles/schemas"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { SearchQuerySchema, EntityIdSchema } from "@/schemas"
 import {
   getVehicles,
   createVehicle,
   updateVehicle,
   getVehicleById,
   deleteVehicleById,
-  getVehiclesByQuery,
   vehicleAssignDriver,
   getVehicleDetailsById,
   vehicleUnAssignDriver,
