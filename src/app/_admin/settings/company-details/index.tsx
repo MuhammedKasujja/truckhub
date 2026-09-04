@@ -38,6 +38,16 @@ function RouteComponent() {
       <Card>
         <CardHeader>
           <CardTitle>Invoice Terms</CardTitle>
+          <CardAction>
+            <Can permission="config:payment_terms:edit">
+              <EditInvoiceTermsForm
+                initialData={{
+                  invoiceTerms: transformToTerms(settings.invoice_terms),
+                  quotationTerms: transformToTerms(settings.quotation_terms),
+                }}
+              />
+            </Can>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -53,14 +63,6 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
-      <Can permission="config:payment_terms:edit">
-        <EditInvoiceTermsForm
-          initialData={{
-            invoiceTerms: transformToTerms(settings.invoice_terms),
-            quotationTerms: transformToTerms(settings.quotation_terms),
-          }}
-        />
-      </Can>
       <Card>
         <CardHeader>
           <CardTitle>Quotation Terms</CardTitle>
