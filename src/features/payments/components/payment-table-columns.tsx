@@ -9,6 +9,7 @@ import { PaymentStatuses, PaymentModeList } from "@/config/constants"
 import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
 import { Can } from "@/components/has-permission"
+import { PaymentStatusIndicator } from "./payment-status-indicator"
 
 export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
   return [
@@ -28,7 +29,9 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.amount"),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2 font-semibold">{formatMoney(row.original.amount)}</div>
+          <div className="flex gap-2 font-semibold">
+            {formatMoney(row.original.amount)}
+          </div>
         )
       },
       meta: {
@@ -41,11 +44,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.status"),
       cell: ({ row }) => {
         const status = row.original.status
-        return (
-          <Badge variant="outline" className="capitalize">
-            {tr(`payments.statuses.${status}`)}
-          </Badge>
-        )
+        return <PaymentStatusIndicator status={status} />
       },
       meta: {
         label: tr("payments.status"),
@@ -69,7 +68,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       },
       meta: {
         label: tr("payments.method"),
-        variant:"multiSelect",
+        variant: "multiSelect",
         options: PaymentModeList.map((method) => ({
           label: tr(`payments.methods.${method}`),
           value: `${method}`,
