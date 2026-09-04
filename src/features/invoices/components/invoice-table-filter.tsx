@@ -12,6 +12,7 @@ import {
 import { Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState } from "react"
+import { useInvoiceStatistics } from "../hooks/use-invoice-statistics"
 
 const DATE_FILTERS = [
   { value: "today", label: "Today" },
@@ -35,8 +36,9 @@ const EXPORT_TYPES = [
 export function InvoiceTableFilter() {
   const [type, setType] = useState("last7")
   const [exportType, setExportType] = useState("")
+  const { data: statistics } = useInvoiceStatistics()
   return (
-    <div className="flex flex-row justify-between gap-4 w-full">
+    <div className="flex w-full flex-row justify-between gap-4">
       <div className="flex flex-row gap-2">
         <ButtonGroup>
           <Select value={type} onValueChange={setType}>
@@ -64,19 +66,28 @@ export function InvoiceTableFilter() {
         </ButtonGroup>
         <ButtonGroup>
           <Button variant="outline" className="text-xs">
-            All <span className="text-muted-foreground">100</span>
+            All{" "}
+            <span className="text-muted-foreground">{statistics?.total}</span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Draft <span className="text-muted-foreground">25</span>
+            Draft{" "}
+            <span className="text-muted-foreground">{statistics?.drafts}</span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Outstanding <span className="text-muted-foreground">5</span>
+            Outstanding{" "}
+            <span className="text-muted-foreground">
+              {statistics?.outstanding}
+            </span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Past Due <span className="text-muted-foreground">10</span>
+            Past Due{" "}
+            <span className="text-muted-foreground">
+              {statistics?.past_due}
+            </span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Paid <span className="text-muted-foreground">40</span>
+            Paid{" "}
+            <span className="text-muted-foreground">{statistics?.paid}</span>
           </Button>
         </ButtonGroup>
       </div>

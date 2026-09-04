@@ -8,6 +8,7 @@ import {
   getInvoicePdf,
   getInvoiceDetails,
   getInvoicesByQuery,
+  getInvoiceStatistics,
 } from "./server"
 
 export const getInvoicesFn = createServerFn()
@@ -36,6 +37,14 @@ export const getInvoicesByQueryFn = createServerFn()
   .handler(async ({ data }) => {
     return getInvoicesByQuery(data)
   })
+
+export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
+  const result = await getInvoiceStatistics()
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+  return { data: result.data! }
+})
 
 export const createInvoiceFn = createServerFn()
   .inputValidator(createInvoiceSchema)

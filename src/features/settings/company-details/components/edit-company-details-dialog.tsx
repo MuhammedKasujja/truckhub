@@ -30,7 +30,7 @@ export function EditCompanyDetailsDialog({
   const invalidator = useQueryInvalidator()
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
-    defaultValues: { ...company },
+    defaultValues: { ...company, phone: company.phone ?? "" },
   })
 
   async function onSubmit(data: z.infer<typeof CompanySchema>) {

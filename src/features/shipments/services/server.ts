@@ -16,7 +16,6 @@ const endpoint = "/v1/trips"
 export async function getShipments(input: ShipmentSearchParamsInput) {
   
   const params = generateApiSearchParams(input)
-  console.log("params", params)
   const response = await apiClient.getPaginatedFn<Shipment[]>(
     `${endpoint}?${params}`
   )

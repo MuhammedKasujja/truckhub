@@ -4,11 +4,15 @@ import {
   InvoiceTableFilter,
 } from "@/features/invoices/components"
 import { InvoiceSearchParams } from "@/features/invoices/schemas"
+import { invoiceStatisticsQueryOptions } from "@/features/invoices/query-options"
 
 export const Route = createFileRoute("/_admin/billing/invoices/")({
   component: RouteComponent,
   validateSearch: InvoiceSearchParams,
   loaderDeps: ({ search }) => search,
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(invoiceStatisticsQueryOptions())
+  },
 })
 
 function RouteComponent() {

@@ -32,6 +32,14 @@ export type Invoice = {
   }
 }
 
+export type InvoiceStatistics = {
+  total: number
+  drafts: number
+  paid: number
+  past_due: number
+  outstanding: number
+}
+
 export interface InvoiceTableRowAction extends DataTableRowAction<
   Invoice,
   "update" | "view" | "makePayment" | "email"

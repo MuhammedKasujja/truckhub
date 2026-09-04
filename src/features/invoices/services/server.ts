@@ -1,5 +1,5 @@
 import { api } from "@/lib/api"
-import { Invoice } from "../types"
+import { Invoice, InvoiceStatistics } from "../types"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
@@ -50,4 +50,8 @@ export async function getInvoicePdf(invoiceId: EntityId) {
     responseType: "arraybuffer",
     timeout: 30000,
   })
+}
+
+export async function getInvoiceStatistics() {
+  return await apiClient.getFn<InvoiceStatistics>(`${endpoint}/statistics`)
 }
