@@ -8,6 +8,7 @@ import { PageHeader, PageTitle } from "@/components/page-header"
 import { createVehiclesListQueryOptions } from "@/features/vehicles/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { VehicleSearchParamsCache } from "@/features/vehicles/schemas"
+import { VehicleFilterCard } from "@/features/vehicles/components"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
@@ -22,11 +23,12 @@ export const Route = createFileRoute("/_admin/vehicles/")({
 
 function RouteComponent() {
   return (
-    <>
-      <PageHeader>
+    <div className="space-y-6">
+      <PageHeader className="pb-0">
         <PageTitle>Vehicles</PageTitle>
       </PageHeader>
+      <VehicleFilterCard/>
       <VehicleTable />
-    </>
+    </div>
   )
 }

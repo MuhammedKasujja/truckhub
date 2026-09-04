@@ -42,6 +42,10 @@ export const VehicleSearchParamsCache = z.object({
     { id: "created_at", desc: true },
   ]).optional(),
   status: z.enum(vehicleStatuses).optional(),
+  brand_id: IDSchema.optional(),
+  model_id: IDSchema.optional(),
+  category_id: IDSchema.optional(),
+  tonnage: z.number().positive().optional(),
   // advanced table filter
   filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,
