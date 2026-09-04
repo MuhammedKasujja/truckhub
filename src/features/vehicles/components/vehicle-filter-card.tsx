@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { CarBrandPicker } from "@/features/settings/car-brand/components"
 import { CarModelPicker } from "@/features/settings/car-model/components"
+import { VehicleCategoryPicker } from "@/features/settings/vehicle-types/components"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 
 export function VehicleFilterCard() {
@@ -27,14 +28,14 @@ export function VehicleFilterCard() {
             navigate({ search: { ...search, model_id: model?.id } })
           }}
         />
-        {/* <Label htmlFor="category">Model</Label>
+        <Label htmlFor="category">Category</Label>
         <VehicleCategoryPicker
           id="category"
           value={search.category_id}
           onSelected={(category) => {
             navigate({ search: { ...search, category_id: category?.id } })
           }}
-        /> */}
+        />
       </CardContent>
     </Card>
   )
