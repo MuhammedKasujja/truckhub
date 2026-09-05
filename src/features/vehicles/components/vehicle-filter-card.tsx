@@ -5,6 +5,7 @@ import { CarBrandPicker } from "@/features/settings/car-brand/components"
 import { CarModelPicker } from "@/features/settings/car-model/components"
 import { VehicleCategoryPicker } from "@/features/settings/vehicle-types/components"
 import { useNavigate, useSearch } from "@tanstack/react-router"
+import { VehicleStatusPicker } from "./vehicle-status-picker"
 
 export function VehicleFilterCard() {
   const search = useSearch({ from: "/_admin/vehicles/" })
@@ -59,6 +60,19 @@ export function VehicleFilterCard() {
               search: {
                 ...search,
                 consumption_rate: e.target.value.toString(),
+              },
+            })
+          }
+        />
+        <Label htmlFor="status">Status</Label>
+        <VehicleStatusPicker
+          id="status"
+          value={search.status}
+          onSelected={(status) =>
+            navigate({
+              search: {
+                ...search,
+                status: status ?? undefined,
               },
             })
           }
