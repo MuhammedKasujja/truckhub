@@ -46,6 +46,7 @@ export const VehicleSearchParamsCache = z.object({
   model_id: IDSchema.optional(),
   category_id: IDSchema.optional(),
   tonnage: z.string().optional(),
+  engine_type: z.enum(EngineTypes).optional(),
   consumption_rate: z.string().optional(),
   filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,

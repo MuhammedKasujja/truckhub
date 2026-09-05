@@ -6,6 +6,7 @@ import { CarModelPicker } from "@/features/settings/car-model/components"
 import { VehicleCategoryPicker } from "@/features/settings/vehicle-types/components"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { VehicleStatusPicker } from "./vehicle-status-picker"
+import { EngineTypePicker } from "./vehicle-pickers"
 
 export function VehicleFilterCard() {
   const search = useSearch({ from: "/_admin/vehicles/" })
@@ -73,6 +74,19 @@ export function VehicleFilterCard() {
               search: {
                 ...search,
                 status: status ?? undefined,
+              },
+            })
+          }
+        />
+        <Label htmlFor="engine">Engine</Label>
+        <EngineTypePicker
+          id="engine"
+          value={search.engine_type}
+          onSelected={(engine) =>
+            navigate({
+              search: {
+                ...search,
+                engine_type: engine ?? undefined,
               },
             })
           }

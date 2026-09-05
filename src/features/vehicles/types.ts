@@ -5,6 +5,7 @@ export const EngineTypes = ["petrol", "desel"] as const
 export const Gearboxes = ["manual", "automatic"] as const
 
 export type Engine = (typeof EngineTypes)[number]
+export type EngineType = Engine
 export type Gearbox = (typeof Gearboxes)[number]
 
 export type VehicleDriver = {

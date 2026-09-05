@@ -90,7 +90,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
             <div className="grid flex-1 gap-4">
               <TextField label="Name" control={form.control} name={"name"} />
               <Label htmlFor={`location`}>
-                Locations {locationFields.fields.length}
+                Locations ({locationFields.fields.length})
               </Label>
               {locationFields.fields.map((field, locationIndex) => (
                 <Field key={field.id} orientation={"horizontal"}>
