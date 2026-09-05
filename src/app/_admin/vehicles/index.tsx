@@ -12,7 +12,6 @@ import { VehicleFilterCard, VehicleStatisticsRow } from "@/features/vehicles/com
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { PlusIcon } from "lucide-react"
-import { useVehicleStatistics } from "@/features/vehicles/hooks/use-invoice-statistics"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,

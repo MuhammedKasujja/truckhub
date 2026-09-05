@@ -43,6 +43,7 @@ export const generateApiSearchParams = (input: Record<string, unknown>) => {
     arrayFormat: "comma",
     skipNull: true,
     encode: true,
+    skipEmptyString: true
     // allowDots: false, // API prefers dots
   })
 }
