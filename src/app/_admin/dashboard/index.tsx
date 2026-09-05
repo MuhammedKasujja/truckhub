@@ -1,4 +1,4 @@
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   Stat,
   StatIndicator,
@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/stat"
 import {
   RecentPaymentsTable,
-  RecentBookingTable,
-  RecentRidesTable,
-  WeeklyQuotationStatistics,
-  AnalyticsCard,
+  RecentInvoicesTable,
+  RecentQuotationsTable,
 } from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
 import { formatMoney } from "@/lib/format"
@@ -76,8 +74,8 @@ function RouteComponent() {
           </StatIndicator>
         </Stat>
         <Stat>
-          <StatLabel>Bookings</StatLabel>
-          <StatValue>{data.statistics.bookings.total}</StatValue>
+          <StatLabel>Invoices</StatLabel>
+          <StatValue>{data.statistics.invoices.total}</StatValue>
           <StatIndicator variant="icon" color="success">
             <DollarSign />
           </StatIndicator>
@@ -92,8 +90,8 @@ function RouteComponent() {
         </Stat>
 
         <Stat>
-          <StatLabel>Rides</StatLabel>
-          <StatValue>{data.statistics.rides.total}</StatValue>
+          <StatLabel>Quotations</StatLabel>
+          <StatValue>{data.statistics.quotations.total}</StatValue>
           <StatIndicator variant="icon" color="warning">
             <TrendingUp />
           </StatIndicator>
@@ -105,8 +103,8 @@ function RouteComponent() {
         <WeeklyQuotationStatistics />
       </div> */}
       <RecentPaymentsTable payments={data.recent_payments} />
-      <RecentBookingTable bookings={data.recent_bookings} />
-      <RecentRidesTable rides={data.recent_rides} />
+      <RecentInvoicesTable invoices={data.recent_invoices} />
+      <RecentQuotationsTable quotations={data.recent_quotations} />
     </div>
   )
 }
