@@ -18,12 +18,15 @@ export function VehicleFilterCard() {
           id="brand"
           value={search.brand_id}
           onSelected={(brand) => {
-            navigate({ search: { ...search, brand_id: brand?.id } })
+            navigate({
+              search: { ...search, brand_id: brand?.id, model_id: undefined },
+            })
           }}
         />
         <Label htmlFor="car-model">Model</Label>
         <CarModelPicker
           id="car-model"
+          carBrandId={search.brand_id}
           value={search.model_id}
           onSelected={(model) => {
             navigate({ search: { ...search, model_id: model?.id } })
@@ -42,7 +45,9 @@ export function VehicleFilterCard() {
           id="tonnage"
           value={search.tonnage}
           onChange={(e) =>
-            navigate({ search: { ...search, tonnage: e.target.value.toString() } })
+            navigate({
+              search: { ...search, tonnage: e.target.value.toString() },
+            })
           }
         />
         <Label htmlFor="consumption-rate">Consumption Rate</Label>
@@ -51,7 +56,10 @@ export function VehicleFilterCard() {
           value={search.consumption_rate}
           onChange={(e) =>
             navigate({
-              search: { ...search, consumption_rate: e.target.value.toString() },
+              search: {
+                ...search,
+                consumption_rate: e.target.value.toString(),
+              },
             })
           }
         />

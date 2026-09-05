@@ -19,6 +19,7 @@ export function CarModelPicker({
   //   const [query, setQuery] = useState("")
   const { data: vehicleCofig, isLoading } = useVehicleConfigurationsQuery()
   const [models, setModels] = useState<CarModel[]>([])
+  // TODO: fix why brand change still selects the brand
 
   useEffect(() => {
     let brandModels = vehicleCofig?.car_models
