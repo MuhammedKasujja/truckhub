@@ -13,6 +13,7 @@ import {
   getVehicleById,
   deleteVehicleById,
   vehicleAssignDriver,
+  getVehicleStatistics,
   getVehicleDetailsById,
   vehicleUnAssignDriver,
 } from "./server"
@@ -81,3 +82,12 @@ export const vehicleUnAssignDriverFn = createServerFn()
   .handler(async ({ data }) => {
     return vehicleUnAssignDriver(data.id)
   })
+
+export const getVehicleStatisticsFn = createServerFn().handler(async () => {
+  const result = await getVehicleStatistics()
+
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+  return { data: result.data! }
+})

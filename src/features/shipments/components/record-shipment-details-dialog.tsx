@@ -100,7 +100,7 @@ export function RecordShipmentDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
+      <DialogContent className="max-h-[90vh] ring-4 sm:max-w-sm md:min-w-lg overflow-hidden">
         <form
           onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
             console.log(errors.consumedFuelRates)
@@ -110,7 +110,7 @@ export function RecordShipmentDetailsDialog({
           <DialogHeader>
             <DialogTitle>Record Shipment Details</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="flext-1 space-y-4 h-full overflow-y-auto">
             <Field orientation={"horizontal"}>
               <NumberField
                 readOnly

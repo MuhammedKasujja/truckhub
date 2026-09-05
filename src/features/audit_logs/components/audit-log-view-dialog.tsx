@@ -29,7 +29,7 @@ export function AuditLogViewDialog({
 }: AuditLogViewDialogProps) {
   const { isLoading, data } = useQuery({
     ...createAuditLogsDetailsQueryOptions(audit?.id ?? ""),
-    enabled: audit?.id != undefined,
+    enabled: !!audit?.id,
   })
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>

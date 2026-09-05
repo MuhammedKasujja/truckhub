@@ -3,12 +3,14 @@ import { queryOptions } from "@tanstack/react-query"
 import {
   getVehiclesFn,
   getVehiclesByQueryFn,
+  getVehicleStatisticsFn,
   getVehicleDetailsByIdFn,
 } from "./services"
 
 export const vehicleQueryKeys = {
   all: () => ["vehicles"],
   list: () => [...vehicleQueryKeys.all(), "list"],
+  statistics: () => [...vehicleQueryKeys.list(), "statistics"],
   details: () => [...vehicleQueryKeys.all(), "detail"],
   detail: (id: string) => [...vehicleQueryKeys.details(), id],
   search: (params: VehicleListSearchParams) => [
@@ -40,3 +42,9 @@ export const vehicleSearchQueryOptions = (params: VehicleListSearchParams) => ({
     }),
   initialPageParam: 1,
 })
+
+export const vehicleStatisticsQueryOptions = () =>
+  queryOptions({
+    queryKey: vehicleQueryKeys.statistics(),
+    queryFn: () => getVehicleStatisticsFn(),
+  })

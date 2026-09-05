@@ -65,3 +65,11 @@ export interface Vehicle extends VehicleBase {
     name: string
   }[]
 }
+
+
+export type VehicleStatistics = {
+  available: number
+  reserved: number
+  maintenance: number
+  on_trip: number
+}
