@@ -5,13 +5,14 @@ import {
 import { requirePermission } from "@/lib/auth"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 
-import { createVehiclesListQueryOptions } from "@/features/vehicles/query-options"
+import { createVehiclesListQueryOptions, vehicleStatisticsQueryOptions } from "@/features/vehicles/query-options"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { VehicleSearchParamsCache } from "@/features/vehicles/schemas"
-import { VehicleFilterCard } from "@/features/vehicles/components"
+import { VehicleFilterCard, VehicleStatisticsRow } from "@/features/vehicles/components"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { PlusIcon } from "lucide-react"
+import { useVehicleStatistics } from "@/features/vehicles/hooks/use-invoice-statistics"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/_admin/vehicles/")({
   component: RouteComponent,
   beforeLoad: () => requirePermission("vehicles:module"),
   loader: ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(vehicleStatisticsQueryOptions())
     context.queryClient.prefetchQuery(createVehiclesListQueryOptions(search))
   },
 })
@@ -40,6 +42,7 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
+      <VehicleStatisticsRow/>
       <VehicleFilterCard />
       <VehicleTable />
     </div>
