@@ -156,4 +156,10 @@ function refreshShipmentDetails(
   shipment: Shipment | undefined
 ) {
   queryClient.setQueryData(queryKeys.shipments.detail(unitId), shipment)
+  // patch the item inside the cached list too, so the table updates immediately
+  queryClient.setQueriesData(
+    { queryKey: queryKeys.shipments.list() },
+    (old: Shipment[] | undefined) =>
+      old?.map((s) => (s.id === shipment?.id ? shipment : s))
+  )
 }

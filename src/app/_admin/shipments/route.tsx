@@ -24,12 +24,12 @@ const shipmentTabs = [
     route: RequestedShipmentsRoute.to,
   },
   {
-    name: "active",
-    route: ActiveShipmentsRoute.to,
-  },
-  {
     name: "confirmed",
     route: ConfirmedShipmentsRoute.to,
+  },
+  {
+    name: "active",
+    route: ActiveShipmentsRoute.to,
   },
   {
     name: "completed",

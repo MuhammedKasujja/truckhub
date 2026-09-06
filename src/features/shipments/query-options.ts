@@ -9,10 +9,10 @@ import {
 export const shipmentsQueryKeys = {
   all: () => ["shipments"],
   list: () => [...shipmentsQueryKeys.all(), "list"],
-  active: () => [...shipmentsQueryKeys.list(), "active"],
-  confirmed: () => [...shipmentsQueryKeys.list(), "confirmed"],
-  requested: () => [...shipmentsQueryKeys.list(), "requested"],
-  completed: () => [...shipmentsQueryKeys.list(), "completed"],
+  active: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "active", search],
+  confirmed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "confirmed", search],
+  requested: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "requested", search],
+  completed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "completed", search],
   details: () => [...shipmentsQueryKeys.all(), "detail"],
   search: () => [...shipmentsQueryKeys.all(), "search"],
   detail: (id: EntityId) => [...shipmentsQueryKeys.details(), id],
@@ -33,7 +33,7 @@ export const shipmentsConfirmedQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: shipmentsQueryKeys.confirmed(),
+    queryKey: shipmentsQueryKeys.confirmed(search),
     queryFn: () =>
       getShipmentsFn({
         data: { ...search, status: ["assigned", "vehicle_assigned"] },
@@ -44,7 +44,7 @@ export const shipmentsActiveQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: shipmentsQueryKeys.active(),
+    queryKey: shipmentsQueryKeys.active(search),
     queryFn: () =>
       getShipmentsFn({
         data: { ...search, status: ["in_progress", "dispatched", "delayed"] },
@@ -55,7 +55,7 @@ export const shipmentsRequestsQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: shipmentsQueryKeys.requested(),
+    queryKey: shipmentsQueryKeys.requested(search),
     queryFn: () =>
       getShipmentsFn({ data: { ...search, status: ["unassigned"] } }),
   })
@@ -70,7 +70,7 @@ export const shipmentsCompletedQueryOptions = (
   search: ShipmentSearchParamsInput
 ) =>
   queryOptions({
-    queryKey: shipmentsQueryKeys.completed(),
+    queryKey: shipmentsQueryKeys.completed(search),
     queryFn: () =>
       getShipmentsFn({
         data: { ...search, status: ["invoiced", "captured_details", "completed"] },
