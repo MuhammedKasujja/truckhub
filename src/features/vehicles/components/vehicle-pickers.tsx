@@ -1,4 +1,4 @@
-import {  EngineType, EngineTypes, Vehicle } from "../types"
+import {  EngineType, EngineTypes, Gearbox, Gearboxes, Vehicle } from "../types"
 import { vehicleDetailsQueryOptions, vehicleSearchQueryOptions } from "../query-options"
 import { createEntityPicker } from "@/components/entity-picker"
 import { VehicleListSearchParams } from "../schemas"
@@ -36,6 +36,28 @@ export const { Picker: VehiclePicker, PickerField: VehiclePickerField } =
         }}
         filterFn={(u, q) => u.toLowerCase().includes(q.toLowerCase())}
         label="Engine"
+        getOptionValue={(u) => u}
+        renderOption={(u) => <span>{u}</span>}
+      />
+    )
+  }
+  
+  export function GearboxTypePicker({
+    value,
+    id,
+    onSelected,
+  }: EntityPickerProps<Gearbox>) {
+    return (
+      <AutoComplete<Gearbox>
+        id={id}
+        options={[...Gearboxes]}
+        loading={false}
+        value={value}
+        onChange={(status) => {
+          onSelected?.(status)
+        }}
+        filterFn={(u, q) => u.toLowerCase().includes(q.toLowerCase())}
+        label="Gearbox"
         getOptionValue={(u) => u}
         renderOption={(u) => <span>{u}</span>}
       />

@@ -40,14 +40,14 @@ function RouteComponent() {
           <CalendarDatePicker
             date={{
               from: new Date(),
-              // to: dates.to,
+              to: new Date(),
             }}
             onDateSelect={({}) => {}}
             // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
             className={`w-fit cursor-pointer`}
             variant="outline"
           />
-          <DateRangePicker2
+          {/* <DateRangePicker2
             initialDateFrom={new Date()}
             initialDateTo={
               new Date(new Date().setDate(new Date().getDate() + 7))
@@ -60,7 +60,7 @@ function RouteComponent() {
             align="start"
             locale="en-GB"
             showCompare={false}
-          />
+          /> */}
         </PageAction>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
