@@ -213,7 +213,7 @@ export function ShipmentDetailsDialog({
       />
       <RecordShipmentDetailsDialog
         shipment={shipment}
-        open={openModal === "record"}
+        open={!!shipment && openModal === "record"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <EndShipmentDialog
