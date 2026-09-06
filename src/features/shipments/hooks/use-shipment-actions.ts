@@ -13,6 +13,10 @@ import {
   recordShipmentDetailsFn,
   shipmentAssignVehicleFn,
 } from "../services"
+import { Shipment } from "../types"
+import { EntityId } from "@/schemas"
+import { queryKeys } from "@/lib/query-keys"
+import { QueryClient, useQueryClient } from "@tanstack/react-query"
 
 const useDispatchShipmentBase = createEntityActionHook(
   dispatchShipmentFn,
@@ -23,10 +27,19 @@ const useDispatchShipmentBase = createEntityActionHook(
 )
 
 export function useDispatchShipment() {
+  const queryClient = useQueryClient()
+
   const { isPending, execute } = useDispatchShipmentBase()
 
   function dispatchShipment(data: DispatchShipmentInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
   }
   return { isPending, dispatchShipment }
 }
@@ -40,10 +53,19 @@ const useEndShipmentBase = createEntityActionHook(
 )
 
 export function useEndShipment() {
+  const queryClient = useQueryClient()
+
   const { isPending, execute } = useEndShipmentBase()
 
   function endShipment(data: EndShipmentInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
   }
   return { isPending, endShipment }
 }
@@ -57,10 +79,18 @@ const useRecordShipmentDetailsBase = createEntityActionHook(
 )
 
 export function useRecordShipmentDetails() {
+  const queryClient = useQueryClient()
   const { isPending, execute } = useRecordShipmentDetailsBase()
 
   function saveShipmentDetails(data: RecordShipmentDetailsInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
   }
   return { isPending, saveShipmentDetails }
 }
@@ -76,10 +106,18 @@ const useAssignShipmentDriverBase = createEntityActionHook(
 )
 
 export function useAssignShipmentDriver() {
+  const queryClient = useQueryClient()
   const { isPending, execute } = useAssignShipmentDriverBase()
 
   function assignShipmentDriver(data: AssignShipmentDriverInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
   }
   return { isPending, assignShipmentDriver }
 }
@@ -95,10 +133,27 @@ const useAssignShipmentVehicleBase = createEntityActionHook(
 )
 
 export function useAssignShipmentVehicle() {
+  const queryClient = useQueryClient()
+
   const { isPending, execute } = useAssignShipmentVehicleBase()
 
   function assignShipmentVehicle(data: AssignShipmentVehicleInput) {
-    return execute({ data })
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
   }
   return { isPending, assignShipmentVehicle }
+}
+
+function refreshShipmentDetails(
+  queryClient: QueryClient,
+  unitId: EntityId,
+  shipment: Shipment | undefined
+) {
+  queryClient.setQueryData(queryKeys.shipments.detail(unitId), shipment)
 }
