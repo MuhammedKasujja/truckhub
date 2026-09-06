@@ -57,7 +57,6 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
                 <TableHead>Client</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Quotation</TableHead>
                 <TableHead>Start Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -73,9 +72,6 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
                       <Badge variant={"outline"}>{quotation.status}</Badge>
                     </TableCell>
                     <TableCell>{formatMoney(quotation.amount)}</TableCell>
-                    <TableCell>
-                      <>-</>
-                    </TableCell>
                     <TableCell>
                       {formatDate(quotation.created_at, {
                         timeStyle: undefined,

@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
@@ -55,11 +53,5 @@ export function CarModelTable() {
 }
 
 export function CarModelTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getCarModelColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={4} filterCount={1} shrinkZero />
 }
