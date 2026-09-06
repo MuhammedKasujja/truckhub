@@ -14,8 +14,10 @@ import {
   changeClientType,
   getClientBookings,
   getClientPayments,
+  getClientInvoices,
   deleteCustomerById,
   getCustomersByQuery,
+  getClientQuotations,
   getClientRoutePricing,
   getCustomerDetailsById,
   createClientBatchRoutePricing,
@@ -97,6 +99,18 @@ export const getClientRidesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientRides(data.id)
+  })
+
+export const getClientQuotationsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientQuotations(data.id)
+  })
+
+export const getClientInvoicesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientInvoices(data.id)
   })
 
 export const createClientBatchRoutePricingFn = createServerFn()

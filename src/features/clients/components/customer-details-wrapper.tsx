@@ -30,9 +30,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useQueries } from "@tanstack/react-query"
 import { EntityId } from "@/schemas"
 import {
-  clientBookingsQueryOptions,
+  clientInvoicesQueryOptions,
   clientPaymentsQueryOptions,
-  clientRidesQueryOptions,
+  clientQuotationsQueryOptions,
 } from "../query-options"
 import { useTranslation } from "@/i18n"
 import { EnterPaymentModal } from "@/features/payments/components"
@@ -52,25 +52,25 @@ export function CustomerDetailsWrapper({
 
   const [
     { data: paymentsResponse },
-    { data: bookingsResponse },
-    { data: ridesResponse },
+    { data: invoicesResponse },
+    { data: quotationsResponse },
   ] = useQueries({
     queries: [
       clientPaymentsQueryOptions(clientId),
-      clientBookingsQueryOptions(clientId),
-      clientRidesQueryOptions(clientId),
+      clientInvoicesQueryOptions(clientId),
+      clientQuotationsQueryOptions(clientId),
     ],
   })
 
   const tr = useTranslation()
 
   const payments = paymentsResponse?.data
-  const bookings = bookingsResponse?.data
-  const rides = ridesResponse?.data
+  const invoices = invoicesResponse?.data
+  const quotations = quotationsResponse?.data
 
-  const latestBooking = bookings?.find((ele) => ele.amount)
+  const latestInvoice = invoices?.find((ele) => ele.total)
   const latestPayment = payments?.find((ele) => ele.date)
-  const latestRide = rides?.find((ele) => ele.created_at)
+  const latestQuotation = quotations?.find((ele) => ele.created_at)
 
   return (
     <div className="grid gap-5">
@@ -143,27 +143,27 @@ export function CustomerDetailsWrapper({
 
         <Card>
           <CardHeader>
-            <CardTitle>Latest Booking</CardTitle>
+            <CardTitle>Latest Invoice</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestBooking ? (
+            {latestInvoice ? (
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  {formatDate(latestBooking.pickup_time)}
+                  {formatDate(latestInvoice.created_at)}
                 </div>
                 <div className="text-lg font-semibold">
-                  {latestBooking.number}
+                  {latestInvoice.number}
                 </div>
-                <div className="text-sm">{latestBooking.status}</div>
+                <div className="text-sm">{latestInvoice.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {formatMoney(latestBooking.amount)}
+                  {formatMoney(latestInvoice.total)}
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
-                    to={`/bookings/$bookingId/view`}
-                    params={{ bookingId: latestBooking.id }}
+                    to={"/billing/invoices/$invoiceId/view"}
+                    params={{ invoiceId: latestInvoice.id }}
                   >
-                    View booking
+                    View Invoice
                   </Link>
                 </Button>
               </div>
@@ -171,7 +171,7 @@ export function CustomerDetailsWrapper({
               <div className="space-y-3 text-center">
                 <CalendarDays className="mx-auto h-8 w-8 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">
-                  No bookings found for this customer.
+                  No invoices found for this customer.
                 </div>
               </div>
             )}
@@ -180,25 +180,25 @@ export function CustomerDetailsWrapper({
 
         <Card>
           <CardHeader>
-            <CardTitle>Latest Ride</CardTitle>
+            <CardTitle>Latest Quotation</CardTitle>
           </CardHeader>
           <CardContent>
-            {latestRide ? (
+            {latestQuotation ? (
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  {formatDate(latestRide.request_start_time)}
+                  {formatDate(latestQuotation.created_at)}
                 </div>
-                <div className="text-lg font-semibold">{latestRide.number}</div>
-                <div className="text-sm">{latestRide.status}</div>
+                <div className="text-lg font-semibold">{latestQuotation.number}</div>
+                <div className="text-sm">{latestQuotation.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {latestRide.origin} → {latestRide.destination}
+                  {latestQuotation.amount} → {latestQuotation.status}
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
-                    to={`/rides/$rideId/view`}
-                    params={{ rideId: latestRide.id }}
+                    to={"/quotations/$quotationId/view"}
+                    params={{ quotationId: latestQuotation.id }}
                   >
-                    View ride
+                    View Quotation
                   </Link>
                 </Button>
               </div>
@@ -206,7 +206,7 @@ export function CustomerDetailsWrapper({
               <div className="space-y-3 text-center">
                 <MapPin className="mx-auto h-8 w-8 text-muted-foreground" />
                 <div className="text-sm text-muted-foreground">
-                  No rides found for this customer.
+                  No quotations found for this customer.
                 </div>
               </div>
             )}
@@ -222,8 +222,8 @@ export function CustomerDetailsWrapper({
           <Tabs defaultValue="payments" className="w-full">
             <TabsList>
               <TabsTrigger value="payments">Payments</TabsTrigger>
-              <TabsTrigger value="bookings">Bookings</TabsTrigger>
-              <TabsTrigger value="rides">Rides</TabsTrigger>
+              <TabsTrigger value="quotations">Quotations</TabsTrigger>
+              <TabsTrigger value="invoices">Invoices</TabsTrigger>
             </TabsList>
 
             <TabsContent value="payments">
@@ -289,29 +289,29 @@ export function CustomerDetailsWrapper({
               </div>
             </TabsContent>
 
-            <TabsContent value="bookings">
+            <TabsContent value="quotations">
               <div className="overflow-hidden rounded-lg border bg-background">
                 <Table>
                   <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead className="w-25">Number</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Pickup</TableHead>
                       <TableHead>Amount</TableHead>
+                      <TableHead>Date</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {bookings?.length ? (
-                      bookings.map((booking) => (
-                        <TableRow key={booking.id.toString()}>
+                    {quotations?.length ? (
+                      quotations.map((quote) => (
+                        <TableRow key={quote.id}>
                           <TableCell className="font-medium">
-                            {booking.number}
+                            {quote.number}
                           </TableCell>
-                          <TableCell>{booking.status}</TableCell>
-                          <TableCell>
-                            {formatDate(booking.pickup_time)}
+                          <TableCell>{quote.status}</TableCell>
+                          <TableCell>{formatMoney(quote.amount)}</TableCell>
+                           <TableCell>
+                            {formatDate(quote.created_at)}
                           </TableCell>
-                          <TableCell>{formatMoney(booking.amount)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
@@ -322,11 +322,11 @@ export function CustomerDetailsWrapper({
                               <EmptyMedia variant="icon">
                                 <CalendarDays />
                               </EmptyMedia>
-                              <EmptyTitle>No Bookings Found</EmptyTitle>
+                              <EmptyTitle>No Quotations Found</EmptyTitle>
                             </EmptyHeader>
                             <EmptyContent>
                               <div className="text-sm text-muted-foreground">
-                                This customer does not have any bookings yet.
+                                This customer does not have any quotations yet.
                               </div>
                             </EmptyContent>
                           </Empty>
@@ -338,30 +338,30 @@ export function CustomerDetailsWrapper({
               </div>
             </TabsContent>
 
-            <TabsContent value="rides">
+            <TabsContent value="invoices">
               <div className="overflow-hidden rounded-lg border bg-background">
                 <Table>
                   <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead className="w-25">Number</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Route</TableHead>
+                      <TableHead>Amount</TableHead>
                       <TableHead>Date</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rides?.length ? (
-                      rides.map((ride) => (
-                        <TableRow key={ride.id.toString()}>
+                    {invoices?.length ? (
+                      invoices.map((inv) => (
+                        <TableRow key={inv.id.toString()}>
                           <TableCell className="font-medium">
-                            {ride.number}
+                            {inv.number}
                           </TableCell>
-                          <TableCell>{ride.status}</TableCell>
+                          <TableCell>{inv.status}</TableCell>
                           <TableCell>
-                            {ride.origin} → {ride.destination}
+                            {formatMoney(inv.total)}
                           </TableCell>
                           <TableCell>
-                            {formatDate(ride.request_start_time)}
+                            {formatDate(inv.due_date)}
                           </TableCell>
                         </TableRow>
                       ))
@@ -373,11 +373,11 @@ export function CustomerDetailsWrapper({
                               <EmptyMedia variant="icon">
                                 <MapPin />
                               </EmptyMedia>
-                              <EmptyTitle>No Rides Found</EmptyTitle>
+                              <EmptyTitle>No Invoices Found</EmptyTitle>
                             </EmptyHeader>
                             <EmptyContent>
                               <div className="text-sm text-muted-foreground">
-                                This customer does not have any rides yet.
+                                This customer does not have any invoices yet.
                               </div>
                             </EmptyContent>
                           </Empty>

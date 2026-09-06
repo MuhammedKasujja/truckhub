@@ -4,11 +4,11 @@ import { queryOptions } from "@tanstack/react-query"
 import {
   getCustomersFn,
   getClientByIdFn,
-  getClientRidesFn,
   getClientProfileFn,
-  getClientBookingsFn,
   getClientPaymentsFn,
   getClientsByQueryFn,
+  getClientInvoicesFn,
+  getClientQuotationsFn,
   getClientRoutePricingFn,
   getClientLoadingOffloadingFreesFn,
 } from "./services"
@@ -26,8 +26,8 @@ export const clientQueryKeys = {
   edit: (id: EntityId) => [...clientQueryKeys.detail(id), "edit"],
   profile: (id: EntityId) => [...clientQueryKeys.detail(id), "profile"],
   payments: (id: EntityId) => [...clientQueryKeys.detail(id), "payments"],
-  bookings: (id: EntityId) => [...clientQueryKeys.detail(id), "bookings"],
-  rides: (id: EntityId) => [...clientQueryKeys.detail(id), "rides"],
+  invoices: (id: EntityId) => [...clientQueryKeys.detail(id), "invoices"],
+  quotations: (id: EntityId) => [...clientQueryKeys.detail(id), "quotations"],
   routePricing: (id: EntityId) => [
     ...clientQueryKeys.detail(id),
     "route_pricing",
@@ -88,16 +88,16 @@ export const clientPaymentsQueryOptions = (clientId: EntityId) =>
     queryFn: () => getClientPaymentsFn({ data: { id: clientId } }),
   })
 
-export const clientBookingsQueryOptions = (clientId: EntityId) =>
+export const clientInvoicesQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.bookings(clientId),
-    queryFn: () => getClientBookingsFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.invoices(clientId),
+    queryFn: () => getClientInvoicesFn({ data: { id: clientId } }),
   })
 
-export const clientRidesQueryOptions = (clientId: EntityId) =>
+export const clientQuotationsQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.rides(clientId),
-    queryFn: () => getClientRidesFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.quotations(clientId),
+    queryFn: () => getClientQuotationsFn({ data: { id: clientId } }),
   })
 
 export const clientRoutePricingQueryOptions = (clientId: EntityId) =>

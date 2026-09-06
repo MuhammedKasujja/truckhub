@@ -15,10 +15,10 @@ import {
 } from "@/features/clients/components"
 import { useClientProfileSuspenseQuery } from "@/features/clients/hooks/use-client"
 import {
-  clientBookingsQueryOptions,
+  clientInvoicesQueryOptions,
   clientPaymentsQueryOptions,
   clientProfileQueryOptions,
-  clientRidesQueryOptions,
+  clientQuotationsQueryOptions,
 } from "@/features/clients/query-options"
 import { requirePermission } from "@/lib/auth"
 import { IconShieldStar } from "@tabler/icons-react"
@@ -32,8 +32,8 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   loader: async ({ context: { queryClient }, params }) => {
     const clientId = params.clientId
     queryClient.ensureQueryData(clientPaymentsQueryOptions(clientId))
-    queryClient.ensureQueryData(clientBookingsQueryOptions(clientId))
-    queryClient.ensureQueryData(clientRidesQueryOptions(clientId))
+    queryClient.ensureQueryData(clientInvoicesQueryOptions(clientId))
+    queryClient.ensureQueryData(clientQuotationsQueryOptions(clientId))
     return queryClient.ensureQueryData(clientProfileQueryOptions(clientId))
   },
 })

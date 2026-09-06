@@ -20,6 +20,8 @@ import {
   LoadingOffloadingPricing,
   LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
+import { Invoice } from "@/features/invoices/types"
+import { Quotation } from "@/features/quotations/types"
 import { RoutePricingResponse } from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
@@ -82,6 +84,12 @@ export async function getClientBookings(clientId: EntityId) {
 
 export async function getClientRides(clientId: EntityId) {
   return await apiClient.getFn<RideRequest[]>(`${endpoint}/${clientId}/rides`)
+}
+export async function getClientInvoices(clientId: EntityId) {
+  return await apiClient.getFn<Invoice[]>(`${endpoint}/${clientId}/invoices`)
+}
+export async function getClientQuotations(clientId: EntityId) {
+  return await apiClient.getFn<Quotation[]>(`${endpoint}/${clientId}/quotations`)
 }
 
 export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
