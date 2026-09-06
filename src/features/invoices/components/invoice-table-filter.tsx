@@ -13,6 +13,7 @@ import { Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { useInvoiceStatistics } from "../hooks/use-invoice-statistics"
+import { DateRange } from "react-day-picker"
 
 const DATE_FILTERS = [
   { value: "today", label: "Today" },
@@ -37,6 +38,10 @@ export function InvoiceTableFilter() {
   const [type, setType] = useState("last7")
   const [exportType, setExportType] = useState("")
   const { data: statistics } = useInvoiceStatistics()
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date(),
+  })
   return (
     <div className="flex w-full flex-row justify-between gap-4">
       <div className="flex flex-row gap-2">
@@ -54,14 +59,12 @@ export function InvoiceTableFilter() {
             </SelectContent>
           </Select>
           <CalendarDatePicker
-            date={{
-              from: new Date(),
-              // to: dates.to,
-            }}
-            onDateSelect={({}) => {}}
+            date={range}
+            onDateSelect={(value) => setRange(value as DateRange)}
             // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
             className={`w-fit cursor-pointer`}
             variant="outline"
+            numberOfMonths={2}
           />
         </ButtonGroup>
         <ButtonGroup>
