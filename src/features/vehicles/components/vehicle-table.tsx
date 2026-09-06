@@ -45,11 +45,5 @@ export function VehicleTable() {
 }
 
 export function VehicleTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={8}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={8} filterCount={1} shrinkZero />
 }

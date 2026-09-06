@@ -69,6 +69,7 @@ export interface Vehicle extends VehicleBase {
 
 
 export type VehicleStatistics = {
+  total: number
   available: number
   reserved: number
   maintenance: number

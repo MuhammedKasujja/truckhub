@@ -8,11 +8,15 @@ export function VehicleStatisticsRow() {
   return (
     <ButtonGroup className="flex w-full">
       <Button className="flex gap-4">
+        <div>Total</div>
+        <div>{data?.total}</div>
+      </Button>
+      <Button className="flex gap-4">
         <div>Available</div>
         <div>{data?.available}</div>
       </Button>
       <Button className="flex gap-4">
-        <div>On Trip</div>
+        <div>In Transit</div>
         <div>{data?.on_trip}</div>
       </Button>
       <Button className="flex gap-4">

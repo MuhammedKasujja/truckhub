@@ -31,10 +31,11 @@ export function VehicleFilterCard() {
         </CardDescription>
         <CardAction>
           <Button
+            size={'sm'}
             variant={"ghost"}
             onClick={() => navigate({ from: "/vehicles/" })}
           >
-            <RotateCcwIcon /> Clear all
+            <RotateCcwIcon className="size-3"/> Clear all
           </Button>
         </CardAction>
       </CardHeader>
@@ -156,9 +157,6 @@ export function VehicleFilterCard() {
           </div>
         </div>
       </CardContent>
-      {/* <CardFooter className="flex items-end justify-end">
-        <Button>Apply filters</Button>
-      </CardFooter> */}
     </Card>
   )
 }
