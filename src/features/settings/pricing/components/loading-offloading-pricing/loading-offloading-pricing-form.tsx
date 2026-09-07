@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { Plus } from "lucide-react"
+import { Plus, XIcon } from "lucide-react"
 import { useFieldArray, useForm } from "react-hook-form"
 import z from "zod"
 import {
@@ -9,7 +9,11 @@ import {
   LoadingOffloadingPricingSchema,
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DatePickerField, MoneyField, TextField } from "@/components/ui/form-fields"
+import {
+  DatePickerField,
+  MoneyField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/providers/auth-context"
@@ -110,7 +114,7 @@ export function LoadingOffloadingPricingForm({
     },
   })
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "pricings",
   })
@@ -144,6 +148,7 @@ export function LoadingOffloadingPricingForm({
               <div>CBM Max</div>
               <div>Loading fees</div>
               <div>Offloading fees</div>
+              <div></div>
             </Field>
             {fields.map((ele, index) => (
               <Field key={ele.id} orientation={"horizontal"}>
@@ -171,6 +176,14 @@ export function LoadingOffloadingPricingForm({
                   control={form.control}
                   name={`pricings.${index}.offloading_fees`}
                 />
+                <Button
+                  size={"icon-xs"}
+                  type="button"
+                  variant={'destructive'}
+                  onClick={() => remove(index)}
+                >
+                  <XIcon className="size-3" />
+                </Button>
               </Field>
             ))}
             <Separator />
