@@ -13,7 +13,7 @@ export const invoiceQueryKeys = {
   list: () => [...invoiceQueryKeys.all(), "list"],
   statistics: () => [...invoiceQueryKeys.list(), "statistics"],
   search: (search?: string | null) => [
-    ...invoiceQueryKeys.all(),
+    ...invoiceQueryKeys.list(),
     "search",
     search,
   ],
