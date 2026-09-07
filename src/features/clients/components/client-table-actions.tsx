@@ -73,19 +73,11 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
               </Link>
             </DropdownMenuItem>
           </Can>
-          <Can permission={"bookings:create"}>
+          <Can permission={"invoices:create"}>
             <DropdownMenuItem asChild>
-              <Link to={"/bookings/new"} search={{ clientId: client.id }}>
+              <Link to={"/billing/invoices/new"} search={{ clientId: client.id }}>
                 <PlusIcon />
-                Booking
-              </Link>
-            </DropdownMenuItem>
-          </Can>
-          <Can permission={"rides:create"}>
-            <DropdownMenuItem asChild>
-              <Link to={"/rides/new"} params={{ clientId: client.id }}>
-                <PlusIcon />
-                Ride
+                Invoice
               </Link>
             </DropdownMenuItem>
           </Can>

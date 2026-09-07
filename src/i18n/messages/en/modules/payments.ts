@@ -20,6 +20,7 @@ export const en = {
     edit: "Edit",
     delete: "Delete",
     close: "Close",
+    enterPayment: "Enter Payment",
   },
   status: "Status",
   amount: "Amount",

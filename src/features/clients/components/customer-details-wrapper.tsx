@@ -1,13 +1,11 @@
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
-import { IconEdit } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
 import {
@@ -77,26 +75,6 @@ export function CustomerDetailsWrapper({
       <Card>
         <CardHeader>
           <CardTitle className="capitalize">{client?.name}</CardTitle>
-          <CardAction className="flex gap-4">
-            <Can permission={"payments:create"}>
-              <Button onClick={() => setOpenModal(true)}>
-                <PlusIcon />
-                {tr("payments.form.new_payment")}
-              </Button>
-              <EnterPaymentModal
-                open={openModal}
-                onOpenChange={() => setOpenModal(false)}
-                initialData={{
-                  type: "invoice",
-                }}
-              />
-            </Can>
-            <Button asChild size={"icon"}>
-              <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
-                <IconEdit />
-              </Link>
-            </Button>
-          </CardAction>
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
           <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">

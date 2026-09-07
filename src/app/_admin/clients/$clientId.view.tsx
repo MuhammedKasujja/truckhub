@@ -20,10 +20,13 @@ import {
   clientProfileQueryOptions,
   clientQuotationsQueryOptions,
 } from "@/features/clients/query-options"
+import { EnterPaymentModal } from "@/features/payments/components"
+import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
-import { IconShieldStar } from "@tabler/icons-react"
+import { IconEdit, IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
+import { FileTextIcon, PlusIcon } from "lucide-react"
+import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
@@ -41,6 +44,9 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 function RouteComponent() {
   const { clientId } = Route.useParams()
   const { data } = useClientProfileSuspenseQuery(clientId)
+  const [openModal, setOpenModal] = useState(false)
+
+  const tr = useTranslation()
   return (
     <div>
       <PageHeader>
@@ -53,29 +59,42 @@ function RouteComponent() {
         <PageAction className="flex gap-2">
           <PageBackButton />
           <ButtonGroup>
+            <Can permission={"clients:edit"}>
+              <Button asChild variant={"secondary"} >
+                <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
+                  <IconEdit />
+                  Edit
+                </Link>
+              </Button>
+            </Can>
             <Can permission={"quotations:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/quotations/new"} search={{ clientId }}>
                   <PlusIcon />
-                  Quotation
+                  New Quotation
                 </Link>
               </Button>
             </Can>
-            <Can permission={"bookings:create"}>
+            <Can permission={"invoices:create"}>
               <Button asChild variant={"secondary"}>
-                <Link to={"/bookings/new"} search={{ clientId }}>
+                <Link to={"/billing/invoices/new"} search={{ clientId }}>
                   <PlusIcon />
-                  New Booking
+                  New Invoice
                 </Link>
               </Button>
             </Can>
-            <Can permission={"rides:create"}>
-              <Button asChild variant={"secondary"}>
-                <Link to={"/rides/new"} params={{ clientId }}>
-                  <PlusIcon />
-                  New Ride
-                </Link>
+            <Can permission={"payments:create"}>
+              <Button variant={"secondary"} onClick={() => setOpenModal(true)}>
+                <PlusIcon />
+                {tr("payments.form.enterPayment")}
               </Button>
+              <EnterPaymentModal
+                open={openModal}
+                onOpenChange={() => setOpenModal(false)}
+                initialData={{
+                  type: "invoice",
+                }}
+              />
             </Can>
             {data?.has_pricing && (
               <Button asChild variant={"secondary"}>
@@ -86,6 +105,7 @@ function RouteComponent() {
             )}
             <Button asChild variant={"secondary"}>
               <Link to="/clients/$clientId/pdf" params={{ clientId }}>
+              <FileTextIcon/>
                 Pdf
               </Link>
             </Button>
