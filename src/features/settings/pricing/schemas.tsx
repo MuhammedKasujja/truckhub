@@ -121,8 +121,8 @@ export type LoadingOffloadingPricingRequest = z.infer<
 export const islandPricingSchema = z.object({
   island_id: IDSchema,
   locations: z.array(z.object({ value: z.string().default("").optional() })),
-  priceRate: z.number().positive("Required"),
-  // priceRate: MoneySchema.min(1, "Required"),
+  // priceRate: z.number().positive("Required"),
+  priceRate: MoneySchema.min(1, "Required"),
   newPriceRate: z.number().positive().optional().nullable(),
 })
 

@@ -8,7 +8,6 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import {
   DatePickerField,
   MoneyField,
-  NumberField,
   TextField,
 } from "@/components/ui/form-fields"
 import { Label } from "@/components/ui/label"
@@ -22,7 +21,7 @@ import { useEffect } from "react"
 const emptyIslandPricing = {
   island_id: "",
   locations: [{ value: "" }],
-  priceRate: 0,
+  priceRate: "",
   newPriceRate: null,
 }
 
@@ -88,9 +87,9 @@ export function EditIslandsPricingForm({
                     label="Island"
                     control={form.control}
                     name={`pricings.${pricingIndex}.island_id`}
-                    onChange={(island) => {}}
+                    onChange={(_) => {}}
                   />
-                  <NumberField
+                  <MoneyField
                     label="Price"
                     control={form.control}
                     name={`pricings.${pricingIndex}.priceRate`}
