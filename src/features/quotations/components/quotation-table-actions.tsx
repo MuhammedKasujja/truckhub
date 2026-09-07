@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { DownloadCloud, EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
+import {
+  DownloadCloud,
+  EditIcon,
+  EyeIcon,
+  MailIcon,
+  MoreVertical,
+} from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -14,8 +20,11 @@ import { Quotation, QuotationTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 import {
   useAcceptQuotation,
+  useMarkQuotationCancelled,
   useMarkQuotationRejected,
+  useSendQuotationEmail,
 } from "../hooks/use-quotation-actions"
+import { isInEnum } from "@/common/enums"
 
 interface TableActionsProps {
   quotation: Quotation
@@ -27,6 +36,8 @@ interface TableActionsProps {
 export function QuotationTableActions({ quotation }: TableActionsProps) {
   const { acceptQuotation } = useAcceptQuotation()
   const { markQuotationRejected } = useMarkQuotationRejected()
+  const { sendQuotationEmail } = useSendQuotationEmail()
+  const { markQuotationCancelled } = useMarkQuotationCancelled()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -67,10 +78,23 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
             )}
           </Can>
           <Can permission={"quotations:email"}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => sendQuotationEmail(quotation.id)}>
               <MailIcon />
               Email
             </DropdownMenuItem>
+          </Can>
+          <Can permission={"quotations:cancel"}>
+            {isInEnum(quotation.status, ["accepted"]) && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => markQuotationCancelled(quotation.id)}
+                >
+                  Cancel
+                </DropdownMenuItem>
+              </>
+            )}
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>

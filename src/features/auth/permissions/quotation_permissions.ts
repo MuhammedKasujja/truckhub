@@ -7,6 +7,7 @@ export const QuotationModulePermissions = {
   "quotations:reject": ["quotations:reject"],
   "quotations:accept": ["quotations:reject"],
   "quotations:email": ["quotations:email"],
+  "quotations:cancel": ["quotations:cancel"],
 } as const
 
 export type QuotationPermissions = keyof typeof QuotationModulePermissions

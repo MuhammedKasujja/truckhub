@@ -1,8 +1,10 @@
 import { EntityId } from "@/schemas"
 import {
+  sendQuotationEmailFn,
   markQuotationExpiredFn,
   markQuotationAcceptedFn,
   markQuotationRejectedFn,
+  markQuotationCancelledFn,
 } from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
@@ -55,4 +57,38 @@ export const useMarkQuotationRejected = () => {
     return execute({ data: { id: quotationId } })
   }
   return { isPending, markQuotationRejected }
+}
+
+const useSendQuotationEmailBase = createEntityActionHook(
+  sendQuotationEmailFn,
+  (invalidator, input) => {
+    invalidator.quotations.list.invalidate()
+    invalidator.quotations.details(input.data.id)
+  }
+)
+
+export const useSendQuotationEmail = () => {
+  const { isPending, execute } = useSendQuotationEmailBase()
+
+  function sendQuotationEmail(quotationId: EntityId) {
+    return execute({ data: { id: quotationId } })
+  }
+  return { isPending, sendQuotationEmail }
+}
+
+const useMarkQuotationCancelledBase = createEntityActionHook(
+  markQuotationCancelledFn,
+  (invalidator, input) => {
+    invalidator.quotations.list.invalidate()
+    invalidator.quotations.details(input.data.id)
+  }
+)
+
+export const useMarkQuotationCancelled = () => {
+  const { isPending, execute } = useMarkQuotationCancelledBase()
+
+  function markQuotationCancelled(quotationId: EntityId) {
+    return execute({ data: { id: quotationId } })
+  }
+  return { isPending, markQuotationCancelled }
 }
