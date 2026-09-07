@@ -6,7 +6,10 @@ import { IconAccessPoint, IconFileTypePdf } from "@tabler/icons-react"
 import { EditIcon, MailIcon } from "lucide-react"
 import { Quotation } from "../../types"
 import { Link } from "@tanstack/react-router"
-import { useAcceptQuotation } from "../../hooks/use-quotation-actions"
+import {
+  useAcceptQuotation,
+  useSendQuotationEmail,
+} from "../../hooks/use-quotation-actions"
 import { ButtonGroup } from "@/components/ui/button-group"
 
 type Props = {
@@ -14,6 +17,7 @@ type Props = {
 }
 
 export function QuotationDetailsPageHeader({ quotation }: Props) {
+  const { sendEmail } = useSendQuotationEmail()
   const handleBack = useBackNavigation()
   const { acceptQuotation } = useAcceptQuotation()
   const quotationId = quotation.id
@@ -42,7 +46,11 @@ export function QuotationDetailsPageHeader({ quotation }: Props) {
             <IconAccessPoint />
             Accept
           </Button>
-          <Button variant={"outline"} size={"sm"}>
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            onClick={() => sendEmail(quotation.id)}
+          >
             <MailIcon />
             Send Email
           </Button>

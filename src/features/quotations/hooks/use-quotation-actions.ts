@@ -73,7 +73,7 @@ export const useSendQuotationEmail = () => {
   function sendQuotationEmail(quotationId: EntityId) {
     return execute({ data: { id: quotationId } })
   }
-  return { isPending, sendQuotationEmail }
+  return { isPending, sendQuotationEmail, sendEmail: sendQuotationEmail}
 }
 
 const useMarkQuotationCancelledBase = createEntityActionHook(
