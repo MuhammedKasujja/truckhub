@@ -11,18 +11,22 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { BookOpenTextIcon, CalendarRangeIcon, FileTextIcon } from "lucide-react"
 
 const biilingTabs = [
   {
+    icon: CalendarRangeIcon,
     name: "overview",
     route: OverviewRoute.to,
   },
   {
     name: "quotation",
+    icon: BookOpenTextIcon,
     route: QuotationsRoute.to,
   },
   {
     name: "invoice",
+    icon: FileTextIcon,
     route: InvoicesRoute.to,
   },
 ] as const
@@ -52,6 +56,7 @@ function RouteComponent() {
         <TabsList>
           {biilingTabs.map((section) => (
             <TabsTrigger key={section.name} value={section.route}>
+              <section.icon/>
               {tr(`common.${section.name}`)}
             </TabsTrigger>
           ))}

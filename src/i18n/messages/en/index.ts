@@ -41,6 +41,8 @@ const en = {
     drivers: "Drivers",
     vehicles: "Vehicles",
     users: "Users",
+    permissions: "Permissions",
+    roles: "Roles",
   },
   common: {
     locale: {
