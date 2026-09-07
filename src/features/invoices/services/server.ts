@@ -1,7 +1,7 @@
 import { api } from "@/lib/api"
-import { Invoice, InvoiceStatistics } from "../types"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
+import { Invoice, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 import { InvoiceCreateInput, InvoiceListSearchParams } from "../schemas"
@@ -54,4 +54,8 @@ export async function getInvoicePdf(invoiceId: EntityId) {
 
 export async function getInvoiceStatistics() {
   return await apiClient.getFn<InvoiceStatistics>(`${endpoint}/statistics`)
+}
+
+export async function sendInvoiceEmail(invoiceId: EntityId) {
+  return await apiClient.postFn<Invoice>(`${endpoint}/${invoiceId}/email`, {})
 }

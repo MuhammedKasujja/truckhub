@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { InvoiceTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
+import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
 
 export type SetInvoiceTableAction = React.Dispatch<
   React.SetStateAction<InvoiceTableRowAction | null>
@@ -34,6 +35,7 @@ export function InvoiceTableActions({
   setRowAction,
 }: TableActionsProps) {
   const invoice = invoiceRow.row.original
+  const { sendInvoiceEmail } = useSendInvoiceEmail()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -91,7 +93,7 @@ export function InvoiceTableActions({
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"invoices:email"}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
               <MailIcon />
               Email
             </DropdownMenuItem>
