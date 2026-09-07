@@ -4,7 +4,13 @@ import {
   IslandsListPricingSchema,
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
 import {
   DatePickerField,
   MoneyField,
@@ -14,7 +20,7 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Field } from "@/components/ui/field"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { Plus } from "lucide-react"
+import { Plus, XIcon } from "lucide-react"
 import { IslandSelectorField } from "@/features/settings/islands/components"
 import { useEffect } from "react"
 
@@ -81,6 +87,18 @@ export function EditIslandsPricingForm({
         <CardContent className="space-y-5">
           {pricingFields.fields.map((pricing, pricingIndex) => (
             <Card key={pricing.id}>
+              <CardHeader>
+                <CardAction>
+                  <Button
+                    size={"icon-xs"}
+                    type="button"
+                    variant={"destructive"}
+                    onClick={() => pricingFields.remove(pricingIndex)}
+                  >
+                    <XIcon className="size-3" />
+                  </Button>
+                </CardAction>
+              </CardHeader>
               <CardContent>
                 <Field orientation={"horizontal"} className="gap-4">
                   <IslandSelectorField

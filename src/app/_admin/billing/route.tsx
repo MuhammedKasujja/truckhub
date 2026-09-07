@@ -20,12 +20,12 @@ const biilingTabs = [
     route: OverviewRoute.to,
   },
   {
-    name: "quotation",
+    name: "quotations",
     icon: BookOpenTextIcon,
     route: QuotationsRoute.to,
   },
   {
-    name: "invoice",
+    name: "invoices",
     icon: FileTextIcon,
     route: InvoicesRoute.to,
   },
