@@ -25,9 +25,9 @@ import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { Link } from "@tanstack/react-router"
 import { ArrowUpRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "@/i18n"
 import { Can } from "@/components/has-permission"
+import { PaymentStatusIndicator } from "@/features/payments/components"
 
 type PaymentTableprops = {
   payments: Payment[]
@@ -73,9 +73,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
                     <TableCell>{payment.client.fullname}</TableCell>
                     <TableCell>{formatMoney(payment.amount)}</TableCell>
                     <TableCell>
-                      <Badge variant={"outline"}>
-                        {tr(`payments.statuses.${payment.status}`)}
-                      </Badge>
+                      <PaymentStatusIndicator status={payment.status}/>
                     </TableCell>
                     <TableCell>
                       {tr(`payments.methods.${payment.payment_mode}`)}
