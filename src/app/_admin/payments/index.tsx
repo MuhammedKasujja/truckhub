@@ -22,6 +22,7 @@ import {
   PaymentTableSkeleton,
   EnterPaymentModal,
 } from "@/features/payments/components"
+import { useQuery } from "@tanstack/react-query"
 
 export const Route = createFileRoute("/_admin/payments/")({
   validateSearch: PaymentSearchParamsCache,
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/_admin/payments/")({
 function RouteComponent() {
   const [openModal, setOpenModal] = useState(false)
 
-  const { data: statistics } = Route.useLoaderData()
+  const { data } = useQuery(paymentStatisticsQueryOptions())
   const tr = useTranslation()
   return (
     <>
@@ -63,7 +64,7 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
-      <PaymentStatisticsCard statistics={statistics} />
+      <PaymentStatisticsCard statistics={data?.data} />
       <PaymentTable />
     </>
   )

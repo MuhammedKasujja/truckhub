@@ -27,10 +27,14 @@ export const Route = createFileRoute("/_admin/settings/company-details/")({
 })
 
 function RouteComponent() {
-  const { settings, error } = useSettings()
+  const { settings, error, isLoading } = useSettings()
+
+  if (isLoading) {
+    return <div>Loading....</div>
+  }
 
   if (error || !settings) {
-    return "Failed to load"
+    return <div>Failed to load company details</div>
   }
 
   return (
