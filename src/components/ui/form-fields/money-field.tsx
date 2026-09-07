@@ -33,10 +33,11 @@ export function MoneyField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
+          {label &&
           <FieldLabel htmlFor={field.name}>
             {label}
             {required && <RequiredLabelIcon />}
-          </FieldLabel>
+          </FieldLabel>}
           <MaskInput
             id={field.name}
             mask="currency"

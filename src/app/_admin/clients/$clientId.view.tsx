@@ -25,7 +25,7 @@ import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
 import { IconEdit, IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { FileTextIcon, PlusIcon } from "lucide-react"
+import { CreditCardIcon, FileTextIcon, PlusIcon } from "lucide-react"
 import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
@@ -99,6 +99,7 @@ function RouteComponent() {
             {data?.has_pricing && (
               <Button asChild variant={"secondary"}>
                 <Link to="/clients/data/$clientId" params={{ clientId }}>
+                 <CreditCardIcon/>
                   Pricing
                 </Link>
               </Button>

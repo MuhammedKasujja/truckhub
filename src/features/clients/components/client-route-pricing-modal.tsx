@@ -12,6 +12,7 @@ import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
 import { createClientBatchRoutePricingFn } from "../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { CreditCardIcon } from "lucide-react"
 
 type ClientPricingProps = {
   clientId: string
@@ -40,7 +41,7 @@ export function ClientRouteTonnagePricingModal({
     <Sheet>
       <SheetTrigger asChild>
         <Button variant={"secondary"}>
-          {/* <CreditCard /> */}
+          <CreditCardIcon />
           Route Pricing
         </Button>
       </SheetTrigger>

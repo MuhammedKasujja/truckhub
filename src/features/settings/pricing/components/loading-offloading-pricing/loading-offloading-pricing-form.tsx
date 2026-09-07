@@ -9,7 +9,7 @@ import {
   LoadingOffloadingPricingSchema,
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { DatePickerField, TextField } from "@/components/ui/form-fields"
+import { DatePickerField, MoneyField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/providers/auth-context"
@@ -163,11 +163,11 @@ export function LoadingOffloadingPricingForm({
                   control={form.control}
                   name={`pricings.${index}.cbm_max`}
                 />
-                <TextField
+                <MoneyField
                   control={form.control}
                   name={`pricings.${index}.loading_fees`}
                 />
-                <TextField
+                <MoneyField
                   control={form.control}
                   name={`pricings.${index}.offloading_fees`}
                 />

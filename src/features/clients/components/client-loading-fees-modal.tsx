@@ -41,7 +41,13 @@ export function ClientLoadingFeesModal({
         <div className="no-scrollbar overflow-y-auto px-4 pb-5">
           <LoadingOffloadingPricingForm
             initialData={
-              data ? { pricings: data, client_id: clientId } : undefined
+              data
+                ? {
+                    pricings: data,
+                    client_id: clientId,
+                    effective_date: data.effective_date,
+                  }
+                : undefined
             }
             isSubmitting={isPending}
             onSubmit={handleSubmit}

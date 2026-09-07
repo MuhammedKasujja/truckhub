@@ -1,4 +1,4 @@
-import { IDSchema } from "@/schemas"
+import { IDSchema, MoneySchema } from "@/schemas"
 import z from "zod"
 
 export const tonnageRangeSchema = z
@@ -100,8 +100,8 @@ const loadingOffloadingPricingSchema = z.object({
   tonnage_max: z.string().min(1, "Required"),
   cbm_min: z.string().min(1, "Required"),
   cbm_max: z.string().min(1, "Required"),
-  loading_fees: z.string().min(1, "Required"),
-  offloading_fees: z.string().min(1, "Required"),
+  loading_fees: MoneySchema.min(1, "Required"),
+  offloading_fees: MoneySchema.min(1, "Required"),
 })
 
 export const LoadingOffloadingPricingSchema = z.object({
