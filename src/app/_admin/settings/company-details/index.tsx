@@ -11,6 +11,7 @@ import {
   EditQuotationTermsForm,
 } from "@/features/settings/_components"
 import { CompanyDetailsView } from "@/features/settings/company-details/components"
+import { useSettings } from "@/features/settings/hooks/use-settings"
 import { settingsQueryOptions } from "@/features/settings/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { SquareDotIcon } from "lucide-react"
@@ -22,13 +23,13 @@ function transformToTerms(terms?: string[] | null) {
 export const Route = createFileRoute("/_admin/settings/company-details/")({
   component: RouteComponent,
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(settingsQueryOptions()),
+    context.queryClient.prefetchQuery(settingsQueryOptions()),
 })
 
 function RouteComponent() {
-  const { data: settings } = Route.useLoaderData()
+  const { settings, error } = useSettings()
 
-  if (!settings) {
+  if (error || !settings) {
     return "Failed to load"
   }
 

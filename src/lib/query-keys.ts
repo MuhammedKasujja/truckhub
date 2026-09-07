@@ -42,7 +42,7 @@ export const queryKeys = {
   islands: islandsQueryKeys,
 
   settings: {
-    app: () => settingsQueryKeys.list(),
+    app: () => settingsQueryKeys.all(),
     vehiclesConfig: () => settingsQueryKeys.vehiclesConfig(),
     pricingPlans: pricingQueryKeys,
   },

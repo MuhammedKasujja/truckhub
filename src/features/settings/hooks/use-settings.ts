@@ -5,7 +5,7 @@ import { settingsQueryOptions } from "../query-options"
 
 export function useSettings() {
   const { data, isLoading } = useQuery(settingsQueryOptions())
-  return { settings: data?.data, isLoading }
+  return { settings: data?.data, isLoading, error: data?.error}
 }
 
 export async function useUpdateSettings(data: Partial<EditSettingsSchemaType>) {
