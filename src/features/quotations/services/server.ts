@@ -40,16 +40,37 @@ export async function getQuotationDetails(quotationId: EntityId) {
 }
 
 export async function markQuotationAccepted(quotationId: EntityId) {
-  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}/accept`)
+  return await apiClient.postFn<Quotation>(
+    `${endpoint}/${quotationId}/accept`,
+    {}
+  )
 }
 
 export async function markQuotationRejected(quotationId: EntityId) {
-  return await apiClient.patchFn<Quotation>(`${endpoint}/${quotationId}/reject`)
+  return await apiClient.postFn<Quotation>(
+    `${endpoint}/${quotationId}/reject`,
+    {}
+  )
+}
+
+export async function markQuotationCancelled(quotationId: EntityId) {
+  return await apiClient.postFn<Quotation>(
+    `${endpoint}/${quotationId}/cancel`,
+    {}
+  )
+}
+
+export async function sendQuotationEmail(quotationId: EntityId) {
+  return await apiClient.postFn<Quotation>(
+    `${endpoint}/${quotationId}/email`,
+    {}
+  )
 }
 
 export async function markQuotationExpired(quotationId: EntityId) {
-  return await apiClient.patchFn<Quotation>(
-    `${endpoint}/${quotationId}/expired`
+  return await apiClient.postFn<Quotation>(
+    `${endpoint}/${quotationId}/expired`,
+    {}
   )
 }
 

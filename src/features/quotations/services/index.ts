@@ -11,12 +11,14 @@ import {
   getQuotations,
   createQuotation,
   updateQuotation,
+  sendQuotationEmail,
   getQuotationDetails,
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
   getQuotationReportPdf,
   getQuotationShipments,
+  markQuotationCancelled,
 } from "./server"
 
 export const getQuotationsFn = createServerFn()
@@ -66,12 +68,32 @@ export const markQuotationRejectedFn = createServerFn({ method: "POST" })
     return { data: result.data, message: result.message }
   })
 
+export const sendQuotationEmailFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await sendQuotationEmail(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, result.error.statusCode ?? 400)
+    }
+    return { data: result.data, message: result.message }
+  })
+
+export const markQuotationCancelledFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await markQuotationCancelled(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, result.error.statusCode ?? 400)
+    }
+    return { data: result.data, message: result.message }
+  })
+
 export const markQuotationExpiredFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await markQuotationExpired(data.id)
     if (result.error) {
-      throw new ApiError(result.error.message, 400)
+      throw new ApiError(result.error.message, result.error.statusCode ?? 400)
     }
     return { data: result.data, message: result.message }
   })
@@ -81,7 +103,7 @@ export const getQuotationDetailsFn = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const result = await getQuotationDetails(data.id)
     if (result.error) {
-      throw new ApiError(result.error.message, 400)
+      throw new ApiError(result.error.message, result.error.statusCode ?? 400)
     }
 
     const quotation = result.data!

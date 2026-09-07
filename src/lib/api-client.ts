@@ -3,6 +3,7 @@ import { AxiosError } from "axios"
 import { logoutFn } from "@/features/auth/services"
 import type {
   Prettify,
+  StatusCode,
   ApiResponse,
   ErrorStatusCode,
   ApiPaginatedResponse,
@@ -37,12 +38,13 @@ export async function getPaginatedFn<T>(
   } catch (error) {
     await logoutOnServerActions(error)
     const errorCode = handleErrorCodes(error)
+    const statusCode = (error instanceof AxiosError ? error.status : 400) as StatusCode
     return {
       success: false,
       error: {
         message: (error as any).response.data.error.message,
         code: (error as any).response.data.error.code,
-        statusCode: 400,
+        statusCode: statusCode,
         erroCode: errorCode,
       },
     }
@@ -115,13 +117,15 @@ export async function deleteFn<T = null>(url: string): Promise<ApiResponse<T>> {
 }
 
 function _handleApiException<T>(error: unknown): ApiResponse<T> {
-  const statusCode = handleErrorCodes(error)
+  const statusMessage = handleErrorCodes(error)
+  const errorCode = (error instanceof AxiosError ? error.status : 400) as StatusCode
   return {
     isSuccess: false,
     error: {
       message: (error as any).response.data.error?.message,
       code: (error as any).response.data.error?.code,
-      status: statusCode,
+      status: statusMessage,
+      statusCode: errorCode,
     },
   }
 }

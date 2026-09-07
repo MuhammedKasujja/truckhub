@@ -33,6 +33,7 @@ export type AppErrorDetails = {
   message: string
   code: string | undefined
   status?: ErrorStatusCode
+  statusCode: StatusCode
 }
 
 export type SuccessResponse<T> = {
@@ -91,7 +92,7 @@ export const ApiErrorCodes = {
   503: "SERVICE_UNAVAILABLE",
 } as const
 
-type StatusCode = keyof typeof ApiErrorCodes
+export type StatusCode = keyof typeof ApiErrorCodes
 
 type ApiErrorCode = (typeof ApiErrorCodes)[keyof typeof ApiErrorCodes]
 
