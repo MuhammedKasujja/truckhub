@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export const Route = createFileRoute("/_admin/billing/invoices/new")({
   component: RouteComponent,
@@ -39,6 +40,28 @@ function RouteComponent() {
     })
   }
 
+  function handleCreateInvoice() {
+    if (!quotation) {
+      toast.error("Please select a quotation")
+      return
+    }
+    if (!dueDate) {
+      toast.error("Due date is required")
+      return
+    }
+
+    if (lineItemsIds.length < 1) {
+      toast.error("Please select at least one line item")
+      return
+    }
+
+    createInvoice({
+      quotationId: quotation?.id,
+      unitIds: lineItemsIds,
+      dueDate: dueDate.toLocaleDateString("en-CA"),
+    })
+  }
+
   return (
     <div className="space-y-5">
       <div className="flex w-full gap-5">
@@ -59,18 +82,7 @@ function RouteComponent() {
       )}
       <Label htmlFor="due-date">Due Date</Label>
       <DatePicker id="due-date" onDateChanged={setDueDate} />
-      <Button
-        onClick={() => {
-          if (quotation && dueDate)
-            createInvoice({
-              quotationId: quotation?.id,
-              unitIds: lineItemsIds,
-              dueDate: dueDate.toLocaleDateString("en-CA"),
-            })
-        }}
-      >
-        Create
-      </Button>
+      <Button onClick={handleCreateInvoice}>Create</Button>
       {shipments?.map((trip) => (
         <Item
           key={trip.id}

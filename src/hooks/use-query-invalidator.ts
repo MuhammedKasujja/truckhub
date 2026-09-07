@@ -88,10 +88,7 @@ export class QueryInvalidator {
     list: {
       invalidate: () => {
         this.queryClient.invalidateQueries({
-          queryKey: queryKeys.bookings.list(),
-        })
-        this.queryClient.invalidateQueries({
-          queryKey: queryKeys.bookings.statistics(),
+          queryKey: queryKeys.invoices.list(),
         })
       },
     },

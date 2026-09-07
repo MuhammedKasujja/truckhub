@@ -9,15 +9,12 @@ import {
 } from "./services"
 
 export const invoiceQueryKeys = {
-  all: () => ["invoices"],
-  list: () => [...invoiceQueryKeys.all(), "list"],
-  statistics: () => [...invoiceQueryKeys.list(), "statistics"],
-  search: (search?: string | null) => [
-    ...invoiceQueryKeys.list(),
-    "search",
-    search,
-  ],
-  detail: (id: EntityId) => [...invoiceQueryKeys.all(), "detail", id],
+  all: () => ["invoices"] as const,
+  list: () => [...invoiceQueryKeys.all(), "list"] as const,
+  statistics: () => [...invoiceQueryKeys.list(), "statistics"] as const,
+  search: (search?: string | null) =>
+    [...invoiceQueryKeys.list(), "search", search] as const,
+  detail: (id: EntityId) => [...invoiceQueryKeys.all(), "detail", id] as const,
 } as const
 
 export const invoiceQueryOptions = (search: InvoiceListSearchParams) =>
