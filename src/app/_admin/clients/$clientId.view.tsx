@@ -107,7 +107,7 @@ function RouteComponent() {
             <Button asChild variant={"secondary"}>
               <Link to="/clients/$clientId/pdf" params={{ clientId }}>
               <FileTextIcon/>
-                Pdf
+                View Pdf
               </Link>
             </Button>
             <ClientRouteTonnagePricingModal clientId={clientId} />
