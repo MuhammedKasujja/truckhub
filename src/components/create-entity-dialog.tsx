@@ -17,12 +17,11 @@ import {
 } from "@/components/ui/command"
 import { useHotkey } from "@tanstack/react-hotkeys"
 import { Route as QuotationCreate } from "@/app/_admin/quotations/new"
-import { Route as BookingCreate } from "@/app/_admin/bookings/new"
 import { Route as ClientCreate } from "@/app/_admin/clients/new"
 import { Route as DriverCreate } from "@/app/_admin/drivers/new"
 import { Route as ServiceCreate } from "@/app/_admin/services/new"
 import { Route as VehicleCreate } from "@/app/_admin/vehicles/new"
-import { Route as RideCreate } from "@/app/_admin/rides/new"
+import { Route as InvoiceCreate } from "@/app/_admin/billing/invoices/new"
 import { Can } from "./has-permission"
 import { useNavigate } from "@tanstack/react-router"
 
@@ -34,10 +33,10 @@ const entityList = [
     permission: "quotations:create",
   },
   {
-    to: BookingCreate.to,
-    label: "booking",
+    to: InvoiceCreate.to,
+    label: "invoice",
     command: "⌘B",
-    permission: "bookings:create",
+    permission: "invoices:create",
   },
   {
     to: ClientCreate.to,
@@ -50,12 +49,6 @@ const entityList = [
     label: "driver",
     command: "⌘D",
     permission: "drivers:create",
-  },
-  {
-    to: RideCreate.to,
-    label: "ride",
-    command: "⌘R",
-    permission: "rides:create",
   },
   {
     to: ServiceCreate.to,

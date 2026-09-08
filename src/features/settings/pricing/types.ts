@@ -2,8 +2,8 @@ import { EntityId } from "@/schemas"
 
 export type TonnagePricing = {
   id: EntityId
-  min_tons: string | number
-  max_tons: string | number
+  min_tons: string
+  max_tons: string
   price: string
 }
 

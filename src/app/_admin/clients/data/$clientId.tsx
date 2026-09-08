@@ -3,6 +3,7 @@ import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { clientRoutePricingQueryOptions } from "@/features/clients/query-options"
+import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricing, TonnageRange } from "@/features/settings/pricing/types"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { useQuery } from "@tanstack/react-query"
@@ -32,9 +33,17 @@ function RouteComponent() {
     clientRoutePricingQueryOptions(Route.useParams().clientId)
   )
 
-  if (isLoading || !data?.data) return <div>Loading data</div>
+  if (isLoading) return <div>Loading data</div>
 
   const pricings = data?.data
+
+  return (
+    <RouteTonnagePricingGrid
+      routes={pricings?.routes ?? []}
+      effectiveDate={pricings?.effective_date ?? (new Date()).toDateString()}
+      title="Client Pricing"
+    />
+  )
 
   const columns = useMemo<ColumnDef<RoutePricing>[]>(() => {
     const mainCols: ColumnDef<RoutePricing>[] = [
