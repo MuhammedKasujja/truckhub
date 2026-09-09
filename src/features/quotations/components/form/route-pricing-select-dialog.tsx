@@ -59,6 +59,7 @@ import {
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
+import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -295,7 +296,14 @@ export function RoutePricingSelectDialog({
         <div className="grid flex-1 overflow-hidden md:grid-cols-5">
           {/* LEFT SIDE */}
           <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-3">
-            <div className="flex flex-col gap-3 sm:flex-row">
+            <RouteTonnagePricingGrid
+              routes={pricings?.routes ?? []}
+              effectiveDate={
+                pricings?.effective_date ?? new Date().toDateString()
+              }
+              title="Client Pricing"
+            />
+            {/* <div className="flex flex-col gap-3 sm:flex-row">
               <InputGroup className="flex-1">
                 <InputGroupInput
                   value={query}
@@ -403,7 +411,7 @@ export function RoutePricingSelectDialog({
                   </ItemContent>
                 </Item>
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* RIGHT SIDE (SORTABLE) */}
