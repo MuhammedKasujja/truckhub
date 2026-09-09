@@ -16,9 +16,9 @@ export type RoutePricing = {
   route_id: EntityId
   origin: string
   destination: string
-  distance_km: string | number
-  min_hrs: string | number
-  max_hrs: string | number
+  distance_km: string
+  min_hrs: string
+  max_hrs: string
   pricings: TonnagePricing[]
 }
 
