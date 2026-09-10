@@ -17,6 +17,7 @@ import {
   ArchiveRestore,
   ListCheckIcon,
   LocateIcon,
+  FileTextIcon,
 } from "lucide-react"
 
 type Module =
@@ -54,7 +55,7 @@ export function getModuleIcon(module: Module) {
     Reports: ChartLine,
     Settings: SettingsIcon,
     Quotations: ListCheckIcon,
-    Invoices: ListCheckIcon,
+    Invoices: FileTextIcon,
   }
   return moduleIcons[module]
 }

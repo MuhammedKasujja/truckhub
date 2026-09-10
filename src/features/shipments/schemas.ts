@@ -19,7 +19,8 @@ const consumedFuelRateSchema = z.object({
 
 export const dispatchShipmentSchema = z.object({
   unitId: IDSchema,
-  startMileage: z.number(),
+  startMileage: z.number('Required').positive(),
+  contactName: z.string("Required").min(3, "Required"),
 })
 
 export const assignShipmentVehicleSchema = z.object({

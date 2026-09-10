@@ -14,7 +14,6 @@ import {
 const endpoint = "/v1/trips"
 
 export async function getShipments(input: ShipmentSearchParamsInput) {
-  
   const params = generateApiSearchParams(input)
   const response = await apiClient.getPaginatedFn<Shipment[]>(
     `${endpoint}?${params}`
@@ -34,15 +33,18 @@ export async function getShipmentById(unitId: EntityId) {
 export async function dispatchShipment(data: DispatchShipmentInput) {
   return await apiClient.postFn<Shipment>(
     `${endpoint}/${data.unitId}/dispatch`,
-    { start_mileage: data.startMileage }
+    { start_mileage: data.startMileage, contact_name: data.contactName }
   )
 }
 
 export async function endShipment(data: EndShipmentInput) {
-  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/complete`, {
-    end_mileage: data.endMileage,
-    ended_at: data.endedAt
-  })
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${data.unitId}/complete`,
+    {
+      end_mileage: data.endMileage,
+      ended_at: data.endedAt,
+    }
+  )
 }
 
 export async function recordShipmentDetails(data: RecordShipmentDetailsInput) {
