@@ -36,7 +36,6 @@ import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
 import { Route as AdminInvoicesCreateRouteImport } from './app/_admin/invoices/create'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
 import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rates'
-import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clients/pricing-rates'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
@@ -230,12 +229,6 @@ const AdminClientsRatesRoute = AdminClientsRatesRouteImport.update({
   path: '/clients/rates',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminClientsPricingRatesRoute =
-  AdminClientsPricingRatesRouteImport.update({
-    id: '/clients/pricing-rates',
-    path: '/clients/pricing-rates',
-    getParentRoute: () => AdminRouteRoute,
-  } as any)
 const AdminSettingsVehicleConfigRouteRoute =
   AdminSettingsVehicleConfigRouteRouteImport.update({
     id: '/vehicle-config',
@@ -588,7 +581,6 @@ export interface FileRoutesByFullPath {
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
   '/invoices/create': typeof AdminInvoicesCreateRoute
@@ -675,7 +667,6 @@ export interface FileRoutesByTo {
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
   '/invoices/create': typeof AdminInvoicesCreateRoute
@@ -764,7 +755,6 @@ export interface FileRoutesById {
   '/_admin/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/_admin/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/_admin/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/_admin/clients/rates': typeof AdminClientsRatesRoute
   '/_admin/drivers/new': typeof AdminDriversNewRoute
   '/_admin/invoices/create': typeof AdminInvoicesCreateRoute
@@ -853,7 +843,6 @@ export interface FileRouteTypes {
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
-    | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
     | '/invoices/create'
@@ -940,7 +929,6 @@ export interface FileRouteTypes {
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
-    | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
     | '/invoices/create'
@@ -1028,7 +1016,6 @@ export interface FileRouteTypes {
     | '/_admin/settings/pricing-config'
     | '/_admin/settings/user-management'
     | '/_admin/settings/vehicle-config'
-    | '/_admin/clients/pricing-rates'
     | '/_admin/clients/rates'
     | '/_admin/drivers/new'
     | '/_admin/invoices/create'
@@ -1302,13 +1289,6 @@ declare module '@tanstack/react-router' {
       path: '/clients/rates'
       fullPath: '/clients/rates'
       preLoaderRoute: typeof AdminClientsRatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/clients/pricing-rates': {
-      id: '/_admin/clients/pricing-rates'
-      path: '/clients/pricing-rates'
-      fullPath: '/clients/pricing-rates'
-      preLoaderRoute: typeof AdminClientsPricingRatesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/vehicle-config': {
@@ -1874,7 +1854,6 @@ interface AdminRouteRouteChildren {
   AdminBillingRouteRoute: typeof AdminBillingRouteRouteWithChildren
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
   AdminShipmentsRouteRoute: typeof AdminShipmentsRouteRouteWithChildren
-  AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
   AdminInvoicesCreateRoute: typeof AdminInvoicesCreateRoute
@@ -1923,7 +1902,6 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminBillingRouteRoute: AdminBillingRouteRouteWithChildren,
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
   AdminShipmentsRouteRoute: AdminShipmentsRouteRouteWithChildren,
-  AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
   AdminInvoicesCreateRoute: AdminInvoicesCreateRoute,

@@ -14,6 +14,7 @@ type Props = {
   routes: RoutePricing[]
   effectiveDate: string
   subtitle?: string
+  isSelectable?: boolean
   onRowSelect?: (rows) => void
 }
 
@@ -110,6 +111,7 @@ export function RouteTonnagePricingGrid({
   effectiveDate,
   title = "Cargo route rates",
   subtitle,
+  isSelectable = false,
   onRowSelect,
 }: Props) {
   const [sorting, setSorting] = useState([{ id: "destination", desc: false }])
@@ -119,7 +121,9 @@ export function RouteTonnagePricingGrid({
   const [durMin, setDurMin] = useState("")
   const [durMax, setDurMax] = useState("")
   const [rowSelection, setRowSelection] = useState({})
-  const [selectionMode, setSelectionMode] = useState("single") // "off" | "single" | "multi"
+  const [selectionMode, setSelectionMode] = useState<
+    "off" | "single" | "multi"
+  >("single")
 
   // Union of tonnage brackets across all routes, in case different routes
   // in a dataset offer different brackets.
@@ -146,8 +150,8 @@ export function RouteTonnagePricingGrid({
           distance_km: num(r.distance_km),
           min_hrs: num(r.min_hrs),
           max_hrs: num(r.max_hrs),
-        };
-        (r.pricings || []).forEach((p) => {
+        }
+        ;(r.pricings || []).forEach((p) => {
           row[`${num(p.min_tons)}-${num(p.max_tons)}`] = num(p.price)
         })
         return row
@@ -237,8 +241,8 @@ export function RouteTonnagePricingGrid({
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onRowSelectionChange: setRowSelection,
-    enableRowSelection: selectionMode !== "off",
-    enableMultiRowSelection: selectionMode === "multi",
+    enableRowSelection: selectionMode !== "off" && isSelectable,
+    enableMultiRowSelection: selectionMode === "multi" && isSelectable,
     globalFilterFn: (row, columnId, value) =>
       row.original.destination.toLowerCase().includes(value.toLowerCase()),
     getCoreRowModel: getCoreRowModel(),
@@ -346,12 +350,12 @@ export function RouteTonnagePricingGrid({
           />
         </div>
 
-        <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
+       {isSelectable &&<div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
           <span className="px-1 text-xs text-muted-foreground">Select</span>
           {[
-            { key: "off", label: "Off" },
-            { key: "single", label: "Single" },
-            { key: "multi", label: "Multi" },
+            { key: "off", label: "Off" } as const,
+            { key: "single", label: "Single" } as const,
+            { key: "multi", label: "Multi" } as const,
           ].map((opt) => (
             <button
               key={opt.key}
@@ -368,7 +372,7 @@ export function RouteTonnagePricingGrid({
               {opt.label}
             </button>
           ))}
-        </div>
+        </div>}
 
         <div className="ml-auto flex items-center gap-3">
           {(distMin || distMax || durMin || durMax || globalFilter) && (
