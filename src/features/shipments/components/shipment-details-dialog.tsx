@@ -52,8 +52,7 @@ export function ShipmentDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
-          <div className="flex flex-col">
+        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
             <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
               <DialogTitle className="text-lg font-semibold tracking-tight">
                 Shipment<span className="mx-1 text-muted-foreground">•</span>
@@ -99,12 +98,12 @@ export function ShipmentDetailsDialog({
                 </ButtonGroup>
               </DialogDescription>
             </DialogHeader>
-            <div className="grid gap-5 p-6 md:grid-flow-col md:grid-cols-6">
-              <div className="md:col-span-4">
+            <div className="grid flex-1 gap-0 overflow-hidden  md:grid-flow-col md:grid-cols-6">
+              <div className="flex flex-col gap-4 overflow-y-auto md:col-span-4 p-6">
                 {shipment && <ShipmentOverviewDetails shipment={shipment} />}
               </div>
-              {/* <Separator/> */}
-              <div className="space-y-6 md:col-span-2">
+              {/* <Separator orientation="vertical" className="shrink"/> */}
+              <div className="overflow-y-auto space-y-6 md:col-span-2 p-6 w-full">
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-primary">Vehicle</CardTitle>
@@ -193,7 +192,6 @@ export function ShipmentDetailsDialog({
                 </Card>
               </div>
             </div>
-          </div>
         </DialogContent>
       </Dialog>
       <DispatchShipmentDialog
