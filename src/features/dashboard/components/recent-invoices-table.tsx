@@ -40,7 +40,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
         <CardAction>
           <Can permission="bookings:view">
             <Button type="button" variant={"secondary"} asChild>
-              <Link to={"/billing/invoices"}>
+              <Link to={"/invoices"}>
                 View
                 <ArrowUpRight />
               </Link>
@@ -89,7 +89,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
                         <EmptyMedia variant="icon">
                           <Can permission="invoices:create">
                             <Button type="button" asChild size={"icon"}>
-                              <Link to={"/billing/invoices/new"}>
+                              <Link to={"/invoices/create"}>
                                 <PlusIcon />
                               </Link>
                             </Button>

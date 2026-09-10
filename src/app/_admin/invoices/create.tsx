@@ -1,24 +1,19 @@
-import { Button } from "@/components/ui/button"
-import { DatePicker } from "@/components/ui/form-fields"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
-import { Label } from "@/components/ui/label"
-import { useCreateInvoice } from "@/features/invoices/hooks/use-edit-invoice"
-import { QuotationPicker } from "@/features/quotations/components"
-import { useQuotationCompletedShipments } from "@/features/quotations/hooks/use-quotation-shipments"
-import { Quotation } from "@/features/quotations/types"
-import { formatDate } from "@/lib/format"
-import { cn } from "@/lib/utils"
-import { EntityId } from "@/schemas"
-import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
-import { toast } from "sonner"
+import { Button } from '@/components/ui/button'
+import { DatePicker } from '@/components/ui/form-fields'
+import { Item, ItemContent, ItemTitle, ItemDescription } from '@/components/ui/item'
+import { Label } from '@/components/ui/label'
+import { useCreateInvoice } from '@/features/invoices/hooks/use-edit-invoice'
+import { QuotationPicker } from '@/features/quotations/components'
+import { useQuotationCompletedShipments } from '@/features/quotations/hooks/use-quotation-shipments'
+import { Quotation } from '@/features/quotations/types'
+import { formatDate } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import { EntityId } from '@/schemas'
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
-export const Route = createFileRoute("/_admin/billing/invoices/new")({
+export const Route = createFileRoute('/_admin/invoices/create')({
   component: RouteComponent,
 })
 

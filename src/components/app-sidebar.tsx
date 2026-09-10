@@ -32,6 +32,7 @@ import { Route as ReportsRoute } from "@/app/_admin/reports"
 import { Route as BillingModuleRoute } from "@/app/_admin/billing/overview"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { Route as QuotationsRoute } from "@/app/_admin/quotations"
+import { Route as InvoicesRoute } from "@/app/_admin/invoices"
 import { getModuleIcon } from "@/components/icons"
 
 export const sibebarModules: SidebarItem[] = [
@@ -95,11 +96,17 @@ export const sibebarModules: SidebarItem[] = [
     icon: getModuleIcon("Vehicles"),
     permission: "vehicles:module",
   },
+  // {
+  //   title: "routes.billing",
+  //   url: BillingModuleRoute.to,
+  //   icon: getModuleIcon("Billing"),
+  //   permission: "billing:module",
+  // },
   {
-    title: "routes.billing",
-    url: BillingModuleRoute.to,
-    icon: getModuleIcon("Billing"),
-    permission: "billing:module",
+    title: "routes.invoices",
+    url: InvoicesRoute.to,
+    icon: getModuleIcon("Invoices"),
+    permission: "invoices:module",
   },
   {
     title: "routes.reports",

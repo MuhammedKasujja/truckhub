@@ -48,6 +48,7 @@ const fmtTon = (v: string) => String(num(v))
 // still renders standalone. Pass your own `routes` array to reuse it elsewhere.
 const SAMPLE_ROUTES = [
   {
+    route_id: "12344",
     origin: "Kampala",
     destination: "Kabale",
     distance_km: 410,
@@ -61,6 +62,7 @@ const SAMPLE_ROUTES = [
     ],
   },
   {
+    route_id: "324835",
     origin: "Kampala",
     destination: "Gulu",
     distance_km: 340,
@@ -74,6 +76,7 @@ const SAMPLE_ROUTES = [
     ],
   },
   {
+    route_id: "86996",
     origin: "Kampala",
     destination: "Mpondwe",
     distance_km: 440,
@@ -87,6 +90,7 @@ const SAMPLE_ROUTES = [
     ],
   },
   {
+    route_id: "895495",
     origin: "Kampala",
     destination: "Kisoro",
     distance_km: 480,
@@ -136,13 +140,14 @@ export function RouteTonnagePricingGrid({
     () =>
       routes.map((r) => {
         const row = {
+          route_id: r.route_id,
           origin: r.origin,
           destination: r.destination,
           distance_km: num(r.distance_km),
           min_hrs: num(r.min_hrs),
           max_hrs: num(r.max_hrs),
-        }
-        ;(r.pricings || []).forEach((p) => {
+        };
+        (r.pricings || []).forEach((p) => {
           row[`${num(p.min_tons)}-${num(p.max_tons)}`] = num(p.price)
         })
         return row

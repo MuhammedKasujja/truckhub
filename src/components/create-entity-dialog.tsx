@@ -21,7 +21,7 @@ import { Route as ClientCreate } from "@/app/_admin/clients/new"
 import { Route as DriverCreate } from "@/app/_admin/drivers/new"
 import { Route as ServiceCreate } from "@/app/_admin/services/new"
 import { Route as VehicleCreate } from "@/app/_admin/vehicles/new"
-import { Route as InvoiceCreate } from "@/app/_admin/billing/invoices/new"
+import { Route as InvoiceCreate } from "@/app/_admin/invoices/create"
 import { Can } from "./has-permission"
 import { useNavigate } from "@tanstack/react-router"
 

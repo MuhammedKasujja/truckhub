@@ -1,6 +1,4 @@
 import { DataTable } from "@/components/data-table"
-// import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
-// import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useTranslation } from "@/i18n"
 import { useMemo, useState } from "react"
 import { getInvoiceTableColumns } from "./invoice-table-columns"
@@ -10,6 +8,7 @@ import { invoiceQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { InvoiceTableRowAction } from "../types"
 import { EnterPaymentModal } from "@/features/payments/components"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 
 export function InvoiceTable() {
   const tr = useTranslation()
@@ -19,7 +18,7 @@ export function InvoiceTable() {
     () => getInvoiceTableColumns({ tr, setRowAction }),
     [tr, setRowAction]
   )
-  const search = useSearch({ from: "/_admin/billing/invoices/" })
+  const search = useSearch({ from: "/_admin/invoices/" })
 
   const { data } = useQuery(invoiceQueryOptions(search))
 
@@ -53,5 +52,17 @@ export function InvoiceTable() {
         }}
       />
     </>
+  )
+}
+
+
+export function InvoiceTableSkeleton() {
+  return (
+    <DataTableSkeleton
+      columnCount={7}
+      filterCount={1}
+      shrinkZero
+      rowCount={25}
+    />
   )
 }

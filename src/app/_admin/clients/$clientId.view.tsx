@@ -77,7 +77,7 @@ function RouteComponent() {
             </Can>
             <Can permission={"invoices:create"}>
               <Button asChild variant={"secondary"}>
-                <Link to={"/billing/invoices/new"} search={{ clientId }}>
+                <Link to={"/invoices/create"} search={{ clientId }}>
                   <PlusIcon />
                   New Invoice
                 </Link>

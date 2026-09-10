@@ -9,8 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { useInvoiceStatistics } from "../hooks/use-invoice-statistics"
 import { DateRange } from "react-day-picker"
@@ -95,11 +93,6 @@ export function InvoiceTableFilter() {
         </ButtonGroup>
       </div>
       <Field className="w-full" orientation={"horizontal"}>
-        <Button asChild>
-          <Link to="/billing/invoices/new">
-            <PlusIcon />
-          </Link>
-        </Button>
         <div className="max-w-30">
           <Select value={exportType} onValueChange={setExportType}>
             <SelectTrigger>

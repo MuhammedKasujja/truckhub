@@ -301,7 +301,7 @@ export function RoutePricingSelectDialog({
               effectiveDate={
                 pricings?.effective_date ?? new Date().toDateString()
               }
-              title="Client Pricing"
+              title="Company Pricing"
             />
             {/* <div className="flex flex-col gap-3 sm:flex-row">
               <InputGroup className="flex-1">

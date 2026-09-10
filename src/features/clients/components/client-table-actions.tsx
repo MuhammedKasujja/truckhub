@@ -75,7 +75,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           </Can>
           <Can permission={"invoices:create"}>
             <DropdownMenuItem asChild>
-              <Link to={"/billing/invoices/new"} search={{ clientId: client.id }}>
+              <Link to={"/invoices/create"} search={{ clientId: client.id }}>
                 <PlusIcon />
                 Invoice
               </Link>

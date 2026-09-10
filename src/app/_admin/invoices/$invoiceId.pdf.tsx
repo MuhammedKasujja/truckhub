@@ -8,7 +8,7 @@ import { InvoicePdf } from "@/features/invoices/components"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_admin/billing/invoices/$invoiceId/pdf")(
+export const Route = createFileRoute("/_admin/invoices/$invoiceId/pdf")(
   {
     component: RouteComponent,
     loader: ({ context, params }) =>
