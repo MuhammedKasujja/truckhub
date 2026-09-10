@@ -265,7 +265,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
             <SectionLabel>Odometer &amp; Consumption</SectionLabel>
             <div className="mb-5 flex items-center justify-center gap-5 rounded-md bg-accent p-5">
               <div className="text-center">
-                <div className="rounded border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+                <div className="rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.start_mileage.toLocaleString()}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">
@@ -274,7 +274,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
               </div>
               <ArrowRight className="h-5 w-5" />
               <div className="text-center">
-                <div className="rounded border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+                <div className="rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.end_mileage?.toLocaleString()}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">
@@ -304,10 +304,6 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           <BillLine
             label="Unit price"
             value={formatMoney(shipment.item.unit_price)}
-          />
-          <BillLine
-            label="Discount"
-            value={formatMoney(shipment.item.discount)}
           />
           <BillLine label="Item type" value={shipment.item.item_type} />
           <Separator className="my-1" />
@@ -439,7 +435,10 @@ function RouteRow({
 function PanelField({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-2.5 py-2">
-      <Icon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+      <div className="size-6 bg-primary/15 rounded flex items-center justify-center">
+      <Icon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+
+      </div>
       <div>
         <p className="mb-0.5 text-[10px] tracking-widest text-muted-foreground uppercase">
           {label}

@@ -1,42 +1,29 @@
-import { RoutePricingDataGridForm } from "@/features/settings/pricing/components"
-import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
-import { createBatchRoutePricingFn } from "@/features/settings/pricing/services"
+import { EditCompanyRoutePricingDialog, RouteTonnagePricingGrid } from "@/features/settings/pricing/components"
+import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
+import { companyRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { createFileRoute } from "@tanstack/react-router"
-import { toast } from "sonner"
 
 export const Route = createFileRoute(
   "/_admin/settings/pricing-config/route-tonnage-pricing"
 )({
   component: RouteComponent,
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(companyRoutePricingQueryOptions())
+  },
 })
 
 function RouteComponent() {
-  async function handleSubmit(data: BatchPricingPayload) {
-    const { message, error, isSuccess } = await createBatchRoutePricingFn({
-      data,
-    })
-
-    if (error) {
-      toast.error(error.message)
-    }
-
-    if (isSuccess) {
-      toast.success(message)
-    }
-  }
-
+  const { data: companyPricings } = useRouteTonnagePricing()
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h2 className="text-lg font-medium tracking-tight">
-          Route tonnage pricing
-        </h2>
-        <p className="mt-0.5 text-sm text-muted-foreground">
-          Define tonnage bands then fill prices per route in the grid. Columns
-          are generated automatically from your band definitions.
-        </p>
-      </div>
-      <RoutePricingDataGridForm onSubmit={handleSubmit} />
+    <div className="space-y-4">
+    <EditCompanyRoutePricingDialog/>
+    <RouteTonnagePricingGrid
+      routes={companyPricings?.routes ?? []}
+      effectiveDate={
+        companyPricings?.effective_date ?? new Date().toDateString()
+      }
+      title="Current Company Pricing"
+    />
     </div>
   )
 }

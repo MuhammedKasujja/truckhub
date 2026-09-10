@@ -48,5 +48,12 @@ export function PaymentTable() {
 }
 
 export function PaymentTableSkeleton() {
-  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />
+  return (
+    <DataTableSkeleton
+      columnCount={6}
+      rowCount={25}
+      filterCount={1}
+      shrinkZero
+    />
+  )
 }
