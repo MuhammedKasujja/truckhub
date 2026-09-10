@@ -5,9 +5,9 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
-import { useTheme } from "./theme/provider"
-import { Card, CardContent, CardHeader } from "./ui/card"
-import { Skeleton } from "./ui/skeleton"
+import { useTheme } from "@/components/theme/provider"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
   const [fileUrl] = useState(pdfUrl)

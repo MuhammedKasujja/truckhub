@@ -20,7 +20,7 @@ export function InvoiceTable() {
   )
   const search = useSearch({ from: "/_admin/invoices/" })
 
-  const { data } = useQuery(invoiceQueryOptions(search))
+  const { data, isLoading } = useQuery(invoiceQueryOptions(search))
 
   const { table } = useDataTable({
     data: data?.data ?? [],
@@ -34,6 +34,11 @@ export function InvoiceTable() {
     shallow: false,
     clearOnDefault: true,
   })
+
+  if(isLoading){
+    return <InvoiceTableSkeleton/>
+  }
+
   return (
     <>
       <DataTable table={table}>

@@ -48,7 +48,7 @@ export function InvoiceTableActions({
           <Can permission={"invoices:edit"}>
             <DropdownMenuItem asChild>
               <Link
-                to={"/billing/invoices/$invoiceId/view"}
+                to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
                 <EditIcon />
@@ -59,7 +59,7 @@ export function InvoiceTableActions({
           <Can permission={"invoices:view"}>
             <DropdownMenuItem asChild>
               <Link
-                to={"/billing/invoices/$invoiceId/view"}
+                to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
                 <EyeIcon />
@@ -83,7 +83,7 @@ export function InvoiceTableActions({
           <Can permission={"invoices:pdf"}>
             <DropdownMenuItem asChild>
               <Link
-                to={"/billing/invoices/$invoiceId/pdf"}
+                to={"/invoices/$invoiceId/pdf"}
                 params={{ invoiceId: invoice.id }}
               >
                 <EyeIcon />

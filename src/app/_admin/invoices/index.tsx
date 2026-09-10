@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_admin/invoices/")({
   component: RouteComponent,
   loader: ({ context, deps: { search } }) => {
     context.queryClient.prefetchQuery(invoiceStatisticsQueryOptions())
-    context.queryClient.prefetchQuery(invoiceQueryOptions(search))
+    return context.queryClient.prefetchQuery(invoiceQueryOptions(search))
   },
 })
 
@@ -45,7 +45,6 @@ function RouteComponent() {
     </div>
   )
 }
-
 function InvoiceTableSkeleton() {
   return (
     <DataTableSkeleton
