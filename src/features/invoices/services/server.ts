@@ -21,18 +21,6 @@ export async function getInvoices(input: InvoiceListSearchParams) {
   return { error: response.error }
 }
 
-export async function getInvoicesByQuery({ search }: SearchQuery) {
-  return getInvoices({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
-    sort: [],
-    search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
-  })
-}
-
 export async function getInvoiceDetails(invoiceId: EntityId) {
   return await apiClient.getFn<Invoice>(`${endpoint}/${invoiceId}`)
 }

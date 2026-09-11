@@ -15,7 +15,7 @@ const DEFAULT_SEARCH_DEBOUNCE_MS = 300
 // ---- API envelope shapes ----
 interface DetailResponse<T> {
   data: T
-  message?: string
+  message?: string | null
 }
 
 interface ListResponse<T> {

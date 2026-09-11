@@ -1,6 +1,6 @@
 import { ApiError } from "@/types"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 import { createInvoiceSchema, InvoiceSearchParams } from "../schemas"
 import {
   getInvoices,
@@ -8,7 +8,6 @@ import {
   getInvoicePdf,
   sendInvoiceEmail,
   getInvoiceDetails,
-  getInvoicesByQuery,
   getInvoiceStatistics,
 } from "./server"
 
@@ -31,12 +30,6 @@ export const getInvoiceDetailsFn = createServerFn()
       throw new ApiError(result.error.message, 400)
     }
     return { data: result.data!, message: result.message }
-  })
-
-export const getInvoicesByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
-  .handler(async ({ data }) => {
-    return getInvoicesByQuery(data)
   })
 
 export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
