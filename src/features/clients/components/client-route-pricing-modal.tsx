@@ -47,7 +47,7 @@ export function ClientRouteTonnagePricingModal({
       </SheetTrigger>
       <SheetContent className="min-w-[80vw] sm:max-w-none">
         <SheetHeader className="border-b">
-          <SheetTitle>Route tonnage pricing</SheetTitle>
+          <SheetTitle>Configure Client Route pricing</SheetTitle>
           <SheetDescription>
             Define tonnage bands then fill prices per route in the grid. Columns
             are generated automatically from your band definitions.

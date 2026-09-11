@@ -15,11 +15,13 @@ import { Payment } from "@/features/payments/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useTranslation } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
+import { useNavigate } from "@tanstack/react-router"
 import { EyeIcon } from "lucide-react"
 
 export function PaymentViewModal({ payment }: { payment: Payment }) {
   const isMobile = useIsMobile()
   const tr = useTranslation()
+  const navigate = useNavigate()
   return (
     <Drawer direction={isMobile ? "bottom" : "right"}>
       <DrawerTrigger asChild>
@@ -36,18 +38,40 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <Card>
-            <CardHeader>
-              <CardTitle>{tr("payments.customer")}</CardTitle>
-            </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div>{payment.client.fullname}</div>
-              <div>{payment.client.email}</div>
-              <div>{payment.client.phone}</div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="header" className="text-muted-foreground">
+                  {tr("payments.amount")}
+                </Label>
+                {formatMoney(payment.amount)}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="type" className="text-muted-foreground">
+                    {tr("payments.applied")}
+                  </Label>
+                  {formatMoney(payment.applied)}
+                </div>
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="status" className="text-muted-foreground">
+                    {tr("payments.status")}
+                  </Label>
+                  {tr(`payments.statuses.${payment.status}`)}
+                </div>
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle
+               className="cursor-pointer"
+                onClick={() =>
+                  navigate({
+                    from: "/invoices/$invoiceId/view",
+                    params: { invoiceId: payment.entity.id },
+                  })
+                }
+              >
                 {tr(`payments.${payment.entity_type}`)} -{" "}
                 {payment.entity.number}
               </CardTitle>
@@ -57,21 +81,13 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
             </CardContent>
           </Card>
           <Card>
+            <CardHeader>
+              <CardTitle>{tr("payments.client")}</CardTitle>
+            </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="header" className="text-muted-foreground">{tr("payments.amount")}</Label>
-                {formatMoney(payment.amount)}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="type" className="text-muted-foreground">{tr("payments.applied")}</Label>
-                  {formatMoney(payment.applied)}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="status" className="text-muted-foreground">{tr("payments.status")}</Label>
-                  {tr(`payments.statuses.${payment.status}`)}
-                </div>
-              </div>
+              <div>{payment.client.fullname}</div>
+              <div>{payment.client.email}</div>
+              <div>{payment.client.phone}</div>
             </CardContent>
           </Card>
         </div>

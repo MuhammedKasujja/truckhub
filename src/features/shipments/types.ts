@@ -13,7 +13,7 @@ export type ShipmentLineItem = LineItemResponse & {
 }
 
 export type ShipmentVehicleConsumption = {
-  start_mileage: string | number
+  start_mileage: string
   end_mileage: number | undefined
   distance_km: string | number | null
   fuel_rate: string | number | null
@@ -27,6 +27,7 @@ export type Shipment = {
   started_at?: Date
   actual_start?: Date
   actual_end?: Date
+  quotation_id: EntityId
   driver?: {
     id: EntityId
     number: string

@@ -1,6 +1,6 @@
 export const en = {
   module: "Payments",
-  customer: "Customer",
+  client: "Client",
   number: "Number",
   revenue: "Revenue",
   booking: "Booking",

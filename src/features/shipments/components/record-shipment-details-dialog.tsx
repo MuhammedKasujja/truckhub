@@ -183,7 +183,7 @@ export function RecordShipmentDetailsDialog({
                           }
                         }}
                         onChange={(e) => {
-                          field.onChange(e.target.value)
+                          field.onChange(e.target.value.replace(/[^0-9]/g, ""))
                         }}
                       />
                     )}

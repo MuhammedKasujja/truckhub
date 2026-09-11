@@ -30,7 +30,7 @@ export type Payment = {
   payment_mode: PaymentMode;
   applied: number;
   refunded: number;
-  entity_id: number;
+  entity_id: EntityId;
   entity_type: PaymentType;
   status: PaymentStatus;
   date: Date;

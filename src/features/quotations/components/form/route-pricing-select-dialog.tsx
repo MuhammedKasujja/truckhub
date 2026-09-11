@@ -297,6 +297,7 @@ export function RoutePricingSelectDialog({
           {/* LEFT SIDE */}
           <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-3">
             <RouteTonnagePricingGrid
+              isSelectable
               routes={pricings?.routes ?? []}
               effectiveDate={
                 pricings?.effective_date ?? new Date().toDateString()

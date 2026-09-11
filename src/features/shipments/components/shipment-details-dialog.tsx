@@ -53,145 +53,145 @@ export function ShipmentDetailsDialog({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
-            <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-              <DialogTitle className="text-lg font-semibold tracking-tight">
-                Shipment<span className="mx-1 text-muted-foreground">•</span>
-                {shipment?.number} <Badge>{shipment?.status}</Badge>
-              </DialogTitle>
-              <DialogDescription className="flex items-center gap-4">
-                <ButtonGroup>
+          <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              Shipment<span className="mx-1 text-muted-foreground">•</span>
+              {shipment?.number} <Badge>{shipment?.status}</Badge>
+            </DialogTitle>
+            <DialogDescription className="flex items-center gap-4">
+              <ButtonGroup>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("dispatch")}
+                >
+                  Dispatch
+                </Button>
+                {!shipment?.vehicle && (
                   <Button
                     variant={"outline"}
-                    onClick={() => setOpenModal("dispatch")}
+                    onClick={() => setOpenModal("assign-vehicle")}
                   >
-                    Dispatch
+                    Assign Vehicle
                   </Button>
-                  {!shipment?.vehicle && (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setOpenModal("assign-vehicle")}
-                    >
-                      Assign Vehicle
-                    </Button>
-                  )}
-                  {!shipment?.driver && (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setOpenModal("asign-driver")}
-                    >
-                      Assign Driver
-                    </Button>
-                  )}
+                )}
+                {!shipment?.driver && (
                   <Button
                     variant={"outline"}
-                    onClick={() => setOpenModal("end-shipment")}
+                    onClick={() => setOpenModal("asign-driver")}
                   >
-                    Finish
+                    Assign Driver
                   </Button>
-                  <Button
-                    variant={"outline"}
-                    onClick={() => setOpenModal("record")}
-                  >
-                    <ReceiptPoundSterlingIcon />
-                    Record Details
-                  </Button>
-                </ButtonGroup>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid flex-1 gap-0 overflow-hidden  md:grid-flow-col md:grid-cols-6">
-              <div className="flex flex-col gap-4 overflow-y-auto md:col-span-4 p-6">
-                {shipment && <ShipmentOverviewDetails shipment={shipment} />}
-              </div>
-              {/* <Separator orientation="vertical" className="shrink"/> */}
-              <div className="overflow-y-auto space-y-6 md:col-span-2 p-6 w-full">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-primary">Vehicle</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {shipment?.vehicle ? (
-                      <div>
-                        <PanelField
-                          icon={MapPin}
-                          label="Plate"
-                          value={shipment.vehicle.plate_number}
-                        />
-                        <PanelField
-                          icon={Truck}
-                          label="Vehicle No."
-                          value={shipment.vehicle.number}
-                        />
-                        <PanelField
-                          icon={Gauge}
-                          label="Model Year"
-                          value={shipment.vehicle.vehicle_year}
-                        />
-                        <PanelField
-                          icon={Fuel}
-                          label="Rated Consumption"
-                          value={`${shipment.vehicle.fuel_consumption_rate} KM/L`}
-                        />
-                      </div>
-                    ) : (
-                      <Empty className="border border-dashed">
-                        <EmptyContent>
-                          <Button
-                            variant={"outline"}
-                            size={"icon-sm"}
-                            onClick={() => setOpenModal("assign-vehicle")}
-                          >
-                            <PlusIcon />
-                          </Button>
-                        </EmptyContent>
-                      </Empty>
-                    )}
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-primary">Driver</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {shipment?.driver ? (
-                      <div>
-                        <PanelField
-                          icon={User}
-                          label="Name"
-                          value={shipment.driver.fullname}
-                        />
-                        <PanelField
-                          icon={Phone}
-                          label="Phone"
-                          value={shipment.driver.phone}
-                        />
-                        <PanelField
-                          icon={Mail}
-                          label="Email"
-                          value={shipment.driver.email}
-                        />
-                        <PanelField
-                          icon={Truck}
-                          label="Driver No."
-                          value={shipment.driver.number}
-                        />
-                      </div>
-                    ) : (
-                      <Empty className="border border-dashed">
-                        <EmptyContent>
-                          <Button
-                            variant={"outline"}
-                            size={"icon-sm"}
-                            onClick={() => setOpenModal("asign-driver")}
-                          >
-                            <PlusIcon />
-                          </Button>
-                        </EmptyContent>
-                      </Empty>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+                )}
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("end-shipment")}
+                >
+                  Finish
+                </Button>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("record")}
+                >
+                  <ReceiptPoundSterlingIcon />
+                  Record Details
+                </Button>
+              </ButtonGroup>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid flex-1 gap-0 overflow-hidden md:grid-flow-col md:grid-cols-6">
+            <div className="flex flex-col gap-4 overflow-y-auto p-6 md:col-span-4">
+              {shipment && <ShipmentOverviewDetails shipment={shipment} />}
             </div>
+            {/* <Separator orientation="vertical" className="shrink"/> */}
+            <div className="w-full space-y-6 overflow-y-auto p-6 md:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">Vehicle</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {shipment?.vehicle ? (
+                    <div>
+                      <PanelField
+                        icon={MapPin}
+                        label="Plate"
+                        value={shipment.vehicle.plate_number}
+                      />
+                      <PanelField
+                        icon={Truck}
+                        label="Vehicle No."
+                        value={shipment.vehicle.number}
+                      />
+                      <PanelField
+                        icon={Gauge}
+                        label="Model Year"
+                        value={shipment.vehicle.vehicle_year}
+                      />
+                      <PanelField
+                        icon={Fuel}
+                        label="Rated Consumption"
+                        value={`${shipment.vehicle.fuel_consumption_rate} KM/L`}
+                      />
+                    </div>
+                  ) : (
+                    <Empty className="border border-dashed">
+                      <EmptyContent>
+                        <Button
+                          variant={"outline"}
+                          size={"icon-sm"}
+                          onClick={() => setOpenModal("assign-vehicle")}
+                        >
+                          <PlusIcon />
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
+                  )}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">Driver</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {shipment?.driver ? (
+                    <div>
+                      <PanelField
+                        icon={User}
+                        label="Name"
+                        value={shipment.driver.fullname}
+                      />
+                      <PanelField
+                        icon={Phone}
+                        label="Phone"
+                        value={shipment.driver.phone}
+                      />
+                      <PanelField
+                        icon={Mail}
+                        label="Email"
+                        value={shipment.driver.email}
+                      />
+                      <PanelField
+                        icon={Truck}
+                        label="Driver No."
+                        value={shipment.driver.number}
+                      />
+                    </div>
+                  ) : (
+                    <Empty className="border border-dashed">
+                      <EmptyContent>
+                        <Button
+                          variant={"outline"}
+                          size={"icon-sm"}
+                          onClick={() => setOpenModal("asign-driver")}
+                        >
+                          <PlusIcon />
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
       <DispatchShipmentDialog
@@ -272,7 +272,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                   Start (km)
                 </p>
               </div>
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="mb-5 size-5" />
               <div className="text-center">
                 <div className="rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.end_mileage?.toLocaleString()}
@@ -282,18 +282,20 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <StatBox label="Distance" value={`${distance} km`} />
-              <StatBox
-                label="Fuel Rate"
-                value={`${formatMoney(trip?.consumption?.fuel_rate)} / L`}
-              />
-              <StatBox
-                label="Est. Fuel Used"
-                value={`${litersUsed} L`}
-                note={`${distance}km × ${rate}L/100km`}
-              />
-            </div>
+            {distance && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <StatBox label="Distance" value={`${distance} km`} />
+                <StatBox
+                  label="Fuel Rate"
+                  value={`${formatMoney(trip?.consumption?.fuel_rate)} / L`}
+                />
+                <StatBox
+                  label="Est. Fuel Used"
+                  value={`${litersUsed} L`}
+                  note={`${distance}km × ${rate}L/100km`}
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -435,9 +437,8 @@ function RouteRow({
 function PanelField({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-2.5 py-2">
-      <div className="size-6 bg-primary/15 rounded flex items-center justify-center">
-      <Icon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
-
+      <div className="flex size-6 items-center justify-center rounded bg-primary/15">
+        <Icon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
       </div>
       <div>
         <p className="mb-0.5 text-[10px] tracking-widest text-muted-foreground uppercase">

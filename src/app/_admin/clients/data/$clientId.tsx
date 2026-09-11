@@ -41,6 +41,7 @@ function RouteComponent() {
   return (
     <>
     <RouteTonnagePricingGrid
+      isSelectable
       // routes={pricings?.routes ?? []}
       effectiveDate={pricings?.effective_date ?? (new Date()).toDateString()}
       title="Client Pricing"
