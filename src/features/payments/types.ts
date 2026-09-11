@@ -45,7 +45,7 @@ type PaymentStat = {
 };
 
 export type PaymentStatistics = {
-  grandTotal: PaymentStat;
-  bookings: PaymentStat;
-  rides: PaymentStat;
+  monthly: PaymentStat;
+  weekly: PaymentStat;
+  yearly: PaymentStat;
 };
