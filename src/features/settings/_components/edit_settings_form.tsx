@@ -25,7 +25,7 @@ import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { DATE_FORMATS } from "@/common/constants"
+import { DATE_FORMATS_OPTIONS, MONTH_OPTIONS } from "@/common/constants"
 import { Can } from "@/components/has-permission"
 
 type EditSettingsFormProps = {
@@ -82,7 +82,13 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
               label={"Date Format"}
               name={"date_format"}
               control={form.control}
-              options={DATE_FORMATS.map((f) => ({ label: f, value: f }))}
+              options={DATE_FORMATS_OPTIONS}
+            />
+            <SelectField
+              label={"Company Start Month"}
+              name={"fiscal_year_start_month"}
+              control={form.control}
+              options={MONTH_OPTIONS}
             />
             <TextField
               label={"Currency Code"}

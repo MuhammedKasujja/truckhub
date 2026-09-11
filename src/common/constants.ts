@@ -69,3 +69,25 @@ export const DATE_FORMATS = [
   "MMM D, YYYY",
   "YYYY-MM-DD",
 ]
+
+export const DATE_FORMATS_OPTIONS = DATE_FORMATS.map((f) => ({ label: f, value: f }))
+
+export const MONTHS = {
+  january: 1,
+  february: 2,
+  march: 3,
+  april: 4,
+  may: 5,
+  june: 6,
+  july: 7,
+  august: 8,
+  september: 9,
+  october: 10,
+  november: 11,
+  december: 12,
+} as const
+
+export const MONTH_OPTIONS = Object.entries(MONTHS).map(([key, value]) => ({
+  label: key,
+  value: value.toString(),
+}));

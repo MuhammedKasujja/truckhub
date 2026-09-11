@@ -34,6 +34,7 @@ export const EditSettingsSchema = z.object({
   invoice_terms: z.array(z.string()).optional().nullable(),
   quotation_terms: z.array(z.string()).optional().nullable(),
   default_tax_rate_id: IDSchema.optional().nullable(),
+  fiscal_year_start_month: z.string().optional().nullable(),
 })
 
 export type Settings = z.infer<typeof EditSettingsSchema>

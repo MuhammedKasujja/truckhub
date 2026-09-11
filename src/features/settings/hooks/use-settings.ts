@@ -5,11 +5,16 @@ import { settingsQueryOptions } from "../query-options"
 
 export function useSettings() {
   const { data, isLoading } = useQuery(settingsQueryOptions())
-  return { settings: data?.data, isLoading, error: data?.error}
+  const settings = data?.data
+    ? {
+        ...data.data,
+        fiscal_year_start_month: data.data?.fiscal_year_start_month?.toString(),
+      }
+    : undefined
+  return { settings: settings, isLoading, error: data?.error }
 }
 
 export async function useUpdateSettings(data: Partial<EditSettingsSchemaType>) {
-
   const { isSuccess, error, message } = await updateSettingsFn({
     data,
   })
