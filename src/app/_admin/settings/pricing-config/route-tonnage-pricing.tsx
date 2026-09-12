@@ -12,25 +12,37 @@ import {
 import { useCompanyPricingDates } from "@/features/settings/pricing/hooks/use-company-pricing-dates"
 import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { companyRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
+import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
   "/_admin/settings/pricing-config/route-tonnage-pricing"
 )({
   component: RouteComponent,
-  loader: ({ context }) => {
-    context.queryClient.prefetchQuery(companyRoutePricingQueryOptions())
+  validateSearch: PricingSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
+  loader: ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(companyRoutePricingQueryOptions(search))
   },
 })
 
 function RouteComponent() {
   const { data: companyPricings } = useRouteTonnagePricing()
   const { data } = useCompanyPricingDates()
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
+
+  const referenceDate = search.referenceDate ?? companyPricings?.effective_date
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
-        <Select value="" onValueChange={(d) => {}}>
+        <Select
+          value={referenceDate}
+          onValueChange={(date) => {
+            navigate({ search: { ...search, referenceDate: date } })
+          }}
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>

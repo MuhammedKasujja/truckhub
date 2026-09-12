@@ -138,7 +138,6 @@ export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>
 
 export const PricingSearchParamsCache = z.object({
   referenceDate: z.string().optional(),
-  clientId: z.string().optional(),
 })
 
 export type PricingSearchParams = z.infer<typeof PricingSearchParamsCache>
