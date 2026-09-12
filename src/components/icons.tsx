@@ -1,6 +1,5 @@
-import { IconReportMoney } from "@tabler/icons-react"
+import { IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
 import { cn } from "cn"
-import type { LucideIcon } from "lucide-react"
 import {
   DatabaseSearch,
   Users,
@@ -19,9 +18,12 @@ import {
   ListCheckIcon,
   LocateIcon,
   FileTextIcon,
-  MessagesSquareIcon,
   PanelTopCloseIcon,
+  MailIcon,
 } from "lucide-react"
+import { ComponentType, SVGProps } from "react"
+
+export type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 
 type Module =
   | "Dashboard"
@@ -41,16 +43,18 @@ type Module =
   | "Invoices"
 
 type Actions =
-  | "Create"
-  | "Edit"
-  | "Delete"
-  | "Restore"
-  | "Pay"
-  | "Email"
-  | "Cancle"
+  | "create"
+  | "edit"
+  | "delete"
+  | "restore"
+  | "pay"
+  | "email"
+  | "cancel"
+  | "download-pdf"
+  | "view-pdf"
 
-export function getModuleIcon(module: Module) {
-  const moduleIcons: Record<Module, LucideIcon> = {
+export function getModuleIcon(module: Module): IconComponent {
+  const moduleIcons: Record<Module, IconComponent> = {
     Dashboard: LayoutDashboard,
     Shipments: LocateIcon,
     Rides: DatabaseSearch,
@@ -70,24 +74,35 @@ export function getModuleIcon(module: Module) {
   return moduleIcons[module]
 }
 
-export function getActionIcon(action: Actions) {
-  const actionIcons: Record<Actions, LucideIcon> = {
-    Create: PlusIcon,
-    Edit: EditIcon,
-    Delete: Trash2Icon,
-    Restore: ArchiveRestore,
-    Pay: CreditCard,
-    Email: MessagesSquareIcon,
-    Cancle: PanelTopCloseIcon,
+export function getActionIcon(action: Actions): IconComponent {
+  const actionIcons: Record<Actions, IconComponent> = {
+    create: PlusIcon,
+    edit: EditIcon,
+    delete: Trash2Icon,
+    restore: ArchiveRestore,
+    pay: CreditCard,
+    email: MailIcon,
+    cancel: PanelTopCloseIcon,
+    "download-pdf": IconFileTypePdf,
+    "view-pdf": IconFileTypePdf,
   }
   return actionIcons[action]
 }
 
-interface ModuleIconProps extends React.ComponentProps<LucideIcon> {
+interface ModuleIconProps extends SVGProps<SVGSVGElement> {
   module: Module
 }
 
 export function ModuleIcon({ module, className, ...props }: ModuleIconProps) {
   const Icon = getModuleIcon(module)
+  return <Icon className={cn("h-4 w-4", className)} {...props} />
+}
+
+interface ActionIconProps extends SVGProps<SVGSVGElement> {
+  action: Actions
+}
+
+export function ActionIcon({ action, className, ...props }: ActionIconProps) {
+  const Icon = getActionIcon(action)
   return <Icon className={cn("h-4 w-4", className)} {...props} />
 }
