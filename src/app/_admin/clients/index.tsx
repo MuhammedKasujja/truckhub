@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ClientType, ClientTypeList } from "@/config/constants"
+import { ClientType, ClientTypeListOptions } from "@/config/constants"
 
 export const Route = createFileRoute("/_admin/clients/")({
   validateSearch: ClientSearchParamsCache,
@@ -40,7 +40,7 @@ function RouteComponent() {
   const navigate = useNavigate({ from: "/clients/" })
   const { client_type } = Route.useSearch()
 
-  function updateClientType(value: ClientType) {
+  function updateClientType(value: ClientType | undefined) {
     navigate({
       search: (prev) => ({
         ...prev,
@@ -68,10 +68,10 @@ function RouteComponent() {
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              {ClientTypeList.map((b) => (
-                <SelectItem key={b} value={b}>
-                  {b}
+            <SelectContent position="popper">
+              {ClientTypeListOptions.map((b) => (
+                <SelectItem key={b.value} value={b.value}>
+                  {b.label}
                 </SelectItem>
               ))}
             </SelectContent>

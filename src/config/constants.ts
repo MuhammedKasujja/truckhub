@@ -32,6 +32,10 @@ export const AuditLogSource = ["system", "user"] as const
 
 export const ClientTypeList = ["normal", "premium"] as const
 
+export const ClientTypeListOptions = [undefined, ...ClientTypeList].map(
+  (p) => ({ label: p ? p : "Select client", value: p })
+)
+
 export const VehicleCylinderList = [2, 4, 5, 6, 8]
 
 export const AxlesList = [2, 3, 4, 5, 6]
