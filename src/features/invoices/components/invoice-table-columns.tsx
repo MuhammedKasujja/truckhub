@@ -6,6 +6,8 @@ import {
   InvoiceTableActions,
   SetInvoiceTableAction,
 } from "./invoice-table-actions"
+import { Button } from "@/components/ui/button"
+import { Link } from "@tanstack/react-router"
 
 type Props = {
   tr: TFunction
@@ -29,7 +31,17 @@ export function getInvoiceTableColumns({
       accessorKey: "number",
       header: () => <p className="uppercase">{tr("invoice_number")}</p>,
       cell: ({ row }) => {
-        return <p>{row.original.number}</p>
+        const invoice = row.original
+        return (
+          <Button type="button" variant={"link"} asChild>
+            <Link
+              to="/invoices/$invoiceId/view"
+              params={{ invoiceId: invoice.id }}
+            >
+              {invoice.number}
+            </Link>
+          </Button>
+        )
       },
     },
     {
@@ -64,7 +76,9 @@ export function getInvoiceTableColumns({
       accessorKey: "due_date",
       header: () => <p className="uppercase">Due Date</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.due_date, {timeStyle: undefined})}</p>
+        return (
+          <p>{formatDate(row.original.due_date, { timeStyle: undefined })}</p>
+        )
       },
     },
     {

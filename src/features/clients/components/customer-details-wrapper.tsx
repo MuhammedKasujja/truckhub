@@ -138,7 +138,7 @@ export function CustomerDetailsWrapper({
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
-                    to={"/billing/invoices/$invoiceId/view"}
+                    to={"/invoices/$invoiceId/view"}
                     params={{ invoiceId: latestInvoice.id }}
                   >
                     View Invoice
@@ -198,7 +198,7 @@ export function CustomerDetailsWrapper({
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="payments" className="w-full">
-            <TabsList>
+            <TabsList variant={'line'}>
               <TabsTrigger value="payments">Payments</TabsTrigger>
               <TabsTrigger value="quotations">Quotations</TabsTrigger>
               <TabsTrigger value="invoices">Invoices</TabsTrigger>

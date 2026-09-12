@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useAuth } from "@/components/providers/auth-context"
+import { useTranslation } from "@/i18n"
 
 type EntityNumbersWrapperProps = {
   patterns: NumberingPatternType
@@ -26,6 +27,7 @@ type EntityNumbersWrapperProps = {
 export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
   const queryInvalidator = useQueryInvalidator()
   const { hasPermission } = useAuth()
+  const tr = useTranslation()
 
   const canEdit = hasPermission("config:manage_entity_numbers")
 
@@ -74,7 +76,7 @@ export function EntityNumbersWrapper({ patterns }: EntityNumbersWrapperProps) {
         <TabsList>
           {tabKeys.map((entity) => (
             <TabsTrigger key={entity} value={entity}>
-              {entity}
+              {tr(`settings.entityNumbers.${entity}`)}
               {isEntityDirty(entity) && <DirtyDot />}
             </TabsTrigger>
           ))}

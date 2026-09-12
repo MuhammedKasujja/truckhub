@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
 function RouteComponent() {
   const { data: invoice } = Route.useLoaderData()
   return (
-    <div className="min-h-screen w-full">
+    <div className="w-full">
       <div className="mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
