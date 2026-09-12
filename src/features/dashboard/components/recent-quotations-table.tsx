@@ -23,7 +23,7 @@ import {
 import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { ArrowUpRight, PlusIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Can } from "@/components/has-permission"
 import { Quotation } from "@/features/quotations/types"
@@ -39,10 +39,9 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
         <CardTitle>Recent Quotations</CardTitle>
         <CardAction>
           <Can permission="quotations:view">
-            <Button type="button" variant={"secondary"} asChild>
+            <Button type="button" variant={"outline"} asChild>
               <Link to={"/quotations"}>
-                View
-                <ArrowUpRight />
+                View All
               </Link>
             </Button>
           </Can>

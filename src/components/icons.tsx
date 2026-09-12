@@ -1,4 +1,5 @@
 import { IconReportMoney } from "@tabler/icons-react"
+import { cn } from "cn"
 import type { LucideIcon } from "lucide-react"
 import {
   DatabaseSearch,
@@ -18,6 +19,8 @@ import {
   ListCheckIcon,
   LocateIcon,
   FileTextIcon,
+  MessagesSquareIcon,
+  PanelTopCloseIcon,
 } from "lucide-react"
 
 type Module =
@@ -37,7 +40,14 @@ type Module =
   | "Quotations"
   | "Invoices"
 
-type Actions = "Create" | "Edit" | "Delete" | "Restore" | "Pay"
+type Actions =
+  | "Create"
+  | "Edit"
+  | "Delete"
+  | "Restore"
+  | "Pay"
+  | "Email"
+  | "Cancle"
 
 export function getModuleIcon(module: Module) {
   const moduleIcons: Record<Module, LucideIcon> = {
@@ -67,6 +77,17 @@ export function getActionIcon(action: Actions) {
     Delete: Trash2Icon,
     Restore: ArchiveRestore,
     Pay: CreditCard,
+    Email: MessagesSquareIcon,
+    Cancle: PanelTopCloseIcon,
   }
   return actionIcons[action]
+}
+
+interface ModuleIconProps extends React.ComponentProps<LucideIcon> {
+  module: Module
+}
+
+export function ModuleIcon({ module, className, ...props }: ModuleIconProps) {
+  const Icon = getModuleIcon(module)
+  return <Icon className={cn("h-4 w-4", className)} {...props} />
 }

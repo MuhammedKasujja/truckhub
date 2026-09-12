@@ -27,6 +27,7 @@ export type Shipment = {
   started_at?: Date
   actual_start?: Date
   actual_end?: Date
+  contact_name?: string
   quotation_id: EntityId
   driver?: {
     id: EntityId

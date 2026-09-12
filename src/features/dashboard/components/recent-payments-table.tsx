@@ -24,7 +24,6 @@ import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { Link } from "@tanstack/react-router"
-import { ArrowUpRight } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { Can } from "@/components/has-permission"
 import { PaymentStatusIndicator } from "@/features/payments/components"
@@ -41,10 +40,9 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
         <CardTitle>Recent Payments</CardTitle>
         <CardAction>
           <Can permission="payments:view">
-            <Button type="button" variant={"secondary"} asChild>
+            <Button type="button" variant={"outline"} asChild>
               <Link to={"/payments"}>
-                View
-                <ArrowUpRight />
+                View All
               </Link>
             </Button>
           </Can>

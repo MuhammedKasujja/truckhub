@@ -1,10 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
@@ -36,6 +31,7 @@ import { useTranslation } from "@/i18n"
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useState } from "react"
 import { useClientProfileSuspenseQuery } from "../hooks/use-client"
+import { ModuleIcon } from "@/components/icons"
 
 type CustomerDetailsWrapperProps = {
   clientId: EntityId
@@ -166,7 +162,9 @@ export function CustomerDetailsWrapper({
                 <div className="text-sm text-muted-foreground">
                   {formatDate(latestQuotation.created_at)}
                 </div>
-                <div className="text-lg font-semibold">{latestQuotation.number}</div>
+                <div className="text-lg font-semibold">
+                  {latestQuotation.number}
+                </div>
                 <div className="text-sm">{latestQuotation.status}</div>
                 <div className="text-sm text-muted-foreground">
                   {latestQuotation.amount} → {latestQuotation.status}
@@ -198,10 +196,19 @@ export function CustomerDetailsWrapper({
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="payments" className="w-full">
-            <TabsList variant={'line'}>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
-              <TabsTrigger value="quotations">Quotations</TabsTrigger>
-              <TabsTrigger value="invoices">Invoices</TabsTrigger>
+            <TabsList variant={"line"}>
+              <TabsTrigger value="payments">
+                <ModuleIcon module="Payments" />
+                Payments
+              </TabsTrigger>
+              <TabsTrigger value="quotations">
+                <ModuleIcon module="Quotations" />
+                Quotations
+              </TabsTrigger>
+              <TabsTrigger value="invoices">
+                <ModuleIcon module="Invoices" />
+                Invoices
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="payments">
@@ -287,9 +294,7 @@ export function CustomerDetailsWrapper({
                           </TableCell>
                           <TableCell>{quote.status}</TableCell>
                           <TableCell>{formatMoney(quote.amount)}</TableCell>
-                           <TableCell>
-                            {formatDate(quote.created_at)}
-                          </TableCell>
+                          <TableCell>{formatDate(quote.created_at)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
@@ -335,12 +340,8 @@ export function CustomerDetailsWrapper({
                             {inv.number}
                           </TableCell>
                           <TableCell>{inv.status}</TableCell>
-                          <TableCell>
-                            {formatMoney(inv.total)}
-                          </TableCell>
-                          <TableCell>
-                            {formatDate(inv.due_date)}
-                          </TableCell>
+                          <TableCell>{formatMoney(inv.total)}</TableCell>
+                          <TableCell>{formatDate(inv.due_date)}</TableCell>
                         </TableRow>
                       ))
                     ) : (
