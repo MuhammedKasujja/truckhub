@@ -2,17 +2,20 @@ import { queryOptions } from "@tanstack/react-query"
 import {
   getIslandPricingsFn,
   getRouteTonnagePricingFn,
+  getCompanyPricingDatesFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
 } from "./services"
 
 export const pricingQueryKeys = {
   all: () => ["pricings"] as const,
-  distances: () => [...pricingQueryKeys.all(), "distances", "list"] as const,
-  routes: () => [...pricingQueryKeys.all(), "routes", "list"] as const,
+  list: () => [...pricingQueryKeys.all(), "list"] as const,
+  distances: () => [...pricingQueryKeys.list(), "distances"] as const,
+  routes: () => [...pricingQueryKeys.list(), "routes"] as const,
   loadingOffloading: () =>
-    [...pricingQueryKeys.all(), "loading-offloading", , "list"] as const,
-  islands: () => [...pricingQueryKeys.all(), "islands-fees", , "list"] as const,
+    [...pricingQueryKeys.list(), "loading-offloading"] as const,
+  islands: () => [...pricingQueryKeys.list(), "islands-fees"] as const,
+  companyDates: () => [...pricingQueryKeys.list(), "islands-fees"] as const,
 } as const
 
 export const distancePricingQueryOptions = () =>
@@ -41,4 +44,11 @@ export const createCompanyIslandPricingQueryOptions = () =>
     queryKey: pricingQueryKeys.islands(),
     queryFn: getIslandPricingsFn,
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+  })
+
+export const companyPricingDatesQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.companyDates(),
+    queryFn: getCompanyPricingDatesFn,
+    gcTime: 60 * 60 * 1000, // Cache for 60 minutes
   })

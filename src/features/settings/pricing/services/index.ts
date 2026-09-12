@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start"
 import {
   getIslandsPricings,
   getRouteTonnagePricing,
+  getCompanyPricingDates,
   createBatchIslandPricing,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
@@ -97,3 +98,7 @@ export const getIslandPricingsFn = createServerFn().handler(async () => {
   }
   return undefined
 })
+
+export const getCompanyPricingDatesFn = createServerFn().handler(async () =>
+  getCompanyPricingDates()
+)

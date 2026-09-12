@@ -7,6 +7,7 @@ import {
   LoadingOffloadingPricingRequest,
 } from "../schemas"
 import {
+  CompanyPricingDates,
   RoutePricingResponse,
   IslandPricingResponse,
   IslandPricingCreateDto,
@@ -74,4 +75,8 @@ export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
 
 export async function getRouteTonnagePricing() {
   return await apiClient.getFn<RoutePricingResponse>(endpoint)
+}
+
+export async function getCompanyPricingDates() {
+  return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
 }

@@ -30,7 +30,7 @@ export type RoutePricingResponse = {
 
 type IslandPricingDto = {
   island_id: EntityId
-  price: number | string
+  price: string
 }
 
 export type IslandPricingCreateDto = {
@@ -43,7 +43,7 @@ export type IslandPricingItem = {
   island_id: string
   name: string
   locations: string[]
-  general_price: number | string
+  general_price: string
 }
 
 export type IslandPricingResponse = {
@@ -80,4 +80,24 @@ export type LoadingOffloadingPricingItem = {
 export type LoadingOffloadingPricingResponse = {
   effective_date: Date | string
   pricings: LoadingOffloadingPricingItem[]
+}
+
+export type LoadingOffloadingPricingSnapshot = LoadingOffloadingPricingResponse
+
+export type PricingDates = {
+  dates: string[]
+  active_date: string | null
+}
+
+export type CompanyPricingDates = {
+  route_tonnage: PricingDates
+  island: PricingDates
+  distance_tonnage: PricingDates
+  loading_offloading: PricingDates
+}
+
+export type ClientPricingDates = {
+  route_tonnage: PricingDates
+  island: PricingDates
+  loading_offloading: PricingDates
 }

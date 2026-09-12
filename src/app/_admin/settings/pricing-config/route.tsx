@@ -1,9 +1,15 @@
-import { createFileRoute, Outlet, useLocation, useRouter } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Outlet,
+  useLocation,
+  useRouter,
+} from "@tanstack/react-router"
 import { Route as DistancePricingRoute } from "@/app/_admin/settings/pricing-config/distance-pricing"
 import { Route as LoacationPricingRoute } from "@/app/_admin/settings/pricing-config/route-tonnage-pricing"
 import { Route as LoadingOffloadingPricingRoute } from "@/app/_admin/settings/pricing-config/loading-offloading-pricing"
 import { Route as IslandsPricingRoute } from "@/app/_admin/settings/pricing-config/islands-pricing"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { companyPricingDatesQueryOptions } from "@/features/settings/pricing/query-options"
 
 const userManagementTabs = [
   {
@@ -26,6 +32,8 @@ const userManagementTabs = [
 
 export const Route = createFileRoute("/_admin/settings/pricing-config")({
   component: RouteComponent,
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(companyPricingDatesQueryOptions()),
 })
 
 function RouteComponent() {
