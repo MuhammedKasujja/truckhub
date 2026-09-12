@@ -22,6 +22,7 @@ export function getShipmentTableColumns({
   return [
     {
       id: "left-actions",
+      header: tr("shipments.shipmentNumber"),
       size: 20,
       maxSize: 16,
       cell: ({ row }) => (
@@ -40,7 +41,7 @@ export function getShipmentTableColumns({
     },
     {
       id: "driver",
-      header: tr("driver"),
+      header: tr("common.driver"),
       cell: ({ row }) => {
         const driver = row.original.driver
         if (!driver) return <p>-</p>
@@ -53,7 +54,7 @@ export function getShipmentTableColumns({
     },
     {
       id: "vehicle",
-      header: tr("vehicle"),
+      header: tr("common.vehicle"),
       cell: ({ row }) => {
         const vehicle = row.original.vehicle
         if (!vehicle) return <p>-</p>
@@ -69,14 +70,14 @@ export function getShipmentTableColumns({
     },
     {
       accessorKey: "status",
-      header: tr("status"),
+      header: tr("common.status"),
       cell: ({ row }) => {
         return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
     },
     {
       id: "started_at",
-      header: "Start Date",
+      header: tr("common.startDate"),
       cell: ({ row }) => {
         return (
           <p>

@@ -29,7 +29,7 @@ export function getInvoiceTableColumns({
     },
     {
       accessorKey: "number",
-      header: () => <p className="uppercase">{tr("invoice_number")}</p>,
+      header: () => <p className="uppercase">{tr("invoices.invoiceNumber")}</p>,
       cell: ({ row }) => {
         const invoice = row.original
         return (
@@ -46,7 +46,7 @@ export function getInvoiceTableColumns({
     },
     {
       accessorKey: "client",
-      header: () => <p className="uppercase">{tr("client")}</p>,
+      header: () => <p className="uppercase">{tr("common.client")}</p>,
       cell: ({ row }) => {
         return <p>{row.original.client.name}</p>
       },
@@ -67,14 +67,14 @@ export function getInvoiceTableColumns({
     },
     {
       accessorKey: "status",
-      header: () => <p className="uppercase">{tr("status")}</p>,
+      header: () => <p className="uppercase">{tr("common.status")}</p>,
       cell: ({ row }) => {
         return <p>{row.original.status}</p>
       },
     },
     {
       accessorKey: "due_date",
-      header: () => <p className="uppercase">Due Date</p>,
+      header: () => <p className="uppercase">{tr("common.dueDate")}</p>,
       cell: ({ row }) => {
         return (
           <p>{formatDate(row.original.due_date, { timeStyle: undefined })}</p>
@@ -83,7 +83,7 @@ export function getInvoiceTableColumns({
     },
     {
       accessorKey: "created_at",
-      header: () => <p className="uppercase">Created</p>,
+      header: () => <p className="uppercase">{tr("common.created")}</p>,
       cell: ({ row }) => {
         return <p>{formatDate(row.original.created_at)}</p>
       },

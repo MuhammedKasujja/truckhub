@@ -1,11 +1,11 @@
-import { en as rideEn } from "./modules/ride";
-import { en as usersEn } from "./modules/users";
-import { en as paymentEn } from "./modules/payments";
-import { en as serviceEn } from "./modules/services";
-import { en as bookingsEn } from "./modules/bookings";
-import { en as vehiclesEn } from "./modules/vehicles";
-import { en as settingsEn } from "./modules/settings";
-import { en as permissionsEn } from "./modules/permissions";
+import { en as rideEn } from "./modules/ride"
+import { en as usersEn } from "./modules/users"
+import { en as paymentEn } from "./modules/payments"
+import { en as serviceEn } from "./modules/services"
+import { en as bookingsEn } from "./modules/bookings"
+import { en as vehiclesEn } from "./modules/vehicles"
+import { en as settingsEn } from "./modules/settings"
+import { en as permissionsEn } from "./modules/permissions"
 
 const tripModuleTranslations = {
   new_trip: "New Ride request",
@@ -13,7 +13,7 @@ const tripModuleTranslations = {
   edit_trip: "Edit Ride",
   trip_created_successfully: "Ride created successfully",
   trip_updated_successfully: "Ride updated successfully",
-} as const;
+} as const
 
 const bookingModuleTranslations = {
   client: "Client",
@@ -22,7 +22,7 @@ const bookingModuleTranslations = {
   edit_booking: "Edit Booking",
   booking_created_successfully: "Booking created successfully",
   booking_updated_successfully: "Booking updated successfully",
-} as const;
+} as const
 
 const en = {
   app_name: "Truckhub",
@@ -52,11 +52,22 @@ const en = {
       en: "English",
       de: "Deutsch",
     },
+    status: "Status",
+    amount: "Amount",
+    createdAt: "Created at",
+    created: "Created",
+    date: "Date",
     year: "Year",
     driver: "Driver",
     passenger: "Passenger",
     clients: "Clients",
+    client: "Client",
+    dueDate: "Due Date",
+    vehicle: "Vehicle",
+    vehicles: "Vehicles",
     customers: "Customers",
+    startDate: "Start Date",
+    endDate: "End Date",
     service: "Service",
     services: "Services",
     vehicle_type: "Vehicle type",
@@ -158,7 +169,20 @@ const en = {
   payments: { ...paymentEn },
   rides: { ...rideEn },
   permissions: { ...permissionsEn },
+  shipments: {
+    shipmentNumber: "Shipment No",
+    recordDetails: "Record Details",
+    dispatch: "Dispatch",
+  },
   settings: { ...settingsEn },
-} as const;
+  quotations: {
+    quotationNumber: "Quotation No",
+    revisions: "Revisions",
+  },
+  invoices: {
+    invoiceNumber: "Invoice No.",
+    revisions: "Revisions",
+  },
+} as const
 
-export default en;
+export default en

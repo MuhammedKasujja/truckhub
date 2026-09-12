@@ -22,7 +22,7 @@ export function getQuotationTableColumns({
     },
     {
       accessorKey: "number",
-      header: tr("quotation_number"),
+      header: tr("quotations.quotationNumber"),
       cell: ({ row }) => {
         return (
           <Link
@@ -36,7 +36,7 @@ export function getQuotationTableColumns({
     },
     {
       accessorKey: "client",
-      header: tr("client"),
+      header: tr("common.client"),
       cell: ({ row }) => {
         return (
           <Link
@@ -57,21 +57,21 @@ export function getQuotationTableColumns({
     },
     {
       accessorKey: "status",
-      header: tr("status"),
+      header: tr("common.status"),
       cell: ({ row }) => {
         return <Badge variant={"outline"}>{row.original.status}</Badge>
       },
     },
     {
       id: "revesions",
-      header: "Revisions",
+      header: tr("quotations.revisions"),
       cell: ({ row }) => {
         return <p>{row.original.versions.length}</p>
       },
     },
     {
       accessorKey: "created_at",
-      header: "Created",
+      header: tr("common.createdAt"),
       cell: ({ row }) => {
         return <p>{formatDate(row.original.created_at)}</p>
       },
