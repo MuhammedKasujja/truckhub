@@ -32,8 +32,9 @@ const userManagementTabs = [
 
 export const Route = createFileRoute("/_admin/settings/pricing-config")({
   component: RouteComponent,
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(companyPricingDatesQueryOptions()),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(companyPricingDatesQueryOptions())
+  },
 })
 
 function RouteComponent() {
