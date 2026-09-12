@@ -2,6 +2,7 @@ import * as apiClient from "@/lib/api-client"
 import {
   BatchPayload,
   BatchPricingPayload,
+  PricingSearchParams,
   DistancePricingRequest,
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
@@ -14,6 +15,7 @@ import {
   DistanceTonnagePricingResponse,
   LoadingOffloadingPricingResponse,
 } from "../types"
+import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/pricing/routes"
 
@@ -40,10 +42,13 @@ export async function createBatchDistancePricing(
   })
 }
 
-export async function getDistanceTonnagePricing() {
-  return await apiClient.getFn<DistanceTonnagePricingResponse>(
-    "/v1/pricing/distance-tonnage"
-  )
+export async function getDistanceTonnagePricing(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/distance-tonnage"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<DistanceTonnagePricingResponse>(modified)
 }
 
 export async function createBatchLoadingPricing(
@@ -56,14 +61,22 @@ export async function createBatchLoadingPricing(
   )
 }
 
-export async function getLoadingOffloadingFrees() {
-  return await apiClient.getFn<LoadingOffloadingPricingResponse>(
-    "/v1/pricing/loading-offloading"
-  )
+export async function getLoadingOffloadingFrees(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/loading-offloading"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
 }
 
-export async function getIslandsPricings() {
-  return await apiClient.getFn<IslandPricingResponse>("/v1/pricing/islands")
+export async function getIslandsPricings(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/islands"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<IslandPricingResponse>(modified)
 }
 
 export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
@@ -73,8 +86,12 @@ export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
   )
 }
 
-export async function getRouteTonnagePricing() {
-  return await apiClient.getFn<RoutePricingResponse>(endpoint)
+export async function getRouteTonnagePricing(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = params ? `${endpoint}?${params}` : endpoint
+  return await apiClient.getFn<RoutePricingResponse>(url)
 }
 
 export async function getCompanyPricingDates() {
