@@ -5,10 +5,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Item, ItemContent, ItemDescription, ItemGroup, ItemHeader, ItemTitle } from "@/components/ui/item"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item"
+import { ServiceForm } from "@/features/services/components"
 import { EntityId } from "@/schemas"
-
-
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -21,59 +27,52 @@ export function ClientServicesDialog({
   open,
   onOpenChange,
 }: ServiceSelectDialogProps) {
-  
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90vh] min-h-[90vh] overflow-hidden p-0 md:min-w-[90vw]">
-        <form className="flex w-full flex-col">
+        <div className="flex w-full flex-col">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Client Service Pricing
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
-              <span className="text-sm text-muted-foreground">
-                Services
-              </span>
-              <div className="flex gap-4">
-                
-              </div>
+              <span className="text-sm text-muted-foreground">Services</span>
+              <div className="flex gap-4"></div>
             </DialogDescription>
           </DialogHeader>
           <div className="grid flex-1 grid-cols-6 overflow-hidden">
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-             <div className="flex w-full max-w-xl flex-col gap-6">
-      <ItemGroup className="grid grid-cols-3 gap-4">
-        {models.map((model) => (
-          <Item key={model.name} variant="outline">
-            <ItemHeader>
-              {/* <Image
+              <div className="flex w-full max-w-xl flex-col gap-6">
+                <ItemGroup className="grid grid-cols-3 gap-4">
+                  {models.map((model) => (
+                    <Item key={model.name} variant="outline">
+                      <ItemHeader className="w-32 h-32 aspect-square rounded-sm object-cover">
+                        {/* <Image
                 src={model.image}
                 alt={model.name}
                 width={128}
                 height={128}
                 className="aspect-square w-full rounded-sm object-cover"
               /> */}
-            </ItemHeader>
-            <ItemContent>
-              <ItemTitle>{model.name}</ItemTitle>
-              <ItemDescription>{model.description}</ItemDescription>
-            </ItemContent>
-          </Item>
-        ))}
-      </ItemGroup>
-    </div>
+                      </ItemHeader>
+                      <ItemContent>
+                        <ItemTitle>{model.name}</ItemTitle>
+                        <ItemDescription>{model.description}</ItemDescription>
+                      </ItemContent>
+                    </Item>
+                  ))}
+                </ItemGroup>
+              </div>
             </div>
             <div className="col-span-2 overflow-y-auto p-6">
-              Right side
+              <ServiceForm mode="create" onSubmit={(data) => {}} />
             </div>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   )
 }
-
 
 const models = [
   {

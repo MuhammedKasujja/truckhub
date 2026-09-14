@@ -1,4 +1,3 @@
-"use client"
 import {
   Card,
   CardContent,
@@ -74,11 +73,11 @@ export function ServiceForm({
       </CardHeader>
       <form
         onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log(errors, mode, isEdit, formSchema)
+          console.log(errors)
         })}
       >
-        <CardContent className="pb-6">
-          <FieldGroup className="grid grid-flow-row grid-cols-1 md:grid-cols-2">
+        <CardContent className="pb-6 @container">
+          <FieldGroup className="grid grid-flow-row grid-cols-1 @md:grid-cols-2">
             <AutoCompleteField
               label={tr("common.vehicle_type")}
               control={form.control}
@@ -102,6 +101,18 @@ export function ServiceForm({
               name={"display_name"}
               control={form.control}
             /> */}
+            <CarBrandPickerField
+              label={tr("services.car_brand")}
+              name={"car_brand_id"}
+              control={form.control}
+            />
+            <CarModelPickerField
+              disabled={form.watch("car_brand_id") == undefined}
+              label={tr("services.car_model")}
+              name={"car_model_id"}
+              carBrandId={form.watch("car_brand_id")}
+              control={form.control}
+            />
             <Field orientation={"horizontal"}>
               <YearPickerField
                 label={"Start Year"}
@@ -119,13 +130,11 @@ export function ServiceForm({
               label={tr("services.price")}
               name={"base_fare"}
               control={form.control}
-              required={false}
             />
             <MoneyField
               label={tr("services.last_price")}
               name={"min_fare"}
               control={form.control}
-              required={false}
             />
             {/* <MoneyField
               label={tr("services.price_per_min")}
@@ -143,18 +152,7 @@ export function ServiceForm({
               control={form.control}
               required={false}
             /> */}
-            <CarBrandPickerField
-              label={tr("services.car_brand")}
-              name={"car_brand_id"}
-              control={form.control}
-            />
-            <CarModelPickerField
-              disabled={form.watch("car_brand_id") == undefined}
-              label={tr("services.car_model")}
-              name={"car_model_id"}
-              carBrandId={form.watch("car_brand_id")}
-              control={form.control}
-            />
+            
             <TextareaField
               label={tr("common.form.description")}
               name={"description"}

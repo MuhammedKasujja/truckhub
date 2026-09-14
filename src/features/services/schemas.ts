@@ -5,7 +5,7 @@ import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ServiceCreateSchema = z.object({
-  name: z.string(),
+  name: z.string("Required").trim().min(1, "Required"),
   seats: z.number().optional(),
   base_fare: MoneySchema,
   min_fare: MoneySchema,
