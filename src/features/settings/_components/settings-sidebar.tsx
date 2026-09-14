@@ -5,7 +5,6 @@ import {
   Settings,
   FileText,
   ListOrdered,
-  LocateFixed,
   UserIcon,
   Wallet,
   SquareSigma,
@@ -41,7 +40,7 @@ import { cn } from "@/lib/utils"
 import { Can } from "@/components/has-permission"
 import { UserPermission } from "@/features/auth/permissions"
 import { GlobalKeys } from "@/i18n"
-import { IconSandbox } from "@tabler/icons-react"
+import { IconRouteSquare, IconSandbox } from "@tabler/icons-react"
 
 type SidebarItem = {
   // name: GlobalKeys
@@ -70,7 +69,7 @@ const data: Navbar = {
     },
     {
       name: "Routes",
-      icon: LocateFixed,
+      icon: IconRouteSquare,
       route: BookingRoutes.to,
       permission: "config:routes:read",
     },

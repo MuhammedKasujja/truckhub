@@ -39,7 +39,8 @@ export function ServiceList({ services }: ServiceListProps) {
             <CardDescription>{service.description}</CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-3 text-sm">
+          <CardContent className="space-y-2 text-sm">
+            <div className="h-40 rounded-sm border bg-accent"></div>
             <div className="flex justify-between">
               <span>{tr("services.price")}</span>
               <span className="font-semibold">
@@ -59,17 +60,6 @@ export function ServiceList({ services }: ServiceListProps) {
                 <span className="font-semibold">{service.seats}</span>
               </div>
             )}
-
-            {/* <div className="flex justify-between">
-              <span>Booking Fee</span>
-              <span>{formatMoney(service.booking_fee)}</span>
-            </div> */}
-
-            {/* <div className="flex justify-between">
-              <span>Tax</span>
-              <span>{formatMoney(service.tax_fee)}</span>
-            </div> */}
-
             <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
               <span>{service.is_truck ? "Truck" : "Car"}</span>
               <Can permission={"services:edit"}>
