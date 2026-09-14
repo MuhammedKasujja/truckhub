@@ -421,7 +421,7 @@ export function DistancePricingScheduleForm({
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold">Price schedule</h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Rates by distance and tonnage bracket. Tonnage is capped at{" "}
             {MAX_TONNAGE} MT, and neither axis may overlap itself.
           </p>

@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils"
 import { Can } from "@/components/has-permission"
 import { UserPermission } from "@/features/auth/permissions"
 import { GlobalKeys } from "@/i18n"
+import { IconSandbox } from "@tabler/icons-react"
 
 type SidebarItem = {
   // name: GlobalKeys
@@ -75,7 +76,7 @@ const data: Navbar = {
     },
     {
       name: "Islands",
-      icon: LocateFixed,
+      icon: IconSandbox,
       route: IslandListRoute.to,
       permission: "config:routes:read",
     },

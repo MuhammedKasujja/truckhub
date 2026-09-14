@@ -14,4 +14,12 @@ export const en = {
     Vehicle: "Vehicle",
     User: "User",
   },
+  vehicleCategory: "Vehicle Category",
+  vehicleCategories: "Vehicle Categories",
+  tonnages: "Tonnages",
+  carMakes: "Car Makes",
+  carModels: "Car Models",
+  carBrands: "Car Brands",
+  driveTrains: "Drive Trains",
+  driveTrain: "Drive Train",
 } as const

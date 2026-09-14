@@ -7,26 +7,27 @@ import { Route as CarModelsRoute } from "@/app/_admin/settings/vehicle-config/ca
 import { Route as DriverTrainsRoute } from "@/app/_admin/settings/vehicle-config/drive-trains"
 import { Route as TonnagesRoute } from "@/app/_admin/settings/vehicle-config/tonnages"
 import { Route as VehicleTypesRoute } from "@/app/_admin/settings/vehicle-config/vehicle-types"
+import { useTranslation } from "@/i18n"
 
 const vehicleConfigSections = [
   {
-    name: "Car Makes",
+    name: "carMakes",
     route: CarBrandsRoute.to,
   },
   {
-    name: "Car Models",
+    name: "carModels",
     route: CarModelsRoute.to,
   },
   {
-    name: "Drive Trains",
+    name: "driveTrains",
     route: DriverTrainsRoute.to,
   },
   {
-    name: "Vehicle Types",
+    name: "vehicleCategories",
     route: VehicleTypesRoute.to,
   },
   {
-    name: "Tonnages",
+    name: "tonnages",
     route: TonnagesRoute.to,
   },
 ] as const
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/_admin/settings/vehicle-config")({
 function RouteComponent() {
   const location = useLocation()
   const router = useRouter()
+  const tr = useTranslation()
 
   console.log("Settings path", location.pathname)
 
@@ -51,7 +53,7 @@ function RouteComponent() {
       <TabsList>
         {vehicleConfigSections.map((section) => (
           <TabsTrigger key={section.name} value={section.route}>
-            {section.name}
+            {tr(`settings.${section.name}`)}
           </TabsTrigger>
         ))}
       </TabsList>
