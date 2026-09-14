@@ -2,6 +2,7 @@ import {
   ClientUpdateSchema,
   ClientCreateSchema,
   ClientSearchParamsCache,
+  ClientServiceCreateSchema,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -15,9 +16,11 @@ import {
   getClientBookings,
   getClientPayments,
   getClientInvoices,
+  getClientServices,
   deleteCustomerById,
   getCustomersByQuery,
   getClientQuotations,
+  createClientService,
   getClientRoutePricing,
   getCustomerDetailsById,
   createClientBatchRoutePricing,
@@ -145,4 +148,16 @@ export const changeClientTypeFn = createServerFn()
       throw new ApiError(result.error.message, 400)
     }
     return { data: result.data, message: result.message }
+  })
+
+export const getClientServicesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientServices(data.id)
+  })
+
+export const createClientServiceFn = createServerFn({ method: "POST" })
+  .inputValidator(ClientServiceCreateSchema)
+  .handler(async ({ data }) => {
+    return createClientService(data)
   })

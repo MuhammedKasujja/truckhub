@@ -4,6 +4,7 @@ import { Client } from "@/features/clients/types"
 import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import { ServiceCreateSchema, ServiceUpdateSchema } from "../services/schemas"
 
 export const ClientCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
@@ -61,3 +62,10 @@ export const RoutePricingSchema = z.object({
 })
 
 export type RoutePricingType = z.infer<typeof RoutePricingSchema>
+
+export const ClientServiceCreateSchema = z.object({
+  clientId: IDSchema,
+  ...ServiceCreateSchema.shape,
+})
+
+export type ClientServiceCreateInput = z.infer<typeof ClientServiceCreateSchema>

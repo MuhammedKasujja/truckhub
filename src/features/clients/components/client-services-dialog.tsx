@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/item"
 import { ServiceForm } from "@/features/services/components"
 import { EntityId } from "@/schemas"
+import { createClientServiceFn } from "../services"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -46,7 +47,7 @@ export function ClientServicesDialog({
                 <ItemGroup className="grid grid-cols-3 gap-4">
                   {models.map((model) => (
                     <Item key={model.name} variant="outline">
-                      <ItemHeader className="w-32 h-32 aspect-square rounded-sm object-cover">
+                      <ItemHeader className="aspect-square h-32 w-32 rounded-sm object-cover">
                         {/* <Image
                 src={model.image}
                 alt={model.name}
@@ -65,7 +66,12 @@ export function ClientServicesDialog({
               </div>
             </div>
             <div className="col-span-2 overflow-y-auto p-6">
-              <ServiceForm mode="create" onSubmit={(data) => {}} />
+              <ServiceForm
+                mode="create"
+                onSubmit={(data) => {
+                  createClientServiceFn({ data: { ...data, clientId } })
+                }}
+              />
             </div>
           </div>
         </div>

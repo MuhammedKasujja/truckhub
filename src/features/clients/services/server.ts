@@ -8,6 +8,7 @@ import {
   ClientUpdateInput,
   ClientCreateInput,
   ClientListSearchParams,
+  ClientServiceCreateInput,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
@@ -21,6 +22,7 @@ import {
   LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
 import { Invoice } from "@/features/invoices/types"
+import { Service } from "@/features/services/types"
 import { Quotation } from "@/features/quotations/types"
 import { RoutePricingResponse } from "@/features/settings/pricing/types"
 
@@ -89,7 +91,9 @@ export async function getClientInvoices(clientId: EntityId) {
   return await apiClient.getFn<Invoice[]>(`${endpoint}/${clientId}/invoices`)
 }
 export async function getClientQuotations(clientId: EntityId) {
-  return await apiClient.getFn<Quotation[]>(`${endpoint}/${clientId}/quotations`)
+  return await apiClient.getFn<Quotation[]>(
+    `${endpoint}/${clientId}/quotations`
+  )
 }
 
 export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
@@ -125,4 +129,16 @@ export async function createClientLoadingOffloadingPricing(
 export async function changeClientType(clientId: EntityId) {
   const url = `${endpoint}/${clientId}/change-type`
   return await apiClient.patchFn<Client>(url)
+}
+
+export async function createClientService(data: ClientServiceCreateInput) {
+  const { clientId, ...rest } = data
+  return await apiClient.postFn<Service>(
+    `${endpoint}/${clientId}/services`,
+    rest
+  )
+}
+
+export async function getClientServices(clientId: EntityId) {
+  return await apiClient.getFn<Service[]>(`${endpoint}/${clientId}/services`)
 }
