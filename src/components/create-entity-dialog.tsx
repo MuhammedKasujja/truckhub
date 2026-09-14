@@ -84,7 +84,7 @@ export function CreateEntityDialog() {
           <CommandInput placeholder="Search create entity ..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Navigation">
+            <CommandGroup heading="New">
               {entityList.map((entity) => (
                 <Can permission={entity.permission} key={entity.to}>
                   <CommandItem

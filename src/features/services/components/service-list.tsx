@@ -53,26 +53,6 @@ export function ServiceList({ services }: ServiceListProps) {
                 {formatMoney(service.min_fare)}
               </span>
             </div>
-
-            <div className="flex justify-between">
-              <p>
-                Time price{" "}
-                <span className="text-muted-foreground">(minutes)</span>
-              </p>
-              <span className="font-semibold">
-                {formatMoney(service.price_per_min)}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <p>
-                Distance price{" "}
-                <span className="text-muted-foreground">(km/l)</span>
-              </p>
-              <span className="font-semibold">
-                {formatMoney(service.price_per_unit_distance)}
-              </span>
-            </div>
             {!service.is_truck && (
               <div className="flex justify-between">
                 <span>{tr("services.seating_capacity")}</span>

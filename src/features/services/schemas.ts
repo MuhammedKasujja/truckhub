@@ -9,14 +9,14 @@ export const ServiceCreateSchema = z.object({
   seats: z.number().optional(),
   base_fare: MoneySchema,
   min_fare: MoneySchema,
-  price_per_min: MoneySchema,
-  price_per_unit_distance: MoneySchema,
+  // price_per_min: MoneySchema,
+  // price_per_unit_distance: MoneySchema,
   booking_fee: MoneySchema.optional(),
   vehicle_category_id: IDSchema,
   car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
   start_year: z.string().optional().nullable(),
-  end_year: z.string().optional().nullable(),
+  // end_year: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
 })
 

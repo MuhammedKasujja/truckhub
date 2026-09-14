@@ -109,11 +109,6 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
                 name={"start_year"}
                 control={form.control}
               />
-              <TextField
-                label={"End Year"}
-                name={"end_year"}
-                control={form.control}
-              />
             </Field>
             <NumberField
               label={tr("services.seating_capacity")}
@@ -133,7 +128,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               control={form.control}
               required={false}
             />
-            <MoneyField
+            {/* <MoneyField
               label={tr("services.price_per_min")}
               name={"price_per_min"}
               control={form.control}
@@ -142,7 +137,7 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
               label={tr("services.price_per_unit_distance")}
               name={"price_per_unit_distance"}
               control={form.control}
-            />
+            /> */}
             {/* <NumberField
               label={tr("services.booking_fee")}
               name={"booking_fee"}
