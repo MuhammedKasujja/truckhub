@@ -19,49 +19,48 @@ import {
 import { useTranslation } from "@/i18n"
 import {
   ServiceCreateSchema,
+  ServiceCreateSchemaInput,
   ServiceUpdateSchema,
+  ServiceUpdateSchemaInput,
 } from "@/features/services/schemas"
-import { createServiceFn, updateServiceFn } from "@/features/services/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
+import { BaseFormProps } from "@/common/types"
 
-type ServiceFormProps = {
-  initialData?: z.infer<typeof ServiceUpdateSchema>
-}
+type ServiceFormProps = BaseFormProps<
+  ServiceCreateSchemaInput,
+  ServiceUpdateSchemaInput
+>
 
-export function ServiceForm({ initialData }: ServiceFormProps) {
+export function ServiceForm({
+  defaultValues,
+  mode,
+  onSubmit,
+}: ServiceFormProps) {
   const tr = useTranslation()
   const { data } = useVehicleConfigurations()
-  const queryInvalidator = useQueryInvalidator()
 
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
   const formSchema = isEdit ? ServiceUpdateSchema : ServiceCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateServiceFn({ data: values })
-        : createServiceFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.services.list.invalidate()
+  async function handleSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(ServiceUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(ServiceCreateSchema.parse(values))
     }
   }
 
@@ -74,8 +73,8 @@ export function ServiceForm({ initialData }: ServiceFormProps) {
         <CardDescription>{tr("services.create_new_service")}</CardDescription>
       </CardHeader>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors)
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+          console.log(errors, mode, isEdit, formSchema)
         })}
       >
         <CardContent className="pb-6">

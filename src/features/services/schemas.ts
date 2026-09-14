@@ -25,9 +25,9 @@ export const ServiceUpdateSchema = z.object({
   ...ServiceCreateSchema.partial().shape,
 })
 
-export type ServiceCreateSchemaType = z.infer<typeof ServiceCreateSchema>
+export type ServiceCreateSchemaInput = z.infer<typeof ServiceCreateSchema>
 
-export type ServiceUpdateSchemaType = z.infer<typeof ServiceUpdateSchema>
+export type ServiceUpdateSchemaInput = z.infer<typeof ServiceUpdateSchema>
 
 export const ServiceSearchParamsCache = z.object({
   sort: getSortingStateSchema<Service>().default([

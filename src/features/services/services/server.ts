@@ -4,8 +4,8 @@ import * as apiClient from "@/lib/api-client"
 import { Service, ServiceGroup } from "@/features/services/types"
 import {
   ServiceListSearchParams,
-  ServiceUpdateSchemaType,
-  ServiceCreateSchemaType,
+  ServiceCreateSchemaInput,
+  ServiceUpdateSchemaInput,
 } from "@/features/services/schemas"
 import { SearchQuery } from "@/schemas"
 import { jsonFormatter, logger } from "@/lib/logger"
@@ -46,11 +46,11 @@ export async function deleteServiceById(serviceId: number | string) {
   return await apiClient.deleteFn(`${endpoint}/${serviceId}`)
 }
 
-export async function updateService(data: ServiceUpdateSchemaType) {
+export async function updateService(data: ServiceUpdateSchemaInput) {
   const { id: serviceId, ...rest } = data
   return await apiClient.putFn<Service>(`${endpoint}/${serviceId}`, rest)
 }
 
-export async function createService(data: ServiceCreateSchemaType) {
+export async function createService(data: ServiceCreateSchemaInput) {
   return await apiClient.postFn<Service>(endpoint, data)
 }
