@@ -103,7 +103,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         <ServiceTable services={services} />
       </Activity>
       <Activity mode={view === "list" ? "visible" : "hidden"}>
-        <ServiceList services={services} />
+        <ServiceList services={serviceList} />
       </Activity>
     </div>
   )

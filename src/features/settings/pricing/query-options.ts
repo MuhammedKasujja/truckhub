@@ -11,14 +11,14 @@ import { PricingSearchParams } from "./schemas"
 export const pricingQueryKeys = {
   all: () => ["pricings"] as const,
   list: () => [...pricingQueryKeys.all(), "list"] as const,
-  distances: (filter: PricingSearchParams | undefined) =>
+  distances: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "distances", filter] as const,
-  routes: (filter: PricingSearchParams | undefined) =>
+  routes: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "routes", filter] as const,
-  loadingOffloading: (filter: PricingSearchParams | undefined) =>
+  loadingOffloading: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "loading-offloading", filter] as const,
-  islands: (date: PricingSearchParams | undefined) =>
-    [...pricingQueryKeys.list(), "islands-fees", date] as const,
+  islands: (filter?: PricingSearchParams | undefined) =>
+    [...pricingQueryKeys.list(), "islands-fees", filter] as const,
   companyDates: () => [...pricingQueryKeys.list(), "islands-fees"] as const,
 } as const
 

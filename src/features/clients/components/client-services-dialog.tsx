@@ -5,17 +5,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemHeader,
-  ItemTitle,
-} from "@/components/ui/item"
-import { ServiceForm } from "@/features/services/components"
+import { ServiceForm, ServiceList } from "@/features/services/components"
 import { EntityId } from "@/schemas"
-import { createClientServiceFn } from "../services"
+import {
+  useClientServiceProducts,
+  useCreateClientService,
+} from "../hooks/user-client-services"
+import { cn } from "@/lib/utils"
+import { Activity, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -28,78 +26,52 @@ export function ClientServicesDialog({
   open,
   onOpenChange,
 }: ServiceSelectDialogProps) {
+  const { data } = useClientServiceProducts(clientId)
+  const { createClientService } = useCreateClientService()
+  const [showEdit, setShowEdit] = useState(false)
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[90vh] min-h-[90vh] overflow-hidden p-0 md:min-w-[90vw]">
         <div className="flex w-full flex-col">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Client Service Pricing
+              Client Services
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
               <span className="text-sm text-muted-foreground">Services</span>
-              <div className="flex gap-4"></div>
+              <div className="flex gap-4">
+                <Button
+                  type="button"
+                  onClick={() => setShowEdit((prev) => !prev)}
+                >
+                  New Service
+                </Button>
+              </div>
             </DialogDescription>
           </DialogHeader>
           <div className="grid flex-1 grid-cols-6 overflow-hidden">
-            <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-              <div className="flex w-full max-w-xl flex-col gap-6">
-                <ItemGroup className="grid grid-cols-3 gap-4">
-                  {models.map((model) => (
-                    <Item key={model.name} variant="outline">
-                      <ItemHeader className="aspect-square h-32 w-32 rounded-sm object-cover">
-                        {/* <Image
-                src={model.image}
-                alt={model.name}
-                width={128}
-                height={128}
-                className="aspect-square w-full rounded-sm object-cover"
-              /> */}
-                      </ItemHeader>
-                      <ItemContent>
-                        <ItemTitle>{model.name}</ItemTitle>
-                        <ItemDescription>{model.description}</ItemDescription>
-                      </ItemContent>
-                    </Item>
-                  ))}
-                </ItemGroup>
+            <div
+              className={cn(
+                "flex-1 space-y-4 overflow-y-auto p-6",
+                showEdit ? "col-span-4 border-r" : "col-span-6"
+              )}
+            >
+              <ServiceList services={data ?? []} />
+            </div>
+            <Activity mode={showEdit ? "visible" : "hidden"}>
+              <div className="col-span-2 overflow-y-auto p-6">
+                <ServiceForm
+                  mode="create"
+                  onSubmit={(data) => {
+                    createClientService({ ...data, clientId })
+                  }}
+                />
               </div>
-            </div>
-            <div className="col-span-2 overflow-y-auto p-6">
-              <ServiceForm
-                mode="create"
-                onSubmit={(data) => {
-                  createClientServiceFn({ data: { ...data, clientId } })
-                }}
-              />
-            </div>
+            </Activity>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   )
 }
-
-const models = [
-  {
-    name: "v0-1.5-sm",
-    description: "Everyday tasks and UI generation.",
-    image:
-      "https://images.unsplash.com/photo-1650804068570-7fb2e3dbf888?q=80&w=640&auto=format&fit=crop",
-    credit: "Valeria Reverdo on Unsplash",
-  },
-  {
-    name: "v0-1.5-lg",
-    description: "Advanced thinking or reasoning.",
-    image:
-      "https://images.unsplash.com/photo-1610280777472-54133d004c8c?q=80&w=640&auto=format&fit=crop",
-    credit: "Michael Oeser on Unsplash",
-  },
-  {
-    name: "v0-2.0-mini",
-    description: "Open Source model for everyone.",
-    image:
-      "https://images.unsplash.com/photo-1602146057681-08560aee8cde?q=80&w=640&auto=format&fit=crop",
-    credit: "Cherry Laithang on Unsplash",
-  },
-]

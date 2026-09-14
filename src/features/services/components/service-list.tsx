@@ -8,25 +8,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ServiceGroup } from "@/features/services/types"
+import { Service } from "@/features/services/types"
 import { useTranslation } from "@/i18n"
 import { formatMoney } from "@/lib/format"
 import { Link } from "@tanstack/react-router"
-import React from "react"
 
 type ServiceListProps = {
-  services: ServiceGroup[]
+  services: Service[]
 }
 
 export function ServiceList({ services }: ServiceListProps) {
   const tr = useTranslation()
-  const serviceList = React.useMemo(() => {
-    return services.flatMap((ele) => ele.services)
-  }, [services])
 
   return (
+    <div className="@container">
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      {serviceList.map((service) => (
+      {services.map((service) => (
         <Card
           key={service.id}
           className="rounded-2xl shadow-sm transition hover:shadow-md"
@@ -76,6 +73,7 @@ export function ServiceList({ services }: ServiceListProps) {
           </CardContent>
         </Card>
       ))}
+    </div>
     </div>
   )
 }

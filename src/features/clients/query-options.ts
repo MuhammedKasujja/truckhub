@@ -29,7 +29,10 @@ export const clientQueryKeys = {
   payments: (id: EntityId) => [...clientQueryKeys.detail(id), "payments"],
   invoices: (id: EntityId) => [...clientQueryKeys.detail(id), "invoices"],
   quotations: (id: EntityId) => [...clientQueryKeys.detail(id), "quotations"],
-  serviceProducts: (id: EntityId) => [...clientQueryKeys.detail(id), "services-products"],
+  serviceProducts: (id: EntityId) => [
+    ...clientQueryKeys.detail(id),
+    "services-products",
+  ],
   routePricing: (id: EntityId) => [
     ...clientQueryKeys.detail(id),
     "route_pricing",
@@ -43,10 +46,7 @@ export const clientQueryKeys = {
     "search",
     params,
   ],
-  filter: () => [
-    ...clientQueryKeys.list(),
-    "filter-list",
-  ],
+  filter: () => [...clientQueryKeys.list(), "filter-list"],
   refreshQueries: () => [...clientQueryKeys.list()],
   refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
 } as const
@@ -115,9 +115,8 @@ export const clientLoadingFeesQueryOptions = (clientId: EntityId) =>
       getClientLoadingOffloadingFreesFn({ data: { id: clientId } }),
   })
 
-  export const clientServiceProductsQueryOptions = (clientId: EntityId) =>
+export const clientServiceProductsQueryOptions = (clientId: EntityId) =>
   queryOptions({
     queryKey: clientQueryKeys.serviceProducts(clientId),
-    queryFn: () =>
-      getClientServicesFn({ data: { id: clientId } }),
+    queryFn: () => getClientServicesFn({ data: { id: clientId } }),
   })
