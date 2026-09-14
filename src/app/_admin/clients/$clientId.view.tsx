@@ -11,6 +11,7 @@ import { ButtonGroup } from "@/components/ui/button-group"
 import {
   ClientLoadingFeesModal,
   ClientRouteTonnagePricingModal,
+  ClientServicesDialog,
   CustomerDetailsWrapper,
 } from "@/features/clients/components"
 import { useClientProfileSuspenseQuery } from "@/features/clients/hooks/use-client"
@@ -45,6 +46,7 @@ function RouteComponent() {
   const { clientId } = Route.useParams()
   const { data } = useClientProfileSuspenseQuery(clientId)
   const [openModal, setOpenModal] = useState(false)
+  const [openServicesModal, setServicesModal] = useState(false)
 
   const tr = useTranslation()
   return (
@@ -60,13 +62,19 @@ function RouteComponent() {
           <PageBackButton />
           <ButtonGroup>
             <Can permission={"clients:edit"}>
-              <Button asChild variant={"secondary"} >
+              <Button asChild variant={"secondary"}>
                 <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
                   <IconEdit />
                   Edit
                 </Link>
               </Button>
             </Can>
+            <Button
+              variant={"secondary"}
+              onClick={() => setServicesModal(true)}
+            >
+              Services
+            </Button>
             <Can permission={"quotations:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/quotations/new"} search={{ clientId }}>
@@ -99,14 +107,14 @@ function RouteComponent() {
             {data?.has_pricing && (
               <Button asChild variant={"secondary"}>
                 <Link to="/clients/data/$clientId" params={{ clientId }}>
-                 <CreditCardIcon/>
+                  <CreditCardIcon />
                   Pricing
                 </Link>
               </Button>
             )}
             <Button asChild variant={"secondary"}>
               <Link to="/clients/$clientId/pdf" params={{ clientId }}>
-              <FileTextIcon/>
+                <FileTextIcon />
                 View Pdf
               </Link>
             </Button>
@@ -114,6 +122,11 @@ function RouteComponent() {
             <ClientLoadingFeesModal
               clientId={clientId}
               clientName={data?.name}
+            />
+            <ClientServicesDialog
+              clientId={clientId}
+              open={openServicesModal}
+              onOpenChange={setServicesModal}
             />
           </ButtonGroup>
         </PageAction>

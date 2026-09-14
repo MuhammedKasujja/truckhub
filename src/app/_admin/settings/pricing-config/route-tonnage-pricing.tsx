@@ -10,9 +10,9 @@ import {
   RouteTonnagePricingGrid,
 } from "@/features/settings/pricing/components"
 import { useCompanyPricingDates } from "@/features/settings/pricing/hooks/use-company-pricing-dates"
-import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { companyRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
@@ -27,9 +27,12 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { data: companyPricings } = useRouteTonnagePricing()
-  const { data } = useCompanyPricingDates()
   const search = Route.useSearch()
+  const { data: companyPricings } = useQuery(
+    companyRoutePricingQueryOptions(search)
+  )
+
+  const { data } = useCompanyPricingDates()
   const navigate = Route.useNavigate()
 
   const referenceDate = search.referenceDate ?? companyPricings?.effective_date

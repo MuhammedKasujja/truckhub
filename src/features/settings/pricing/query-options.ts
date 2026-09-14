@@ -15,7 +15,7 @@ export const pricingQueryKeys = {
     [...pricingQueryKeys.list(), "distances", filter] as const,
   routes: (filter: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "routes", filter] as const,
-  loadingOffloading: (filter: PricingSearchParams| undefined) =>
+  loadingOffloading: (filter: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "loading-offloading", filter] as const,
   islands: (date: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "islands-fees", date] as const,
@@ -25,30 +25,32 @@ export const pricingQueryKeys = {
 export const distancePricingQueryOptions = (data?: PricingSearchParams) =>
   queryOptions({
     queryKey: pricingQueryKeys.distances(data),
-    queryFn: () =>
-      getDistanceTonnagePricingFn({ data:{...data} }),
+    queryFn: () => getDistanceTonnagePricingFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
 export const companyRoutePricingQueryOptions = (data?: PricingSearchParams) =>
   queryOptions({
     queryKey: pricingQueryKeys.routes(data),
-    queryFn: () => getRouteTonnagePricingFn({ data:{...data} }),
+    queryFn: () => getRouteTonnagePricingFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
-export const createCompanyLoadingFreesQueryOptions = (data?: PricingSearchParams) =>
+export const createCompanyLoadingFreesQueryOptions = (
+  data?: PricingSearchParams
+) =>
   queryOptions({
     queryKey: pricingQueryKeys.loadingOffloading(data),
-    queryFn: () =>
-      getLoadingOffloadingFreesFn({ data:{...data} }),
+    queryFn: () => getLoadingOffloadingFreesFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
-export const createCompanyIslandPricingQueryOptions = (data?: PricingSearchParams) =>
+export const createCompanyIslandPricingQueryOptions = (
+  data?: PricingSearchParams
+) =>
   queryOptions({
     queryKey: pricingQueryKeys.islands(data),
-    queryFn: () => getIslandPricingsFn({ data:{...data} }),
+    queryFn: () => getIslandPricingsFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 

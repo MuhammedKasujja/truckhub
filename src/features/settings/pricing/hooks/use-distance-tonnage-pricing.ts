@@ -16,7 +16,7 @@ export function useDistanceTonnagePricing() {
 export function useRouteTonnagePricing() {
   const { data, isLoading, error } = useQuery(companyRoutePricingQueryOptions())
 
-  return { isLoading, data: data?.data, error }
+  return { isLoading, data: data, error }
 }
 
 const useCreateDistanceTonnageBase = createEntityActionHook(

@@ -60,7 +60,7 @@ export const getRouteTonnagePricingFn = createServerFn()
     if (result.error) {
       throw new ApiError(result.error.message, 400)
     }
-    return { data: result.data!, message: result.message }
+    return result.data!
   })
 
 export const createBatchLoadingPricingFn = createServerFn()
