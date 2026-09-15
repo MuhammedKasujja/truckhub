@@ -74,7 +74,7 @@ export function ClientServicesDialog({
                     </EmptyMedia>
                     <EmptyTitle>Pricing Services Empty</EmptyTitle>
                     <EmptyDescription>
-                      Create client pricings they will appear here.
+                      Configured client services will appear here.
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>

@@ -5,10 +5,16 @@ import {
 import { requirePermission } from "@/lib/auth"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 
-import { createVehiclesListQueryOptions, vehicleStatisticsQueryOptions } from "@/features/vehicles/query-options"
+import {
+  createVehiclesListQueryOptions,
+  vehicleStatisticsQueryOptions,
+} from "@/features/vehicles/query-options"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { VehicleSearchParamsCache } from "@/features/vehicles/schemas"
-import { VehicleFilterCard, VehicleStatisticsRow } from "@/features/vehicles/components"
+import {
+  VehicleFilterCard,
+  VehicleStatisticsRow,
+} from "@/features/vehicles/components"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { PlusIcon } from "lucide-react"
@@ -41,9 +47,15 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
-      <VehicleStatisticsRow/>
-      <VehicleFilterCard />
-      <VehicleTable />
+      <VehicleStatisticsRow />
+      <div className="grid grid-cols-8 gap-5">
+        <div className="col-span-2">
+          <VehicleFilterCard />
+        </div>
+        <div className="col-span-6">
+          <VehicleTable />
+        </div>
+      </div>
     </div>
   )
 }

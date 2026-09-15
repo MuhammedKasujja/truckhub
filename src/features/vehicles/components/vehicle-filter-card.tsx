@@ -26,13 +26,14 @@ export function VehicleFilterCard() {
     <Card className="border border-dotted">
       <CardHeader>
         <CardTitle>Filters</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-xs">
           Now your search using the filters below
         </CardDescription>
         <CardAction>
           <Button
             size={'sm'}
             variant={"ghost"}
+            className="text-xs"
             onClick={() => navigate({ from: "/vehicles/" })}
           >
             <RotateCcwIcon className="size-3"/> Clear all
@@ -41,8 +42,8 @@ export function VehicleFilterCard() {
       </CardHeader>
       <Separator />
       <CardContent className="space-y-4 pb-5">
-        <div className="flex flex-col gap-5 md:flex-row">
-          <div className="w-full space-y-4">
+        <div className="space-y-4">
+          <div className="w-full space-y-2">
             <Label htmlFor="brand">Brand</Label>
             <CarBrandPicker
               id="brand"
@@ -81,7 +82,7 @@ export function VehicleFilterCard() {
           </div>
         </div>
         <div className="flex flex-col gap-5 md:flex-row">
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-3">
             <Label htmlFor="tonnage">Tonnage</Label>
             <Input
               id="tonnage"
@@ -93,7 +94,7 @@ export function VehicleFilterCard() {
               }
             />
           </div>
-          <div className="w-full space-y-4">
+          <div className="w-full space-y-3">
             <Label htmlFor="consumption-rate">Consumption Rate</Label>
             <Input
               id="consumption-rate"
@@ -109,7 +110,7 @@ export function VehicleFilterCard() {
             />
           </div>
         </div>
-        <div className="flex flex-col gap-5 md:flex-row">
+        <div className="space-y-4">
           <div className="w-full space-y-4">
             <Label htmlFor="status">Status</Label>
             <VehicleStatusPicker

@@ -33,13 +33,13 @@ import { useState } from "react"
 import { useClientProfileSuspenseQuery } from "../hooks/use-client"
 import { ModuleIcon } from "@/components/icons"
 
-type CustomerDetailsWrapperProps = {
+type ClientDetailsWrapperProps = {
   clientId: EntityId
 }
 
 export function CustomerDetailsWrapper({
   clientId,
-}: CustomerDetailsWrapperProps) {
+}: ClientDetailsWrapperProps) {
   const { data: client } = useClientProfileSuspenseQuery(clientId)
 
   const [openModal, setOpenModal] = useState(false)
