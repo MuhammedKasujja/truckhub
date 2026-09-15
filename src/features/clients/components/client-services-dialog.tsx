@@ -14,6 +14,15 @@ import {
 import { cn } from "@/lib/utils"
 import { Activity, useState } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+import { IconCloud } from "@tabler/icons-react"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -26,7 +35,7 @@ export function ClientServicesDialog({
   open,
   onOpenChange,
 }: ServiceSelectDialogProps) {
-  const { data } = useClientServiceProducts(clientId)
+  const { data: services, isLoading } = useClientServiceProducts(clientId)
   const { createClientService } = useCreateClientService()
   const [showEdit, setShowEdit] = useState(false)
 
@@ -57,7 +66,32 @@ export function ClientServicesDialog({
                 showEdit ? "col-span-4 border-r" : "col-span-6"
               )}
             >
-              <ServiceList services={data ?? []} />
+              {!isLoading && services?.length === 0 && (
+                <Empty className="h-full border border-dashed">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <IconCloud />
+                    </EmptyMedia>
+                    <EmptyTitle>Pricing Services Empty</EmptyTitle>
+                    <EmptyDescription>
+                      Create client pricings they will appear here.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                      onClick={() => setShowEdit((prev) => !prev)}
+                    >
+                      New Service
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              )}
+              {services && services.length > 0 && (
+                <ServiceList services={services} />
+              )}
             </div>
             <Activity mode={showEdit ? "visible" : "hidden"}>
               <div className="col-span-2 overflow-y-auto p-6">

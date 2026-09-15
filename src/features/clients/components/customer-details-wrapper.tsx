@@ -254,7 +254,7 @@ export function CustomerDetailsWrapper({
                               <Can permission={"payments:create"}>
                                 <Button onClick={() => setOpenModal(true)}>
                                   <PlusIcon />
-                                  {tr("payments.form.new_payment")}
+                                  {tr("payments.form.enterPayment")}
                                 </Button>
                                 <EnterPaymentModal
                                   open={openModal}
