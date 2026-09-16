@@ -101,6 +101,7 @@ const en = {
     quotation: "Quotation",
     quotations: "Quotations",
     active: "Active",
+    inTransit: "In Transit",
     confirmed: "Confirmed",
     requests: "Requests",
     completed: "Completed",

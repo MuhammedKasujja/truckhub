@@ -28,7 +28,7 @@ const shipmentTabs = [
     route: ConfirmedShipmentsRoute.to,
   },
   {
-    name: "active",
+    name: "inTransit",
     route: ActiveShipmentsRoute.to,
   },
   {

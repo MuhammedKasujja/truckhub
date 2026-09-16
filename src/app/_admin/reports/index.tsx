@@ -30,7 +30,7 @@ function RouteComponent() {
           trends, and exports.
         </PageDescription>
       </PageHeader>
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-5 grid-cols-1 md:grid-cols-3">
         <ReportCardItem
           title={"Invoices"}
           subtitle={
@@ -66,14 +66,15 @@ type ReportCardItemProps = {
 
 function ReportCardItem({ title, subtitle, onClick }: ReportCardItemProps) {
   return (
-    <Card onClick={onClick} className="hover:ring hover:ring-primary cursor-pointer">
+    <Card onClick={onClick} className="group hover:ring hover:ring-primary cursor-pointer">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
-      <Separator />
+      <div className="px-4"><Separator /></div>
+      
       <div className="flex justify-end pr-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 group-hover:text-primary text-muted-foreground">
           View report
           <ArrowRightIcon className="size-3.5" />
         </div>

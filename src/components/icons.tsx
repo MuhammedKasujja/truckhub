@@ -1,4 +1,4 @@
-import { IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
+import { IconAssembly, IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
 import { cn } from "cn"
 import {
   DatabaseSearch,
@@ -16,7 +16,6 @@ import {
   Trash2Icon,
   ArchiveRestore,
   ListCheckIcon,
-  LocateIcon,
   FileTextIcon,
   PanelTopCloseIcon,
   MailIcon,
@@ -56,7 +55,7 @@ type Actions =
 export function getModuleIcon(module: Module): IconComponent {
   const moduleIcons: Record<Module, IconComponent> = {
     Dashboard: LayoutDashboard,
-    Shipments: LocateIcon,
+    Shipments: IconAssembly,
     Rides: DatabaseSearch,
     Bookings: CalendarCheck,
     Payments: CreditCard,

@@ -52,7 +52,10 @@ export async function deleteServiceById(serviceId: number | string) {
 
 export async function updateService(data: ServiceUpdateSchemaInput) {
   const { id: serviceId, ...rest } = data
-  return await apiClient.putFn<Service>(`${endpoint}/${serviceId}`, rest)
+  return await apiClient.putFn<Service>(
+    `${endpoint}/${serviceId}`,
+    toServicePricingApiPayload(rest)
+  )
 }
 
 export async function createService(data: ServiceCreateSchemaInput) {
