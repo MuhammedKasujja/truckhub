@@ -3,7 +3,6 @@ import {
   AutoCompleteField,
   MoneyField,
   NumberField,
-  TextareaField,
   TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
@@ -21,6 +20,14 @@ import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { BaseFormProps } from "@/common/types"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item"
+import { cn } from "@/lib/utils"
+import { useMemo } from "react"
 
 type ServiceFormProps = BaseFormProps<
   ServiceCreateSchemaInput,
@@ -41,10 +48,21 @@ export function ServiceForm({
 
   type Values = z.infer<typeof formSchema>
 
+  const defaultDerivedValues = useMemo(() => {
+    const target = (
+      defaultValues?.vehicle_category_id ? "category" : "model"
+    ) as const
+    return defaultValues
+      ? { ...defaultValues, target: target }
+      : { target: target }
+  }, [defaultValues])
+
   const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: defaultDerivedValues,
   })
+
+  const target = form.watch("target")
 
   async function handleSubmit(values: Values) {
     if (mode === "edit") {
@@ -55,44 +73,86 @@ export function ServiceForm({
   }
 
   return (
-    <form id="service-form"
+    <form
+      id="service-form"
       onSubmit={form.handleSubmit(handleSubmit, (errors) => {
         console.log(errors)
       })}
     >
+      <p className="pb-2">Select a pricing rule</p>
+      <div className="@container">
+        <Field orientation={"horizontal"} className="pb-5">
+          <Item
+            variant={"outline"}
+            className={cn(
+              "cursor-pointer",
+              target === "model" && "bg-primary/5 dark:bg-primary/10"
+            )}
+            onClick={() => {
+              form.setValue("target", "model")
+            }}
+          >
+            <ItemContent>
+              <ItemTitle>A Car Model</ItemTitle>
+              <ItemDescription>e.g. Toyota Hillux</ItemDescription>
+            </ItemContent>
+          </Item>
+          <Item
+            variant={"outline"}
+            className={cn(
+              "cursor-pointer",
+              target === "category" && "bg-primary/5 dark:bg-primary/10"
+            )}
+            onClick={() => {
+              form.setValue("target", "category")
+            }}
+          >
+            <ItemContent>
+              <ItemTitle>A Category</ItemTitle>
+              <ItemDescription>e.g. any Sedan</ItemDescription>
+            </ItemContent>
+          </Item>
+        </Field>
+      </div>
       <div className="@container pb-6">
         <FieldGroup className="grid grid-flow-row grid-cols-1 @md:grid-cols-2">
-          <AutoCompleteField
-            label={tr("common.vehicleCaterory")}
-            control={form.control}
-            name={"vehicle_category_id"}
-            placeholder="Select Vehicle"
-            emptyPlaceholder="No vehicles found"
-            options={
-              data?.vehicle_types.map((opt) => ({
-                label: opt.name,
-                value: opt.id,
-              })) ?? []
-            }
-          />
-          <CarBrandPickerField
-            label={tr("services.car_brand")}
-            name={"car_brand_id"}
-            control={form.control}
-          />
-          <CarModelPickerField
-            disabled={form.watch("car_brand_id") == undefined}
-            label={tr("services.car_model")}
-            name={"car_model_id"}
-            carBrandId={form.watch("car_brand_id")}
-            control={form.control}
-          />
+          {target === "category" && (
+            <AutoCompleteField
+              label={tr("common.vehicleCaterory")}
+              control={form.control}
+              name={"vehicle_category_id"}
+              placeholder="Select Vehicle"
+              emptyPlaceholder="No vehicles found"
+              options={
+                data?.vehicle_types.map((opt) => ({
+                  label: opt.name,
+                  value: opt.id,
+                })) ?? []
+              }
+            />
+          )}
+          {target === "model" && (
+            <>
+              <CarBrandPickerField
+                label={tr("services.car_brand")}
+                name={"car_brand_id"}
+                control={form.control}
+              />
+              <CarModelPickerField
+                disabled={form.watch("car_brand_id") == undefined}
+                label={tr("services.car_model")}
+                name={"car_model_id"}
+                carBrandId={form.watch("car_brand_id")}
+                control={form.control}
+              />
+            </>
+          )}
           <TextField
             label={tr("common.form.serviceName")}
             name={"name"}
             control={form.control}
           />
-          
+
           <Field orientation={"horizontal"}>
             <YearPickerField
               label={"Start Year"}
@@ -132,13 +192,6 @@ export function ServiceForm({
               control={form.control}
               required={false}
             /> */}
-
-          {/* <TextareaField
-            label={tr("common.form.description")}
-            name={"description"}
-            control={form.control}
-            required={false}
-          /> */}
         </FieldGroup>
       </div>
     </form>

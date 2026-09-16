@@ -1,7 +1,11 @@
 "use server"
 
 import * as apiClient from "@/lib/api-client"
-import { Service, ServiceGroup } from "@/features/services/types"
+import {
+  Service,
+  ServiceGroup,
+  toServicePricingApiPayload,
+} from "@/features/services/types"
 import {
   ServiceListSearchParams,
   ServiceCreateSchemaInput,
@@ -52,5 +56,8 @@ export async function updateService(data: ServiceUpdateSchemaInput) {
 }
 
 export async function createService(data: ServiceCreateSchemaInput) {
-  return await apiClient.postFn<Service>(endpoint, data)
+  return await apiClient.postFn<Service>(
+    endpoint,
+    toServicePricingApiPayload(data)
+  )
 }

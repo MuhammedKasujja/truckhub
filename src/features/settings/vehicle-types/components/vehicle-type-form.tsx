@@ -72,7 +72,7 @@ export function VehicleTypeForm({ trigger, initialData }: Props) {
         {trigger ?? (
           <Button size="sm" className="font-normal">
             <PlusIcon />
-            Vehicle Type
+            Vehicle Category
           </Button>
         )}
       </DialogTrigger>
@@ -82,7 +82,7 @@ export function VehicleTypeForm({ trigger, initialData }: Props) {
             <DialogTitle>
               {isEdit ? "Edit Vehicle Type" : "Add Vehicle Type"}
             </DialogTitle>
-            <DialogDescription>Create new vehicle type</DialogDescription>
+            <DialogDescription>Create new vehicle category</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <div className="grid flex-1 gap-4">

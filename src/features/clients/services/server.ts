@@ -22,9 +22,9 @@ import {
   LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
 import { Invoice } from "@/features/invoices/types"
-import { Service } from "@/features/services/types"
 import { Quotation } from "@/features/quotations/types"
 import { RoutePricingResponse } from "@/features/settings/pricing/types"
+import { Service, toServicePricingApiPayload } from "@/features/services/types"
 
 const endpoint = "/v1/clients"
 
@@ -133,9 +133,10 @@ export async function changeClientType(clientId: EntityId) {
 
 export async function createClientService(data: ClientServiceCreateInput) {
   const { clientId, ...rest } = data
+  const payload = toServicePricingApiPayload(rest)
   return await apiClient.postFn<Service>(
     `${endpoint}/${clientId}/services`,
-    rest
+    payload
   )
 }
 
