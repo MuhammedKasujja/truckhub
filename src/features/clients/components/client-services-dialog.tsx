@@ -23,6 +23,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { IconCloud } from "@tabler/icons-react"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -36,7 +37,7 @@ export function ClientServicesDialog({
   onOpenChange,
 }: ServiceSelectDialogProps) {
   const { data: services, isLoading } = useClientServiceProducts(clientId)
-  const { createClientService } = useCreateClientService()
+  const { createClientService, isLoading: isSaving } = useCreateClientService()
   const [showEdit, setShowEdit] = useState(false)
 
   return (
@@ -101,6 +102,7 @@ export function ClientServicesDialog({
                     createClientService({ ...data, clientId })
                   }}
                 />
+              <SubmitButton form="service-form" isSubmitting={isSaving} />
               </div>
             </Activity>
           </div>

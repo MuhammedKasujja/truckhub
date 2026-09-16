@@ -17,14 +17,32 @@ import {
 import { Service } from "@/features/services/types"
 import { useTranslation } from "@/i18n"
 import { formatMoney } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
+import { useState } from "react"
 
 type ServiceListProps = {
   services: Service[]
+  selectable?: boolean
+  onSelected?: (services: Service[]) => void
 }
 
-export function ServiceList({ services }: ServiceListProps) {
+export function ServiceList({
+  services,
+  selectable = false,
+}: ServiceListProps) {
   const tr = useTranslation()
+  const [selectedItems, setSelected] = useState<Service[]>([])
+
+  function handleSelected(service: Service) {
+    setSelected((prev) => {
+      const find = prev.find((s) => s.id === service.id)
+      if (find) {
+        return prev.filter((s) => s.id !== service.id)
+      }
+      return [...prev, service]
+    })
+  }
 
   return (
     <div className="@container">
@@ -32,7 +50,12 @@ export function ServiceList({ services }: ServiceListProps) {
         {services.map((service) => (
           <Card
             key={service.id}
-            className="rounded-2xl shadow-sm transition hover:shadow-md"
+            className={cn(
+              "rounded-2xl shadow-sm transition hover:shadow-md",
+              selectedItems.find((s) => s.id === service.id) &&
+                "ring-2 ring-primary"
+            )}
+            onClick={selectable ? () => handleSelected(service) : undefined}
           >
             <CardHeader>
               <div className="flex items-center justify-between">
