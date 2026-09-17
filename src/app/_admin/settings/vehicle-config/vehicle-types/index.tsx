@@ -1,6 +1,6 @@
-import { VehicleTypeTable } from "@/features/settings/vehicle-types/components/vehicle-types-table"
-import { createVehicleTypesQueryOptions } from "@/features/settings/vehicle-types/query-options"
-import { VehicleTypeSearchParamsCache } from "@/features/settings/vehicle-types/schemas"
+import { VehicleTypeTable } from "@/features/settings/vehicle-categories/components/vehicle-types-table"
+import { createVehicleTypesQueryOptions } from "@/features/settings/vehicle-categories/query-options"
+import { VehicleTypeSearchParamsCache } from "@/features/settings/vehicle-categories/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(

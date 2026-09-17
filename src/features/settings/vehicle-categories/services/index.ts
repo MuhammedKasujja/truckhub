@@ -2,7 +2,7 @@ import {
   VehicleTypeUpdateSchema,
   VehicleTypeCreateSchema,
   VehicleTypeSearchParamsCache,
-} from "@/features/settings/vehicle-types/schemas"
+} from "@/features/settings/vehicle-categories/schemas"
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import {

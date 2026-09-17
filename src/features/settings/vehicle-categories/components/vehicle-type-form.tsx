@@ -19,11 +19,11 @@ import {
   VehicleTypeCreateSchema,
   VehicleTypeUpdateSchemaType,
   VehicleTypeUpdateSchema,
-} from "@/features/settings/vehicle-types/schemas"
+} from "@/features/settings/vehicle-categories/schemas"
 import {
   createVehicleTypeFn,
   updateVehicleTypeFn,
-} from "@/features/settings/vehicle-types/services"
+} from "@/features/settings/vehicle-categories/services"
 import { SwitchField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"

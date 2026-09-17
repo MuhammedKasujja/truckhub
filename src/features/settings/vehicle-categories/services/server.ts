@@ -1,12 +1,12 @@
 "use server";
 
 import * as apiClient from "@/lib/api-client";
-import { VehicleType } from "@/features/settings/vehicle-types/types";
+import { VehicleType } from "@/features/settings/vehicle-categories/types";
 import {
   VehicleTypeCreateSchemaType,
   VehicleTypeListSearchParams,
   VehicleTypeUpdateSchemaType,
-} from "@/features/settings/vehicle-types/schemas";
+} from "@/features/settings/vehicle-categories/schemas";
 
 const endpoint = "/v1/vehicle-categories";
 

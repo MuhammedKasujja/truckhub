@@ -19,8 +19,8 @@ import { islandsQueryKeys } from "@/features/settings/islands/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
 import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
 import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
-import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-types/query-options"
 import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query-options"
+import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-categories/query-options"
 import { entityNumberPattensQueryKeys } from "@/features/settings/entity-numbers/query-options"
 
 export const queryKeys = {
