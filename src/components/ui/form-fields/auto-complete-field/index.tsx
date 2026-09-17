@@ -1,7 +1,7 @@
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { Check, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
+import { Check, ChevronDown } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Command,
   CommandEmpty,
@@ -9,30 +9,30 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Field, FieldDescription, FieldError, FieldLabel } from "../../field";
-import React from "react";
-import { RequiredLabelIcon } from "@/components/required-label-icon";
+} from "@/components/ui/popover"
+import { Field, FieldDescription, FieldError, FieldLabel } from "../../field"
+import React from "react"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
 
-type Option = { label: string; value: string | number };
+type Option = { label: string; value: string | number }
 
 export type AutoCompleteFieldProps<T extends FieldValues> = {
-  label?: string;
-  options: readonly Option[];
-  control: Control<T>;
-  name: FieldPath<T>;
-  placeholder?: string;
-  description?: string;
-  required?: boolean;
-  disabled?: boolean;
-  emptyPlaceholder?: string;
-  className?: string;
-};
+  label?: string
+  options: readonly Option[]
+  control: Control<T>
+  name: FieldPath<T>
+  placeholder?: string
+  description?: string
+  required?: boolean
+  disabled?: boolean
+  emptyPlaceholder?: string
+  className?: string
+}
 
 export function AutoCompleteField<T extends FieldValues>({
   options,
@@ -46,14 +46,14 @@ export function AutoCompleteField<T extends FieldValues>({
   className,
   disabled = false,
 }: AutoCompleteFieldProps<T>) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field, fieldState }) => {
-        const currentOption = options.find((o) => o.value === field.value);
+        const currentOption = options.find((o) => o.value === field.value)
 
         return (
           <Field data-invalid={fieldState.invalid} className={className}>
@@ -71,7 +71,7 @@ export function AutoCompleteField<T extends FieldValues>({
                   className={cn(
                     "w-full justify-between text-left font-normal",
                     !field.value && "text-muted-foreground",
-                    fieldState.invalid && "border-destructive",
+                    fieldState.invalid && "border-destructive"
                   )}
                   disabled={disabled}
                 >
@@ -80,7 +80,7 @@ export function AutoCompleteField<T extends FieldValues>({
                 </Button>
               </PopoverTrigger>
 
-              <PopoverContent className="p-0 w-(--radix-popover-trigger-width)">
+              <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                 <Command>
                   <CommandInput
                     disabled={disabled}
@@ -88,7 +88,10 @@ export function AutoCompleteField<T extends FieldValues>({
                     placeholder={placeholder}
                     // aria-invalid={fieldState.invalid}
                   />
-                  <CommandList>
+                  <CommandList
+                    onWheel={(e) => e.stopPropagation()}
+                    onTouchMove={(e) => e.stopPropagation()}
+                  >
                     <CommandEmpty>{emptyPlaceholder}</CommandEmpty>
                     <CommandGroup>
                       {options.map((option) => (
@@ -96,8 +99,8 @@ export function AutoCompleteField<T extends FieldValues>({
                           key={option.value}
                           value={option.label.toLowerCase()} // cmdk expects string // this is used for filtering
                           onSelect={() => {
-                            field.onChange(option.value);
-                            setOpen(false);
+                            field.onChange(option.value)
+                            setOpen(false)
                           }}
                         >
                           <Check
@@ -105,7 +108,7 @@ export function AutoCompleteField<T extends FieldValues>({
                               "mr-2 h-4 w-4",
                               field.value === option.value
                                 ? "opacity-100"
-                                : "opacity-0",
+                                : "opacity-0"
                             )}
                           />
                           {option.label}
@@ -120,10 +123,10 @@ export function AutoCompleteField<T extends FieldValues>({
             {description && <FieldDescription>{description}</FieldDescription>}
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
-        );
+        )
       }}
     />
-  );
+  )
 }
 
 // import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'

@@ -180,6 +180,8 @@ export function AutoComplete<T>({
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
             placeholder={
               (searchPlaceholder ?? label)
                 ? `Search ${label?.toLowerCase()}...`

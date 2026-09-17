@@ -147,7 +147,7 @@ export function AutoComplete<T>({
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={ searchPlaceholder??`Search...`}
+            placeholder={searchPlaceholder ?? `Search...`}
             value={search}
             onValueChange={(val) => {
               setSearch(val)
@@ -155,7 +155,10 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList>
+          <CommandList
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />
