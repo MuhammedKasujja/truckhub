@@ -1,1 +1,1 @@
-export { ShipmentTable } from "./shipment-table"
+export { ShipmentTable, ShipmentTableSkeleton } from "./shipment-table"

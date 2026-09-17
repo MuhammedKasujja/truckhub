@@ -1,5 +1,8 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
-import { ShipmentTable } from "@/features/shipments/components"
+import {
+  ShipmentTable,
+  ShipmentTableSkeleton,
+} from "@/features/shipments/components"
 import { shipmentsRequestsQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { useQuery } from "@tanstack/react-query"
@@ -10,14 +13,19 @@ export const Route = createFileRoute("/_admin/shipments/requests/")({
   errorComponent: DefaultCatchBoundary,
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
-  loader: ({ context, deps: { search } }) =>
-    context.queryClient.ensureQueryData(shipmentsRequestsQueryOptions(search)),
+  loader: ({ context, deps: { search } }) => {
+    context.queryClient.ensureQueryData(shipmentsRequestsQueryOptions(search))
+  },
 })
 
 function RouteComponent() {
   const search = Route.useSearch()
 
-  const { data } = useQuery(shipmentsRequestsQueryOptions(search))
+  const { data, isLoading } = useQuery(shipmentsRequestsQueryOptions(search))
+
+  if (isLoading) {
+    return <ShipmentTableSkeleton />
+  }
   return (
     <div>
       <ShipmentTable data={data?.data} pagination={data?.pagination} />

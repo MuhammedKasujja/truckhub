@@ -16,6 +16,7 @@ const ServiceBaseSchema = z.object({
     message: "Choose whether this rule targets a model or a category",
   }),
   vehicle_category_id: IDSchema.optional(),
+  capacity_id: IDSchema.optional(),
   car_brand_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
   start_year: z.string().optional().nullable(),
