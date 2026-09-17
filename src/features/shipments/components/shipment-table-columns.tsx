@@ -30,6 +30,7 @@ export function getShipmentTableColumns({
           variant={"ghost"}
           size={"sm"}
           onClick={() => setRowAction({ row, variant: "view" })}
+          className="cursor-pointer"
         >
           {row.original.number}
         </Button>

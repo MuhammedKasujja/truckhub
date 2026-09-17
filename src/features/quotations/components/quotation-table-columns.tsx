@@ -38,13 +38,17 @@ export function getQuotationTableColumns({
       accessorKey: "client",
       header: tr("common.client"),
       cell: ({ row }) => {
+        const client = row.original.client
         return (
+          <>
           <Link
             to="/clients/$clientId/view"
-            params={{ clientId: row.original.client.id }}
+            params={{ clientId: client.id }}
           >
-            {row.original.client.name}
+            {client.name}
           </Link>
+          <p className="text-muted-foreground text-xs">{client.phone}</p>
+          </>
         )
       },
     },

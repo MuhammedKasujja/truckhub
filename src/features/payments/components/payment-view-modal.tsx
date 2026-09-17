@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DataList, DataListItem, DataListItemLabel, DataListItemValue } from "@/components/ui/data-list"
 import {
   Drawer,
   DrawerClose,
@@ -85,9 +86,20 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
               <CardTitle>{tr("payments.client")}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div>{payment.client.fullname}</div>
-              <div>{payment.client.email}</div>
-              <div>{payment.client.phone}</div>
+              <DataList>
+                <DataListItem>
+                  <DataListItemLabel>Name</DataListItemLabel>
+                  <DataListItemValue>{payment.client.fullname}</DataListItemValue>
+                </DataListItem>
+                <DataListItem>
+                  <DataListItemLabel>Email</DataListItemLabel>
+                  <DataListItemValue>{payment.client.email}</DataListItemValue>
+                </DataListItem>
+                <DataListItem>
+                  <DataListItemLabel>Phone</DataListItemLabel>
+                  <DataListItemValue>{payment.client.phone}</DataListItemValue>
+                </DataListItem>
+              </DataList>
             </CardContent>
           </Card>
         </div>

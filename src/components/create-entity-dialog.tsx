@@ -12,7 +12,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command"
 import { useHotkey } from "@tanstack/react-hotkeys"
@@ -28,37 +27,37 @@ import { useNavigate } from "@tanstack/react-router"
 const entityList = [
   {
     to: QuotationCreate.to,
-    label: "quotation",
+    label: "Create Quotation",
     command: "⌘B",
     permission: "quotations:create",
   },
   {
     to: InvoiceCreate.to,
-    label: "invoice",
+    label: "Create Invoice",
     command: "⌘B",
     permission: "invoices:create",
   },
   {
     to: ClientCreate.to,
-    label: "client",
+    label: "New client",
     command: "⌘C",
     permission: "clients:create",
   },
   {
     to: DriverCreate.to,
-    label: "driver",
+    label: "Add driver",
     command: "⌘D",
     permission: "drivers:create",
   },
   {
     to: ServiceCreate.to,
-    label: "service",
+    label: "Create Service",
     command: "⌘S",
     permission: "services:create",
   },
   {
     to: VehicleCreate.to,
-    label: "vehicle",
+    label: "Add Vehicle",
     command: "⌘V",
     permission: "vehicles:create",
   },
@@ -84,7 +83,7 @@ export function CreateEntityDialog() {
           <CommandInput placeholder="Search create entity ..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="New">
+            <CommandGroup heading="Quick actions">
               {entityList.map((entity) => (
                 <Can permission={entity.permission} key={entity.to}>
                   <CommandItem
@@ -99,14 +98,6 @@ export function CreateEntityDialog() {
                   </CommandItem>
                 </Can>
               ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Actions">
-              <CommandItem>
-                <PlusIcon />
-                <span>New File</span>
-                <CommandShortcut>⌘N</CommandShortcut>
-              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

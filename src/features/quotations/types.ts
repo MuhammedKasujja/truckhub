@@ -82,6 +82,7 @@ export type Quotation = {
     number: string
     name: string
     short_name: string
+    phone: string
   }
 }
 
