@@ -1075,7 +1075,7 @@ export const CalendarDatePicker = React.forwardRef<
           <PopoverContent
             className="w-auto overflow-hidden rounded-xl border p-0 shadow-lg"
             align="start"
-            avoidCollisions={false}
+            collisionPadding={16}
             onInteractOutside={handleClose}
             onEscapeKeyDown={handleClose}
             style={{
