@@ -22,7 +22,7 @@ type ServiceListWrapperProps = {
 }
 
 export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
-  const [view, setView] = React.useState<"table" | "list">("list")
+  const [view, setView] = React.useState<"card" | "list">("card")
   const serviceList = React.useMemo(() => {
     return services.flatMap((ele) => ele.services)
   }, [services])
@@ -45,6 +45,19 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
               variant={"secondary"}
               type="button"
               className={cn(
+                view == "card"
+                  ? "border-primary text-primary"
+                  : "text-muted-foreground"
+              )}
+              onClick={() => setView("card")}
+            >
+              <Grid3X3Icon />
+              Card
+            </Button>
+            <Button
+              variant={"secondary"}
+              type="button"
+              className={cn(
                 view == "list"
                   ? "border-primary text-primary"
                   : "text-muted-foreground"
@@ -53,19 +66,6 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
             >
               <ListIcon />
               List
-            </Button>
-            <Button
-              variant={"secondary"}
-              type="button"
-              className={cn(
-                view == "table"
-                  ? "border-primary text-primary"
-                  : "text-muted-foreground"
-              )}
-              onClick={() => setView("table")}
-            >
-              <Grid3X3Icon />
-              Card
             </Button>
           </ButtonGroup>
           <Can permission={"services:create"}>
@@ -99,10 +99,10 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         </div>
         <Separator />
       </div>
-      <Activity mode={view === "table" ? "visible" : "hidden"}>
+      <Activity mode={view === "list" ? "visible" : "hidden"}>
         <ServiceTable services={services} />
       </Activity>
-      <Activity mode={view === "list" ? "visible" : "hidden"}>
+      <Activity mode={view === "card" ? "visible" : "hidden"}>
         <ServiceList services={serviceList} />
       </Activity>
     </div>

@@ -2,18 +2,22 @@ import { CURRENCY_CODE } from "@/config/constants"
 
 export function formatMoney(
   amount?: number | string | null,
-  { showZeroAsNumber = false } = {}
+  { showZeroAsNumber = false, showZeroFallaback = false } = {}
 ) {
   if (amount === undefined || amount === null) return ""
 
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: CURRENCY_CODE,
-    minimumFractionDigits: 0//Number.isInteger(amount) ? 0 : 2,
+    minimumFractionDigits: 0, //Number.isInteger(amount) ? 0 : 2,
   })
 
-  if (amount === 0 && !showZeroAsNumber) return "Free"
-  return formatter.format(Number(amount))
+  const convertedAmount = Number(amount)
+
+  if (convertedAmount === 0 && showZeroFallaback) return "-"
+
+  if (convertedAmount === 0 && !showZeroAsNumber) return "Free"
+  return formatter.format(convertedAmount)
 }
 
 export function formatNumber(
