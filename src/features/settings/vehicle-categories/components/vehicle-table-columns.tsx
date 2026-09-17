@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { VehicleType } from "@/features/settings/vehicle-categories/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { EditIcon, EyeIcon } from "lucide-react"
-import { VehicleTypeForm } from "./vehicle-type-form"
+import { VehicleCategoryForm } from "./vehicle-type-form"
 import { Can } from "@/components/has-permission"
 
 export function getVehicleTypeColumns(): ColumnDef<VehicleType>[] {
@@ -30,7 +30,7 @@ export function getVehicleTypeColumns(): ColumnDef<VehicleType>[] {
               <EyeIcon />
             </Button>
             <Can permission="config:vehicle_types:edit">
-              <VehicleTypeForm
+              <VehicleCategoryForm
                 initialData={{ ...row.original }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>

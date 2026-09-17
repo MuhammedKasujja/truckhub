@@ -7,7 +7,7 @@ import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { getVehicleTypeColumns } from "./vehicle-table-columns"
-import { VehicleTypeForm } from "./vehicle-type-form"
+import { VehicleCategoryForm } from "./vehicle-type-form"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehicleTypesQueryOptions } from "../query-options"
@@ -42,7 +42,7 @@ export function VehicleTypeTable() {
     <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <Can permission="config:vehicle_types:create">
-          <VehicleTypeForm />
+          <VehicleCategoryForm />
         </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>

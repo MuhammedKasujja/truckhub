@@ -7,6 +7,7 @@ import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 export const VehicleTypeCreateSchema = z.object({
   name: z.string(),
   is_truck: z.boolean().default(false).optional(),
+  parent_category_id: IDSchema.optional(),
 })
 
 export const VehicleTypeUpdateSchema = z.object({

@@ -29,13 +29,14 @@ import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
 
 type Props = {
   trigger?: React.ReactNode
   initialData?: VehicleTypeUpdateSchemaType
 }
 
-export function VehicleTypeForm({ trigger, initialData }: Props) {
+export function VehicleCategoryForm({ trigger, initialData }: Props) {
   const tr = useTranslation()
   const queryInvalidator = useQueryInvalidator()
   const [open, setOpen] = React.useState(false)
@@ -80,13 +81,20 @@ export function VehicleTypeForm({ trigger, initialData }: Props) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle>
-              {isEdit ? "Edit Vehicle Type" : "Add Vehicle Type"}
+              {isEdit ? "Edit Vehicle Category" : "New Vehicle Category"}
             </DialogTitle>
             <DialogDescription>Create new vehicle category</DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <div className="grid flex-1 gap-4">
               <TextField label="Name" control={form.control} name={"name"} />
+              <VehicleCategoryPickerField
+                label="Parent Category"
+                name={"parent_category_id"}
+                control={form.control}
+                required={false}
+                description="Leave blank if this is the main category"
+              />
               <SwitchField
                 label="Truck Vehicle"
                 control={form.control}
