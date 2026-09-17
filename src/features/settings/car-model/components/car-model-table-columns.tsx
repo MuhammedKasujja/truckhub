@@ -23,7 +23,12 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
         return (
           <p>
             {model.name}
-            {model.manufacture_year && <span className="text-muted-foreground"> ({model.manufacture_year})</span>}
+            {model.manufacture_year && (
+              <span className="text-muted-foreground">
+                {" "}
+                ({model.manufacture_year})
+              </span>
+            )}
           </p>
         )
       },
@@ -45,7 +50,10 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
             </Button>
             <Can permission="config:car_model:edit">
               <CarModelForm
-                initialData={{ ...row.original }}
+                initialData={{
+                  ...row.original,
+                  manufacture_year: row.original.manufacture_year?.toString(),
+                }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
                     <EditIcon />

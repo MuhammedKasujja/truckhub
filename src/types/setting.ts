@@ -20,6 +20,7 @@ export type CarModel = {
   id: EntityId
   car_brand_id: EntityId
   vehicle_category_id: EntityId
+  manufacture_year: number | string
 }
 
 export type VehicleFeature = {

@@ -21,9 +21,11 @@ export const Route = createFileRoute("/_admin/shipments/completed/")({
 function RouteComponent() {
   const search = Route.useSearch()
 
-  const { data, isLoading } = useQuery(shipmentsCompletedQueryOptions(search))
+  const { data, isLoading, isFetching } = useQuery(
+    shipmentsCompletedQueryOptions(search)
+  )
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <ShipmentTableSkeleton />
   }
 
