@@ -103,10 +103,8 @@ export function ServicesDialog({
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
               <span className="text-sm text-muted-foreground">
-                {formatMoney(form.watch("line_total"), {
-                  showZeroAsNumber: true,
-                })}{" "}
-                - locations {locationsFields.fields.length}
+                {formatMoney(form.watch("line_total"))} - locations{" "}
+                {locationsFields.fields.length}
               </span>
               <div className="flex gap-4">
                 <Controller

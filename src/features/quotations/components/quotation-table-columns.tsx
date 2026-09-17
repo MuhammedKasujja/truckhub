@@ -56,17 +56,17 @@ export function getQuotationTableColumns({
       },
     },
     {
-      accessorKey: "status",
-      header: tr("common.status"),
-      cell: ({ row }) => {
-        return <Badge variant={"outline"}>{row.original.status}</Badge>
-      },
-    },
-    {
       id: "revesions",
       header: tr("quotations.revisions"),
       cell: ({ row }) => {
-        return <p>{row.original.current_version.version_number}</p>
+        return <p className="text-center w-20">{row.original.current_version.version_number}</p>
+      },
+    },
+    {
+      accessorKey: "status",
+      header: tr("common.status"),
+      cell: ({ row }) => {
+        return <div><Badge variant={"outline"}>{row.original.status}</Badge></div>
       },
     },
     {

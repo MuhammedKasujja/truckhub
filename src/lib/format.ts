@@ -2,7 +2,7 @@ import { CURRENCY_CODE } from "@/config/constants"
 
 export function formatMoney(
   amount?: number | string | null,
-  { showZeroAsNumber = false, showZeroFallaback = false } = {}
+  { showZeroAsNumber = true, showZeroFallaback = false } = {}
 ) {
   if (amount === undefined || amount === null) return ""
 

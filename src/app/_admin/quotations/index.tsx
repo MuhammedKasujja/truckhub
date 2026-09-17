@@ -1,3 +1,4 @@
+import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
   QuotationTable,
@@ -23,10 +24,15 @@ function RouteComponent() {
 
   const { data } = useQuery(quotationQueryOptions(search))
   return (
-    <div className="space-y-5">
-      <Button asChild>
-        <Link to="/quotations/new">New Quotation</Link>
-      </Button>{" "}
+    <div>
+      <PageHeader>
+        <PageTitle>Quotations</PageTitle>
+        <PageAction>
+          <Button asChild>
+            <Link to="/quotations/new">New Quotation</Link>
+          </Button>
+        </PageAction>
+      </PageHeader>
       <QuotationTable data={data?.data} pagination={data?.pagination} />
     </div>
   )

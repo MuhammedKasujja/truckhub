@@ -356,9 +356,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                             </CardContent>
                             <CardFooter>
                               Total:{" "}
-                              {formatMoney(serviceWithTotal?.lineTotal, {
-                                showZeroAsNumber: true,
-                              })}
+                              {formatMoney(serviceWithTotal?.lineTotal)}
                             </CardFooter>
                           </Card>
                         </TabsContent>
@@ -405,9 +403,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                         </CardContent>
                         <CardFooter>
                           Total:{" "}
-                          {formatMoney(serviceWithTotal?.lineTotal, {
-                            showZeroAsNumber: true,
-                          })}
+                          {formatMoney(serviceWithTotal?.lineTotal)}
                         </CardFooter>
                       </Card>
                     )

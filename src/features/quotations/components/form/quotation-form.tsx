@@ -420,7 +420,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               <div className="flex justify-between">
                 <div className="text-muted-foreground">Subtotal</div>
                 <div className="font-semibold">
-                  {formatMoney(subtotal, { showZeroAsNumber: true })}
+                  {formatMoney(subtotal)}
                 </div>
               </div>
               <div className="flex justify-between">
@@ -428,13 +428,13 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   Tax ({taxRate?.name} {taxRate?.rate}%)
                 </div>
                 <div className="font-semibold">
-                  {formatMoney(taxAmount, { showZeroAsNumber: true })}
+                  {formatMoney(taxAmount)}
                 </div>
               </div>
               <div className="flex justify-between border-b-2 pb-1.5">
                 <div className="text-muted-foreground">Grand total</div>
                 <div className="font-bold">
-                  {formatMoney(grandTotal, { showZeroAsNumber: true })}
+                  {formatMoney(grandTotal)}
                 </div>
               </div>
             </CardContent>
