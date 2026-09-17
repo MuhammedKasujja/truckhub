@@ -44,13 +44,15 @@ export interface ServicePricingRulePayload {
 export function toServicePricingApiPayload(
   values: ServiceCreateSchemaInput
 ): ServicePricingRulePayload {
+  const resolvedCategoryId =
+    values.target === "category"
+      ? (values.capacity_id ?? values.vehicle_category_id ?? null)
+      : null
+      
   return {
     car_model_id:
       values.target === "model" ? (values.car_model_id ?? null) : null,
-    vehicle_category_id:
-      values.target === "category"
-        ? (values.vehicle_category_id ?? null)
-        : null,
+    vehicle_category_id: resolvedCategoryId,
     base_fare: values.base_fare,
     min_fare: values.min_fare,
     name: values.name,

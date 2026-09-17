@@ -52,7 +52,7 @@ export function getQuotationTableColumns({
       accessorKey: "amount",
       header: tr("common.form.amount"),
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.amount)}</p>
+        return <p>{formatMoney(row.original.current_version.total_amount)}</p>
       },
     },
     {
@@ -66,7 +66,7 @@ export function getQuotationTableColumns({
       id: "revesions",
       header: tr("quotations.revisions"),
       cell: ({ row }) => {
-        return <p>{row.original.versions.length}</p>
+        return <p>{row.original.current_version.version_number}</p>
       },
     },
     {

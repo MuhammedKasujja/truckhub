@@ -72,10 +72,10 @@ export type Quotation = {
   id: EntityId
   number: string
   status: QuotationStatus
-  amount: string
   last_updated_at: Date
   created_at: Date
   versions: QuotationVersion[]
+  current_version: QuotationVersion
   activeRevision: QuotationVersion
   client: {
     id: EntityId
