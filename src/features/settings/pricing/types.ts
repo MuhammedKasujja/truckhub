@@ -96,7 +96,14 @@ export type CompanyPricingDates = {
   loading_offloading: PricingDates
 }
 
-export type CompanyPricingTypes = keyof CompanyPricingDates
+export type CompanyPricingType = keyof CompanyPricingDates
+
+export const COMPANY_PRICING_TYPES = [
+  "route",
+  "island",
+  "distance",
+  "loading",
+] as const
 
 export type ClientPricingDates = {
   route_tonnage: PricingDates

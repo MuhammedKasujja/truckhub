@@ -1,9 +1,9 @@
 import { ActivatePricingInput } from "../schemas"
-import { activateCompanyRoutePricingFn } from "../services"
+import { activateCompanyPricingFn } from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useActivateCompanyPricingBase = createEntityActionHook(
-  activateCompanyRoutePricingFn,
+  activateCompanyPricingFn,
   (invalidator) => {
     invalidator.settings.pricingPlans.all()
   }

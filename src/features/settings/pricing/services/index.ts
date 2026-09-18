@@ -3,12 +3,12 @@ import {
   getIslandsPricings,
   getRouteTonnagePricing,
   getCompanyPricingDates,
+  activateCompanyPricing,
   createBatchIslandPricing,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
   createBatchDistancePricing,
-  activateCompanyRoutePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
 } from "./server"
@@ -113,8 +113,8 @@ export const getCompanyPricingDatesFn = createServerFn().handler(
   async () => await getCompanyPricingDates()
 )
 
-export const activateCompanyRoutePricingFn = createServerFn()
+export const activateCompanyPricingFn = createServerFn()
   .inputValidator(ActivatePricingSchema)
   .handler(({ data }) =>
-    apiResponseTransform(activateCompanyRoutePricing(data.effectiveDate))
+    apiResponseTransform(activateCompanyPricing(data))
   )

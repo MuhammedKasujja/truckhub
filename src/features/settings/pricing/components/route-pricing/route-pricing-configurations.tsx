@@ -108,6 +108,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                         if (search?.referenceDate)
                           activateCompanyPricing({
                             effectiveDate: search?.referenceDate,
+                            source: "route",
                           })
                       }}
                     >

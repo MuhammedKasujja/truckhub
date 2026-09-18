@@ -1,5 +1,6 @@
 import { IDSchema, MoneySchema } from "@/schemas"
 import z from "zod"
+import { COMPANY_PRICING_TYPES } from "./types"
 
 export const tonnageRangeSchema = z
   .object({
@@ -143,6 +144,7 @@ export type PricingSearchParams = z.infer<typeof PricingSearchParamsCache>
 
 export const ActivatePricingSchema = z.object({
   effectiveDate: z.string(),
+  source: z.enum(COMPANY_PRICING_TYPES),
 })
 
 export type ActivatePricingInput = z.infer<typeof ActivatePricingSchema>

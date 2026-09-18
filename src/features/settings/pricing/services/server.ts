@@ -3,6 +3,7 @@ import {
   BatchPayload,
   BatchPricingPayload,
   PricingSearchParams,
+  ActivatePricingInput,
   DistancePricingRequest,
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
@@ -15,6 +16,7 @@ import {
   DistanceTonnagePricingResponse,
   LoadingOffloadingPricingResponse,
 } from "../types"
+import { ApiError } from "@/types"
 import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/pricing/routes"
@@ -98,10 +100,20 @@ export async function getCompanyPricingDates() {
   return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
 }
 
-export async function activateCompanyRoutePricing(effectiveDate: string) {
-  console.log('Firing endpoints')
-  return await apiClient.postFn<RoutePricingResponse>(
-    `/v1/pricing/routes/${effectiveDate}/activate`,
-    { }
-  )
+export async function activateCompanyPricing(input: ActivatePricingInput) {
+  const activateEndpoint = deriveActivatePricingRoute(input)
+  return await apiClient.postFn<RoutePricingResponse>(activateEndpoint, {})
+}
+
+function deriveActivatePricingRoute(input: ActivatePricingInput) {
+  if (input.source == "route") {
+    return `/v1/pricing/routes/${input.effectiveDate}/activate`
+  } else if (input.source == "distance") {
+    return `/v1/pricing/distance-tonnage/${input.effectiveDate}/activate`
+  } else if (input.source == "island") {
+    return `/v1/pricing/islands/${input.effectiveDate}/activate`
+  } else if (input.source == "loading") {
+    return `/v1/pricing/loading-offloading/${input.effectiveDate}/activatee`
+  }
+  throw new ApiError(`Pricing source: ${input.source} not allowed`, 400)
 }
