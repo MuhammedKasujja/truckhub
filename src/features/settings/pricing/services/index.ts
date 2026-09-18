@@ -8,11 +8,13 @@ import {
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
   createBatchDistancePricing,
+  activateCompanyRoutePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
 } from "./server"
 import {
   IslandPricingRequest,
+  ActivatePricingSchema,
   IslandsListPricingSchema,
   PricingSearchParamsCache,
   ListDistancePricingSchema,
@@ -20,6 +22,7 @@ import {
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
 import { ApiError } from "@/types"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
@@ -106,6 +109,12 @@ export const getIslandPricingsFn = createServerFn()
     return undefined
   })
 
-export const getCompanyPricingDatesFn = createServerFn().handler(async () =>
-  getCompanyPricingDates()
+export const getCompanyPricingDatesFn = createServerFn().handler(
+  async () => await getCompanyPricingDates()
 )
+
+export const activateCompanyRoutePricingFn = createServerFn()
+  .inputValidator(ActivatePricingSchema)
+  .handler(({ data }) =>
+    apiResponseTransform(activateCompanyRoutePricing(data.effectiveDate))
+  )

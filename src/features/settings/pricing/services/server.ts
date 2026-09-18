@@ -97,3 +97,11 @@ export async function getRouteTonnagePricing(search: PricingSearchParams) {
 export async function getCompanyPricingDates() {
   return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
 }
+
+export async function activateCompanyRoutePricing(effectiveDate: string) {
+  console.log('Firing endpoints')
+  return await apiClient.postFn<RoutePricingResponse>(
+    `/v1/pricing/routes/${effectiveDate}/activate`,
+    { }
+  )
+}

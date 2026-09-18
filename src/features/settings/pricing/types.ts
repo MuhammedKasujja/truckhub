@@ -96,8 +96,12 @@ export type CompanyPricingDates = {
   loading_offloading: PricingDates
 }
 
+export type CompanyPricingTypes = keyof CompanyPricingDates
+
 export type ClientPricingDates = {
   route_tonnage: PricingDates
   island: PricingDates
   loading_offloading: PricingDates
 }
+
+export type ClientPricingTypes = keyof ClientPricingDates

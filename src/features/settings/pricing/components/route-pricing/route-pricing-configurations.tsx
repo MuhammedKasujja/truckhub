@@ -27,9 +27,11 @@ import { RouteTonnagePricingGrid } from "./route-tonnage-pricing"
 import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
+import { useActivateCompanyPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
 
 export function CompanyRoutePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
+  const { activateCompanyPricing, isPending } = useActivateCompanyPricing()
   const [search, setSearch] = useState<PricingSearchParams>()
   const [view, setView] = useState<"list" | "edit">("list")
 
@@ -55,7 +57,7 @@ export function CompanyRoutePricingConfigurationDialog() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant={"secondary"}>
+        <Button variant={"secondary"} type="button">
           <CreditCardIcon />
           View Configurations
         </Button>
@@ -99,7 +101,18 @@ export function CompanyRoutePricingConfigurationDialog() {
                     </Select>
                   </div>
                   {data?.route_tonnage.active_date !== referenceDate && (
-                    <Button type="button">Set Active</Button>
+                    <Button
+                      type="button"
+                      disabled={isPending}
+                      onClick={() => {
+                        if (search?.referenceDate)
+                          activateCompanyPricing({
+                            effectiveDate: search?.referenceDate,
+                          })
+                      }}
+                    >
+                      Set Active
+                    </Button>
                   )}
                 </div>
                 <Button

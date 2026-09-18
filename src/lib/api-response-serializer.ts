@@ -16,7 +16,7 @@ export async function apiResponseTransform<T>(
   const result = await apiCall
 
   if (result.error) {
-    throw new ApiError(result.error.message, 400)
+    throw new ApiError(result.error.message, result.error.statusCode ?? 400)
   }
 
   return { data: result.data, message: result.message }
