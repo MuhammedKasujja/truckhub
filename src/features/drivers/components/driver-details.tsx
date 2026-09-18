@@ -24,6 +24,7 @@ import { Driver } from "../types"
 import {
   PageAction,
   PageBackButton,
+  PageDescription,
   PageHeader,
   PageTitle,
 } from "@/components/page-header"
@@ -71,13 +72,14 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-2">
       <PageHeader className="pb-2">
         <PageTitle>
-          <PageBackButton />
           {driver?.fullname}
         </PageTitle>
+        <PageDescription>Driver ID: {driver.number}</PageDescription>
         <PageAction>
+          <PageBackButton />
           <Can permission="drivers:edit">
             <Button asChild size={"icon"}>
               <Link

@@ -1,8 +1,8 @@
 import z from "zod"
 import { Shipment } from "./types"
 import { shipmentStatuses } from "./enums"
-import { EntityId, IDSchema, MoneySchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { type EntityId, IDSchema, MoneySchema } from "@/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ShipmentSearchParams = z.object({

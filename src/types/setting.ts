@@ -1,4 +1,4 @@
-import { EntityId } from "@/schemas"
+import { type EntityId } from "@/schemas"
 
 export type Setting = {
   key: string

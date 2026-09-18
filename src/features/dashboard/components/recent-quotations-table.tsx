@@ -50,7 +50,7 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
       <CardContent>
         <div className="overflow-hidden rounded-lg border bg-background">
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead className="w-25">Number</TableHead>
                 <TableHead>Client</TableHead>
@@ -70,7 +70,7 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
                     <TableCell>
                       <Badge variant={"outline"}>{quotation.status}</Badge>
                     </TableCell>
-                    <TableCell>{formatMoney(quotation.amount)}</TableCell>
+                    <TableCell>{formatMoney(quotation.current_version.total_amount)}</TableCell>
                     <TableCell>
                       {formatDate(quotation.created_at, {
                         timeStyle: undefined,

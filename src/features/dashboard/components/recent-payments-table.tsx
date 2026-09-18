@@ -51,7 +51,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
       <CardContent>
         <div className="overflow-hidden rounded-lg border bg-background">
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead className="w-25">Number</TableHead>
                 <TableHead>Client</TableHead>

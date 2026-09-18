@@ -180,7 +180,7 @@ function RouteComponent() {
           </div>
 
           {/* Scrollable detail body */}
-          <div className="flex-1 overflow-y-auto py-6 pr-6">
+          <div className="flex-1 overflow-y-auto py-6 pl-0.5 pr-6">
             <Card className="mb-5">
               <CardContent className="pt-6">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
