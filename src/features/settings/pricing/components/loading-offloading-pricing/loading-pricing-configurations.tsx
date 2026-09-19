@@ -1,7 +1,9 @@
 import { toast } from "sonner"
-import { BatchPricingPayload, PricingSearchParams } from "../../schemas"
-import { createBatchRoutePricingFn } from "../../services"
-import { RoutePricingDataGridForm } from "./pricing-grid-form"
+import {
+  LoadingOffloadingPricingRequest,
+  PricingSearchParams,
+} from "../../schemas"
+import { createBatchLoadingPricingFn } from "../../services"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
 import {
@@ -13,7 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
-import { companyRoutePricingQueryOptions } from "../../query-options"
+import { createCompanyLoadingFreesQueryOptions } from "../../query-options"
 import { useQuery } from "@tanstack/react-query"
 import { Activity, useState } from "react"
 import {
@@ -27,28 +29,26 @@ import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
 import { useActivateLoadingPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
+import { LoadingOffloadingPricingForm } from "./loading-offloading-pricing-form"
+import { LoadingOffloadingPricingTable } from "./loading-offloading-pricing-table"
 
-export function CompanyRoutePricingConfigurationDialog() {
+export function CompanyLoadingPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
   const { activateLoadingPricing, isPending } = useActivateLoadingPricing()
   const [search, setSearch] = useState<PricingSearchParams>()
   const [view, setView] = useState<"list" | "edit">("list")
 
   const { data: companyPricings } = useQuery(
-    companyRoutePricingQueryOptions(search)
+    createCompanyLoadingFreesQueryOptions(search)
   )
-  const referenceDate = companyPricings?.effective_date
+  const referenceDate =
+    search?.referenceDate ?? companyPricings?.data?.effective_date
 
-  async function handleSubmit(data: BatchPricingPayload) {
-    const { message, error, isSuccess } = await createBatchRoutePricingFn({
-      data,
-    })
-
+  async function handleSubmit(data: LoadingOffloadingPricingRequest) {
+    const { message, error } = await createBatchLoadingPricingFn({ data })
     if (error) {
       toast.error(error.message)
-    }
-
-    if (isSuccess) {
+    } else {
       toast.success(message)
     }
   }
@@ -63,10 +63,9 @@ export function CompanyRoutePricingConfigurationDialog() {
       </SheetTrigger>
       <SheetContent className="min-w-[80vw] sm:max-w-none">
         <SheetHeader className="border-b">
-          <SheetTitle>Configure Route tonnage pricing</SheetTitle>
+          <SheetTitle>Configure Loading and offloading fees</SheetTitle>
           <SheetDescription>
-            Define tonnage bands then fill prices per route in the grid. Columns
-            are generated automatically from your band definitions.
+            Define tonnage ranges and CBM with prices.
           </SheetDescription>
         </SheetHeader>
         <div className="no-scrollbar overflow-y-auto px-4 pb-5">
@@ -77,9 +76,8 @@ export function CompanyRoutePricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.route_tonnage.active_date === referenceDate && (
-                        <Badge>Current</Badge>
-                      )}
+                      {data?.loading_offloading.active_date ===
+                        referenceDate && <Badge>Current</Badge>}
                     </FieldLabel>
                     <Select
                       value={referenceDate}
@@ -91,7 +89,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {data?.route_tonnage.dates.map((date) => (
+                        {data?.loading_offloading.dates.map((date) => (
                           <SelectItem key={date} value={date}>
                             {date}
                           </SelectItem>
@@ -99,7 +97,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.route_tonnage.active_date !== referenceDate && (
+                  {data?.loading_offloading.active_date !== referenceDate && (
                     <Button
                       type="button"
                       disabled={isPending}
@@ -123,11 +121,13 @@ export function CompanyRoutePricingConfigurationDialog() {
                   New Configuration
                 </Button>
               </div>
-              <RouteTonnagePricingGrid
-                routes={companyPricings?.routes ?? []}
-                effectiveDate={
-                  companyPricings?.effective_date ?? new Date().toDateString()
-                }
+              <LoadingOffloadingPricingTable
+                pricings={{
+                  pricings: companyPricings?.data?.pricings,
+                  effective_date:
+                    companyPricings?.data?.effective_date ??
+                    new Date().toDateString(),
+                }}
                 title={
                   data?.route_tonnage.active_date === referenceDate
                     ? "Current Company Pricing"
@@ -136,7 +136,11 @@ export function CompanyRoutePricingConfigurationDialog() {
               />
             </Activity>
             <Activity mode={view == "edit" ? "visible" : "hidden"}>
-              <RoutePricingDataGridForm
+              <LoadingOffloadingPricingForm
+                initialData={{
+                  pricings: [],
+                  effective_date: new Date().toDateString(),
+                }}
                 onSubmit={handleSubmit}
                 onCancel={() => setView("list")}
               />

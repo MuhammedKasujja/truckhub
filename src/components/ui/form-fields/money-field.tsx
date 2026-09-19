@@ -25,6 +25,7 @@ export function MoneyField<T extends FieldValues>({
   placeholder,
   required = true,
   description,
+  ...rest
 }: Readonly<MoneyFieldProps<T>>) {
   const { settings } = useSettings()
   return (
@@ -49,6 +50,7 @@ export function MoneyField<T extends FieldValues>({
             onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
             onBlur={field.onBlur}
             invalid={!!fieldState.error}
+            readOnly={rest.readOnly}
           />
           {/* <InputGroup>
             <InputGroupInput

@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
-import { useAuth } from "@/components/providers/auth-context"
 
 const emptyPricingList = [
   {
@@ -90,18 +89,15 @@ interface LoadingOffloadingPricingSchemaProp {
   initialData?: LoadingOffloadingPricingRequest
   isSubmitting?: boolean
   onSubmit: (data: LoadingOffloadingPricingRequest) => Promise<void>
+  onCancel?: () => void
 }
 
 export function LoadingOffloadingPricingForm({
   initialData,
   isSubmitting = false,
   onSubmit,
+  onCancel,
 }: LoadingOffloadingPricingSchemaProp) {
-  const { hasPermission } = useAuth()
-  const canCreateOrEdit =
-    hasPermission("config:loading_fees:create") ||
-    hasPermission("config:loading_fees:edit")
-
   const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
@@ -131,13 +127,21 @@ export function LoadingOffloadingPricingForm({
       })}
       className="space-y-4"
     >
-      <div className="w-full space-y-2.5 md:w-80">
-        <DatePickerField
-          label="Effective Date"
-          name={"effective_date"}
-          control={form.control}
-        />
+      <div className="flex items-baseline-last justify-between">
+        <div className="w-full space-y-2.5 md:w-80">
+          <DatePickerField
+            label="Effective Date"
+            name={"effective_date"}
+            control={form.control}
+          />
+        </div>
+        {onCancel && (
+          <Button type="button" variant={"outline"} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
       </div>
+
       <Card>
         <CardContent>
           <FieldGroup className="space-y-1">
@@ -179,7 +183,7 @@ export function LoadingOffloadingPricingForm({
                 <Button
                   size={"icon-xs"}
                   type="button"
-                  variant={'destructive'}
+                  variant={"destructive"}
                   onClick={() => remove(index)}
                 >
                   <XIcon className="size-3" />
@@ -187,22 +191,18 @@ export function LoadingOffloadingPricingForm({
               </Field>
             ))}
             <Separator />
-            {canCreateOrEdit && (
-              <Button
-                type="button"
-                variant={"outline"}
-                className="mb-5"
-                onClick={() => append(emptyPricing)}
-              >
-                <Plus /> Add
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant={"outline"}
+              className="mb-5"
+              onClick={() => append(emptyPricing)}
+            >
+              <Plus /> Add
+            </Button>
           </FieldGroup>
-          {canCreateOrEdit && (
-            <Field className="">
-              <SubmitButton isSubmitting={isSubmitting} />
-            </Field>
-          )}
+          <Field className="">
+            <SubmitButton isSubmitting={isSubmitting} />
+          </Field>
         </CardContent>
       </Card>
     </form>

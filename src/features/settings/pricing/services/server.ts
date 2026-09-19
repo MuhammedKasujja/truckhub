@@ -113,7 +113,7 @@ function deriveActivatePricingRoute(input: ActivatePricingInput) {
   } else if (input.source == "island") {
     return `/v1/pricing/islands/${input.effectiveDate}/activate`
   } else if (input.source == "loading") {
-    return `/v1/pricing/loading-offloading/${input.effectiveDate}/activatee`
+    return `/v1/pricing/loading-offloading/${input.effectiveDate}/activate`
   }
   throw new ApiError(`Pricing source: ${input.source} not allowed`, 400)
 }
