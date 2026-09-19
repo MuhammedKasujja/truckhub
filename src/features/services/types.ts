@@ -5,6 +5,23 @@ export const DistanceUnitList = ["km", "miles"] as const
 
 export type DistanceUnit = (typeof DistanceUnitList)[number]
 
+type VehicleCategory = {
+  id: EntityId
+  name: string
+}
+
+type CarModel = {
+  id: EntityId
+  name: string
+  seats: number | null
+  manufacture_year: number | null
+  consumption_rate: string | null
+  car_brand: {
+    id: EntityId
+    name: string
+  }
+}
+
 export type Service = {
   name: string
   category: string
@@ -16,13 +33,14 @@ export type Service = {
   // price_per_unit_distance: string;
   // booking_fee: number;
   // tax_fee: number;
-  distance_unit: DistanceUnit
   vehicle_category_id: EntityId
   description: string | undefined
   id: EntityId
   is_truck: boolean
   created_at: Date
   updated_at: Date
+  vehicle_category: VehicleCategory | null
+  car_model: CarModel | null
 }
 
 export type ServiceGroup = {
@@ -48,7 +66,7 @@ export function toServicePricingApiPayload(
     values.target === "category"
       ? (values.capacity_id ?? values.vehicle_category_id ?? null)
       : null
-      
+
   return {
     car_model_id:
       values.target === "model" ? (values.car_model_id ?? null) : null,

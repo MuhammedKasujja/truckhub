@@ -59,7 +59,10 @@ export function ServiceList({
           >
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{service.name}</CardTitle>
+                <CardTitle className="text-lg">
+                  {service.vehicle_category?.name ??
+                    `${service.car_model?.car_brand.name} ${service.car_model?.name} (${service.car_model?.manufacture_year})`}
+                </CardTitle>
                 <Badge variant="default">{service.category}</Badge>
               </div>
               <CardDescription>{service.description}</CardDescription>
