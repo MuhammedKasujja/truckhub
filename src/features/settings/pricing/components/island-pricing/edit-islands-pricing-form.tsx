@@ -34,11 +34,13 @@ const emptyIslandPricing = {
 interface EditIslandsPricingProp {
   initialData?: IslandsListPricingRequest
   onSubmit: (data: IslandsListPricingRequest) => Promise<void>
+  onCancel?: () => void
 }
 
 export function EditIslandsPricingForm({
   onSubmit,
   initialData,
+  onCancel,
 }: EditIslandsPricingProp) {
   const form = useForm<IslandsListPricingRequest>({
     resolver: zodResolver(IslandsListPricingSchema),
@@ -66,21 +68,34 @@ export function EditIslandsPricingForm({
         console.error("IslandPricingForm errors", errors)
       })}
     >
-      <div className="mb-4 flex flex-row gap-4">
-        {/* <div className="uppercase">Islands {pricingFields.fields.length} </div> */}
-        <DatePickerField
-          control={form.control}
-          name="validFromDate"
-          label="Effective Date"
-        />
-        <Button
-          type="button"
-          variant={"outline"}
-          onClick={() => pricingFields.prepend(emptyIslandPricing)}
-        >
-          <Plus />
-          Add
-        </Button>
+      <div className="mb-4 flex flex-row items-baseline-last justify-between gap-4">
+        <div className="min-w-40">
+          <DatePickerField
+            control={form.control}
+            name="validFromDate"
+            label="Effective Date"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant={'secondary'}
+            onClick={() => pricingFields.prepend(emptyIslandPricing)}
+          >
+            <Plus />
+            Add Island
+          </Button>
+          {onCancel && (
+            <Button
+              type="button"
+              onClick={onCancel}
+              variant={"outline"}
+              className="mr-2"
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card>

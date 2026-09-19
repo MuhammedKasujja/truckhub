@@ -63,7 +63,7 @@ export type DistanceTonnagePricingItem = {
 }
 
 export type DistanceTonnagePricingResponse = {
-  effective_date: Date
+  effective_date: string
   pricings: DistanceTonnagePricingItem[]
 }
 

@@ -85,10 +85,10 @@ export const createBatchIslandPricingsFn = createServerFn()
       island_id: p.island_id,
       price: p.priceRate,
     }))
-    return createBatchIslandPricing({
+    return apiResponseTransform(createBatchIslandPricing({
       pricings,
       valid_from: data.validFromDate,
-    })
+    }))
   })
 
 export const getIslandPricingsFn = createServerFn()
@@ -104,7 +104,7 @@ export const getIslandPricingsFn = createServerFn()
           locations: p.locations.map((l) => ({ value: l })),
         })
       )
-      return { pricings, validFromDate: response.data.effective_date }
+      return { pricings:response.data.pricings, validFromDate: response.data.effective_date }
     }
     return undefined
   })
