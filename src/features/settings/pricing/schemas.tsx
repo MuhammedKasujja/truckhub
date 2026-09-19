@@ -87,7 +87,7 @@ export const DistancePricingSchema = z.object({
 
 export const ListDistancePricingSchema = z.object({
   pricings: z.array(DistancePricingSchema),
-  effectiveDate: z.string().min(1, "Required"),
+  effectiveDate: z.date(),
 })
 
 export type ListDistancePricingRequest = z.infer<

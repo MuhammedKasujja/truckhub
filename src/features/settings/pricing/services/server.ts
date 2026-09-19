@@ -39,7 +39,7 @@ export async function createBatchDistancePricing(
 ) {
   const { pricings, effectiveDate: valid_from } = data
   return await apiClient.postFn<BatchPayload>("/v1/pricing/distance-tonnage", {
-    valid_from,
+    valid_from: valid_from.toLocaleDateString("en-CA"),
     pricings,
   })
 }

@@ -1,7 +1,6 @@
 import { toast } from "sonner"
 import { BatchPricingPayload, PricingSearchParams } from "../../schemas"
 import { createBatchRoutePricingFn } from "../../services"
-import { RoutePricingDataGridForm } from "./pricing-grid-form"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
 import {
@@ -23,15 +22,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { RouteTonnagePricingGrid } from "./route-tonnage-pricing"
 import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
 import { useActivateDistancePricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
+import { DistancePricingDatagridForm } from "./distance-pricing-schedule-form"
+import { DistancePricingScheduleGrid } from "./distance-pricing-schedule-grid"
+import { useCreateDistanceTonnage } from "../../hooks/use-distance-tonnage-pricing"
+import { fromDbRows } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 
-export function CompanyRoutePricingConfigurationDialog() {
+export function CompanyLoadingPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
   const { activateDistancePricing, isPending } = useActivateDistancePricing()
+  const { createDistanceTonnage } = useCreateDistanceTonnage()
+
   const [search, setSearch] = useState<PricingSearchParams>()
   const [view, setView] = useState<"list" | "edit">("list")
 
@@ -57,14 +61,14 @@ export function CompanyRoutePricingConfigurationDialog() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant={"secondary"} type="button">
+        <Button type="button">
           <CreditCardIcon />
           View Configurations
         </Button>
       </SheetTrigger>
       <SheetContent className="min-w-[80vw] sm:max-w-none">
         <SheetHeader className="border-b">
-          <SheetTitle>Configure Route tonnage pricing</SheetTitle>
+          <SheetTitle>Configure Distance pricing</SheetTitle>
           <SheetDescription>
             Define tonnage bands then fill prices per route in the grid. Columns
             are generated automatically from your band definitions.
@@ -78,7 +82,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.route_tonnage.active_date === referenceDate && (
+                      {data?.distance_tonnage.active_date === referenceDate && (
                         <Badge>Current</Badge>
                       )}
                     </FieldLabel>
@@ -92,7 +96,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {data?.route_tonnage.dates.map((date) => (
+                        {data?.distance_tonnage.dates.map((date) => (
                           <SelectItem key={date} value={date}>
                             {date}
                           </SelectItem>
@@ -100,15 +104,14 @@ export function CompanyRoutePricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.route_tonnage.active_date !== referenceDate && (
+                  {data?.distance_tonnage.active_date !== referenceDate && (
                     <Button
                       type="button"
                       disabled={isPending}
                       onClick={() => {
                         if (search?.referenceDate)
-                          activateCompanyPricing({
+                          activateDistancePricing({
                             effectiveDate: search?.referenceDate,
-                            source: "route",
                           })
                       }}
                     >
@@ -122,25 +125,27 @@ export function CompanyRoutePricingConfigurationDialog() {
                   onClick={() => setView("edit")}
                 >
                   <ActionIcon action="create" />
-                  New Configuration
+                  New Distance Pricing
                 </Button>
               </div>
-              <RouteTonnagePricingGrid
-                routes={companyPricings?.routes ?? []}
-                effectiveDate={
-                  companyPricings?.effective_date ?? new Date().toDateString()
-                }
-                title={
-                  data?.route_tonnage.active_date === referenceDate
-                    ? "Current Company Pricing"
-                    : "Company Pricing"
+              <DistancePricingScheduleGrid
+                initialSchedule={fromDbRows(companyPricings?.data.pricings ??[])}
+                initialDate={
+                  companyPricings?.data.effective_date ??
+                  new Date().toDateString()
                 }
               />
             </Activity>
             <Activity mode={view == "edit" ? "visible" : "hidden"}>
-              <RoutePricingDataGridForm
-                onSubmit={handleSubmit}
+              <DistancePricingDatagridForm
+                initialDate={new Date()}
                 onCancel={() => setView("list")}
+                onSave={async (pricings, _, effectiveDate) => {
+                  await createDistanceTonnage({
+                    pricings,
+                    effectiveDate: effectiveDate,
+                  })
+                }}
               />
             </Activity>
           </div>
