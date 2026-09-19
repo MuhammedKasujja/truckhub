@@ -23,16 +23,16 @@ import {
 import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
-import { useActivateCompanyPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
+import { useActivateIslandPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
 import { EditIslandsPricingForm } from "./edit-islands-pricing-form"
 import { IslandPricingTable } from "./island-pricing-table"
 import { useCreateIslandPricing } from "../../hooks/use-island-pricing"
 
 export function CompanyIslandsPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
-  const { activateCompanyPricing, isPending } = useActivateCompanyPricing()
+  const { activateIslandPricing, isPending } = useActivateIslandPricing()
   const { createIslandPricing } = useCreateIslandPricing()
-  
+
   const [search, setSearch] = useState<PricingSearchParams>()
   const [view, setView] = useState<"list" | "edit">("list")
 
@@ -94,9 +94,8 @@ export function CompanyIslandsPricingConfigurationDialog() {
                       disabled={isPending}
                       onClick={() => {
                         if (search?.referenceDate)
-                          activateCompanyPricing({
+                          activateIslandPricing({
                             effectiveDate: search?.referenceDate,
-                            source: "island",
                           })
                       }}
                     >

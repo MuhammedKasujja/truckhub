@@ -27,11 +27,11 @@ import { RouteTonnagePricingGrid } from "./route-tonnage-pricing"
 import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
-import { useActivateCompanyPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
+import { useActivateRoutePricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
 
 export function CompanyRoutePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
-  const { activateCompanyPricing, isPending } = useActivateCompanyPricing()
+  const { activateRoutePricing, isPending } = useActivateRoutePricing()
   const [search, setSearch] = useState<PricingSearchParams>()
   const [view, setView] = useState<"list" | "edit">("list")
 
@@ -106,9 +106,8 @@ export function CompanyRoutePricingConfigurationDialog() {
                       disabled={isPending}
                       onClick={() => {
                         if (search?.referenceDate)
-                          activateCompanyPricing({
+                          activateRoutePricing({
                             effectiveDate: search?.referenceDate,
-                            source: "route",
                           })
                       }}
                     >
