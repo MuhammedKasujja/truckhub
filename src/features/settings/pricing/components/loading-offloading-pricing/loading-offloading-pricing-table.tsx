@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { useFieldArray, useForm } from "react-hook-form"
 import z from "zod"
@@ -42,18 +42,19 @@ export function LoadingOffloadingPricingTable({ pricings, onSubmit }: Props) {
       })}
       className="space-y-4"
     >
-      <div className="flex items-baseline-last justify-between">
-        <div className="w-full space-y-1.5 md:w-80">
+      <Card>
+        <CardHeader>
+          <CardDescription>
+            <div className="w-full space-y-2.5 md:w-80">
           <Label>Effective Date</Label>
           <DatePicker
             initialDate={pricings?.effective_date}
             onDateChanged={() => {}}
           />
         </div>
-      </div>
-
-      <Card>
-        <CardContent>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="border-t border-b py-4 mb-7">
           <FieldGroup className="space-y-1">
             <Field orientation={"horizontal"} className="grid grid-cols-6">
               <div>TONS Min</div>

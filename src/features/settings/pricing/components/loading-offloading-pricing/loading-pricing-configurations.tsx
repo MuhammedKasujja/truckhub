@@ -118,7 +118,7 @@ export function CompanyLoadingPricingConfigurationDialog() {
                   onClick={() => setView("edit")}
                 >
                   <ActionIcon action="create" />
-                  New Configuration
+                  New Pricing
                 </Button>
               </div>
               <LoadingOffloadingPricingTable
