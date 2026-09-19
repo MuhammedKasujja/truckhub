@@ -113,7 +113,7 @@ export function CompanyIslandsPricingConfigurationDialog() {
                 </Button>
               </div>
               <IslandPricingTable
-                data={companyPricings?.pricings}
+                pricings={companyPricings?.pricings}
                 // effectiveDate={
                 //   companyPricings?.validFromDate ?? new Date().toDateString()
                 // }
@@ -127,7 +127,7 @@ export function CompanyIslandsPricingConfigurationDialog() {
             <Activity mode={view == "edit" ? "visible" : "hidden"}>
               <EditIslandsPricingForm
                 initialData={{
-                  pricings: companyPricings?.pricings ?? [],
+                  pricings:[],
                   validFromDate:
                     companyPricings?.validFromDate ??
                     new Date().toLocaleDateString("en-CA"),

@@ -1,6 +1,6 @@
 import { CompanyIslandsPricingConfigurationDialog } from "@/features/settings/pricing/components/island-pricing/island-pricing-configurations"
 import { IslandPricingTable } from "@/features/settings/pricing/components/island-pricing/island-pricing-table"
-import { useCompanyPricingDates } from "@/features/settings/pricing/hooks/use-company-pricing-dates"
+import { useCompanyIslandsPricing } from "@/features/settings/pricing/hooks/use-island-pricing"
 import { createCompanyIslandPricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
 import { createFileRoute } from "@tanstack/react-router"
@@ -18,32 +18,12 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const data = Route.useLoaderData()
-  const { data: pricingDates } = useCompanyPricingDates()
-  
-  const referenceDate = data?.validFromDate
+  const { data } = useCompanyIslandsPricing()
 
   return (
     <div className="space-y-5">
-      
-      <CompanyIslandsPricingConfigurationDialog/>
-      {/* <EditIslandsPricingForm
-        initialData={{
-          pricings: data?.pricings ?? [],
-          validFromDate:
-            data?.validFromDate ?? new Date().toLocaleDateString("en-CA"),
-        }}
-        onSubmit={async (data) => {
-          console.log("Validated Data", data)
-          const { message, error } = await createBatchIslandPricingsFn({ data })
-          if (error) {
-            toast.error(error.message)
-          } else {
-            toast.success(message)
-          }
-        }}
-      /> */}
-      <IslandPricingTable data={data?.pricings}/>
+      <CompanyIslandsPricingConfigurationDialog />
+      <IslandPricingTable pricings={data?.pricings} />
     </div>
   )
 }

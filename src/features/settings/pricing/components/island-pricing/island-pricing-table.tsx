@@ -5,7 +5,7 @@ import { DataTable } from "@/components/data-table"
 import { formatMoney } from "@/lib/format"
 
 interface IslandsPricingTableProp {
-  data?: IslandPricingItem[]
+  pricings?: IslandPricingItem[]
 }
 
 const columns: ColumnDef<IslandPricingItem>[] = [
@@ -53,9 +53,9 @@ const columns: ColumnDef<IslandPricingItem>[] = [
   },
 ]
 
-export function IslandPricingTable({ data }: IslandsPricingTableProp) {
+export function IslandPricingTable({ pricings }: IslandsPricingTableProp) {
   const { table } = useDataTable({
-    data: data!,
+    data: pricings!,
     columns,
     // getRowId: (row) => row.id,
     enableSearch: true,
