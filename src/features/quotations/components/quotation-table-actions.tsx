@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-  DownloadCloud,
-  EditIcon,
-  EyeIcon,
-  MailIcon,
-  MoreVertical,
-} from "lucide-react"
+import { DownloadCloud, MoreVertical } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -25,6 +19,7 @@ import {
   useSendQuotationEmail,
 } from "../hooks/use-quotation-actions"
 import { isInEnum } from "@/common/enums"
+import { ActionIcon } from "@/components/icons"
 
 interface TableActionsProps {
   quotation: Quotation
@@ -53,7 +48,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
                 to={"/quotations/$quotationId/edit"}
                 params={{ quotationId: quotation.id }}
               >
-                <EditIcon />
+                <ActionIcon action="edit" />
                 Edit
               </Link>
             </DropdownMenuItem>
@@ -64,7 +59,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
                 to={"/quotations/$quotationId/view"}
                 params={{ quotationId: quotation.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 View
               </Link>
             </DropdownMenuItem>
@@ -79,7 +74,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           </Can>
           <Can permission={"quotations:email"}>
             <DropdownMenuItem onClick={() => sendQuotationEmail(quotation.id)}>
-              <MailIcon />
+              <ActionIcon action="email" />
               Email
             </DropdownMenuItem>
           </Can>

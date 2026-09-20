@@ -2,8 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DriveTrain } from "@/features/settings/drive-trains/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { CarIcon, EditIcon, EyeIcon } from "lucide-react";
+import { CarIcon } from "lucide-react";
 import { DriveTrainForm } from "./drive-train-form";
+import { ActionIcon } from "@/components/icons";
 
 export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
   return [
@@ -42,13 +43,13 @@ export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <DriveTrainForm
               initialData={{ ...row.original }}
               trigger={
                 <Button variant={"outline"} size={"icon"}>
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </Button>
               }
             />

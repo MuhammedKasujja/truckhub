@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { VehicleType } from "@/features/settings/vehicle-categories/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon } from "lucide-react"
 import { VehicleCategoryForm } from "./vehicle-type-form"
 import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 
 export function getVehicleTypeColumns(): ColumnDef<VehicleType>[] {
   return [
@@ -27,14 +27,14 @@ export function getVehicleTypeColumns(): ColumnDef<VehicleType>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <Can permission="config:vehicle_types:edit">
               <VehicleCategoryForm
                 initialData={{ ...row.original }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
-                    <EditIcon />
+                    <ActionIcon action="edit" />
                   </Button>
                 }
               />

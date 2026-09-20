@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-  EditIcon,
-  EyeIcon,
-  MoreVertical,
-  PlusIcon,
-  TypeIcon,
-} from "lucide-react"
+import { MoreVertical, PlusIcon, TypeIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -49,7 +43,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
                 to={"/clients/$clientId/edit"}
                 params={{ clientId: client.id }}
               >
-                <EditIcon />
+                <ActionIcon action="edit" />
                 Edit
               </Link>
             </DropdownMenuItem>
@@ -60,7 +54,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
                 to={"/clients/$clientId/view"}
                 params={{ clientId: client.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 View
               </Link>
             </DropdownMenuItem>
@@ -87,7 +81,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
                 to={"/clients/data/$clientId"}
                 params={{ clientId: client.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 Pricing
               </Link>
             </DropdownMenuItem>

@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { IconAccessPoint, IconFileTypePdf } from "@tabler/icons-react"
-import { EditIcon, MailIcon } from "lucide-react"
 import { Quotation } from "../../types"
 import { Link } from "@tanstack/react-router"
 import {
@@ -11,6 +10,7 @@ import {
   useSendQuotationEmail,
 } from "../../hooks/use-quotation-actions"
 import { ButtonGroup } from "@/components/ui/button-group"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   quotation: Quotation
@@ -34,7 +34,7 @@ export function QuotationDetailsPageHeader({ quotation }: Props) {
           </Button>
           <Button variant={"outline"} size={"sm"} asChild>
             <Link to="/quotations/$quotationId/edit" params={{ quotationId }}>
-              <EditIcon />
+              <ActionIcon action="edit" />
               Edit
             </Link>
           </Button>
@@ -51,7 +51,7 @@ export function QuotationDetailsPageHeader({ quotation }: Props) {
             size={"sm"}
             onClick={() => sendEmail(quotation.id)}
           >
-            <MailIcon />
+            <ActionIcon action="email" />
             Send Email
           </Button>
           <Button variant={"outline"} size={"sm"} asChild>

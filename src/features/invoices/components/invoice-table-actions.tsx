@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import {
   CreditCard,
-  EditIcon,
   EyeIcon,
   MailIcon,
   MoreVertical,
@@ -19,6 +18,7 @@ import {
 import { InvoiceTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
+import { ActionIcon } from "@/components/icons"
 
 export type SetInvoiceTableAction = React.Dispatch<
   React.SetStateAction<InvoiceTableRowAction | null>
@@ -51,7 +51,7 @@ export function InvoiceTableActions({
                 to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
-                <EditIcon />
+                <ActionIcon action="edit" />
                 Edit
               </Link>
             </DropdownMenuItem>
@@ -62,7 +62,7 @@ export function InvoiceTableActions({
                 to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 View
               </Link>
             </DropdownMenuItem>

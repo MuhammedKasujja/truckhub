@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Tonnage } from "@/features/settings/tonnage/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { EditIcon, EyeIcon } from "lucide-react";
 import { TonnageForm } from "./tonnage-form";
+import { ActionIcon } from "@/components/icons";
 
 export function getTonnageColumns(): ColumnDef<Tonnage>[] {
   return [
@@ -33,13 +33,13 @@ export function getTonnageColumns(): ColumnDef<Tonnage>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <TonnageForm
               initialData={{ ...row.original }}
               trigger={
                 <Button variant={"outline"} size={"icon"}>
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </Button>
               }
             />

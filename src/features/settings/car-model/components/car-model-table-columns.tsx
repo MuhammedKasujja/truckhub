@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { CarModel } from "@/features/settings/car-model/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon } from "lucide-react"
 import { CarModelForm } from "./car-brand-form"
 import { Can } from "@/components/has-permission"
 import { formatNumber } from "@/lib/format"
+import { ActionIcon } from "@/components/icons"
 
 export function getCarModelColumns(): ColumnDef<CarModel>[] {
   return [
@@ -46,7 +46,7 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <Can permission="config:car_model:edit">
               <CarModelForm
@@ -56,7 +56,7 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
                 }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
-                    <EditIcon />
+                    <ActionIcon action="edit" />
                   </Button>
                 }
               />
