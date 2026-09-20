@@ -123,7 +123,10 @@ export function EnterPaymentModal({
                   label={"Invoice"}
                   name={"entity_id"}
                   control={form.control}
-                  filters={{ status: ["draft", "partially_paid"] }}
+                  filters={{
+                    status: ["draft", "partially_paid"],
+                    client_id: initialData.client_id,
+                  }}
                   onChange={(invoice) => {
                     const balanceDue = invoice?.balance_due ?? ""
                     form.setValue("amount", balanceDue)

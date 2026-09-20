@@ -26,6 +26,14 @@ export function generatePageSearchParams<Parsers extends ParserMap>(
     filters,
   }
 }
+const toSnake = (key: string) =>
+  key
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
+    .toLowerCase()
+
+const snakeKeys = (obj: Record<string, unknown>) =>
+  Object.fromEntries(Object.entries(obj).map(([k, v]) => [toSnake(k), v]))
 
 export const generateApiSearchParams = (input: Record<string, unknown>) => {
   const { sort, ...rest } = input
@@ -39,7 +47,7 @@ export const generateApiSearchParams = (input: Record<string, unknown>) => {
     }
   }
 
-  return qs.stringify(normalized, {
+  return qs.stringify(snakeKeys(normalized), {
     arrayFormat: "comma",
     skipNull: true,
     encode: true,

@@ -9,6 +9,7 @@ export const InvoiceSearchParams = z.object({
   sort: getSortingStateSchema<Invoice>().default([
     { id: "created_at", desc: true },
   ]),
+  client_id: IDSchema.optional(),
    status: z.array(z.enum(invoiceStatuses)).optional(),
   // advanced filter
   filters: getFiltersStateSchema<Invoice>().optional(),

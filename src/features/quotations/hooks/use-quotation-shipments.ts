@@ -9,6 +9,7 @@ export function useQuotationShipments(
 ) {
   const { isLoading, data, error } = useQuery({
     ...quotationShipmentsQueryOptions({
+      search: '',
       page: 1,
       perPage: 20,
       sort: [],

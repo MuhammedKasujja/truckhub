@@ -10,6 +10,7 @@ export const QuotationSearchParams = z.object({
   sort: getSortingStateSchema<Quotation>().default([
     { id: "created_at", desc: true },
   ]),
+  clientId: IDSchema.optional(),
   filters: getFiltersStateSchema<Quotation>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
