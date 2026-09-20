@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
   const [fileUrl] = useState(pdfUrl)
-  const defaultLayoutPluginInstance = defaultLayoutPlugin()
+  const layoutPlugin = defaultLayoutPlugin()
   const theme = useTheme()
   return (
     <div
@@ -23,10 +23,10 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
         marginTop: 16,
       }}
     >
-      <Worker workerUrl="/pdf.worker.min.mjs">
+      <Worker workerUrl="/pdf.worker.min.js">
         <Viewer
           fileUrl={fileUrl}
-          plugins={[defaultLayoutPluginInstance]}
+          plugins={[layoutPlugin]}
           theme={theme}
           defaultScale={1} // 1 = 100%
         />
