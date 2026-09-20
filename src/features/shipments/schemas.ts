@@ -35,9 +35,9 @@ export const assignShipmentDriverSchema = z.object({
 
 export const recordShipmentDetailsSchema = z.object({
   unitId: IDSchema,
-  startMileage: z.number(),
-  endMileage: z.number(),
-  distanceKm: z.number(),
+  startMileage: z.string(),
+  endMileage: z.string(),
+  distanceKm: z.string(),
   vehicleConsumptionRate: MoneySchema,
   fuelUsedLitres: MoneySchema.optional(),
   fuelRate: MoneySchema.optional(),

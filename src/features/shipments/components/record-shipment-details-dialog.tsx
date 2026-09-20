@@ -16,8 +16,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
 import {
   MoneyField,
-  NumberField,
   TextareaField,
+  TextField,
 } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
@@ -44,7 +44,7 @@ export function RecordShipmentDetailsDialog({
     resolver: zodResolver(recordShipmentDetailsSchema),
     defaultValues: {
       unitId: shipment?.id,
-      startMileage: Number(shipment?.consumption?.start_mileage),
+      startMileage: shipment?.consumption?.start_mileage,
       endMileage: shipment?.consumption?.end_mileage,
       vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
       consumedFuelRates: [{ value: "0" }],
@@ -66,19 +66,22 @@ export function RecordShipmentDetailsDialog({
   const fuelConsumptionRates = form.watch("consumedFuelRates")
 
   useEffect(() => {
-    if (startMileage > endMileage) {
+    const newStartMileage = new Decimal(startMileage ?? 0)
+    const newEndMileage = new Decimal(endMileage ?? 0)
+
+    if (newStartMileage.greaterThan(newEndMileage)) {
       form.setError("endMileage", {
         message: "Invalid end mileage",
       })
     } else {
       // form.clearErrors()
-      const distance = Number(endMileage - startMileage)
-      form.setValue("distanceKm", distance)
+      const distance = newEndMileage.minus(newStartMileage)
+      form.setValue("distanceKm", distance.toFixed())
       const consumptionRate = form.getValues("vehicleConsumptionRate")
       const litresUsed = new Decimal(distance).div(consumptionRate)
       form.setValue("fuelUsedLitres", litresUsed.toFixed(2))
     }
-  }, [startMileage, endMileage])
+  }, [startMileage, endMileage, open])
 
   useEffect(() => {
     const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
@@ -109,24 +112,24 @@ export function RecordShipmentDetailsDialog({
           onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
             console.log(errors.consumedFuelRates)
           })}
-          className="min-h-full flex-1 space-y-4 overflow-y-auto no-scrollbar"
+          className="no-scrollbar min-h-full flex-1 space-y-4 overflow-y-auto"
         >
           <Field orientation={"horizontal"}>
-            <NumberField
+            <TextField
               readOnly
               required={false}
               label="Start Mileage"
               name="startMileage"
               control={form.control}
             />
-            <NumberField
+            <TextField
               required={false}
               label="End Mileage"
               name="endMileage"
               control={form.control}
             />
           </Field>
-          <NumberField
+          <TextField
             readOnly
             required={false}
             label="Distance (km)"
@@ -135,14 +138,14 @@ export function RecordShipmentDetailsDialog({
           />
 
           <Field orientation={"horizontal"}>
-            <NumberField
+            <TextField
               readOnly
               required={false}
               label="Vehicle Consumption Rate (km/l)"
               name="vehicleConsumptionRate"
               control={form.control}
             />
-            <NumberField
+            <TextField
               readOnly
               required={false}
               label="Litres consumed"
