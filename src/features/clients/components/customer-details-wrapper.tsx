@@ -167,7 +167,7 @@ export function CustomerDetailsWrapper({
                 </div>
                 <div className="text-sm">{latestQuotation.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {latestQuotation.amount} → {latestQuotation.status}
+                  {latestQuotation.current_version.total_amount} → {latestQuotation.status}
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
@@ -293,7 +293,7 @@ export function CustomerDetailsWrapper({
                             {quote.number}
                           </TableCell>
                           <TableCell>{quote.status}</TableCell>
-                          <TableCell>{formatMoney(quote.amount)}</TableCell>
+                          <TableCell>{formatMoney(quote.current_version.total_amount)}</TableCell>
                           <TableCell>{formatDate(quote.created_at)}</TableCell>
                         </TableRow>
                       ))

@@ -52,7 +52,10 @@ function RouteComponent() {
         <CardContent>
           <ServiceForm
             mode="edit"
-            defaultValues={{ ...data }}
+            defaultValues={{
+              ...data,
+              car_brand_id: data?.car_model?.car_brand.id,
+            }}
             onSubmit={onSubmit}
           />
         </CardContent>
