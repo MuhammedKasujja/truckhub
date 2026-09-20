@@ -100,137 +100,136 @@ export function RecordShipmentDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] ring-4 sm:max-w-sm md:min-w-lg overflow-hidden">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden ring-4 sm:max-w-sm md:min-w-lg">
+        <DialogHeader>
+          <DialogTitle>Record Shipment Details</DialogTitle>
+        </DialogHeader>
         <form
+          id="shipment-details"
           onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
             console.log(errors.consumedFuelRates)
           })}
-          className="flex flex-col gap-4"
+          className="min-h-full flex-1 space-y-4 overflow-y-auto no-scrollbar"
         >
-          <DialogHeader>
-            <DialogTitle>Record Shipment Details</DialogTitle>
-          </DialogHeader>
-          <div className="flext-1 space-y-4 h-full overflow-y-auto">
-            <Field orientation={"horizontal"}>
-              <NumberField
-                readOnly
-                required={false}
-                label="Start Mileage"
-                name="startMileage"
-                control={form.control}
-              />
-              <NumberField
-                required={false}
-                label="End Mileage"
-                name="endMileage"
-                control={form.control}
-              />
-            </Field>
+          <Field orientation={"horizontal"}>
             <NumberField
               readOnly
               required={false}
-              label="Distance (km)"
-              name="distanceKm"
+              label="Start Mileage"
+              name="startMileage"
               control={form.control}
             />
+            <NumberField
+              required={false}
+              label="End Mileage"
+              name="endMileage"
+              control={form.control}
+            />
+          </Field>
+          <NumberField
+            readOnly
+            required={false}
+            label="Distance (km)"
+            name="distanceKm"
+            control={form.control}
+          />
 
-            <Field orientation={"horizontal"}>
-              <NumberField
-                readOnly
-                required={false}
-                label="Vehicle Consumption Rate (km/l)"
-                name="vehicleConsumptionRate"
-                control={form.control}
-              />
-              <NumberField
-                readOnly
-                required={false}
-                label="Litres consumed"
-                name="fuelUsedLitres"
-                control={form.control}
-              />
-            </Field>
-            <FieldGroup className="rounded-lg border border-dashed p-4">
-              <FieldLabel>
-                Fuel Consumptions{" "}
+          <Field orientation={"horizontal"}>
+            <NumberField
+              readOnly
+              required={false}
+              label="Vehicle Consumption Rate (km/l)"
+              name="vehicleConsumptionRate"
+              control={form.control}
+            />
+            <NumberField
+              readOnly
+              required={false}
+              label="Litres consumed"
+              name="fuelUsedLitres"
+              control={form.control}
+            />
+          </Field>
+          <FieldGroup className="rounded-lg border border-dashed p-4">
+            <FieldLabel>
+              Fuel Consumptions{" "}
+              <Button
+                type="button"
+                variant={"outline"}
+                size={"icon-sm"}
+                onClick={() => fuelConsumptionRatesFields.append({})}
+              >
+                <PlusIcon />
+              </Button>
+            </FieldLabel>
+            {fuelConsumptionRatesFields.fields.map((ele, index) => (
+              <Field key={ele.id} orientation={"horizontal"}>
+                <Controller
+                  control={form.control}
+                  name={`consumedFuelRates.${index}.value`}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      type={"number"}
+                      inputMode="decimal"
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      value={field.value}
+                      autoComplete="off"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault()
+                          fuelConsumptionRatesFields.append({})
+                        }
+                      }}
+                      onChange={(e) => {
+                        field.onChange(e.target.value.replace(/[^0-9]/g, ""))
+                      }}
+                    />
+                  )}
+                />
                 <Button
                   type="button"
-                  variant={"outline"}
+                  variant={"destructive"}
+                  onClick={() => fuelConsumptionRatesFields.remove(index)}
                   size={"icon-sm"}
-                  onClick={() => fuelConsumptionRatesFields.append({})}
                 >
-                  <PlusIcon />
+                  <XIcon />
                 </Button>
-              </FieldLabel>
-              {fuelConsumptionRatesFields.fields.map((ele, index) => (
-                <Field key={ele.id} orientation={"horizontal"}>
-                  <Controller
-                    control={form.control}
-                    name={`consumedFuelRates.${index}.value`}
-                    render={({ field, fieldState }) => (
-                      <Input
-                        {...field}
-                        type={"number"}
-                        inputMode="decimal"
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        value={field.value}
-                        autoComplete="off"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault()
-                            fuelConsumptionRatesFields.append({})
-                          }
-                        }}
-                        onChange={(e) => {
-                          field.onChange(e.target.value.replace(/[^0-9]/g, ""))
-                        }}
-                      />
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant={"destructive"}
-                    onClick={() => fuelConsumptionRatesFields.remove(index)}
-                    size={"icon-sm"}
-                  >
-                    <XIcon />
-                  </Button>
-                </Field>
-              ))}
-            </FieldGroup>
-            <MoneyField
-              readOnly
-              required={false}
-              label="Fuel Rate"
-              name="fuelRate"
-              control={form.control}
-            />
-            <MoneyField
-              readOnly
-              required={false}
-              label="Actual Fuel Consumed"
-              name="actualFuelConsumed"
-              control={form.control}
-            />
+              </Field>
+            ))}
+          </FieldGroup>
+          <MoneyField
+            readOnly
+            required={false}
+            label="Fuel Rate"
+            name="fuelRate"
+            control={form.control}
+          />
+          <MoneyField
+            readOnly
+            required={false}
+            label="Actual Fuel Consumed"
+            name="actualFuelConsumed"
+            control={form.control}
+          />
 
-            <TextareaField
-              label="Notes"
-              name="notes"
-              control={form.control}
-              required={false}
-              placeholder="optional"
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose>
-              {/* <Button type="button" variant={"ghost"}> */}
-              Cancle
-              {/* </Button> */}
-            </DialogClose>
-            <SubmitButton isSubmitting={isPending} />
-          </DialogFooter>
+          <TextareaField
+            label="Notes"
+            name="notes"
+            control={form.control}
+            required={false}
+            placeholder="optional"
+          />
         </form>
+        <DialogFooter>
+          <DialogClose>
+            {/* <Button type="button" variant={"ghost"}> */}
+            Cancle
+            {/* </Button> */}
+          </DialogClose>
+          <SubmitButton isSubmitting={isPending} form="shipment-details" />
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

@@ -147,15 +147,15 @@ export function ServiceForm({
               />
             </>
           )}
-          <TextField
+          {/* <TextField
             label={tr("common.form.serviceName")}
             name={"name"}
             control={form.control}
-          />
+          /> */}
 
           <Field orientation={"horizontal"}>
             <YearPickerField
-              label={"Start Year"}
+              label={"Manufacture Year"}
               name={"start_year"}
               control={form.control}
             />
