@@ -22,7 +22,7 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
         const model = row.original
         return (
           <p>
-            {model.name}
+            {model?.car_brand?.name} {model.name}
             {model.manufacture_year && (
               <span className="text-muted-foreground">
                 {" "}

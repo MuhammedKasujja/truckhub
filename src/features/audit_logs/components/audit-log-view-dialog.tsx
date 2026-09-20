@@ -33,7 +33,7 @@ export function AuditLogViewDialog({
   })
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-md md:min-w-xl">
+      <DialogContent className="sm:max-w-md md:min-w-xl ring-4">
         <DialogHeader>
           <DialogTitle>Audit Details</DialogTitle>
         </DialogHeader>

@@ -12,7 +12,7 @@ export function useFetchEror(
 ) {
   useEffect(() => {
     if (error) {
-      if (error.statusCode === 401) {
+      if (error.statusCode == 401) {
         startTransition(async () => {
           await logoutFn()
         })
