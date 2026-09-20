@@ -2,13 +2,7 @@ import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
 import { SystemUser, UserDataTableRowAction } from "@/features/users/types"
 import { ColumnDef } from "@tanstack/react-table"
-import {
-  EditIcon,
-  EyeIcon,
-  MoreVertical,
-  SettingsIcon,
-  Trash2Icon,
-} from "lucide-react"
+import { MoreVertical, SettingsIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -21,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
+import { ActionIcon } from "@/components/icons"
 
 interface GetUserTableColumnsProps {
   setRowAction: React.Dispatch<
@@ -115,7 +110,7 @@ export function getUserTableColumns({
                       to={`/settings/user-management/users/$userId/view`}
                       params={{ userId: user.id }}
                     >
-                      <EyeIcon />
+                      <ActionIcon action="view" />
                       {tr("common.form.view")}
                     </Link>
                   </DropdownMenuItem>
@@ -126,7 +121,7 @@ export function getUserTableColumns({
                       to={`/settings/user-management/users/$userId/edit`}
                       params={{ userId: user.id }}
                     >
-                      <EditIcon />
+                      <ActionIcon action="edit" />
                       {tr("common.form.edit")}
                     </Link>
                   </DropdownMenuItem>
@@ -169,7 +164,7 @@ export function getUserTableColumns({
                     >
                       <div className="flex gap-4"> */}
                         {/* <Button type="button" variant={"destructive"}> */}
-                        <Trash2Icon />
+                        <ActionIcon action="delete" />
                         {tr("common.form.delete")}
                         {/* </Button> */}
                         {/* </div>

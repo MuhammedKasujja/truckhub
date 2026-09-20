@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef, TableMeta } from "@tanstack/react-table"
-import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react"
+import { CopyIcon, EraserIcon, ScissorsIcon } from "lucide-react"
 import * as React from "react"
 import { toast } from "sonner"
 import {
@@ -14,6 +14,7 @@ import {
 import { useAsRef } from "@/hooks/use-as-ref"
 import { parseCellKey } from "@/lib/data-grid"
 import type { CellUpdate, ContextMenuState } from "@/types/data-grid"
+import { ActionIcon } from "../icons"
 
 interface DataGridContextMenuProps<TData> {
   tableMeta: TableMeta<TData>
@@ -232,7 +233,7 @@ function ContextMenuImpl<TData>({
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onSelect={onDelete}>
-              <Trash2Icon />
+              <ActionIcon action="delete" />
               Delete rows
             </DropdownMenuItem>
           </>

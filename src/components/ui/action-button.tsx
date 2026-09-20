@@ -16,7 +16,7 @@ import {
   AlertDialogTrigger,
   AlertDialogMedia,
 } from "@/components/ui/alert-dialog"
-import { Trash2Icon } from "lucide-react"
+import { ActionIcon } from "../icons"
 
 export function ActionButton({
   action,
@@ -46,7 +46,7 @@ export function ActionButton({
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
             <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-              <Trash2Icon />
+              <ActionIcon action="delete" />
             </AlertDialogMedia>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>

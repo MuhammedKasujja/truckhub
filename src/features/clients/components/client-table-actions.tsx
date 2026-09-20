@@ -4,7 +4,6 @@ import {
   EyeIcon,
   MoreVertical,
   PlusIcon,
-  Trash2Icon,
   TypeIcon,
 } from "lucide-react"
 import { Link } from "@tanstack/react-router"
@@ -20,6 +19,7 @@ import {
 import { Client, ClientsDataTableRowAction } from "../types"
 import { useChangeClientType } from "../hooks/use-client"
 import { toast } from "sonner"
+import { ActionIcon } from "@/components/icons"
 
 interface ClientTableActionsProps {
   client: Client
@@ -101,7 +101,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           <Can permission={"clients:delete"}>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">
-              <Trash2Icon />
+              <ActionIcon action="delete" />
               Delete
             </DropdownMenuItem>
           </Can>

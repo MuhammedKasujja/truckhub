@@ -19,6 +19,7 @@ import {
   FileTextIcon,
   PanelTopCloseIcon,
   MailIcon,
+  EyeIcon,
 } from "lucide-react"
 import { ComponentType, SVGProps } from "react"
 
@@ -44,6 +45,7 @@ type Module =
 type Actions =
   | "create"
   | "edit"
+  | "view"
   | "delete"
   | "restore"
   | "pay"
@@ -77,6 +79,7 @@ export function getActionIcon(action: Actions): IconComponent {
   const actionIcons: Record<Actions, IconComponent> = {
     create: PlusIcon,
     edit: EditIcon,
+    view: EyeIcon,
     delete: Trash2Icon,
     restore: ArchiveRestore,
     pay: CreditCard,

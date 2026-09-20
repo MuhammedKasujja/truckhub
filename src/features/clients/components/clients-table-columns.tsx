@@ -4,12 +4,12 @@ import { formatDateTime } from "@/lib/format"
 import { deleteClientFn } from "@/features/clients/services"
 import { Client } from "@/features/clients/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { ClientTableActions } from "./client-table-actions"
 import { TFunction } from "@/i18n"
+import { ActionIcon } from "@/components/icons"
 
 export function getClientsTableColumns(tr: TFunction): ColumnDef<Client>[] {
   return [
@@ -78,7 +78,7 @@ export function getClientsTableColumns(tr: TFunction): ColumnDef<Client>[] {
                   }
                 }}
               >
-                <Trash2Icon />
+                <ActionIcon action="delete" />
               </ActionButton>
             </Can>
           </div>

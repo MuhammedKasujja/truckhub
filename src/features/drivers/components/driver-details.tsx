@@ -15,7 +15,7 @@ import {
   vehicleAssignDriverFn,
   vehicleUnAssignDriverFn,
 } from "@/features/vehicles/services"
-import { Edit2Icon, TrashIcon } from "lucide-react"
+import { TrashIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
@@ -30,6 +30,7 @@ import {
 } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Vehicle } from "@/features/vehicles/types"
+import { ActionIcon } from "@/components/icons"
 
 type DriverDetailsProps = {
   driver: Driver
@@ -74,19 +75,18 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
   return (
     <div className="space-y-2">
       <PageHeader className="pb-2">
-        <PageTitle>
-          {driver?.fullname}
-        </PageTitle>
+        <PageTitle>{driver?.fullname}</PageTitle>
         <PageDescription>Driver ID: {driver.number}</PageDescription>
         <PageAction>
           <PageBackButton />
           <Can permission="drivers:edit">
-            <Button asChild size={"icon"}>
+            <Button asChild>
               <Link
                 to={"/drivers/$driverId/edit"}
                 params={{ driverId: driver?.id }}
               >
-                <Edit2Icon />
+                <ActionIcon action="edit" />
+                Edit
               </Link>
             </Button>
           </Can>
@@ -111,7 +111,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           <CardContent className="flex">
             <VehiclePicker
               value={selectedVehicle}
-              onSelected={(vehicle) => setSelectedVehicle(vehicle)}
+              onChange={(vehicle) => setSelectedVehicle(vehicle)}
             />
           </CardContent>
           <CardFooter>

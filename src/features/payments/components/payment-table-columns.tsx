@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { formatDate, formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
-import { Trash2Icon } from "lucide-react"
 import { PaymentViewModal } from "./payment-view-modal"
 import { PaymentStatuses, PaymentModeList } from "@/config/constants"
 import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
 import { Can } from "@/components/has-permission"
 import { PaymentStatusIndicator } from "./payment-status-indicator"
+import { ActionIcon } from "@/components/icons"
 
 export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
   return [
@@ -111,7 +111,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
                   return { error: true, message: "Not implemented yet...." }
                 }}
               >
-                <Trash2Icon />
+                <ActionIcon action="delete" />
               </ActionButton>
             </Can>
           </div>

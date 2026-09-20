@@ -4,12 +4,12 @@ import { formatDateTime } from "@/lib/format"
 import { deleteVehicleFn } from "@/features/vehicles/services"
 import { Vehicle } from "@/features/vehicles/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { VehicleStatusIndicator } from "./vehicle-status-indicator"
 import { vehicleStatuses } from "../enums"
+import { ActionIcon } from "@/components/icons"
 
 export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
   return [
@@ -117,7 +117,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
                   to={`/vehicles/$vehicleId/view`}
                   params={{ vehicleId: vehicle.id }}
                 >
-                  <EyeIcon />
+                  <ActionIcon action="view" />
                 </Link>
               </Button>
             </Can>
@@ -127,7 +127,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
                   to={`/vehicles/$vehicleId/edit`}
                   params={{ vehicleId: vehicle.id }}
                 >
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </Link>
               </Button>
             </Can>
@@ -148,7 +148,7 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
                   }
                 }}
               >
-                <Trash2Icon />
+                <ActionIcon action="delete" />
               </ActionButton>
             </Can>
           </div>

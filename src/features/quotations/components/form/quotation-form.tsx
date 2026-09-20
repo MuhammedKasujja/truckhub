@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { EditIcon, MapPin, Plus, Trash2Icon } from "lucide-react"
+import { MapPin, Plus } from "lucide-react"
 import {
   ClientPickerField,
   ClientContactsList,
@@ -46,6 +46,7 @@ import { formatMoney } from "@/lib/format"
 import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 import Decimal from "@/lib/decimal-config"
 import { LineItemRow } from "../details/line-item-row"
+import { ActionIcon } from "@/components/icons"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -213,7 +214,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   <div>{selectedClient.email}</div>
                 </CardDescription>
                 <CardAction onClick={() => handleClientSelected()}>
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </CardAction>
               </CardHeader>
             )}
@@ -387,7 +388,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                           variant={"ghost"}
                           onClick={() => handleSourceChange(item.source, item)}
                         >
-                          <EditIcon />
+                          <ActionIcon action="edit" />
                         </Button>
                         <Button
                           type="button"
@@ -395,7 +396,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                           variant={"ghost"}
                           onClick={() => lineItemsFields.remove(index)}
                         >
-                          <Trash2Icon />
+                          <ActionIcon action="delete" />
                         </Button>
                       </div>
                     }
@@ -419,23 +420,17 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             <CardContent className="space-y-4">
               <div className="flex justify-between">
                 <div className="text-muted-foreground">Subtotal</div>
-                <div className="font-semibold">
-                  {formatMoney(subtotal)}
-                </div>
+                <div className="font-semibold">{formatMoney(subtotal)}</div>
               </div>
               <div className="flex justify-between">
                 <div className="text-muted-foreground">
                   Tax ({taxRate?.name} {taxRate?.rate}%)
                 </div>
-                <div className="font-semibold">
-                  {formatMoney(taxAmount)}
-                </div>
+                <div className="font-semibold">{formatMoney(taxAmount)}</div>
               </div>
               <div className="flex justify-between border-b-2 pb-1.5">
                 <div className="text-muted-foreground">Grand total</div>
-                <div className="font-bold">
-                  {formatMoney(grandTotal)}
-                </div>
+                <div className="font-bold">{formatMoney(grandTotal)}</div>
               </div>
             </CardContent>
           </Card>

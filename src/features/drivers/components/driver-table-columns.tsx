@@ -4,11 +4,11 @@ import { formatDateTime } from "@/lib/format"
 import { deleteDriverFn } from "@/features/drivers/services"
 import { Driver } from "@/features/drivers/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { TFunction } from "@/i18n"
+import { ActionIcon } from "@/components/icons"
 
 export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
   return [
@@ -60,7 +60,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   to={`/drivers/$driverId/view`}
                   params={{ driverId: row.original.id }}
                 >
-                  <EyeIcon />
+                  <ActionIcon action="view" />
                 </Link>
               </Button>
             </Can>
@@ -70,7 +70,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   to={`/drivers/$driverId/edit`}
                   params={{ driverId: row.original.id }}
                 >
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </Link>
               </Button>
             </Can>
@@ -91,7 +91,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   }
                 }}
               >
-                <Trash2Icon />
+                <ActionIcon action="delete" />
               </ActionButton>
             </Can>
           </div>

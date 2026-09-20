@@ -6,9 +6,9 @@ import type {
 import { TFunction } from "@/i18n"
 import { formatDate } from "@/lib/format"
 import { ActionButton } from "@/components/ui/action-button"
-import { EyeIcon, Trash2Icon } from "lucide-react"
 import { AuditLogSource } from "@/config/constants"
 import { Button } from "@/components/ui/button"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   tr: TFunction
@@ -75,7 +75,7 @@ export function getAuditLogTableColumns({
               variant={"outline"}
               onClick={() => setRowAction({ row, variant: "view" })}
             >
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <ActionButton
               variant={"destructive"}
@@ -85,7 +85,7 @@ export function getAuditLogTableColumns({
                 return { error: true, message: "Not implemented yet...." }
               }}
             >
-              <Trash2Icon />
+              <ActionIcon action="delete" />
             </ActionButton>
           </div>
         )
