@@ -52,6 +52,7 @@ import { Route as AdminSettingsIslandsIndexRouteImport } from './app/_admin/sett
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
+import { Route as AdminSettingsBankAccountsIndexRouteImport } from './app/_admin/settings/bank-accounts/index'
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
 import { Route as AdminReportsInvoicesIndexRouteImport } from './app/_admin/reports/invoices/index'
@@ -323,6 +324,12 @@ const AdminSettingsBookingRoutesIndexRoute =
   AdminSettingsBookingRoutesIndexRouteImport.update({
     id: '/booking-routes/',
     path: '/booking-routes/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsBankAccountsIndexRoute =
+  AdminSettingsBankAccountsIndexRouteImport.update({
+    id: '/bank-accounts/',
+    path: '/bank-accounts/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsAdvancedIndexRoute =
@@ -638,6 +645,7 @@ export interface FileRoutesByFullPath {
   '/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
@@ -725,6 +733,7 @@ export interface FileRoutesByTo {
   '/reports/invoices': typeof AdminReportsInvoicesIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/bank-accounts': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
@@ -814,6 +823,7 @@ export interface FileRoutesById {
   '/_admin/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/_admin/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
@@ -903,6 +913,7 @@ export interface FileRouteTypes {
     | '/reports/invoices/'
     | '/services/new/'
     | '/settings/advanced/'
+    | '/settings/bank-accounts/'
     | '/settings/booking-routes/'
     | '/settings/company-details/'
     | '/settings/generate-numbers/'
@@ -990,6 +1001,7 @@ export interface FileRouteTypes {
     | '/reports/invoices'
     | '/services/new'
     | '/settings/advanced'
+    | '/settings/bank-accounts'
     | '/settings/booking-routes'
     | '/settings/company-details'
     | '/settings/generate-numbers'
@@ -1078,6 +1090,7 @@ export interface FileRouteTypes {
     | '/_admin/reports/invoices/'
     | '/_admin/services/new/'
     | '/_admin/settings/advanced/'
+    | '/_admin/settings/bank-accounts/'
     | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
     | '/_admin/settings/generate-numbers/'
@@ -1414,6 +1427,13 @@ declare module '@tanstack/react-router' {
       path: '/booking-routes'
       fullPath: '/settings/booking-routes/'
       preLoaderRoute: typeof AdminSettingsBookingRoutesIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/bank-accounts/': {
+      id: '/_admin/settings/bank-accounts/'
+      path: '/bank-accounts'
+      fullPath: '/settings/bank-accounts/'
+      preLoaderRoute: typeof AdminSettingsBankAccountsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/advanced/': {
@@ -1819,6 +1839,7 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsUserManagementRouteRoute: typeof AdminSettingsUserManagementRouteRouteWithChildren
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
+  AdminSettingsBankAccountsIndexRoute: typeof AdminSettingsBankAccountsIndexRoute
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
@@ -1837,6 +1858,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsVehicleConfigRouteRoute:
     AdminSettingsVehicleConfigRouteRouteWithChildren,
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
+  AdminSettingsBankAccountsIndexRoute: AdminSettingsBankAccountsIndexRoute,
   AdminSettingsBookingRoutesIndexRoute: AdminSettingsBookingRoutesIndexRoute,
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsGenerateNumbersIndexRoute:

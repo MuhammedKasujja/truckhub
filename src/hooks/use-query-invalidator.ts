@@ -364,6 +364,36 @@ export class QueryInvalidator {
     }),
   }
 
+  banks = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.banks.list(),
+        }),
+    },
+    details: (id: EntityId) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.banks.detail(id),
+        }),
+    }),
+  }
+
+  bankAccounts = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bankAccounts.list(),
+        }),
+    },
+    details: (id: EntityId) => ({
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.bankAccounts.detail(id),
+        }),
+    }),
+  }
+
   users = {
     list: {
       invalidate: () =>

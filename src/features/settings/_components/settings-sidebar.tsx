@@ -35,6 +35,7 @@ import { Route as GenerateNumbersRoute } from "@/app/_admin/settings/generate-nu
 import { Route as NotificationsRoute } from "@/app/_admin/settings/notifications"
 import { Route as ProfileRoute } from "@/app/_admin/settings/user-profile"
 import { Route as IslandListRoute } from "@/app/_admin/settings/islands"
+import { Route as BankAccountsRoute } from "@/app/_admin/settings/bank-accounts"
 import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
 import { Can } from "@/components/has-permission"
@@ -99,6 +100,11 @@ const data: Navbar = {
       icon: ListOrdered,
       route: GenerateNumbersRoute.to,
       permission: "config:manage_entity_numbers",
+    },
+    {
+      name: "Bank Accounts",
+      icon: UserIcon,
+      route: BankAccountsRoute.to,
     },
     {
       name: "User Profile",

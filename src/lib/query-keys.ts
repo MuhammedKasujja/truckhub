@@ -22,6 +22,7 @@ import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
 import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query-options"
 import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-categories/query-options"
 import { entityNumberPattensQueryKeys } from "@/features/settings/entity-numbers/query-options"
+import { bankAccountsQueryKeys, banksQueryKeys } from "@/features/settings/bank-accounts/query-options"
 
 export const queryKeys = {
   dashboard: dashboardQueryKeys,
@@ -54,4 +55,6 @@ export const queryKeys = {
   auditLogs: auditLogsQueryKeys,
   quotations: quotationQueryKeys,
   shipments: shipmentsQueryKeys,
+  banks: banksQueryKeys,
+  bankAccounts: bankAccountsQueryKeys,
 }
