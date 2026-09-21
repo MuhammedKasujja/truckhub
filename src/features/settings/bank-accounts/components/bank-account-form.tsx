@@ -29,6 +29,7 @@ import {
   createBankAccountFn,
   updateBankAccountFn,
 } from "@/features/settings/bank-accounts/services"
+import { BankPickerField } from "./bank-pickers"
 
 type BankAccountFormProps = {
   trigger: React.ReactNode
@@ -79,18 +80,23 @@ export function BankAccountForm({
               </Button>
               Bank Account
             </DialogTitle>
-            <DialogDescription>Create new Bank Account</DialogDescription>
+            <DialogDescription>Add bank account details</DialogDescription>
           </DialogHeader>
           <FieldGroup>
-            <TextField
-              label="Account Number"
+            <BankPickerField
+              label="Bank name"
               control={form.control}
-              name={"account_number"}
+              name={"bank_id"}
             />
             <TextField
               label="Account Name"
               control={form.control}
               name={"account_name"}
+            />
+            <TextField
+              label="Account Number"
+              control={form.control}
+              name={"account_number"}
             />
             <TextField label="Branch" control={form.control} name={"branch"} />
           </FieldGroup>

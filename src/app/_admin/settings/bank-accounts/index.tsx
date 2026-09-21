@@ -1,5 +1,5 @@
 import { ModuleIcon } from "@/components/icons"
-import { PageHeader, PageTitle } from "@/components/page-header"
+import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
@@ -9,6 +9,10 @@ import {
   EmptyDescription,
   EmptyContent,
 } from "@/components/ui/empty"
+import {
+  BankAccountForm,
+  BankDetailsForm,
+} from "@/features/settings/bank-accounts/components"
 import { IconCloud } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 
@@ -21,6 +25,16 @@ function RouteComponent() {
     <div className="space-y-5">
       <PageHeader>
         <PageTitle>Bank Accounts</PageTitle>
+        <PageAction>
+          <BankDetailsForm
+            trigger={
+              <Button variant="outline" size="sm">
+                <ModuleIcon module="Settings" />
+                Bank
+              </Button>
+            }
+          />
+        </PageAction>
       </PageHeader>
       <Empty className="h-100 border border-dashed">
         <EmptyHeader>
@@ -33,10 +47,14 @@ function RouteComponent() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button variant="outline" size="sm">
-            <ModuleIcon module="Settings" />
-            Configure Account
-          </Button>
+          <BankAccountForm
+            trigger={
+              <Button variant="outline" size="sm">
+                <ModuleIcon module="Settings" />
+                Configure Account
+              </Button>
+            }
+          />
         </EmptyContent>
       </Empty>
     </div>

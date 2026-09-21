@@ -22,7 +22,10 @@ import {
   bankDetailsUpdateSchema,
 } from "../schemas"
 
-export const getBanksFn = createServerFn().handler(() => getBanks())
+export const getBanksFn = createServerFn().handler(async () => {
+  const response = await getBanks()
+  return response.data
+})
 
 export const getBankDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
