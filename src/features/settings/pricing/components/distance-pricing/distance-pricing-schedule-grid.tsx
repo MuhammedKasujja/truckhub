@@ -18,14 +18,15 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
+  CalendarIcon,
 } from "lucide-react"
 import {
   distanceLabel,
   formatUgx,
   FormValues,
+  fromDbRows,
   GridRow,
   numericLeadingSort,
-  PriceSchedule,
   RateEntry,
   rateKey,
   scheduleToFormValues,
@@ -33,38 +34,31 @@ import {
 } from "../../utils/distance-tonnage-pricing-utils"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
-import { DatePicker } from "@/components/ui/form-fields"
 import { Label } from "@/components/ui/label"
+import { DistanceTonnagePricingItem } from "../../types"
+import { Button } from "@/components/ui/button"
 
 const gridColumnHelper = createColumnHelper<GridRow>()
 const listColumnHelper = createColumnHelper<RateEntry>()
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
-type DistancePricingScheduleFormProps = {
-  initialDate?: Date
-  initialSchedule?: PriceSchedule
+type DistancePricingScheduleProps = {
+  initialDate?: string
+  pricings: DistanceTonnagePricingItem[]
 }
 
 export function DistancePricingScheduleGrid({
-  initialSchedule = {
-    tonnageRanges: [],
-    distanceRanges: [],
-    rates: [],
-  },
+  pricings,
   initialDate,
-}: DistancePricingScheduleFormProps) {
-  const [submittedSchedule] = useState<PriceSchedule>(initialSchedule)
+}: DistancePricingScheduleProps) {
+  const submittedSchedule = useMemo(() => fromDbRows(pricings), [pricings])
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
-  const [pricingDate, setPricingDate] = useState<Date | undefined>(initialDate)
 
   const { control, watch, getValues } = useForm<FormValues>({
-    defaultValues: scheduleToFormValues(initialSchedule),
+    defaultValues: scheduleToFormValues(submittedSchedule),
     mode: "onBlur",
   })
 
@@ -259,13 +253,15 @@ export function DistancePricingScheduleGrid({
     <div className="mx-auto space-y-6">
       <div className="w-full space-y-2.5 md:w-80">
         <Label>Effective Date *</Label>
-        <DatePicker
-          initialDate={pricingDate}
-          onDateChanged={(date) => {
-            setPricingDate(date)
-          }}
-        />
+        <Button
+          variant={"outline"}
+          className="justify-start font-normal md:w-80"
+        >
+          <CalendarIcon className="mr-1 h-4 w-4 opacity-50" />
+          {initialDate}
+        </Button>
       </div>
+
       <SchedulePanel
         viewMode={viewMode}
         onViewModeChange={setViewMode}

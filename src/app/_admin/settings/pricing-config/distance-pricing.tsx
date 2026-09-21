@@ -3,10 +3,7 @@ import { DistancePricingScheduleGrid } from "@/features/settings/pricing/compone
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { distancePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
-import {
-  fromDbRows,
-  MAX_TONNAGE,
-} from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
+import { MAX_TONNAGE } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
@@ -35,7 +32,7 @@ function RouteComponent() {
         <CompanyLoadingPricingConfigurationDialog />
       </header>
       <DistancePricingScheduleGrid
-        initialSchedule={fromDbRows(data?.pricings ??[])}
+        pricings={data?.pricings ?? []}
         initialDate={data?.effective_date}
       />
     </div>

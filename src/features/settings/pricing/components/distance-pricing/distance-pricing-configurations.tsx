@@ -29,7 +29,6 @@ import { useActivateDistancePricing } from "@/features/settings/pricing/hooks/us
 import { DistancePricingDatagridForm } from "./distance-pricing-schedule-form"
 import { DistancePricingScheduleGrid } from "./distance-pricing-schedule-grid"
 import { useCreateDistanceTonnage } from "../../hooks/use-distance-tonnage-pricing"
-import { fromDbRows } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 
 export function CompanyLoadingPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
@@ -129,7 +128,7 @@ export function CompanyLoadingPricingConfigurationDialog() {
                 </Button>
               </div>
               <DistancePricingScheduleGrid
-                initialSchedule={fromDbRows(companyPricings?.data.pricings ??[])}
+                pricings={companyPricings?.data.pricings ??[]}
                 initialDate={
                   companyPricings?.data.effective_date ??
                   new Date().toDateString()
