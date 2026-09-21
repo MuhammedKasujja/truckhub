@@ -43,7 +43,7 @@ export async function getDriverDetailsById(driverId: EntityId) {
   return await apiClient.getFn<Driver>(`/v1/drivers/${driverId}`);
 }
 
-export async function deleteDriverById(driverId: number | string) {
+export async function deleteDriverById(driverId: EntityId) {
   return await apiClient.deleteFn(`/v1/drivers/${driverId}`);
 }
 
