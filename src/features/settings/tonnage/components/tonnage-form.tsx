@@ -13,7 +13,6 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import z from "zod"
 import {
   TonnageCreateSchema,
@@ -28,6 +27,7 @@ import React from "react"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { ActionIcon } from "@/components/icons"
 
 type TonnageFormProps = {
   trigger?: React.ReactNode
@@ -65,7 +65,7 @@ export function TonnageForm({ trigger, initialData }: TonnageFormProps) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <PlusIcon />
+            <ActionIcon action="create"/>
             Tonnage
           </Button>
         )}
@@ -75,7 +75,7 @@ export function TonnageForm({ trigger, initialData }: TonnageFormProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
-                <PlusIcon />
+                <ActionIcon action="create"/>
               </Button>
               {isEdit ? "Edit Tonnage" : "Tonnage"}
             </DialogTitle>

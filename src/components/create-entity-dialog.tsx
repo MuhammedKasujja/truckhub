@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +22,7 @@ import { Route as VehicleCreate } from "@/app/_admin/vehicles/new"
 import { Route as InvoiceCreate } from "@/app/_admin/invoices/create"
 import { Can } from "./has-permission"
 import { useNavigate } from "@tanstack/react-router"
+import { ActionIcon } from "./icons"
 
 const entityList = [
   {
@@ -76,7 +76,7 @@ export function CreateEntityDialog() {
   return (
     <div>
       <Button onClick={() => setOpen(true)} variant="outline" size={"icon-xs"}>
-        <PlusIcon />
+        <ActionIcon action="create"/>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
@@ -92,7 +92,7 @@ export function CreateEntityDialog() {
                       navigate({ to: entity.to })
                     }}
                   >
-                    <PlusIcon />
+                    <ActionIcon action="create"/>
                     <span>{entity.label}</span>
                     <CommandShortcut>{entity.command}</CommandShortcut>
                   </CommandItem>

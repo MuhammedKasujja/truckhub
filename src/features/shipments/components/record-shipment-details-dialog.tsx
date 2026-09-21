@@ -22,10 +22,11 @@ import {
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { PlusIcon, XIcon } from "lucide-react"
+import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Decimal from "@/lib/decimal-config"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   shipment?: Shipment
@@ -162,7 +163,7 @@ export function RecordShipmentDetailsDialog({
                 size={"icon-sm"}
                 onClick={() => fuelConsumptionRatesFields.append({})}
               >
-                <PlusIcon />
+                <ActionIcon action="create"/>
               </Button>
             </FieldLabel>
             {fuelConsumptionRatesFields.fields.map((ele, index) => (

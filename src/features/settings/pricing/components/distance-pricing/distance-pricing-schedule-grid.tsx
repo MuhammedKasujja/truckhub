@@ -252,7 +252,7 @@ export function DistancePricingScheduleGrid({
   return (
     <div className="mx-auto space-y-6">
       <div className="w-full space-y-2.5 md:w-80">
-        <Label>Effective Date *</Label>
+        <Label>Effective Date</Label>
         <Button
           variant={"outline"}
           className="justify-start font-normal md:w-80"

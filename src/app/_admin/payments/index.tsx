@@ -7,7 +7,6 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
 import { useState } from "react"
 import {
   paymentsQueryOptions,
@@ -23,6 +22,7 @@ import {
   EnterPaymentModal,
 } from "@/features/payments/components"
 import { useQuery } from "@tanstack/react-query"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/payments/")({
   validateSearch: PaymentSearchParamsCache,
@@ -51,7 +51,7 @@ function RouteComponent() {
         <PageAction>
           <Can permission={"payments:create"}>
             <Button onClick={() => setOpenModal(true)}>
-              <PlusIcon />
+              <ActionIcon action="create"/>
               {tr("payments.form.new_payment")}
             </Button>
             <EnterPaymentModal

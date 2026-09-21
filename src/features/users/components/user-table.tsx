@@ -9,7 +9,6 @@ import React from "react"
 import { getUserTableColumns } from "./user-table-columns"
 import { Button } from "@/components/ui/button"
 import { Link, useSearch } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
@@ -17,6 +16,7 @@ import { usersQueryOprions } from "../query-options"
 import { UserDataTableRowAction } from "../types"
 import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
 import { useTranslation } from "@/i18n"
+import { ActionIcon } from "@/components/icons"
 
 export function UserTable() {
   const search = useSearch({ from: "/_admin/settings/user-management/users/" })
@@ -57,7 +57,7 @@ export function UserTable() {
           <Can permission="users:create">
             <Button asChild>
               <Link to={"/settings/user-management/users/new"}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 Add User
               </Link>
             </Button>

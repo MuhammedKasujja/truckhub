@@ -13,7 +13,6 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import z from "zod"
 import {
   VehicleTypeCreateSchema,
@@ -30,6 +29,7 @@ import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   trigger?: React.ReactNode
@@ -72,7 +72,7 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <PlusIcon />
+            <ActionIcon action="create"/>
             Vehicle Category
           </Button>
         )}

@@ -23,10 +23,10 @@ import {
 import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Can } from "@/components/has-permission"
 import { Quotation } from "@/features/quotations/types"
+import { ActionIcon } from "@/components/icons"
 
 type TableProps = {
   quotations: Quotation[]
@@ -87,7 +87,7 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
                           <Can permission="quotations:create">
                             <Button type="button" asChild size={"icon"}>
                               <Link to={"/quotations/new"}>
-                                <PlusIcon />
+                                <ActionIcon action="create"/>
                               </Link>
                             </Button>
                           </Can>

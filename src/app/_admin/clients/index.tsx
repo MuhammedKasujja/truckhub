@@ -12,7 +12,6 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
-import { PlusIcon } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { clientsQueryOptions } from "@/features/clients/query-options"
 import { ClientSearchParamsCache } from "@/features/clients/schemas"
@@ -24,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ClientType, ClientTypeListOptions } from "@/config/constants"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/clients/")({
   validateSearch: ClientSearchParamsCache,
@@ -79,8 +79,8 @@ function RouteComponent() {
           <Can permission={"clients:create"}>
             <Button asChild>
               <Link to={"/clients/new"}>
-                <PlusIcon />
-                New Customer
+                <ActionIcon action="create"/>
+                Add Client
               </Link>
             </Button>
           </Can>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { MoreVertical, PlusIcon, TypeIcon } from "lucide-react"
+import { MoreVertical, TypeIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -62,7 +62,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           <Can permission={"bookings:create"}>
             <DropdownMenuItem asChild>
               <Link to={"/quotations/new"} search={{ clientId: client.id }}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 Quotation
               </Link>
             </DropdownMenuItem>
@@ -70,7 +70,7 @@ export function ClientTableActions({ client }: ClientTableActionsProps) {
           <Can permission={"invoices:create"}>
             <DropdownMenuItem asChild>
               <Link to={"/invoices/create"} search={{ clientId: client.id }}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 Invoice
               </Link>
             </DropdownMenuItem>

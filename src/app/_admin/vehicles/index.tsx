@@ -17,7 +17,7 @@ import {
 } from "@/features/vehicles/components"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
-import { PlusIcon } from "lucide-react"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
@@ -40,7 +40,7 @@ function RouteComponent() {
           <Can permission={"vehicles:create"}>
             <Button asChild>
               <Link to={"/vehicles/new"}>
-                <PlusIcon />
+                <ActionIcon action="create" />
                 New Vehicle
               </Link>
             </Button>

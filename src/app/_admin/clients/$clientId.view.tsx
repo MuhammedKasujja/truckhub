@@ -1,5 +1,6 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 import {
   PageAction,
   PageBackButton,
@@ -26,7 +27,7 @@ import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
 import { IconEdit, IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { CreditCardIcon, FileTextIcon, PlusIcon } from "lucide-react"
+import { CreditCardIcon, FileTextIcon } from "lucide-react"
 import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
@@ -78,7 +79,7 @@ function RouteComponent() {
             <Can permission={"quotations:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/quotations/new"} search={{ clientId }}>
-                  <PlusIcon />
+                  <ActionIcon action="create"/>
                   New Quotation
                 </Link>
               </Button>
@@ -86,14 +87,14 @@ function RouteComponent() {
             <Can permission={"invoices:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/invoices/create"} search={{ clientId }}>
-                  <PlusIcon />
+                  <ActionIcon action="create"/>
                   New Invoice
                 </Link>
               </Button>
             </Can>
             <Can permission={"payments:create"}>
               <Button variant={"secondary"} onClick={() => setOpenModal(true)}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 {tr("payments.form.enterPayment")}
               </Button>
               <EnterPaymentModal

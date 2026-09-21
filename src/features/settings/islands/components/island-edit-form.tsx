@@ -12,7 +12,6 @@ import {
 import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon, Trash2 } from "lucide-react"
 import z from "zod"
 import { TextField } from "@/components/ui/form-fields"
 import React from "react"
@@ -27,6 +26,7 @@ import {
 import { createIslandFn, updateIslandFn } from "../services"
 import { Label } from "@/components/ui/label"
 import { Field } from "@/components/ui/field"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   trigger?: React.ReactNode
@@ -73,7 +73,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <PlusIcon />
+            <ActionIcon action="create"/>
             Island
           </Button>
         )}
@@ -108,7 +108,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
                           locationFields.remove(locationIndex)
                       }}
                     >
-                      <Trash2 />
+                      <ActionIcon action="delete"/>
                     </Button>
                   )}
                 </Field>

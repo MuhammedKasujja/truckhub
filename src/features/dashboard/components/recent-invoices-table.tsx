@@ -23,10 +23,10 @@ import {
 import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Can } from "@/components/has-permission"
 import { Invoice } from "@/features/invoices/types"
+import { ActionIcon } from "@/components/icons"
 
 type RecentInvoiceTableProps = {
   invoices: Invoice[]
@@ -89,7 +89,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
                           <Can permission="invoices:create">
                             <Button type="button" asChild size={"icon"}>
                               <Link to={"/invoices/create"}>
-                                <PlusIcon />
+                                <ActionIcon action="create"/>
                               </Link>
                             </Button>
                           </Can>

@@ -64,7 +64,7 @@ export function BookingRoutesTable() {
               onClick={() => setOpen(true)}
             >
               <PlusIcon />
-              Route
+             New Route
             </Button>
           </Can>
           <RouteEditForm

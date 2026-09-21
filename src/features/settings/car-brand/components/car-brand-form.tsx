@@ -13,7 +13,6 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import z from "zod"
 import {
   CarBrandCreateSchema,
@@ -29,6 +28,7 @@ import React from "react"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   trigger?: React.ReactNode
@@ -70,7 +70,7 @@ export function CarBrandForm({ trigger, initialData }: Props) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <PlusIcon />
+            <ActionIcon action="create"/>
             Car Brand
           </Button>
         )}

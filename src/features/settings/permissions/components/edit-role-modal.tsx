@@ -13,7 +13,6 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import z from "zod"
 import {
   RoleCreateSchema,
@@ -28,6 +27,7 @@ import {
   createRoleFn,
   updateRoleFn,
 } from "@/features/settings/permissions/services"
+import { ActionIcon } from "@/components/icons"
 
 type EditRoleDialogProps = {
   trigger?: React.ReactNode
@@ -65,7 +65,7 @@ export function EditRoleDialog({ initialData }: EditRoleDialogProps) {
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
         <Button size="sm" className="font-normal">
-          <PlusIcon />
+          <ActionIcon action="create"/>
           Role
         </Button>
       </DialogTrigger>

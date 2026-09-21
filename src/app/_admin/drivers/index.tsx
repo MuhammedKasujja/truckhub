@@ -7,9 +7,9 @@ import {
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
 import { requirePermission } from "@/lib/auth"
 import { DriverSearchParamsCache } from "@/features/drivers/schemas"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/drivers/")({
   validateSearch: DriverSearchParamsCache,
@@ -30,7 +30,7 @@ function RouteComponent() {
           <Can permission={"drivers:create"}>
             <Button asChild>
               <Link to={"/drivers/new"}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 New Driver
               </Link>
             </Button>

@@ -1,5 +1,5 @@
 import { ServiceGroup } from "@/features/services/types"
-import { Grid3X3Icon, ListIcon, PlusIcon, SearchIcon } from "lucide-react"
+import { Grid3X3Icon, ListIcon, SearchIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ServiceTable } from "./service-table"
 import { ServiceList } from "./service-list"
@@ -16,6 +16,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
+import { ActionIcon } from "@/components/icons"
 
 type ServiceListWrapperProps = {
   services: ServiceGroup[]
@@ -71,7 +72,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
           <Can permission={"services:create"}>
             <Button asChild>
               <Link to={"/services/new"}>
-                <PlusIcon />
+                <ActionIcon action="create"/>
                 New Service
               </Link>
             </Button>

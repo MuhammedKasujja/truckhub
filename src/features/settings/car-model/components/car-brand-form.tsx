@@ -13,7 +13,6 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon } from "lucide-react"
 import z from "zod"
 import {
   CarModelCreateSchema,
@@ -36,6 +35,7 @@ import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { CarBrandPickerField } from "../../car-brand/components"
 import { VehicleCategoryPickerField } from "../../vehicle-categories/components"
+import { ActionIcon } from "@/components/icons"
 
 type CarModelFormProps = {
   trigger?: React.ReactNode
@@ -76,7 +76,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <PlusIcon />
+            <ActionIcon action="create"/>
             Car Model
           </Button>
         )}
@@ -86,7 +86,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
-                <PlusIcon />
+                <ActionIcon action="create"/>
               </Button>
               Car Model
             </DialogTitle>
