@@ -17,4 +17,6 @@ export type BankAccount = {
   currency: Currency
   purpose: AccountPurpose
   show_on_invoices: boolean
+  is_active: boolean
+  bank: Bank
 }

@@ -21,6 +21,7 @@ import {
   bankDetailsCreateSchema,
   bankDetailsUpdateSchema,
 } from "../schemas"
+import { ApiError } from "@/types"
 
 export const getBanksFn = createServerFn().handler(async () => {
   const response = await getBanks()
@@ -51,9 +52,13 @@ export const createBankFn = createServerFn()
     return createBank(data)
   })
 
-export const getBankAccountsFn = createServerFn().handler(() =>
-  getBankAccounts()
-)
+export const getBankAccountsFn = createServerFn().handler(async () => {
+  const respone = await getBankAccounts()
+  if (respone.error) {
+    throw new ApiError(respone.error.message, respone.error.statusCode)
+  }
+  return respone.data
+})
 
 export const getBankAccountFn = createServerFn()
   .inputValidator(EntityIdSchema)

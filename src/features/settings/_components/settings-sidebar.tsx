@@ -11,6 +11,7 @@ import {
   SettingsIcon,
   Users,
   type LucideIcon,
+  LandmarkIcon,
 } from "lucide-react"
 import {
   Sidebar,
@@ -103,7 +104,7 @@ const data: Navbar = {
     },
     {
       name: "Bank Accounts",
-      icon: UserIcon,
+      icon: LandmarkIcon,
       route: BankAccountsRoute.to,
     },
     {
