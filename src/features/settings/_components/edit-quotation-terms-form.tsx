@@ -82,7 +82,8 @@ export function EditQuotationTermsForm({
                 />
                 <Button
                   type="button"
-                  variant={"destructive"}
+                  variant={"secondary"}
+                  className="hover:text-destructive hover:bg-destructive/20"
                   onClick={() => quotationTermsFields.remove(index)}
                   size={"icon-sm"}
                 >

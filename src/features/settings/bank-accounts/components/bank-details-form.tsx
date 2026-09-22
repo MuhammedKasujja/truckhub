@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import z from "zod"
-import { TextField } from "@/components/ui/form-fields"
+import { SelectField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
@@ -29,6 +29,7 @@ import {
   createBankFn,
   updateBankFn,
 } from "@/features/settings/bank-accounts/services"
+import { bankCountryCodes } from "../enums"
 
 type BankDetailsFormProps = {
   trigger: React.ReactNode
@@ -83,6 +84,21 @@ export function BankDetailsForm({
           </DialogHeader>
           <FieldGroup>
             <TextField label="Bank name" control={form.control} name={"name"} />
+            <SelectField
+              label="Country"
+              control={form.control}
+              name={"country"}
+              options={bankCountryCodes.map((ele) => ({
+                label: ele,
+                value: ele,
+              }))}
+            />
+            <TextField
+              label="Swift code"
+              control={form.control}
+              name={"swift_code"}
+              required={false}
+            />
           </FieldGroup>
           <DialogFooter className="sm:justify-end">
             <SubmitButton

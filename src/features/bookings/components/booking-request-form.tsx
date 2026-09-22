@@ -130,7 +130,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   useEffect(() => {
     setValue("client_id", search.clientId ?? "")
     if (clients) {
-      const client = clients.find((c) => c.id === search.clientId)
+      const client = clients.data.find((c) => c.id === search.clientId)
       setClient(client ?? null)
     }
   }, [search, clients])

@@ -7,19 +7,17 @@ export function SubmitButton({
   disabled = false,
   loadingText,
   text = "Submit",
-  asChild = false,
   type = "submit",
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
     isSubmitting?: boolean;
     text?: string;
     loadingText?: string;
   }) {
   const loadingLabel = loadingText ?? `${text}....`;
   return (
-    <Button type={type} {...props} disabled={disabled ?? isSubmitting}>
+    <Button type={type} {...props} disabled={disabled || isSubmitting}>
       {isSubmitting && <Loader2 className="size-4 animate-spin" />}
       {isSubmitting ? loadingLabel : text}
     </Button>
