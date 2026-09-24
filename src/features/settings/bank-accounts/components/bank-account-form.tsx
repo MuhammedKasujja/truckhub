@@ -12,7 +12,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import z from "zod"
-import { SelectField, TextField } from "@/components/ui/form-fields"
+import {
+  CheckboxField,
+  SelectField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
@@ -71,7 +75,12 @@ export function BankAccountForm({
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit, (errors) => {
+            console.error(errors)
+          })}
+          className="space-y-4"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
@@ -115,6 +124,12 @@ export function BankAccountForm({
                 label: ele,
                 value: ele,
               }))}
+            />
+            <CheckboxField
+              label="Show on invoices"
+              control={form.control}
+              name={"show_on_invoices"}
+              description="Use this account on client invoices"
             />
           </FieldGroup>
           <DialogFooter className="sm:justify-end">
