@@ -10,10 +10,12 @@ import {
   Item,
   ItemContent,
   ItemDescription,
+  ItemMedia,
   ItemTitle,
 } from "@/components/ui/item"
 import { Company } from "../../schemas"
 import { EditCompanyDetailsDialog } from "./edit-company-details-dialog"
+import { GlobeIcon, MailIcon, MapPinHouseIcon, PhoneIcon } from "lucide-react"
 
 type CompanyDetailsProps = {
   company: Company
@@ -32,24 +34,36 @@ export function CompanyDetailsView({ company }: CompanyDetailsProps) {
       </CardHeader>
       <CardContent>
         <Item>
+          <ItemMedia variant="icon">
+            <PhoneIcon />
+          </ItemMedia>
           <ItemContent>
             <ItemDescription>Phone</ItemDescription>
             <ItemTitle>{company.phone ?? "-"}</ItemTitle>
           </ItemContent>
         </Item>
         <Item>
+          <ItemMedia variant="icon">
+            <MailIcon />
+          </ItemMedia>
           <ItemContent>
             <ItemDescription>Email</ItemDescription>
             <ItemTitle>{company.email ?? "-"}</ItemTitle>
           </ItemContent>
         </Item>
         <Item>
+          <ItemMedia variant="icon">
+            <MapPinHouseIcon />
+          </ItemMedia>
           <ItemContent>
             <ItemDescription>Address</ItemDescription>
             <ItemTitle>{company.address ?? "-"}</ItemTitle>
           </ItemContent>
         </Item>
         <Item>
+          <ItemMedia variant="icon">
+            <GlobeIcon />
+          </ItemMedia>
           <ItemContent>
             <ItemDescription>Website</ItemDescription>
             <ItemTitle>{company.website ?? "-"}</ItemTitle>
