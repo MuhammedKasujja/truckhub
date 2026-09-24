@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { useForm } from "react-hook-form"
@@ -14,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import z from "zod"
 import { SelectField, TextField } from "@/components/ui/form-fields"
-import React from "react"
 import { FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
@@ -33,17 +31,18 @@ import { BankPickerField } from "./bank-pickers"
 import { accountPurposes, currencies } from "../enums"
 
 type BankAccountFormProps = {
-  trigger: React.ReactNode
   initialData?: BankAccountUpdateInput
+  open: boolean
+  onOpenChange: (v: boolean) => void
 }
 
 export function BankAccountForm({
-  trigger,
   initialData,
+  open,
+  onOpenChange,
 }: BankAccountFormProps) {
   const queryInvalidator = useQueryInvalidator()
   const tr = useTranslation()
-  const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
 
   const formSchema = isEdit ? bankAccountUpdateSchema : bankAccountCreateSchema
@@ -70,8 +69,7 @@ export function BankAccountForm({
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+    <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-md">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
