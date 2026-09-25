@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { ShipmentStatus } from "./enums"
+import { LineItemType } from "@/common/enums"
 import { DataTableRowAction } from "@/types/data-table"
 import { LineItemResponse } from "../quotations/schemas"
 
@@ -7,9 +8,21 @@ export type ShipmentLineItem = LineItemResponse & {
   scheduled_start: string
   scheduled_end: string
   car_brand_id: EntityId
+  tonnage: number | null
   car_brand: { id: EntityId; name: string } | null
   car_model: { id: EntityId; name: string } | null
   vehicle_category: { id: EntityId; name: string; is_truck: boolean } | null
+  service_id: EntityId | null
+  car_model_id: EntityId | null
+  with_loaders: boolean
+  with_driver: boolean
+  estimated_fuel_rate_km: string | null
+  locations: []
+  vehicle_addons: string[]
+  item_type: LineItemType
+  discount: string | null
+  is_round_trip: boolean
+  vehicle_year: string | null
 }
 
 export type ShipmentVehicleConsumption = {
