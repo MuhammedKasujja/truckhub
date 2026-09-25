@@ -64,10 +64,8 @@ function RouteComponent() {
 
   const subtotal = useMemo(() => {
     return lineItems.reduce((curr, item) => {
-      const days = item.consumption?.days ?? 1
-      const total = new Decimal(item.item.unit_price ?? "").times(
-        days === 0 ? 1 : days
-      )
+      const days = item.consumption?.days ? item.consumption?.days : 1
+      const total = new Decimal(item.item.unit_price ?? "").times(days)
       return total.plus(curr)
     }, new Decimal(0))
   }, [lineItems])
@@ -157,17 +155,13 @@ function RouteComponent() {
                 </FrameHeader>
                 <FramePanel>
                   {/* <Item variant={"default"}> */}
-                    <ItemContent>
-                      <ItemTitle>
-                        {quotation.client.name} - {quotation.client.number}
-                      </ItemTitle>
-                      <ItemDescription>
-                        {quotation.client.phone}
-                      </ItemDescription>
-                      <ItemDescription>
-                        {quotation.client.email}
-                      </ItemDescription>
-                    </ItemContent>
+                  <ItemContent>
+                    <ItemTitle>
+                      {quotation.client.name} - {quotation.client.number}
+                    </ItemTitle>
+                    <ItemDescription>{quotation.client.phone}</ItemDescription>
+                    <ItemDescription>{quotation.client.email}</ItemDescription>
+                  </ItemContent>
                   {/* </Item> */}
                 </FramePanel>
               </Frame>
@@ -193,107 +187,118 @@ function RouteComponent() {
               <FrameDescription>Line items</FrameDescription>
             </FrameHeader>
             <FramePanel className="space-y-4">
-              {shipments?.map((trip) => (
-                <Item
-                  key={trip.id}
-                  className={cn(
-                    "flex w-full cursor-pointer",
-                    lineItemsIds.includes(trip.id) && "ring ring-primary"
-                  )}
-                  variant={lineItemsIds.includes(trip.id) ? "muted" : "outline"}
-                  onClick={() => onItemSelected(trip.id)}
-                >
-                  <ItemContent>
-                    <ItemTitle>{trip.number}</ItemTitle>
-                    <ItemDescription className="grid grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <div>Started</div>
-                        <div className="text-foreground">
-                          {formatDate(trip.actual_start)}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>Ended</div>
-                        <div className="text-foreground">
-                          {trip.actual_end ? formatDate(trip.actual_end) : "-"}
-                        </div>
-                      </div>
-                      {trip.item.tonnage && (
+              {shipments?.map((trip) => {
+                const pricing = loadingFees?.pricings.find(
+                  (ele) =>
+                    Number(ele.tonnage_max) <= Number(trip.item.tonnage) &&
+                    Number(ele.tonnage_max) >= Number(trip.item.tonnage)
+                )
+                return (
+                  <Item
+                    key={trip.id}
+                    className={cn(
+                      "flex w-full cursor-pointer",
+                      lineItemsIds.includes(trip.id) && "ring ring-primary"
+                    )}
+                    variant={
+                      lineItemsIds.includes(trip.id) ? "muted" : "outline"
+                    }
+                    onClick={() => onItemSelected(trip.id)}
+                  >
+                    <ItemContent>
+                      <ItemTitle>{trip.number}</ItemTitle>
+                      <ItemDescription className="grid grid-cols-4 gap-4">
                         <div className="space-y-2">
-                          <div>Tonnage</div>
+                          <div>Started</div>
                           <div className="text-foreground">
-                            {formatNumber(trip.item.tonnage)}
+                            {formatDate(trip.actual_start)}
                           </div>
                         </div>
-                      )}
-                      <div className="space-y-2">
-                        <div>Distance (km)</div>
-                        <div className="text-foreground">
-                          {trip.consumption?.distance_km ?? "-"}
-                        </div>
-                      </div>
-                    </ItemDescription>
-                    <Separator />
-                    <ItemDescription className="grid grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <div>Contact name</div>
-                        <div className="text-foreground">
-                          {trip.contact_name ?? "-"}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>Start Mileage</div>
-                        <div className="text-foreground">
-                          {trip.consumption?.start_mileage ?? "-"}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>End Mileage</div>
-                        <div className="text-foreground">
-                          {trip.consumption?.end_mileage ?? "-"}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>Consumption Rate</div>
-                        <div className="text-foreground">
-                          {trip.vehicle?.fuel_consumption_rate ?? "-"}
-                        </div>
-                      </div>
-                    </ItemDescription>
-                    <Separator />
-                    <ItemDescription className="grid grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <div>Fuel Rate</div>
-                        <div className="text-foreground">
-                          {formatMoney(trip.consumption?.fuel_rate)}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>Cost (days * price)</div>
-                        <div className="text-foreground">
-                          {formatMoney(trip.item.unit_price)}
-                        </div>
-                      </div>
-                      {trip.item.with_loaders && (
                         <div className="space-y-2">
-                          <div>Loading Fees</div>
+                          <div>Ended</div>
                           <div className="text-foreground">
-                            {formatMoney(trip.item.unit_price)}
+                            {trip.actual_end
+                              ? formatDate(trip.actual_end)
+                              : "-"}
                           </div>
                         </div>
-                      )}
-                      {trip.item.with_loaders && (
+                        {trip.item.tonnage && (
+                          <div className="space-y-2">
+                            <div>Tonnage</div>
+                            <div className="text-foreground">
+                              {formatNumber(trip.item.tonnage)}
+                            </div>
+                          </div>
+                        )}
                         <div className="space-y-2">
-                          <div>Offloading Fees</div>
+                          <div>Distance (km)</div>
+                          <div className="text-foreground">
+                            {trip.consumption?.distance_km ?? "-"}
+                          </div>
+                        </div>
+                      </ItemDescription>
+                      <Separator />
+                      <ItemDescription className="grid grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <div>Contact name</div>
+                          <div className="text-foreground">
+                            {trip.contact_name ?? "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div>Start Mileage</div>
+                          <div className="text-foreground">
+                            {trip.consumption?.start_mileage ?? "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div>End Mileage</div>
+                          <div className="text-foreground">
+                            {trip.consumption?.end_mileage ?? "-"}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div>Consumption Rate</div>
+                          <div className="text-foreground">
+                            {trip.vehicle?.fuel_consumption_rate ?? "-"}
+                          </div>
+                        </div>
+                      </ItemDescription>
+                      <Separator />
+                      <ItemDescription className="grid grid-cols-4 gap-4">
+                        <div className="space-y-2">
+                          <div>Fuel Rate</div>
+                          <div className="text-foreground">
+                            {formatMoney(trip.consumption?.fuel_rate)}
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div>Cost (days * price)</div>
                           <div className="text-foreground">
                             {formatMoney(trip.item.unit_price)}
                           </div>
                         </div>
-                      )}
-                    </ItemDescription>
-                  </ItemContent>
-                </Item>
-              ))}
+                        {trip.item.with_loaders && (
+                          <div className="space-y-2">
+                            <div>Loading Fees</div>
+                            <div className="text-foreground">
+                              {formatMoney(pricing?.loading_fees)}
+                            </div>
+                          </div>
+                        )}
+                        {trip.item.with_loaders && (
+                          <div className="space-y-2">
+                            <div>Offloading Fees</div>
+                            <div className="text-foreground">
+                              {formatMoney(pricing?.offloading_fees)}
+                            </div>
+                          </div>
+                        )}
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )
+              })}
             </FramePanel>
           </Frame>
           <div className="md:col-span-2">
@@ -304,7 +309,15 @@ function RouteComponent() {
                     <div key={item.id} className="flex justify-between py-2">
                       <div className="text-muted-foreground">{item.number}</div>
                       <div className="text-foreground">
-                        {formatMoney(item.item.unit_price)}
+                        {formatMoney(
+                          new Decimal(item.item.unit_price ?? 0)
+                            .times(
+                              item.consumption?.days
+                                ? item.consumption?.days
+                                : 1
+                            )
+                            .toString()
+                        )}
                       </div>
                     </div>
                   ))}
