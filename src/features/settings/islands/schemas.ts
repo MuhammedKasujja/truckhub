@@ -2,7 +2,7 @@ import z from "zod"
 import { IDSchema } from "@/schemas"
 
 export const islandCreateSchema = z.object({
-  name: z.string(),
+  name: z.string("Required").trim().min(3),
   locations: z
       .array(z.object({ value: z.string('Required').trim().min(2, "Too Short") }))
       .min(1, "Locations cannot be empty"),
