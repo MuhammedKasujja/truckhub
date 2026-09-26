@@ -78,7 +78,7 @@ export type LoadingOffloadingPricingItem = {
 }
 
 export type LoadingOffloadingPricingResponse = {
-  effective_date: Date | string
+  effective_date: string
   pricings: LoadingOffloadingPricingItem[]
 }
 

@@ -142,6 +142,14 @@ export const PricingSearchParamsCache = z.object({
 
 export type PricingSearchParams = z.infer<typeof PricingSearchParamsCache>
 
+export const ActivePricingSearchParamsCache = z.object({
+  clientId: z.string().optional(),
+})
+
+export type ActivePricingSearchParams = z.infer<
+  typeof ActivePricingSearchParamsCache
+>
+
 export const ActivatePricingSchema = z.object({
   effectiveDate: z.string(),
   source: z.enum(COMPANY_PRICING_TYPES),

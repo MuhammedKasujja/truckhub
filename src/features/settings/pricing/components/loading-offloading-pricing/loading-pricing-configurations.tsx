@@ -122,6 +122,7 @@ export function CompanyLoadingPricingConfigurationDialog() {
                 </Button>
               </div>
               <LoadingOffloadingPricingTable
+                key={companyPricings?.data?.effective_date}
                 pricings={{
                   pricings: companyPricings?.data?.pricings,
                   effective_date:

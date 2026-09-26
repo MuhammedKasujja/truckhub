@@ -11,6 +11,7 @@ import {
   createBatchDistancePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
+  getActiveLoadingOffloadingFrees,
 } from "./server"
 import {
   IslandPricingRequest,
@@ -19,6 +20,7 @@ import {
   PricingSearchParamsCache,
   ListDistancePricingSchema,
   LoadingOffloadingPricingSchema,
+  ActivePricingSearchParamsCache,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
 import { ApiError } from "@/types"
@@ -76,6 +78,12 @@ export const getLoadingOffloadingFreesFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
     return getLoadingOffloadingFrees(data)
+  })
+
+  export const getActiveLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(ActivePricingSearchParamsCache)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(getActiveLoadingOffloadingFrees(data))
   })
 
 export const createBatchIslandPricingsFn = createServerFn()

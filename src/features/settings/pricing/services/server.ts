@@ -5,6 +5,7 @@ import {
   PricingSearchParams,
   ActivatePricingInput,
   DistancePricingRequest,
+  ActivePricingSearchParams,
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
 } from "../schemas"
@@ -68,6 +69,15 @@ export async function getLoadingOffloadingFrees(search: PricingSearchParams) {
     reference_date: search.referenceDate,
   })
   const url = "/v1/pricing/loading-offloading"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
+}
+
+export async function getActiveLoadingOffloadingFrees(search: ActivePricingSearchParams) {
+  const params = generateApiSearchParams({
+    client_id: search.clientId,
+  })
+  const url = "/v1/pricing/loading-offloading/active"
   const modified = params ? `${url}?${params}` : url
   return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
 }

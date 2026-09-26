@@ -17,7 +17,7 @@ import { useCreateInvoice } from "@/features/invoices/hooks/use-edit-invoice"
 import { QuotationPicker } from "@/features/quotations/components"
 import { useQuotationCompletedShipments } from "@/features/quotations/hooks/use-quotation-shipments"
 import { Quotation } from "@/features/quotations/types"
-import { useCompanyLoadingFees } from "@/features/settings/pricing/hooks/use-loading-offloading-pricing"
+import { useClientLoadingFeesWithFallback } from "@/features/settings/pricing/hooks/use-loading-offloading-pricing"
 import { formatDate, formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
@@ -46,7 +46,9 @@ function RouteComponent() {
 
   const { data: shipments } = useQuotationCompletedShipments(quotation?.id)
 
-  const { data: loadingFees } = useCompanyLoadingFees()
+  const { data: loadingFees } = useClientLoadingFeesWithFallback({
+    clientId: quotation?.client.id,
+  })
 
   const defaultTaxRate = useDefaultTaxRate()
 
