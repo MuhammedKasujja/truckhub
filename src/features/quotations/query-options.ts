@@ -7,6 +7,8 @@ import {
   getQuotationShipmentsFn,
 } from "./services"
 
+export type QuotationFilterParams= Omit<QuotationListSearchParams, 'page'| 'sort'>
+
 export const quotationQueryKeys = {
   all: () => ["quotations"],
   list: () => [...quotationQueryKeys.all(), "list"],
@@ -35,3 +37,13 @@ export const quotationShipmentsQueryOptions = (
     queryKey: quotationQueryKeys.shipments(search.quotation_id),
     queryFn: () => getQuotationShipmentsFn({ data: { ...search } }),
   })
+
+
+export const quotationFilterQueryOptions = (params: QuotationFilterParams) => ({
+  queryKey: [...quotationQueryKeys.list(), params],
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getQuotationsFn({
+      data: { ...params, page: pageParam },
+    }),
+  initialPageParam: 1,
+})

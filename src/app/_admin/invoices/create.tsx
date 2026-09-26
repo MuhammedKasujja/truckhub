@@ -192,7 +192,7 @@ function RouteComponent() {
               {shipments?.map((trip) => {
                 const pricing = loadingFees?.pricings.find(
                   (ele) =>
-                    Number(ele.tonnage_max) <= Number(trip.item.tonnage) &&
+                    Number(ele.tonnage_min) <= Number(trip.item.tonnage) &&
                     Number(ele.tonnage_max) >= Number(trip.item.tonnage)
                 )
                 return (

@@ -27,7 +27,7 @@ function RouteComponent() {
         pricings={
           data
             ? {
-                pricings: data.data?.pricings,
+                pricings: data.data?.pricings ??[],
                 effective_date: data?.data?.effective_date,
               }
             : undefined

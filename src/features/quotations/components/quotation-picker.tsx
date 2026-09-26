@@ -1,16 +1,16 @@
 import { createEntityPicker } from "@/components/entity-picker"
 import { Quotation } from "../types"
-import { QuotationListSearchParams } from "../schemas"
 import {
   quotationDetailsQueryOptions,
-  quotationQueryOptions,
+  QuotationFilterParams,
+  quotationFilterQueryOptions,
 } from "../query-options"
 
 export const { Picker: QuotationPicker, PickerField: QuotationPickerField } =
-  createEntityPicker<Quotation, QuotationListSearchParams>({
+  createEntityPicker<Quotation, QuotationFilterParams>({
     mode: "remote",
     entityName: "quotation",
-    listQueryOptions: quotationQueryOptions,
+    listQueryOptions: quotationFilterQueryOptions,
     detailQueryOptions: quotationDetailsQueryOptions,
     defaultSearchParams: { search: "", perPage: 10 },
     getOptionValue: (c) => c.id,

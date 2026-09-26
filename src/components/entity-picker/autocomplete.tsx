@@ -194,7 +194,7 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList ref={listRef}>
+          <CommandList ref={listRef} className="max-h-72 overflow-y-auto">
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />
