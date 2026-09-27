@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
+import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { formatDate, formatMoney } from "@/lib/format"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import Decimal from "decimal.js"
 
 export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
   component: RouteComponent,
@@ -13,6 +15,7 @@ export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
 
 function RouteComponent() {
   const { data: invoice } = Route.useLoaderData()
+  const { sendInvoiceEmail } = useSendInvoiceEmail()
   return (
     <div className="w-full">
       <div className="mx-auto space-y-6">
@@ -30,7 +33,7 @@ function RouteComponent() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground" asChild>
+            <Button variant={"outline"} asChild>
               <Link
                 to="/invoices/$invoiceId/pdf"
                 params={{ invoiceId: invoice.id }}
@@ -38,11 +41,9 @@ function RouteComponent() {
                 View PDF
               </Link>
             </Button>
-            <Button className="inline-flex items-center justify-center rounded-md border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground">
-              Download PDF
-            </Button>
-            <Button className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90">
-              Send to client
+            <Button variant={"outline"}>Download PDF</Button>
+            <Button onClick={() => sendInvoiceEmail(invoice.id)}>
+              Send Email
             </Button>
           </div>
         </div>
@@ -153,6 +154,18 @@ function RouteComponent() {
                 value={`- ${formatMoney(invoice.discount)}`}
               />
             )}
+            <div className="my-2 h-px bg-border" />
+            <SummaryRow
+              label="Fuel charge"
+              value={formatMoney(
+                invoice.line_items
+                  .reduce(
+                    (curr, item) => curr.plus(item.fuel_surcharge),
+                    new Decimal("0")
+                  )
+                  .toString()
+              )}
+            />
             <div className="my-2 h-px bg-border" />
             <SummaryRow label="Total" value={formatMoney(invoice.total)} bold />
             <SummaryRow

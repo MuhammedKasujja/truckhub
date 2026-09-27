@@ -233,12 +233,12 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 name={"end_date"}
                 control={control}
               />
-              <MoneyField
+              {/* <MoneyField
                 label={"Partial Amount"}
                 name={"partial"}
                 control={control}
                 required={false}
-              />
+              /> */}
               <UserPickerField
                 label={"Assigned User"}
                 name={"assigned_user_id"}

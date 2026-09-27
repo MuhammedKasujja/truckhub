@@ -43,7 +43,7 @@ export function InvoiceTableFilter() {
   return (
     <div className="flex w-full flex-row justify-between gap-4">
       <div className="flex flex-row gap-2">
-        <ButtonGroup>
+        {/* <ButtonGroup>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger>
               <SelectValue />
@@ -64,7 +64,7 @@ export function InvoiceTableFilter() {
             variant="outline"
             numberOfMonths={2}
           />
-        </ButtonGroup>
+        </ButtonGroup> */}
         <ButtonGroup>
           <Button variant="outline" className="text-xs">
             All{" "}
@@ -92,7 +92,7 @@ export function InvoiceTableFilter() {
           </Button>
         </ButtonGroup>
       </div>
-      <Field className="w-full" orientation={"horizontal"}>
+      {/* <Field className="w-full" orientation={"horizontal"}>
         <div className="max-w-30">
           <Select value={exportType} onValueChange={setExportType}>
             <SelectTrigger>
@@ -107,7 +107,7 @@ export function InvoiceTableFilter() {
             </SelectContent>
           </Select>
         </div>
-      </Field>
+      </Field> */}
     </div>
   )
 }

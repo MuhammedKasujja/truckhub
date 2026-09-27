@@ -86,8 +86,8 @@ export function InvoiceTableActions({
                 to={"/invoices/$invoiceId/pdf"}
                 params={{ invoiceId: invoice.id }}
               >
-                <EyeIcon />
-                Pdf
+                <ActionIcon action='view-pdf'/>
+                View Pdf
               </Link>
             </DropdownMenuItem>
           </Can>
@@ -95,7 +95,7 @@ export function InvoiceTableActions({
           <Can permission={"invoices:email"}>
             <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
               <MailIcon />
-              Email
+              Send Email
             </DropdownMenuItem>
           </Can>
         </DropdownMenuGroup>
