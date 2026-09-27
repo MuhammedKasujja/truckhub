@@ -109,8 +109,8 @@ function RouteComponent() {
   const prev = versions.find((x) => x.version_number === selected - 1)
 
   const combinedTaxRate = useMemo(() => {
-    if (v?.tax_rates?.length) return null
-    return [...new Set(v?.tax_rates.map((r) => r.rate))].join("% + ") + "%"
+    if (v?.tax_rates?.length === 0) return null
+    return [...new Set(v?.tax_rates.map((r) => Number(r.rate)))].join("% + ") + "%"
   }, [v])
 
   const maxTotal = Math.max(...versions.map((x) => Number(x.total_amount)))
@@ -182,12 +182,12 @@ function RouteComponent() {
           {/* Scrollable detail body */}
           <div className="flex-1 overflow-y-auto py-6 pl-0.5 pr-6">
             <Card className="mb-5">
-              <CardContent className="pt-6">
+              <CardContent className="pt-1">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <CalendarRange className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium text-foreground">
-                      {shortDate(v.start_date)} — {shortDate(v.end_date)}, 2026
+                      {fullDate(v.start_date)} — {fullDate(v.end_date)}
                     </span>
                   </div>
                   <Delta
@@ -340,128 +340,3 @@ function RouteComponent() {
     </div>
   )
 }
-
-// function RouteComponent() {
-//   const { quotationId } = Route.useParams()
-//   const [activeVersion, setActiveVersion] = useState<QuotationVersion>()
-//   const { data: quotation } = Route.useLoaderData()
-//   const back = useBackNavigation()
-
-//   const quotationRevisions = quotation.versions
-
-//   useEffect(() => {
-//     setActiveVersion(quotation.activeRevision)
-//   }, [quotation])
-
-//   return (
-//     <div className="space-y-4">
-//       <PageHeader className="pb-0">
-//         <PageTitle>
-//           Quotation{" "}
-//           <Badge variant={"outline"}>v{quotationRevisions.length}</Badge>
-//         </PageTitle>
-//         <PageAction className="flex gap-2">
-//           <Button variant={"outline"} size={"sm"} onClick={back}>
-//             Back
-//           </Button>
-//           <Button variant={"outline"} size={"sm"}>
-//             <MailIcon />
-//             Send Email
-//           </Button>
-//           <Button variant={"outline"} size={"sm"} asChild>
-//             <Link to="/quotations/$quotationId/pdf" params={{ quotationId }}>
-//               <IconFileTypePdf />
-//               PDF
-//             </Link>
-//           </Button>
-//         </PageAction>
-//       </PageHeader>
-//       <Card>
-//         <CardHeader>
-//           <CardTitle>
-//             {quotation?.number} <Badge>{quotation?.status}</Badge>
-//           </CardTitle>
-//           <CardDescription>
-//             {/* <Badge>{quotation?.status}</Badge> */}
-//           </CardDescription>
-//           <CardAction>
-//             {quotation.status != "accepted" && (
-//               <Button asChild>
-//                 <Link
-//                   to="/quotations/$quotationId/edit"
-//                   params={{ quotationId }}
-//                 >
-//                   <PlusIcon />
-//                   New Revision
-//                 </Link>
-//               </Button>
-//             )}
-//           </CardAction>
-//         </CardHeader>
-//       </Card>
-//       <div className="grid gap-5 md:grid-cols-5">
-//         <div className="md:col-span-2">
-//           {quotationRevisions.map((ver) => (
-//             <div
-//               key={ver.version_number}
-//               className={cn(
-//                 "space-y-2 rounded-lg border border-dashed p-4",
-//                 ver.version_number === activeVersion?.version_number &&
-//                   "bg-card"
-//               )}
-//               onClick={() => setActiveVersion(ver)}
-//             >
-//               <div>Version: {ver.version_number}</div>
-//               <div>Date: {ver.start_date}</div>
-//               <div>Amount: {formatMoney(ver.total_amount)}</div>
-//               <div>Service Count: {ver.line_items.length}</div>
-//             </div>
-//           ))}
-//         </div>
-//         <div className="md:col-span-3">
-//           {activeVersion && (
-//             <div>
-//               {activeVersion.line_items.map((lineitem) => (
-//                 <div
-//                   key={lineitem.unit_price}
-//                   className="rounded-lg border border-dashed p-4"
-//                 >
-//                   {lineitem.source === "distance" && (
-//                     <DistanceLineItemListItem lineItem={lineitem} />
-//                   )}
-//                   {lineitem.source === "route" && (
-//                     <RouteLineItemListItem lineItem={lineitem} />
-//                   )}
-//                   {lineitem.source === "service" && (
-//                     <ServiceLineItemListItem lineItem={lineitem} />
-//                   )}
-//                 </div>
-//               ))}
-//             </div>
-//           )}
-//           <div className="grid md:grid-cols-2">
-//             <div className="col-span-1"></div>
-//             <div className="col-span-1 mt-2 space-y-2">
-//               <div className="flex justify-between">
-//                 <div>Subtotal</div>
-//                 <div>{formatMoney(activeVersion?.subtotal)}</div>
-//               </div>
-//               <div className="flex justify-between">
-//                 <div>Tax</div>
-//                 <div>{formatMoney(activeVersion?.tax_amount)}</div>
-//               </div>
-//               <div className="flex justify-between">
-//                 <div>Total</div>
-//                 <div className="font-semibold">
-//                   {formatMoney(activeVersion?.total_amount)}
-//                 </div>
-//               </div>
-//               <Separator />
-//               <Separator />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }

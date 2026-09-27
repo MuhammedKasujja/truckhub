@@ -47,6 +47,12 @@ import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 import Decimal from "@/lib/decimal-config"
 import { LineItemRow } from "../details/line-item-row"
 import { ActionIcon } from "@/components/icons"
+import {
+  Frame,
+  FrameDescription,
+  FrameHeader,
+  FramePanel,
+} from "@/components/ui/frame"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -407,33 +413,28 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
           </CardContent>
         </Card>
         <div className="space-y-4 md:col-span-2">
-          <Card>
-            <CardContent>
-              <TaxRatePicker
-                id="tax"
-                value={taxRate?.id}
-                onSelected={handleUpdateTaxRates}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="space-y-4">
+          <Frame>
+            <FrameHeader>
+              <FrameDescription>Summary</FrameDescription>
+            </FrameHeader>
+            <FramePanel className="space-y-4">
               <div className="flex justify-between">
-                <div className="text-muted-foreground">Subtotal</div>
-                <div className="font-semibold">{formatMoney(subtotal)}</div>
+                <div className="text-muted-foreground text-sm">Subtotal</div>
+                <div>{formatMoney(subtotal)}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   Tax ({taxRate?.name} {taxRate?.rate}%)
                 </div>
-                <div className="font-semibold">{formatMoney(taxAmount)}</div>
+                <div>{formatMoney(taxAmount)}</div>
               </div>
-              <div className="flex justify-between border-b-2 pb-1.5">
+              <Separator/>
+              <div className="flex justify-between py-1">
                 <div className="text-muted-foreground">Grand total</div>
                 <div className="font-bold">{formatMoney(grandTotal)}</div>
               </div>
-            </CardContent>
-          </Card>
+            </FramePanel>
+          </Frame>
         </div>
       </div>
     </form>
