@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Dialog,
   DialogContent,
@@ -12,6 +11,12 @@ import { EntityId } from "@/schemas"
 import { ClientLoadingFeesModal } from "../client-loading-fees-modal"
 import { Activity, useState } from "react"
 import { ClientRouteTonnagePricingModal } from "../client-route-pricing-modal"
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarSeparator,
+} from "@/components/ui/toolbar"
 
 type ClientPricingDialogProps = {
   clientId: EntityId
@@ -35,14 +40,39 @@ export function ClientPricingConfigDialog({
             {data?.name}
           </DialogTitle>
           <DialogDescription className="flex items-center gap-4">
-            <ButtonGroup>
-              <Button variant={"outline"} onClick={() => setPricing("route")}>
-                Route Pricing
-              </Button>
-              <Button variant={"outline"} onClick={() => setPricing("loading")}>
-                Loading Fees
-              </Button>
-            </ButtonGroup>
+            <Toolbar>
+              <ToolbarGroup>
+                <ToolbarButton
+                  render={
+                    <Button
+                      size={"sm"}
+                      variant={pricing === "route" ? 'default' : "ghost"}
+                      onClick={() => setPricing("route")}
+                    >
+                      Route Pricing
+                    </Button>
+                  }
+                >
+                  Save
+                </ToolbarButton>
+              </ToolbarGroup>
+              <ToolbarSeparator />
+              <ToolbarGroup>
+                <ToolbarButton
+                  render={
+                    <Button
+                      size={"sm"}
+                      variant={pricing === "loading" ? "default" : "ghost"}
+                      onClick={() => setPricing("loading")}
+                    >
+                      Loading Fees
+                    </Button>
+                  }
+                >
+                  Save
+                </ToolbarButton>
+              </ToolbarGroup>
+            </Toolbar>
           </DialogDescription>
         </DialogHeader>
         <div className="grid flex-1 gap-0 overflow-hidden">
