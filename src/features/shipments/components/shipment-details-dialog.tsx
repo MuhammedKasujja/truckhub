@@ -195,26 +195,31 @@ export function ShipmentDetailsDialog({
         </DialogContent>
       </Dialog>
       <DispatchShipmentDialog
+        key={shipment?.id}
         shipment={shipment}
         open={openModal === "dispatch"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <ShipmentAssignVehicleDialog
+        key={shipment?.id}
         shipment={shipment}
         open={openModal === "assign-vehicle"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <ShipmentAssignDriverDialog
+        key={shipment?.id}
         shipment={shipment}
         open={openModal === "asign-driver"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <RecordShipmentDetailsDialog
+        key={shipment?.id}
         shipment={shipment}
         open={!!shipment && openModal === "record"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <EndShipmentDialog
+        key={shipment?.id}
         shipment={shipment}
         open={openModal === "end-shipment"}
         onOpenChange={() => setOpenModal(undefined)}

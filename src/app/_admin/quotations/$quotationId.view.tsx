@@ -246,7 +246,7 @@ function RouteComponent() {
         </section>
 
         {/* ================= Right rail: totals + ledger ================= */}
-        <aside className="flex w-[300px] shrink-0 flex-col overflow-hidden border-l border-border bg-card">
+        <aside className="flex w-75 shrink-0 flex-col overflow-hidden border-l border-border bg-card">
           <div className="border-b border-border px-5 py-5">
             <div className="mb-3 font-mono text-[11px] tracking-wide text-muted-foreground uppercase">
               Totals · v{v.version_number}

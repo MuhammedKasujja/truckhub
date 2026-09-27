@@ -1,6 +1,6 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { Can } from "@/components/has-permission"
-import { ActionIcon } from "@/components/icons"
+import { ActionIcon, ModuleIcon } from "@/components/icons"
 import {
   PageAction,
   PageBackButton,
@@ -10,8 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import {
-  ClientLoadingFeesModal,
-  ClientRouteTonnagePricingModal,
+  ClientPricingConfigDialog,
   ClientServicesDialog,
   CustomerDetailsWrapper,
 } from "@/features/clients/components"
@@ -48,6 +47,7 @@ function RouteComponent() {
   const { data } = useClientProfileSuspenseQuery(clientId)
   const [openModal, setOpenModal] = useState(false)
   const [openServicesModal, setServicesModal] = useState(false)
+  const [openPricingModal, setPricingModal] = useState(false)
 
   const tr = useTranslation()
   return (
@@ -79,7 +79,7 @@ function RouteComponent() {
             <Can permission={"quotations:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/quotations/new"} search={{ clientId }}>
-                  <ActionIcon action="create"/>
+                  <ActionIcon action="create" />
                   New Quotation
                 </Link>
               </Button>
@@ -87,14 +87,14 @@ function RouteComponent() {
             <Can permission={"invoices:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/invoices/create"} search={{ clientId }}>
-                  <ActionIcon action="create"/>
+                  <ActionIcon action="create" />
                   New Invoice
                 </Link>
               </Button>
             </Can>
             <Can permission={"payments:create"}>
               <Button variant={"secondary"} onClick={() => setOpenModal(true)}>
-                <ActionIcon action="create"/>
+                <ActionIcon action="create" />
                 {tr("payments.form.enterPayment")}
               </Button>
               <EnterPaymentModal
@@ -119,20 +119,24 @@ function RouteComponent() {
                 View Pdf
               </Link>
             </Button>
-            <ClientRouteTonnagePricingModal clientId={clientId} />
-            <ClientLoadingFeesModal
-              clientId={clientId}
-              clientName={data?.name}
-            />
-            <ClientServicesDialog
-              clientId={clientId}
-              open={openServicesModal}
-              onOpenChange={setServicesModal}
-            />
+            <Button variant={"secondary"} onClick={() => setPricingModal(true)}>
+              <ModuleIcon module="Settings" />
+              Pricing
+            </Button>
           </ButtonGroup>
         </PageAction>
       </PageHeader>
       <CustomerDetailsWrapper clientId={clientId} />
+      <ClientPricingConfigDialog
+        clientId={clientId}
+        open={openPricingModal}
+        onOpenChange={setPricingModal}
+      />
+      <ClientServicesDialog
+        clientId={clientId}
+        open={openServicesModal}
+        onOpenChange={setServicesModal}
+      />
     </div>
   )
 }
