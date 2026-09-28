@@ -40,6 +40,7 @@ import { ENGINE_MODES } from "@/common/config"
 import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
+import Decimal from "decimal.js"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -112,6 +113,20 @@ export function RoutePricingSelectDialog({
     }))
     form.setValue("locations", locations)
   }, [selectedRoutes])
+
+  useEffect(() => {
+    const pricings = routes.map((r) => r.pricings).flat()
+    const activePricing = pricings.find(
+      (p) => tonnage <= Number(p.maxTons) && tonnage >= Number(p.minTons)
+    )
+    const unitPrice = new Decimal(activePricing?.price?? "0")
+    const subtotal = unitPrice.times(quantity??"0").times(isRoundTrip ? 2 : 1)
+    const lineTotal = subtotal
+    form.setValue("unit_price", unitPrice.toString())
+    form.setValue("subtotal", subtotal.toString())
+    form.setValue("line_total", lineTotal.toString())
+
+  }, [tonnage, routes, isRoundTrip, quantity])
 
   // useEffect(() => {
   //   const unitPrice = routes.reduce(
@@ -273,7 +288,8 @@ export function RoutePricingSelectDialog({
                       <div className="space-y-1">
                         {r.pricings.map((p) => (
                           <p key={p.price} className="text-xs">
-                            {p.minTons} - {p.maxTons} T || {formatMoney(p.price)}
+                            {p.minTons} - {p.maxTons} T ||{" "}
+                            {formatMoney(p.price)}
                           </p>
                         ))}
                       </div>
