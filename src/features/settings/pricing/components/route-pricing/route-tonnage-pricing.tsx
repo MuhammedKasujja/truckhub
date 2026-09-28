@@ -114,7 +114,7 @@ export function RouteTonnagePricingGrid({
   isSelectable = false,
   onRowSelect,
 }: Props) {
-  const [sorting, setSorting] = useState([{ id: "destination", desc: false }])
+  const [sorting, setSorting] = useState([{ id: "distance_km", desc: false }])
   const [globalFilter, setGlobalFilter] = useState("")
   const [distMin, setDistMin] = useState("")
   const [distMax, setDistMax] = useState("")
@@ -196,7 +196,7 @@ export function RouteTonnagePricingGrid({
         const [min, max] = key.split("-")
         return {
           accessorKey: key,
-          header: `${fmtTon(min)}–${fmtTon(max)}t`,
+          header: `${fmtTon(min)}  –  ${fmtTon(max)}t`,
           cell: (info) => {
             const value = info.getValue()
             return value == null ? (

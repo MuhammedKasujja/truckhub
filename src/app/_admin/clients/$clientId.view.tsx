@@ -70,12 +70,6 @@ function RouteComponent() {
                 </Link>
               </Button>
             </Can>
-            <Button
-              variant={"secondary"}
-              onClick={() => setServicesModal(true)}
-            >
-              Services
-            </Button>
             <Can permission={"quotations:create"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/quotations/new"} search={{ clientId }}>
@@ -118,6 +112,13 @@ function RouteComponent() {
                 <FileTextIcon />
                 View Pdf
               </Link>
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={() => setServicesModal(true)}
+            >
+              <ModuleIcon module="Services"/>
+              Services
             </Button>
             <Button variant={"secondary"} onClick={() => setPricingModal(true)}>
               <ModuleIcon module="Settings" />
