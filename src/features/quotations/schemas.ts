@@ -30,7 +30,6 @@ const createVehicleAddonSchema = z.object({
 
 const createDistancePricingSchema = z.object({
   route_id: IDSchema,
-  pricing_id: IDSchema,
   origin: z.string(),
   destination: z.string().optional(),
   price: z.number().positive(),
@@ -130,21 +129,18 @@ export const tonnagePricingRangeSchema = z
   })
 
 export const tonnagePricingSchema = z.object({
-  id: IDSchema,
-  min_tons: z.union([z.string(), z.number()]),
-  max_tons: z.union([z.string(), z.number()]),
+  minTons: z.union([z.string(), z.number()]),
+  maxTons: z.union([z.string(), z.number()]),
   price: MoneySchema.optional(),
 })
 
 export const routePricingsSchema = z.object({
   tempId: IDSchema,
-  route_id: IDSchema,
+  routeId: IDSchema,
   origin: z.string(),
   destination: z.string(),
-  distance_km: z.union([z.string(), z.number()]),
-  min_hrs: z.union([z.string(), z.number()]),
-  max_hrs: z.union([z.string(), z.number()]),
-  pricing: tonnagePricingSchema,
+  distanceKm: z.union([z.string(), z.number()]),
+  pricings: z.array(tonnagePricingSchema),
 })
 
 export const updateQuotationSchema = z.object({

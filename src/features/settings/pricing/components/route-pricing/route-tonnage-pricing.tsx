@@ -273,7 +273,15 @@ export function RouteTonnagePricingGrid({
         distanceKm: distance_km,
         minHrs: min_hrs,
         maxHrs: max_hrs,
-        pricings,
+        pricings: Object.entries(pricings).map(([range, price]) => {
+          const [minTons, maxTons] = range.split("-").map(Number)
+
+          return {
+            minTons,
+            maxTons,
+            price: `${price}`,
+          }
+        }),
       })
     )
     onRowSelect(generated)

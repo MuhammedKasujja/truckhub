@@ -5,14 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
 import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
-import { TonnagePricing } from "@/features/settings/pricing"
 import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
@@ -30,15 +23,7 @@ import {
   SortableItemHandle,
 } from "@/components/ui/sortable"
 import { Button } from "@/components/ui/button"
-import { GripVertical, MapPin, Search, PackageOpen } from "lucide-react"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { GripVertical, PackageOpen } from "lucide-react"
 import z from "zod"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -51,13 +36,7 @@ import {
   SelectField,
   SwitchField,
 } from "@/components/ui/form-fields"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group"
 import { ENGINE_MODES } from "@/common/config"
-import Decimal from "@/lib/decimal-config"
 import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
@@ -67,6 +46,8 @@ const formSchema = z.object({
   routes: z.array(routePricingsSchema).min(1, "At least one route required"),
 })
 
+type RoutePricing = RoutePricingRow & { tempId: string }
+
 type FormValues = z.infer<typeof formSchema>
 
 type RoutePricingDialogProps = {
@@ -75,25 +56,15 @@ type RoutePricingDialogProps = {
   selectedPricings: RoutePricingStruct[]
   onOpenChange: (v: boolean) => void
   lineItem?: TruckLineItemRequest
-  onLiveChange?: (route: RoutePricingStruct) => void
   onLineItemAdded: (lineItem: TruckLineItemRequest) => void
 }
 
-type RouteDetails = {
-  route_id: EntityId
-  origin: string
-  destination: string
-  distance_km: string | number
-  min_hrs: string | number
-  max_hrs: string | number
-}
 export function RoutePricingSelectDialog({
   clientId,
   open,
   selectedPricings,
   onOpenChange,
   lineItem,
-  onLiveChange,
   onLineItemAdded,
 }: RoutePricingDialogProps) {
   const { data: clientPricings, isLoading } = useClientRoutingPricing(clientId)
@@ -120,87 +91,39 @@ export function RoutePricingSelectDialog({
 
   const { watch } = form
 
-  const serviceLocationsFields = useFieldArray({
-    control: form.control,
-    name: "locations",
-  })
-
   const routes = watch("routes")
   const quantity = watch("quantity")
   const isRoundTrip = watch("is_round_trip")
   const tonnage = watch("tonnage")
   const [selectedRoutes, setSelectedRoutes] = useState<RoutePricingRow[]>([])
 
-  const [query, setQuery] = useState("")
-
   useEffect(() => {
-    const unitPrice = routes.reduce(
-      (curr, route) => curr.plus(route.pricing.price ?? 0),
-      new Decimal("0")
+    form.setValue(
+      "routes",
+      selectedRoutes.map((r) => ({ ...r, tempId: r.routeId }))
     )
-    const subtotal = unitPrice.times(quantity).times(isRoundTrip ? 2 : 1)
-    const lineTotal = subtotal
-    form.setValue("unit_price", unitPrice.toString())
-    form.setValue("subtotal", subtotal.toString())
-    form.setValue("line_total", lineTotal.toString())
-  }, [routes, quantity, isRoundTrip])
-
-  function handleSelectPricing(pricing: TonnagePricing, route: RouteDetails) {
-    const updated: RoutePricingStruct = {
-      tempId: route.route_id,
-      route_id: route.route_id,
+    const locations = selectedRoutes.map((route) => ({
+      route_id: route.routeId,
       origin: route.origin,
       destination: route.destination,
-      distance_km: route.distance_km,
-      min_hrs: route.min_hrs,
-      max_hrs: route.max_hrs,
-      pricing: {
-        id: pricing.id,
-        min_tons: Number(pricing.min_tons),
-        max_tons: Number(pricing.max_tons),
-        price: pricing.price,
-      },
-    }
+      price: 600,
+      min_tons: 6,
+      max_tons: 6,
+    }))
+    form.setValue("locations", locations)
+  }, [selectedRoutes])
 
-    const current = form.getValues("routes")
-
-    const exists = current.find((r) => r.route_id === route.route_id)
-
-    let next: RoutePricingStruct[]
-
-    // ➜ add
-    if (!exists) {
-      next = [...current, updated]
-    }
-    // ➜ toggle off (remove route)
-    else if (exists.pricing.id === pricing.id) {
-      next = current.filter((r) => r.route_id !== route.route_id)
-    }
-    // ➜ replace
-    else {
-      next = current.map((r) => (r.route_id === route.route_id ? updated : r))
-    }
-
-    form.setValue("routes", next, {
-      shouldDirty: true,
-      shouldValidate: true,
-    })
-    serviceLocationsFields.append({
-      ...route,
-      price: Number(pricing.price),
-      pricing_id: pricing.id,
-      max_tons: Number(pricing.max_tons),
-      min_tons: Number(pricing.min_tons),
-    })
-
-    // 🔥 LIVE SYNC to MAIN FORM
-    onLiveChange?.(updated)
-  }
-
-
-  const totalSelected = useMemo(() => {
-    return routes.filter((r) => r.pricing).length
-  }, [routes])
+  // useEffect(() => {
+  //   const unitPrice = routes.reduce(
+  //     (curr, route) => curr.plus(route.pricing.price ?? 0),
+  //     new Decimal("0")
+  //   )
+  //   const subtotal = unitPrice.times(quantity).times(isRoundTrip ? 2 : 1)
+  //   const lineTotal = subtotal
+  //   form.setValue("unit_price", unitPrice.toString())
+  //   form.setValue("subtotal", subtotal.toString())
+  //   form.setValue("line_total", lineTotal.toString())
+  // }, [routes, quantity, isRoundTrip])
 
   useEffect(() => {
     if (lineItem) {
@@ -217,7 +140,7 @@ export function RoutePricingSelectDialog({
           </DialogTitle>
           <DialogDescription className="flex items-center justify-between gap-4">
             <span className="text-sm text-muted-foreground">
-              Destinations - {serviceLocationsFields.fields.length}
+              Destinations - {selectedRoutes.length}
             </span>
             <div className="flex gap-4">
               <Controller
@@ -253,11 +176,16 @@ export function RoutePricingSelectDialog({
               <Button
                 type="button"
                 className="shrink-0"
-                onClick={form.handleSubmit((data) => {
-                  const { routes: _, ...rest } = data
-                  onLineItemAdded(rest)
-                  onOpenChange(false)
-                })}
+                onClick={form.handleSubmit(
+                  (data) => {
+                    const { routes: _, ...rest } = data
+                    onLineItemAdded(rest)
+                    onOpenChange(false)
+                  },
+                  (errors) => {
+                    console.log("Form Errors", errors)
+                  }
+                )}
               >
                 Accept
                 <span
@@ -266,7 +194,7 @@ export function RoutePricingSelectDialog({
                     "bg-primary-foreground/20"
                   )}
                 >
-                  {totalSelected}
+                  {selectedRoutes.length}
                 </span>
               </Button>
             </div>
@@ -294,11 +222,11 @@ export function RoutePricingSelectDialog({
                 Selected routes
               </h3>
               <span className="text-xs text-muted-foreground">
-                {routes.length} added
+                {selectedRoutes.length} added
               </span>
             </div>
 
-            {routes.length === 0 && (
+            {selectedRoutes.length === 0 && (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center text-muted-foreground">
                 <PackageOpen className="h-6 w-6" />
                 <p className="text-sm">
@@ -314,13 +242,13 @@ export function RoutePricingSelectDialog({
                   shouldDirty: true,
                 })
               }
-              getItemValue={(item) => item.route_id}
+              getItemValue={(item) => item.routeId}
             >
               <SortableContent className="flex flex-col gap-2">
                 {routes.map((r) => (
                   <SortableItem
-                    key={r.route_id}
-                    value={r.route_id}
+                    key={r.routeId}
+                    value={r.routeId}
                     className="flex items-start gap-2 rounded-lg border bg-background/20 p-3 shadow-sm"
                   >
                     <SortableItemHandle asChild>
@@ -332,13 +260,22 @@ export function RoutePricingSelectDialog({
                         <GripVertical className="h-4 w-4" />
                       </Button>
                     </SortableItemHandle>
-                    <div className="flex items-center gap-2">
-                      <div className="leading-tight font-medium">
-                        {r.destination}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="leading-tight font-medium">
+                          {r.origin} -- {r.destination}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {formatNumber(r.distanceKm)} km &nbsp;•&nbsp;{" "}
+                          {/* {formatMoney(r.pricing.price)} */}
+                        </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {formatNumber(r.distance_km)} km &nbsp;•&nbsp;{" "}
-                        {formatMoney(r.pricing.price)}
+                      <div className="space-y-1">
+                        {r.pricings.map((p) => (
+                          <p key={p.price} className="text-xs">
+                            {p.minTons} - {p.maxTons} T || {formatMoney(p.price)}
+                          </p>
+                        ))}
                       </div>
                     </div>
                   </SortableItem>
@@ -367,6 +304,11 @@ export function RoutePricingSelectDialog({
                 control={form.control}
               />
             </Field>
+            <NumberField
+              label="Tonnage"
+              control={form.control}
+              name="tonnage"
+            />
             <NumberField
               label="Consumption Rate (km/l)"
               control={form.control}

@@ -163,5 +163,5 @@ export type RoutePricingRow = {
   distanceKm: string
   minHrs: string
   maxHrs: string
-  pricings: Record<string, string>
+  pricings: { minTons: number; maxTons: number; price: string }[]
 }
