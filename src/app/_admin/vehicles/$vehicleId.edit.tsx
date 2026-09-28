@@ -1,3 +1,4 @@
+import { PageHeader, PageTitle } from "@/components/page-header"
 import { VehicleForm } from "@/features/vehicles/components/vehicle-form"
 import { vehicleDetailsQueryOptions } from "@/features/vehicles/query-options"
 import { mapEditVehicle } from "@/features/vehicles/serializers"
@@ -17,5 +18,12 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
 
 function RouteComponent() {
   const vehicle = Route.useLoaderData()
-  return <VehicleForm initialData={vehicle} />
+  return (
+    <>
+      <PageHeader>
+        <PageTitle>Edit Vehicle</PageTitle>
+      </PageHeader>
+      <VehicleForm initialData={vehicle} />
+    </>
+  )
 }

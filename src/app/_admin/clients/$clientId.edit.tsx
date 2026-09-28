@@ -1,4 +1,5 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { PageHeader, PageTitle } from "@/components/page-header"
 import { ClientForm } from "@/features/clients/components"
 import { useEditClient } from "@/features/clients/hooks/use-client"
 import { clientEditQueryOptions } from "@/features/clients/query-options"
@@ -22,12 +23,17 @@ function RouteComponent() {
   useFetchEror(error)
   const { editClient } = useEditClient()
   return (
-    <ClientForm
-      mode="edit"
-      defaultValues={{ ...data, id: clientId }}
-      onSubmit={(data) => {
-        editClient({ ...data, id: clientId })
-      }}
-    />
+    <>
+      <PageHeader>
+        <PageTitle>Edit Client</PageTitle>
+      </PageHeader>
+      <ClientForm
+        mode="edit"
+        defaultValues={{ ...data, id: clientId }}
+        onSubmit={(data) => {
+          editClient({ ...data, id: clientId })
+        }}
+      />
+    </>
   )
 }

@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field"
 import {
   AutoCompleteField,
@@ -58,7 +52,7 @@ type VehicleFormProps = {
 const steps = [
   {
     value: "details",
-    title: "Vehicle Details",
+    title: "Vehicle Info",
     description: "Enter car information",
     fields: Object.keys(VehicleCreateSchema.shape) as Array<
       keyof z.infer<typeof VehicleCreateSchema>
@@ -86,7 +80,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     isEdit,
     carModels,
   } = useVehicleForm(vehicleCofig, initialData)
-  const [step, setStep] = useState<"details"| "features">("details")
+  const [step, setStep] = useState<"details" | "features">("details")
 
   const stepIndex = steps.findIndex((s) => s.value === step)
 
@@ -131,7 +125,11 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
         console.log(errors)
       })}
     >
-      <Stepper value={step} onValueChange={(val)=>setStep(val)} onValidate={onValidate}>
+      <Stepper
+        value={step}
+        onValueChange={(val) => setStep(val)}
+        onValidate={onValidate}
+      >
         <StepperList>
           {steps.map((step) => (
             <StepperItem key={step.value} value={step.value}>
@@ -148,13 +146,6 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
         </StepperList>
         <StepperContent value="details">
           <Card>
-            <CardHeader>
-              <CardTitle>
-                {isEdit ? tr("edit_vehicle") : tr("new_vehicle")}
-              </CardTitle>
-              <CardDescription>{tr("create_new_vehicle")}</CardDescription>
-            </CardHeader>
-
             <CardContent className="pb-6">
               <div className="grid grid-cols-1 gap-5 pb-6 md:grid-cols-2">
                 <FieldGroup>

@@ -4,7 +4,6 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
@@ -54,7 +53,6 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{isEdit ? "Edit Client details" : "New Client"}</CardTitle>
         <CardDescription>Create new client</CardDescription>
       </CardHeader>
       <form

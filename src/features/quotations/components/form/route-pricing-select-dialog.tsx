@@ -128,18 +128,6 @@ export function RoutePricingSelectDialog({
 
   }, [tonnage, routes, isRoundTrip, quantity])
 
-  // useEffect(() => {
-  //   const unitPrice = routes.reduce(
-  //     (curr, route) => curr.plus(route.pricing.price ?? 0),
-  //     new Decimal("0")
-  //   )
-  //   const subtotal = unitPrice.times(quantity).times(isRoundTrip ? 2 : 1)
-  //   const lineTotal = subtotal
-  //   form.setValue("unit_price", unitPrice.toString())
-  //   form.setValue("subtotal", subtotal.toString())
-  //   form.setValue("line_total", lineTotal.toString())
-  // }, [routes, quantity, isRoundTrip])
-
   useEffect(() => {
     if (lineItem) {
       form.reset({ ...lineItem, routes: [] })

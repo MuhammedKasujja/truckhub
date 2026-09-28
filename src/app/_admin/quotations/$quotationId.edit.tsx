@@ -44,7 +44,7 @@ function RouteComponent() {
             Cancel
           </Button>
           <Button type="submit" form="form-quotation">
-            Submit
+            Save quotation
           </Button>
         </PageAction>
       </PageHeader>

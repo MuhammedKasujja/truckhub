@@ -58,7 +58,7 @@ export function ShipmentAssignVehicleDialog({
               <div className="space-y-4">
                 {shipment?.item.service_id && (
                   <div className="space-y-2">
-                    <Label htmlFor="service">Service</Label>
+                    <Label htmlFor="service" className="text-muted-foreground">Service</Label>
                     <ServicePicker
                       id="service"
                       value={shipment?.item.service_id}
@@ -67,7 +67,7 @@ export function ShipmentAssignVehicleDialog({
                 )}
                 {shipment?.item.car_brand_id && (
                   <div className="space-y-2">
-                    <Label htmlFor="car_make">Car Make</Label>
+                    <Label htmlFor="car_make" className="text-muted-foreground">Car Make</Label>
                     <CarBrandPicker
                       id="car_make"
                       value={shipment?.item.car_brand_id}
@@ -76,7 +76,7 @@ export function ShipmentAssignVehicleDialog({
                 )}
                 {shipment?.item.car_model_id && (
                   <div className="space-y-2">
-                    <Label htmlFor="model">Model</Label>
+                    <Label htmlFor="model" className="text-muted-foreground">Model</Label>
                     <CarModelPicker
                       id="model"
                       value={shipment?.item.car_model_id}
@@ -87,7 +87,7 @@ export function ShipmentAssignVehicleDialog({
             )}
             {shipment?.item.item_type === "truck" && (
               <div>
-                <div>Tonnage Capacity</div>
+                <div className="text-muted-foreground">Tonnage Capacity</div>
                 <div>{shipment.item.tonnage} Tons</div>
               </div>
             )}

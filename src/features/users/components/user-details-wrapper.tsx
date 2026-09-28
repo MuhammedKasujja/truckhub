@@ -62,7 +62,7 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           <Item>
             <ItemContent>
               <ItemDescription>Username</ItemDescription>
-              <ItemTitle>{user?.username??"-"}</ItemTitle>
+              <ItemTitle>{user?.username ?? "-"}</ItemTitle>
             </ItemContent>
           </Item>
           <Item>
