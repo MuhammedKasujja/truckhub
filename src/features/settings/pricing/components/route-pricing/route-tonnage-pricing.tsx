@@ -7,7 +7,8 @@ import {
   flexRender,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, Truck } from "lucide-react"
-import { RoutePricing } from "../../types"
+import { RoutePricing } from "@/features/settings/pricing/types"
+import { RoutePricingRow } from "@/features/settings/pricing/schemas"
 
 type Props = {
   title: string
@@ -15,7 +16,7 @@ type Props = {
   effectiveDate: string
   subtitle?: string
   isSelectable?: boolean
-  onRowSelect?: (rows) => void
+  onRowSelect?: (rows: RoutePricingRow[]) => void
 }
 
 // Range filter: column value must fall within [min, max] of the filter tuple.
@@ -256,7 +257,26 @@ export function RouteTonnagePricingGrid({
   React.useEffect(() => {
     if (!onRowSelect) return
     const selectedRows = data.filter((d) => selectedIds.includes(d.destination))
-    onRowSelect(selectedRows)
+    const generated = selectedRows.map(
+      ({
+        route_id,
+        origin,
+        destination,
+        distance_km,
+        min_hrs,
+        max_hrs,
+        ...pricings
+      }) => ({
+        routeId: route_id,
+        origin,
+        destination,
+        distanceKm: distance_km,
+        minHrs: min_hrs,
+        maxHrs: max_hrs,
+        pricings,
+      })
+    )
+    onRowSelect(generated)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIdsKey])
 
@@ -350,29 +370,31 @@ export function RouteTonnagePricingGrid({
           />
         </div>
 
-       {isSelectable &&<div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
-          <span className="px-1 text-xs text-muted-foreground">Select</span>
-          {[
-            { key: "off", label: "Off" } as const,
-            { key: "single", label: "Single" } as const,
-            { key: "multi", label: "Multi" } as const,
-          ].map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => {
-                setSelectionMode(opt.key)
-                setRowSelection({})
-              }}
-              className={`rounded px-2 py-1 text-xs transition-colors ${
-                selectionMode === opt.key
-                  ? "bg-primary font-medium text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>}
+        {isSelectable && (
+          <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
+            <span className="px-1 text-xs text-muted-foreground">Select</span>
+            {[
+              { key: "off", label: "Off" } as const,
+              { key: "single", label: "Single" } as const,
+              { key: "multi", label: "Multi" } as const,
+            ].map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => {
+                  setSelectionMode(opt.key)
+                  setRowSelection({})
+                }}
+                className={`rounded px-2 py-1 text-xs transition-colors ${
+                  selectionMode === opt.key
+                    ? "bg-primary font-medium text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="ml-auto flex items-center gap-3">
           {(distMin || distMax || durMin || durMax || globalFilter) && (

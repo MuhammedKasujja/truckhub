@@ -60,6 +60,7 @@ import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
+import { RoutePricingRow } from "@/features/settings/pricing/schemas"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -128,27 +129,9 @@ export function RoutePricingSelectDialog({
   const quantity = watch("quantity")
   const isRoundTrip = watch("is_round_trip")
   const tonnage = watch("tonnage")
+  const [selectedRoutes, setSelectedRoutes] = useState<RoutePricingRow[]>([])
 
   const [query, setQuery] = useState("")
-
-  const filteredRoutes = useMemo(() => {
-    return (pricings?.routes ?? []).filter((route) => {
-      const q = query.toLowerCase()
-
-      // if (tonnage) {
-      //   tonnage &&
-      //     route.pricings.find(
-      //       (p) =>
-      //         tonnage >= Number(p.min_tons) && tonnage <= Number(p.max_tons)
-      //     )
-      // }
-
-      return (
-        route.origin.toLowerCase().includes(q) ||
-        route.destination.toLowerCase().includes(q)
-      )
-    })
-  }, [query, pricings, tonnage])
 
   useEffect(() => {
     const unitPrice = routes.reduce(
@@ -214,8 +197,6 @@ export function RoutePricingSelectDialog({
     onLiveChange?.(updated)
   }
 
-  const isSelected = (routeId: EntityId, pricingId: EntityId) =>
-    routes.find((r) => r.route_id === routeId)?.pricing?.id === pricingId
 
   const totalSelected = useMemo(() => {
     return routes.filter((r) => r.pricing).length
@@ -232,9 +213,8 @@ export function RoutePricingSelectDialog({
       <DialogContent className="flex max-h-[95vh] min-h-[95vh] flex-col overflow-hidden p-0 md:min-w-[95vw]">
         <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            Location Pricing
+            Route Pricing
           </DialogTitle>
-
           <DialogDescription className="flex items-center justify-between gap-4">
             <span className="text-sm text-muted-foreground">
               Destinations - {serviceLocationsFields.fields.length}
@@ -293,9 +273,9 @@ export function RoutePricingSelectDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid flex-1 overflow-hidden md:grid-cols-5">
+        <div className="grid flex-1 overflow-hidden md:grid-cols-6">
           {/* LEFT SIDE */}
-          <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-3">
+          <div className="overflow-y-auto border-r p-6 md:col-span-4">
             <RouteTonnagePricingGrid
               isSelectable
               routes={pricings?.routes ?? []}
@@ -303,116 +283,8 @@ export function RoutePricingSelectDialog({
                 pricings?.effective_date ?? new Date().toDateString()
               }
               title="Company Pricing"
+              onRowSelect={setSelectedRoutes}
             />
-            {/* <div className="flex flex-col gap-3 sm:flex-row">
-              <InputGroup className="flex-1">
-                <InputGroupInput
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search by origin or destination..."
-                />
-                <InputGroupAddon>
-                  <Search />
-                </InputGroupAddon>
-              </InputGroup>
-              <Select>
-                <SelectTrigger className="sm:w-48">
-                  <SelectValue placeholder="Filter by tonnage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {pricings?.tonnages?.map((item) => (
-                      <SelectItem
-                        key={item.min_tons}
-                        value={item.min_tons.toString()}
-                      >
-                        {formatNumber(item.min_tons)} –{" "}
-                        {formatNumber(item.max_tons)} TONS
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <NumberField
-                className="w-32"
-                control={form.control}
-                name={"tonnage"}
-              />
-            </div>
-
-            {isLoading && (
-              <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground">
-                Loading routes...
-              </div>
-            )}
-
-            {!isLoading && filteredRoutes.length === 0 && (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground">
-                <PackageOpen className="h-8 w-8" />
-                <p className="text-sm">No routes match your search.</p>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-3">
-              {filteredRoutes.map((route) => (
-                <Item
-                  key={route.route_id}
-                  variant="outline"
-                  className="flex-col items-stretch gap-3 p-4"
-                >
-                  <ItemContent>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                      <ItemTitle className="text-base">
-                        {route.origin}
-                        <span className="mx-1.5 text-muted-foreground">→</span>
-                        {route.destination}
-                      </ItemTitle>
-                    </div>
-
-                    <ItemDescription>
-                      {formatNumber(route.min_hrs)} –{" "}
-                      {formatNumber(route.max_hrs)} hrs &nbsp;•&nbsp;{" "}
-                      {formatNumber(route.distance_km)} km
-                    </ItemDescription>
-
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {route.pricings.map((pricing) => {
-                        const active = isSelected(route.route_id, pricing.id)
-
-                        return (
-                          <Item
-                            key={pricing.id}
-                            variant={active ? "outline" : "muted"}
-                            className={cn(
-                              "cursor-pointer p-2.5 transition-colors hover:border-primary/60",
-                              active && "border-primary bg-primary/5"
-                            )}
-                            onClick={() => handleSelectPricing(pricing, route)}
-                          >
-                            <ItemContent className="gap-0.5">
-                              <ItemTitle
-                                className={cn(
-                                  "text-sm",
-                                  active && "text-primary"
-                                )}
-                              >
-                                {formatMoney(pricing.price)}
-                              </ItemTitle>
-
-                              <ItemDescription className="text-xs">
-                                {formatNumber(pricing.min_tons)} –{" "}
-                                {formatNumber(pricing.max_tons)} tons
-                              </ItemDescription>
-                            </ItemContent>
-                          </Item>
-                        )
-                      })}
-                    </div>
-                  </ItemContent>
-                </Item>
-              ))}
-            </div> */}
           </div>
 
           {/* RIGHT SIDE (SORTABLE) */}

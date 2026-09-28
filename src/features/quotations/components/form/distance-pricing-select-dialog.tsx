@@ -181,9 +181,9 @@ export function DistancePricingSelectDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid flex-1 overflow-hidden md:grid-cols-5">
+        <div className="grid flex-1 overflow-hidden md:grid-cols-6">
           {/* LEFT SIDE */}
-          <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-3">
+          <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-4">
             <div className="flex flex-col gap-3 sm:flex-row">
               <InputGroup className="flex-1">
                 <InputGroupInput

@@ -1,4 +1,4 @@
-import { IDSchema, MoneySchema } from "@/schemas"
+import { EntityId, IDSchema, MoneySchema } from "@/schemas"
 import z from "zod"
 import { COMPANY_PRICING_TYPES } from "./types"
 
@@ -35,7 +35,6 @@ export const batchPricingSchema = z.object({
 })
 
 export type TonnageRangeInput = z.infer<typeof tonnageRangeSchema>
-export type RoutePricingInput = z.infer<typeof routePricingSchema>
 export type BatchPricingInput = z.infer<typeof batchPricingSchema>
 
 export const PriceRangeSchema = z.object({
@@ -156,3 +155,13 @@ export const ActivatePricingSchema = z.object({
 })
 
 export type ActivatePricingInput = z.infer<typeof ActivatePricingSchema>
+
+export type RoutePricingRow = {
+  routeId: EntityId
+  origin: string
+  destination: string
+  distanceKm: string
+  minHrs: string
+  maxHrs: string
+  pricings: Record<string, string>
+}
