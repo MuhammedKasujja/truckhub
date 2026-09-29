@@ -40,12 +40,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  DataList,
-  DataListItem,
-  DataListItemLabel,
-  DataListItemValue,
-} from "@/components/ui/data-list"
 import { Badge } from "lucide-react"
 
 type ServiceSelectDialogProps = {
@@ -353,39 +347,38 @@ function ServiceList({
               <CardContent className="space-y-2 text-sm">
                 <div className="h-40 rounded-sm border bg-accent" />
 
-                <DataList>
-                  <DataListItem className="flex w-full justify-between">
-                    <DataListItemLabel>
+                <div className="space-y-1">
+                  <div className="flex w-full justify-between">
+                    <div className="text-muted-foreground">
                       {tr("services.price")}
-                    </DataListItemLabel>
-
-                    <DataListItemValue className="text-end font-semibold">
+                    </div>
+                    <div className="text-end font-semibold">
                       {formatMoney(service.base_fare)}
-                    </DataListItemValue>
-                  </DataListItem>
+                    </div>
+                  </div>
 
-                  <DataListItem className="flex w-full justify-between py-0">
-                    <DataListItemLabel>
+                  <div className="flex w-full justify-between py-0">
+                    <div className="text-muted-foreground">
                       {tr("services.last_price")}
-                    </DataListItemLabel>
+                    </div>
 
-                    <DataListItemValue className="text-end font-semibold">
+                    <div className="text-end font-semibold">
                       {formatMoney(service.min_fare)}
-                    </DataListItemValue>
-                  </DataListItem>
+                    </div>
+                  </div>
 
                   {!service.is_truck && (
-                    <DataListItem className="flex w-full justify-between">
-                      <DataListItemLabel>
+                    <div className="flex w-full justify-between">
+                      <div className="text-muted-foreground">
                         {tr("services.seating_capacity")}
-                      </DataListItemLabel>
+                      </div>
 
-                      <DataListItemValue className="text-end font-semibold">
+                      <div className="text-end font-semibold">
                         {service.seats}
-                      </DataListItemValue>
-                    </DataListItem>
+                      </div>
+                    </div>
                   )}
-                </DataList>
+                </div>
               </CardContent>
             </Card>
           )
