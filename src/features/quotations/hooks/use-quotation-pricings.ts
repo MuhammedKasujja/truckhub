@@ -4,22 +4,23 @@ import { useActiveServiceProducts } from "@/features/services/hooks/use-service-
 
 type PricingSource = "client" | "company" | undefined
 
+const hasItems = <T>(data?: T[]) => Array.isArray(data) && data.length > 0
+
 export function useQuotationServiceProducts(clientId: EntityId) {
   const clientQuery = useClientServiceProducts(clientId)
 
-  // Fall back to company pricing when there's no client,
-  // or the client query finished with no data / an error
+  // Use company pricing when there's no client, the client query failed,
+  // or it finished but came back empty
   const shouldUseCompany =
     !clientId ||
     clientQuery.isError ||
-    (clientQuery.isSuccess && !clientQuery.data)
+    (clientQuery.isSuccess && !hasItems(clientQuery.data))
 
-  const companyQuery = useActiveServiceProducts({
-    enabled: shouldUseCompany,
-  })
+  const companyQuery = useActiveServiceProducts({ enabled: shouldUseCompany })
 
   const active = shouldUseCompany ? companyQuery : clientQuery
-  const source: PricingSource = active.data
+
+  const source: PricingSource = hasItems(active.data)
     ? shouldUseCompany
       ? "company"
       : "client"
@@ -28,7 +29,8 @@ export function useQuotationServiceProducts(clientId: EntityId) {
   return {
     pricing: active.data,
     source,
-    isLoading: active.isLoading,
+    // isLoading: active.isLoading,
+    isLoading: clientQuery.isLoading || (shouldUseCompany && companyQuery.isLoading),
     isError: shouldUseCompany ? companyQuery.isError : clientQuery.isError,
     error: active.error,
     refetch: active.refetch,

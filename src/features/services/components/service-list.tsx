@@ -30,6 +30,7 @@ type ServiceListProps = {
 export function ServiceList({
   services,
   selectable = false,
+  onSelected,
 }: ServiceListProps) {
   const tr = useTranslation()
   const [selectedItems, setSelected] = useState<Service[]>([])
@@ -98,16 +99,18 @@ export function ServiceList({
               </DataList>
               <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
                 <span>{service.is_truck ? "Truck" : "Car"}</span>
-                <Can permission={"services:edit"}>
-                  <Button size="sm" variant="outline" asChild>
-                    <Link
-                      to={`/services/$serviceId/edit`}
-                      params={{ serviceId: service.id }}
-                    >
-                      Edit
-                    </Link>
-                  </Button>
-                </Can>
+                {!selectable && (
+                  <Can permission={"services:edit"}>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link
+                        to={`/services/$serviceId/edit`}
+                        params={{ serviceId: service.id }}
+                      >
+                        Edit
+                      </Link>
+                    </Button>
+                  </Can>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ServicePickerField } from "@/features/services/components"
+import { ServiceList, ServicePickerField } from "@/features/services/components"
 import { formatMoney } from "@/lib/format"
 import { ServiceRoutesDialog } from "./service-routes"
 import { ENGINE_MODES } from "@/common/config"
@@ -159,7 +159,15 @@ export function ServicesDialog({
           </DialogHeader>
           <div className="grid flex-1 grid-cols-6 overflow-hidden">
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-              {/* {services?.map((s)=><div key={s.id}>{s.vehicle_category?.name}</div>)} */}
+              <ServiceList
+                services={services ?? []}
+                selectable
+                onSelected={(selected) => {
+                  console.log("Selected Services", selected)
+                }}
+              />
+            </div>
+            <div className="col-span-2 overflow-y-auto p-6 space-y-2">
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-2"
@@ -266,8 +274,6 @@ export function ServicesDialog({
                 name={"line_total"}
                 control={form.control}
               />
-            </div>
-            <div className="col-span-2 overflow-y-auto p-6">
               <ServiceRoutesDialog
                 selectedRoutes={locationsFields.fields}
                 clientId={clientId}
