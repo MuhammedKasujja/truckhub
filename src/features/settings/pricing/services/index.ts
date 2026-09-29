@@ -12,6 +12,7 @@ import {
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
   getActiveLoadingOffloadingFrees,
+  getCompanyActiveDistancePricing,
 } from "./server"
 import {
   IslandPricingRequest,
@@ -23,7 +24,6 @@ import {
   ActivePricingSearchParamsCache,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
-import { ApiError } from "@/types"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn()
@@ -41,31 +41,24 @@ export const createBatchRoutePricingFn = createServerFn()
 export const createBatchDistancePricingFn = createServerFn()
   .inputValidator(ListDistancePricingSchema)
   .handler(async ({ data }) => {
-    const result = await createBatchDistancePricing(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return await apiResponseTransform(createBatchDistancePricing(data))
   })
 
 export const getDistanceTonnagePricingFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
-    const result = await getDistanceTonnagePricing(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data!, message: result.message }
+    return await apiResponseTransform(getDistanceTonnagePricing(data))
+  })
+
+export const getCompanyActiveDistancePricingFn = createServerFn()
+  .handler(() => {
+    return apiResponseTransform(getCompanyActiveDistancePricing())
   })
 
 export const getRouteTonnagePricingFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
-    const result = await getRouteTonnagePricing(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return result.data!
+    return await apiResponseTransform(getRouteTonnagePricing(data))
   })
 
 export const createBatchLoadingPricingFn = createServerFn()
@@ -80,7 +73,7 @@ export const getLoadingOffloadingFreesFn = createServerFn()
     return getLoadingOffloadingFrees(data)
   })
 
-  export const getActiveLoadingOffloadingFreesFn = createServerFn()
+export const getActiveLoadingOffloadingFreesFn = createServerFn()
   .inputValidator(ActivePricingSearchParamsCache)
   .handler(async ({ data }) => {
     return apiResponseTransform(getActiveLoadingOffloadingFrees(data))
@@ -93,10 +86,12 @@ export const createBatchIslandPricingsFn = createServerFn()
       island_id: p.island_id,
       price: p.priceRate,
     }))
-    return apiResponseTransform(createBatchIslandPricing({
-      pricings,
-      valid_from: data.validFromDate,
-    }))
+    return apiResponseTransform(
+      createBatchIslandPricing({
+        pricings,
+        valid_from: data.validFromDate,
+      })
+    )
   })
 
 export const getIslandPricingsFn = createServerFn()
@@ -112,7 +107,10 @@ export const getIslandPricingsFn = createServerFn()
           locations: p.locations.map((l) => ({ value: l })),
         })
       )
-      return { pricings:response.data.pricings, validFromDate: response.data.effective_date }
+      return {
+        pricings: response.data.pricings,
+        validFromDate: response.data.effective_date,
+      }
     }
     return undefined
   })
@@ -123,6 +121,4 @@ export const getCompanyPricingDatesFn = createServerFn().handler(
 
 export const activateCompanyPricingFn = createServerFn()
   .inputValidator(ActivatePricingSchema)
-  .handler(({ data }) =>
-    apiResponseTransform(activateCompanyPricing(data))
-  )
+  .handler(({ data }) => apiResponseTransform(activateCompanyPricing(data)))

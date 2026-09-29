@@ -6,6 +6,7 @@ import {
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
   getActiveLoadingOffloadingFreesFn,
+  getCompanyActiveDistancePricingFn,
 } from "./services"
 import { ActivePricingSearchParams, PricingSearchParams } from "./schemas"
 
@@ -14,6 +15,8 @@ export const pricingQueryKeys = {
   list: () => [...pricingQueryKeys.all(), "list"] as const,
   distances: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "distances", filter] as const,
+  distanceActive: () =>
+    [...pricingQueryKeys.list(), "distances", "active"] as const,
   routes: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "routes", filter] as const,
   loadingOffloading: (filter?: PricingSearchParams | undefined) =>
@@ -34,6 +37,13 @@ export const distancePricingQueryOptions = (data?: PricingSearchParams) =>
   queryOptions({
     queryKey: pricingQueryKeys.distances(data),
     queryFn: () => getDistanceTonnagePricingFn({ data: { ...data } }),
+    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+  })
+
+export const companyActiveDistancePricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.distanceActive(),
+    queryFn: () => getCompanyActiveDistancePricingFn(),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 

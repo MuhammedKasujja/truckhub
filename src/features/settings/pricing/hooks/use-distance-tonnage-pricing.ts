@@ -3,12 +3,14 @@ import { ListDistancePricingRequest } from "../schemas"
 import { createBatchDistancePricingFn } from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import {
-  distancePricingQueryOptions,
   companyRoutePricingQueryOptions,
+  companyActiveDistancePricingQueryOptions,
 } from "../query-options"
 
 export function useDistanceTonnagePricing() {
-  const { data, isLoading, error } = useQuery(distancePricingQueryOptions())
+  const { data, isLoading, error } = useQuery(
+    companyActiveDistancePricingQueryOptions()
+  )
 
   return { isLoading, data: data?.data, error }
 }

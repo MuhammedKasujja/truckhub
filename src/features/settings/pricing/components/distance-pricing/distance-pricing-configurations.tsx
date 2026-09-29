@@ -128,9 +128,9 @@ export function CompanyLoadingPricingConfigurationDialog() {
                 </Button>
               </div>
               <DistancePricingScheduleGrid
-                pricings={companyPricings?.data.pricings ??[]}
+                pricings={companyPricings?.data?.pricings ??[]}
                 initialDate={
-                  companyPricings?.data.effective_date ??
+                  companyPricings?.data?.effective_date ??
                   new Date().toDateString()
                 }
               />

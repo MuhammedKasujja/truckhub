@@ -54,6 +54,12 @@ export async function getDistanceTonnagePricing(search: PricingSearchParams) {
   return await apiClient.getFn<DistanceTonnagePricingResponse>(modified)
 }
 
+export async function getCompanyActiveDistancePricing() {
+  return await apiClient.getFn<DistanceTonnagePricingResponse>(
+    "/v1/pricing/distance-tonnage/active"
+  )
+}
+
 export async function createBatchLoadingPricing(
   data: LoadingOffloadingPricingRequest
 ) {
@@ -73,7 +79,9 @@ export async function getLoadingOffloadingFrees(search: PricingSearchParams) {
   return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
 }
 
-export async function getActiveLoadingOffloadingFrees(search: ActivePricingSearchParams) {
+export async function getActiveLoadingOffloadingFrees(
+  search: ActivePricingSearchParams
+) {
   const params = generateApiSearchParams({
     client_id: search.clientId,
   })

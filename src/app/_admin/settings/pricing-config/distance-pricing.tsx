@@ -1,7 +1,7 @@
 import { CompanyLoadingPricingConfigurationDialog } from "@/features/settings/pricing/components"
 import { DistancePricingScheduleGrid } from "@/features/settings/pricing/components/distance-pricing/distance-pricing-schedule-grid"
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
-import { distancePricingQueryOptions } from "@/features/settings/pricing/query-options"
+import { companyActiveDistancePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
 import { MAX_TONNAGE } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import { createFileRoute } from "@tanstack/react-router"
@@ -13,7 +13,7 @@ export const Route = createFileRoute(
   validateSearch: PricingSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(distancePricingQueryOptions()),
+    context.queryClient.ensureQueryData(companyActiveDistancePricingQueryOptions()),
 })
 
 function RouteComponent() {
