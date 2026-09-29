@@ -31,6 +31,7 @@ import { formatMoney } from "@/lib/format"
 import { ServiceRoutesDialog } from "./service-routes"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
+import { useQuotationServiceProducts } from "@/features/quotations/hooks/use-quotation-pricings"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -55,6 +56,8 @@ export function ServicesDialog({
           ...generateEmptyLineItem(),
         },
   })
+
+  const { pricing: services } = useQuotationServiceProducts(clientId)
 
   const unitPrice = form.watch("unit_price")
   const quantity = form.watch("quantity")
@@ -156,6 +159,7 @@ export function ServicesDialog({
           </DialogHeader>
           <div className="grid flex-1 grid-cols-6 overflow-hidden">
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
+              {/* {services?.map((s)=><div key={s.id}>{s.vehicle_category?.name}</div>)} */}
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-2"
@@ -173,20 +177,6 @@ export function ServicesDialog({
                     )
                   }}
                 />
-                {/* <CarBrandPickerField
-                  label={"Car Brand"}
-                  name={"car_brand_id"}
-                  control={form.control}
-                  required={false}
-                  onSelected={(_) => {
-                    form.setValue("car_model_id", "")
-                    form.setValue(
-                      "estimated_consumption_rate_km",
-                      Number(undefined)
-                    )
-                    form.setValue("vehicle_year", "")
-                  }}
-                /> */}
                 <CarModelPickerField
                   label={"Car Model"}
                   name={"car_model_id"}

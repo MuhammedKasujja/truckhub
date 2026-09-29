@@ -12,11 +12,12 @@ import {
   deleteServiceById,
   getServicesByQuery,
 } from "./server"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
-export const getServicesFn = createServerFn()
-  .handler(async () => {
-    return getServices()
-  })
+export const getServicesFn = createServerFn().handler(async () => {
+  const { data } = await apiResponseTransform(getServices())
+  return data ?? []
+})
 
 export const getServicesByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)

@@ -13,6 +13,6 @@ export const Route = createFileRoute("/_admin/services/")({
 })
 
 function RouteComponent() {
-  const { data } = useSuspenseQuery(serviceQueryOptions())
-  return <ServiceListWrapper services={data.data} />
+  const { data: services } = useSuspenseQuery(serviceQueryOptions())
+  return <ServiceListWrapper services={services} />
 }

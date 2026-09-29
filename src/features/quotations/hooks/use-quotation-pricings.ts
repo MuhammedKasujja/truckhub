@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { useClientServiceProducts } from "@/features/clients/hooks/user-client-services"
+import { useActiveServiceProducts } from "@/features/services/hooks/use-service-products"
 
 type PricingSource = "client" | "company" | undefined
 
@@ -13,7 +14,7 @@ export function useQuotationServiceProducts(clientId: EntityId) {
     clientQuery.isError ||
     (clientQuery.isSuccess && !clientQuery.data)
 
-  const companyQuery = useCompanyPricing({
+  const companyQuery = useActiveServiceProducts({
     enabled: shouldUseCompany,
   })
 
