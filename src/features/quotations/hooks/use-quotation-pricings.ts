@@ -6,6 +6,13 @@ type PricingSource = "client" | "company" | undefined
 
 const hasItems = <T>(data?: T[]) => Array.isArray(data) && data.length > 0
 
+/**
+ * 
+ * An empty client array is a valid result you want to show as-is, change shouldUseCompany to just `!clientId || clientQuery.isError`.
+ * @param clientId 
+ * @returns 
+ */
+
 export function useQuotationServiceProducts(clientId: EntityId) {
   const clientQuery = useClientServiceProducts(clientId)
 

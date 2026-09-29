@@ -13,7 +13,6 @@ import {
   RouteServiceInput,
   SmallLineItemRequest,
 } from "@/features/quotations/schemas"
-import { CarModelPickerField } from "@/features/settings/car-model/components"
 import {
   MoneyField,
   NumberField,
@@ -24,14 +23,30 @@ import {
 import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ServiceList, ServicePickerField } from "@/features/services/components"
 import { formatMoney } from "@/lib/format"
 import { ServiceRoutesDialog } from "./service-routes"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { useQuotationServiceProducts } from "@/features/quotations/hooks/use-quotation-pricings"
+import { Service } from "@/features/services/types"
+import { useTranslation } from "@/i18n"
+import { cn } from "cn"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  DataList,
+  DataListItem,
+  DataListItemLabel,
+  DataListItemValue,
+} from "@/components/ui/data-list"
+import { Badge } from "lucide-react"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -64,6 +79,8 @@ export function ServicesDialog({
   const isRoundTrip = form.watch("is_round_trip")
   const discount = form.watch("discount")
   const locations = form.watch("locations")
+  const serviceId = form.watch("service_id")
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   const locationsFields = useFieldArray({
     control: form.control,
@@ -84,6 +101,14 @@ export function ServicesDialog({
     form.setValue("subtotal", subtotal.toFixed(2))
     form.setValue("line_total", lineTotal.toFixed(2))
   }, [unitPrice, quantity, isRoundTrip, discount])
+
+  useEffect(() => {
+    const selectedService = services?.find((s) => selectedIds.includes(s.id))
+    const price = selectedService?.base_fare
+    form.setValue("unit_price", price ?? "0")
+    form.setValue("car_model_id", selectedService?.car_model?.id)
+    form.setValue("vehicle_category_id", selectedService?.vehicle_category?.id)
+  }, [serviceId])
 
   useEffect(() => {
     if (lineItem) {
@@ -161,50 +186,18 @@ export function ServicesDialog({
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
               <ServiceList
                 services={services ?? []}
-                selectable
-                onSelected={(selected) => {
-                  console.log("Selected Services", selected)
+                selectionMode="single"
+                selectedIds={selectedIds}
+                onSelectedIdsChange={(ids) => {
+                  setSelectedIds(ids)
+                  form.setValue(
+                    "service_id",
+                    ids.length > 0 ? ids[0] : undefined
+                  )
                 }}
               />
             </div>
-            <div className="col-span-2 overflow-y-auto p-6 space-y-2">
-              <Field
-                orientation={"horizontal"}
-                className="grid gap-4 md:grid-cols-2"
-              >
-                <ServicePickerField
-                  label={"Service"}
-                  name={"service_id"}
-                  control={form.control}
-                  required={false}
-                  onSelected={(service) => {
-                    const unitPrice = service?.base_fare ?? ""
-                    form.setValue(
-                      "unit_price",
-                      new Decimal(unitPrice).toFixed(2)
-                    )
-                  }}
-                />
-                <CarModelPickerField
-                  label={"Car Model"}
-                  name={"car_model_id"}
-                  // carBrandId={form.watch("car_brand_id")}
-                  control={form.control}
-                  required={false}
-                  onSelected={(model) => {
-                    form.setValue(
-                      "estimated_consumption_rate_km",
-                      Number(model?.consumption_rate)
-                    )
-                    form.setValue(
-                      "vehicle_year",
-                      model?.manufacture_year
-                        ? `${model?.manufacture_year}`
-                        : ""
-                    )
-                  }}
-                />
-              </Field>
+            <div className="col-span-2 space-y-2 overflow-y-auto p-6">
               <Field
                 orientation={"horizontal"}
                 className="grid gap-4 md:grid-cols-2"
@@ -284,5 +277,120 @@ export function ServicesDialog({
         </form>
       </DialogContent>
     </Dialog>
+  )
+}
+
+type ServiceSelectionMode = "single" | "multiple"
+
+type ServiceListProps = {
+  services: Service[]
+  selectionMode?: ServiceSelectionMode
+  selectedIds?: EntityId[]
+  onSelectedIdsChange?: (ids: EntityId[]) => void
+}
+
+function ServiceList({
+  services,
+  selectionMode,
+  selectedIds = [],
+  onSelectedIdsChange,
+}: ServiceListProps) {
+  const tr = useTranslation()
+
+  const selectable = !!selectionMode
+
+  function handleSelected(service: Service) {
+    if (!selectionMode) return
+
+    const isSelected = selectedIds.includes(service.id)
+
+    if (selectionMode === "single") {
+      onSelectedIdsChange?.(isSelected ? [] : [service.id])
+      return
+    }
+
+    const nextIds = isSelected
+      ? selectedIds.filter((id) => id !== service.id)
+      : [...selectedIds, service.id]
+
+    onSelectedIdsChange?.(nextIds)
+  }
+
+  return (
+    <div className="@container">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        {services.map((service) => {
+          const isSelected = selectedIds.includes(service.id)
+
+          return (
+            <Card
+              key={service.id}
+              role={selectable ? "button" : undefined}
+              tabIndex={selectable ? 0 : undefined}
+              aria-pressed={selectable ? isSelected : undefined}
+              onClick={selectable ? () => handleSelected(service) : undefined}
+              className={cn(
+                "rounded-2xl shadow-sm transition hover:shadow-md",
+                selectable && "cursor-pointer",
+                isSelected && "ring-2 ring-primary"
+              )}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">
+                    {service.vehicle_category?.name ??
+                      `${service.car_model?.car_brand.name} ${
+                        service.car_model?.name
+                      } (${service.car_model?.manufacture_year})`}
+                  </CardTitle>
+
+                  <Badge variant="default">{service.category}</Badge>
+                </div>
+
+                <CardDescription>{service.description}</CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-2 text-sm">
+                <div className="h-40 rounded-sm border bg-accent" />
+
+                <DataList>
+                  <DataListItem className="flex w-full justify-between">
+                    <DataListItemLabel>
+                      {tr("services.price")}
+                    </DataListItemLabel>
+
+                    <DataListItemValue className="text-end font-semibold">
+                      {formatMoney(service.base_fare)}
+                    </DataListItemValue>
+                  </DataListItem>
+
+                  <DataListItem className="flex w-full justify-between py-0">
+                    <DataListItemLabel>
+                      {tr("services.last_price")}
+                    </DataListItemLabel>
+
+                    <DataListItemValue className="text-end font-semibold">
+                      {formatMoney(service.min_fare)}
+                    </DataListItemValue>
+                  </DataListItem>
+
+                  {!service.is_truck && (
+                    <DataListItem className="flex w-full justify-between">
+                      <DataListItemLabel>
+                        {tr("services.seating_capacity")}
+                      </DataListItemLabel>
+
+                      <DataListItemValue className="text-end font-semibold">
+                        {service.seats}
+                      </DataListItemValue>
+                    </DataListItem>
+                  )}
+                </DataList>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
+    </div>
   )
 }
