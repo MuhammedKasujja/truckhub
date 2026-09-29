@@ -143,7 +143,8 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
               rate: defaultTaxRate.rate,
             },
           ]
-        : taxRates
+        : taxRates,
+      { shouldDirty: true }
     )
   }, [defaultTaxRate])
 
@@ -419,16 +420,16 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             </FrameHeader>
             <FramePanel className="space-y-4">
               <div className="flex justify-between">
-                <div className="text-muted-foreground text-sm">Subtotal</div>
+                <div className="text-sm text-muted-foreground">Subtotal</div>
                 <div>{formatMoney(subtotal)}</div>
               </div>
               <div className="flex justify-between">
-                <div className="text-muted-foreground text-sm">
+                <div className="text-sm text-muted-foreground">
                   Tax ({taxRate?.name} {taxRate?.rate}%)
                 </div>
                 <div>{formatMoney(taxAmount)}</div>
               </div>
-              <Separator/>
+              <Separator />
               <div className="flex justify-between py-1">
                 <div className="text-muted-foreground">Grand total</div>
                 <div className="font-bold">{formatMoney(grandTotal)}</div>

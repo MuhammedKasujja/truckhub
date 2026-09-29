@@ -39,17 +39,6 @@ export function BookingTableActions({
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <Can permission={"bookings:edit"}>
-            <DropdownMenuItem asChild>
-              <Link
-                to={"/bookings/$bookingId/view"}
-                params={{ bookingId: booking.id }}
-              >
-                <EditIcon />
-                Edit
-              </Link>
-            </DropdownMenuItem>
-          </Can>
           <Can permission={"bookings:view"}>
             <DropdownMenuItem asChild>
               <Link
