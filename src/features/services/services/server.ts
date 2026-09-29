@@ -17,7 +17,7 @@ import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/services"
 
-export async function getServices(_: ServiceListSearchParams) {
+export async function getServices() {
   const { data, isSuccess, error } = await apiClient.getFn<Service[]>(endpoint)
   const grouped = Object.groupBy(data! ?? [], (service, _) => service.category)
 

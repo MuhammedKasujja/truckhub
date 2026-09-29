@@ -1,7 +1,6 @@
 import {
   ServiceUpdateSchema,
   ServiceCreateSchema,
-  ServiceSearchParamsCache,
 } from "@/features/services/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -15,9 +14,8 @@ import {
 } from "./server"
 
 export const getServicesFn = createServerFn()
-  .inputValidator(ServiceSearchParamsCache)
-  .handler(async ({ data }) => {
-    return getServices(data)
+  .handler(async () => {
+    return getServices()
   })
 
 export const getServicesByQueryFn = createServerFn()
