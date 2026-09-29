@@ -46,19 +46,22 @@ export const createBatchDistancePricingFn = createServerFn()
 
 export const getDistanceTonnagePricingFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
-  .handler(async ({ data }) => {
-    return await apiResponseTransform(getDistanceTonnagePricing(data))
+  .handler(async ({ data: req }) => {
+    const { data } = await apiResponseTransform(getDistanceTonnagePricing(req))
+    return data
   })
 
-export const getCompanyActiveDistancePricingFn = createServerFn()
-  .handler(() => {
+export const getCompanyActiveDistancePricingFn = createServerFn().handler(
+  () => {
     return apiResponseTransform(getCompanyActiveDistancePricing())
-  })
+  }
+)
 
 export const getRouteTonnagePricingFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
-    return await apiResponseTransform(getRouteTonnagePricing(data))
+    const result = await apiResponseTransform(getRouteTonnagePricing(data))
+    return result.data
   })
 
 export const createBatchLoadingPricingFn = createServerFn()

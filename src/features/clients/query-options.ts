@@ -118,5 +118,6 @@ export const clientLoadingFeesQueryOptions = (clientId: EntityId) =>
 export const clientServiceProductsQueryOptions = (clientId: EntityId) =>
   queryOptions({
     queryKey: clientQueryKeys.serviceProducts(clientId),
+    enabled: !!clientId,
     queryFn: () => getClientServicesFn({ data: { id: clientId } }),
   })

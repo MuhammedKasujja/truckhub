@@ -6,11 +6,7 @@ import { clientServiceProductsQueryOptions } from "../query-options"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 export function useClientServiceProducts(clientId: EntityId) {
-  const { data, isLoading } = useQuery(
-    clientServiceProductsQueryOptions(clientId)
-  )
-
-  return { isLoading, data: data?.data, error: data?.error }
+  return useQuery(clientServiceProductsQueryOptions(clientId))
 }
 
 const useCreateClientServiceBase = createEntityActionHook(

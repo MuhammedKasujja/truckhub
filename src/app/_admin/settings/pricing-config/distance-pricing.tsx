@@ -12,8 +12,11 @@ export const Route = createFileRoute(
   component: RouteComponent,
   validateSearch: PricingSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(companyActiveDistancePricingQueryOptions()),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(
+      companyActiveDistancePricingQueryOptions()
+    )
+  },
 })
 
 function RouteComponent() {

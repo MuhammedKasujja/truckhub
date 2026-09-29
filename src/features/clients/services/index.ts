@@ -153,7 +153,8 @@ export const changeClientTypeFn = createServerFn()
 export const getClientServicesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getClientServices(data.id)
+    const response = await apiResponseTransform(getClientServices(data.id))
+    return response.data
   })
 
 export const createClientServiceFn = createServerFn({ method: "POST" })

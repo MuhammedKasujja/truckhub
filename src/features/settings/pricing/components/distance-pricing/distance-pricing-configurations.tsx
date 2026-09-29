@@ -41,7 +41,7 @@ export function CompanyLoadingPricingConfigurationDialog() {
   const { data: companyPricings } = useQuery(
     distancePricingQueryOptions(search)
   )
-  const referenceDate = companyPricings?.data?.effective_date
+  const referenceDate = companyPricings?.effective_date
 
   async function handleSubmit(data: BatchPricingPayload) {
     const { message, error, isSuccess } = await createBatchRoutePricingFn({
@@ -128,9 +128,9 @@ export function CompanyLoadingPricingConfigurationDialog() {
                 </Button>
               </div>
               <DistancePricingScheduleGrid
-                pricings={companyPricings?.data?.pricings ??[]}
+                pricings={companyPricings?.pricings ??[]}
                 initialDate={
-                  companyPricings?.data?.effective_date ??
+                  companyPricings?.effective_date ??
                   new Date().toDateString()
                 }
               />
