@@ -58,6 +58,7 @@ export type Shipment = {
   }
   item: ShipmentLineItem
   consumption: ShipmentVehicleConsumption | null
+  updated_at: string
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<

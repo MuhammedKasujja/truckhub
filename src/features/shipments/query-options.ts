@@ -64,6 +64,7 @@ export const shipmentsDetailsQueryOptions = (shipmentId: EntityId) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.detail(shipmentId),
     queryFn: () => getShipmentByIdFn({ data: { id: shipmentId } }),
+    enabled: !!shipmentId
   })
 
 export const shipmentsCompletedQueryOptions = (
