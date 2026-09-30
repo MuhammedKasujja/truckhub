@@ -33,6 +33,7 @@ import { formatDate, formatMoney, formatNumber } from "@/lib/format"
 import { Empty, EmptyContent } from "@/components/ui/empty"
 import { useShipmentDetails } from "../hooks/use-shipment-details"
 import { cn } from "@/lib/utils"
+import Decimal from "decimal.js"
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -232,6 +233,10 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   const distance = trip?.consumption?.distance_km
   const rate = parseFloat(trip?.vehicle?.fuel_consumption_rate ?? "")
   const litersUsed = (((distance ?? 0) / 100) * rate).toFixed(1)
+  const totalDue = new Decimal(shipment.item.unit_price ?? "0")
+    .minus(shipment.item.discount ?? "0")
+    .toString()
+    
   return (
     <div className="space-y-4">
       {/* Route */}
@@ -310,13 +315,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           <BillLine label="Item type" value={shipment.item.item_type} />
           <Separator className="my-1" />
           <div className="pt-3">
-            <BillLine
-              label="Total due"
-              value={formatMoney(
-                shipment.item.unit_price - shipment.item.discount
-              )}
-              total
-            />
+            <BillLine label="Total due" value={formatMoney(totalDue)} total />
           </div>
         </CardContent>
       </Card>

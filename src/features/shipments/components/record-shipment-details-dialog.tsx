@@ -41,14 +41,22 @@ export function RecordShipmentDetailsDialog({
 }: Props) {
   const { saveShipmentDetails, isPending } = useRecordShipmentDetails()
 
+  const consumption = shipment?.consumption
+  const consumedFuelRates = consumption?.consumed_fuel_rates ?? []
+
   const form = useForm<RecordShipmentDetailsInput>({
     resolver: zodResolver(recordShipmentDetailsSchema),
     defaultValues: {
       unitId: shipment?.id,
-      startMileage: shipment?.consumption?.start_mileage,
-      endMileage: shipment?.consumption?.end_mileage,
+      startMileage: consumption?.start_mileage,
+      endMileage: consumption?.end_mileage,
       vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
-      consumedFuelRates: [{ value: "0" }],
+      consumedFuelRates:
+        consumedFuelRates.length > 0
+          ? consumedFuelRates.map((rate) => ({
+              value: rate,
+            }))
+          : [{ value: "0" }],
       actualFuelConsumed: "0",
     },
     reValidateMode: "onChange",
@@ -163,7 +171,7 @@ export function RecordShipmentDetailsDialog({
                 size={"icon-sm"}
                 onClick={() => fuelConsumptionRatesFields.append({})}
               >
-                <ActionIcon action="create"/>
+                <ActionIcon action="create" />
               </Button>
             </FieldLabel>
             {fuelConsumptionRatesFields.fields.map((ele, index) => (
