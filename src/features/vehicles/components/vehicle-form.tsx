@@ -14,7 +14,7 @@ import {
   VehicleUpdateSchema,
 } from "@/features/vehicles/schemas"
 import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
-import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
+import { EngineTypes, vehicleTransmissionList } from "@/features/vehicles/types"
 import { toast } from "sonner"
 import z from "zod"
 import { AxlesList, VehicleCylinderList } from "@/config/constants"
@@ -191,7 +191,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     />
                   </Field>
                   <NumberField
-                    label={tr("tank_capacity")}
+                    label={tr("engineCapacity")}
                     name={"tank_capacity"}
                     control={form.control}
                   />
@@ -220,21 +220,21 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 </FieldGroup>
                 <FieldGroup>
                   <SelectField
-                    label={tr("fuel_type")}
+                    label={tr("engineType")}
                     control={form.control}
                     name={"engine_type"}
-                    placeholder="Select fuel type"
+                    placeholder="Select engine type"
                     options={EngineTypes.map((opt) => ({
                       label: tr(`common.${opt}`),
                       value: opt,
                     }))}
                   />
                   <SelectField
-                    label={tr("gearbox")}
+                    label={tr("transmission")}
                     control={form.control}
                     name={"gearbox"}
-                    placeholder="Select gearbox"
-                    options={Gearboxes.map((opt) => ({
+                    placeholder="Select transmission"
+                    options={vehicleTransmissionList.map((opt) => ({
                       label: tr(`common.${opt}`),
                       value: opt,
                     }))}

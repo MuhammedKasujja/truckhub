@@ -159,7 +159,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
 
               <DetailItem label="Year" value={vehicle.year} />
 
-              <DetailItem label="Gearbox" value={vehicle.gearbox} />
+              <DetailItem label="Transmission" value={vehicle.gearbox} />
 
               <DetailItem label="Engine Type" value={vehicle.engine_type} />
 

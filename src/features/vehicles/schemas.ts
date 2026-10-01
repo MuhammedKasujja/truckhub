@@ -1,9 +1,9 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
 import { vehicleStatuses } from "./enums"
-import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { DefaultSearchParamsSchema, plateNumberSchema } from "@/common/schemas"
+import { EngineTypes, vehicleTransmissionList, Vehicle } from "@/features/vehicles/types"
 
 export const VehicleCreateSchema = z.object({
   plate_number: plateNumberSchema,
@@ -13,7 +13,7 @@ export const VehicleCreateSchema = z.object({
   tank_capacity: z.number(),
   fuel_consumption_rate: z.number(),
   engine_type: z.enum(EngineTypes),
-  gearbox: z.enum(Gearboxes),
+  gearbox: z.enum(vehicleTransmissionList),
   // year: z.number().min(2010).max((new Date()).getFullYear()),
   year: z.string(),
   seats: z.number().optional().nullable(),
@@ -47,7 +47,7 @@ export const VehicleSearchParamsCache = z.object({
   category_id: IDSchema.optional(),
   tonnage: z.string().optional(),
   engine_type: z.enum(EngineTypes).optional(),
-  gearbox: z.enum(Gearboxes).optional(),
+  gearbox: z.enum(vehicleTransmissionList).optional(),
   consumption_rate: z.string().optional(),
   filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,

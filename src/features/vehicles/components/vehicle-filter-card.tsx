@@ -142,7 +142,7 @@ export function VehicleFilterCard() {
             />
           </div>
           <div className="w-full space-y-4">
-            <Label htmlFor="gearbox">Gearbox</Label>
+            <Label htmlFor="gearbox">Transmission</Label>
             <GearboxTypePicker
               id="gearbox"
               value={search.gearbox}

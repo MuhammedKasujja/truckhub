@@ -18,6 +18,7 @@ import {
   vehicleUnAssignDriver,
 } from "./server"
 import { ApiError } from "@/types"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getVehiclesFn = createServerFn()
   .inputValidator(VehicleSearchParamsCache)
@@ -50,7 +51,8 @@ export const getVehicleByIdFn = createServerFn()
 export const getVehicleDetailsByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getVehicleDetailsById(data.id)
+   const result = await apiResponseTransform(getVehicleDetailsById(data.id))
+   return result.data!
   })
 
 export const deleteVehicleFn = createServerFn()
