@@ -73,7 +73,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
   const {
     formSchema,
     form,
-    vehicleType,
+    vehicleCategory,
     toggleFeatures,
     driveTrains,
     selectedFeatures,
@@ -267,7 +267,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     }
                   />
                   <AutoCompleteField
-                    disabled={!vehicleType}
+                    disabled={!vehicleCategory}
                     label={tr("common.drive_train")}
                     control={form.control}
                     name={"drive_train_id"}
@@ -280,7 +280,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                       })) ?? []
                     }
                   />
-                  {vehicleType?.is_truck && (
+                  {vehicleCategory?.is_truck && (
                     <div className="space-y-4">
                       <NumberField
                         label={"Tonnage Capacity"}

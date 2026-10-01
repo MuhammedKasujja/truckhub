@@ -1,30 +1,31 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
+import { vehicleTypesList } from "./enums"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
-import { VehicleType } from "@/features/settings/vehicle-categories/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import { VehicleCategory } from "@/features/settings/vehicle-categories/types"
 
-export const VehicleTypeCreateSchema = z.object({
+export const VehicleCategoryCreateSchema = z.object({
   name: z.string(),
-  is_truck: z.boolean().default(false).optional(),
+  type: z.enum(vehicleTypesList),
   parent_category_id: IDSchema.optional(),
 })
 
-export const VehicleTypeUpdateSchema = z.object({
+export const VehicleCategoryUpdateSchema = z.object({
   id: IDSchema,
-  ...VehicleTypeCreateSchema.partial().shape,
+  ...VehicleCategoryCreateSchema.partial().shape,
 })
 
-export type VehicleTypeCreateSchemaType = z.infer<
-  typeof VehicleTypeCreateSchema
+export type VehicleCategoryCreateSchemaType = z.infer<
+  typeof VehicleCategoryCreateSchema
 >
 
-export type VehicleTypeUpdateSchemaType = z.infer<
-  typeof VehicleTypeUpdateSchema
+export type VehicleCategoryUpdateSchemaType = z.infer<
+  typeof VehicleCategoryUpdateSchema
 >
 
-export const VehicleTypeSearchParamsCache = z.object({
-  sort: getSortingStateSchema<VehicleType>().default([
+export const VehicleCategorySearchParamsCache = z.object({
+  sort: getSortingStateSchema<VehicleCategory>().default([
     { id: "id", desc: true },
   ]),
   // advanced filter
@@ -32,6 +33,6 @@ export const VehicleTypeSearchParamsCache = z.object({
   ...DefaultSearchParamsSchema.shape,
 })
 
-export type VehicleTypeListSearchParams = z.infer<
-  typeof VehicleTypeSearchParamsCache
+export type VehicleCategoryListSearchParams = z.infer<
+  typeof VehicleCategorySearchParamsCache
 >

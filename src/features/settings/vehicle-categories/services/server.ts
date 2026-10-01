@@ -1,35 +1,36 @@
 "use server";
 
 import * as apiClient from "@/lib/api-client";
-import { VehicleType } from "@/features/settings/vehicle-categories/types";
+import { VehicleCategory } from "@/features/settings/vehicle-categories/types";
 import {
-  VehicleTypeCreateSchemaType,
-  VehicleTypeListSearchParams,
-  VehicleTypeUpdateSchemaType,
+  VehicleCategoryCreateSchemaType,
+  VehicleCategoryListSearchParams,
+  VehicleCategoryUpdateSchemaType,
 } from "@/features/settings/vehicle-categories/schemas";
+import { EntityId } from "@/schemas";
 
 const endpoint = "/v1/vehicle-categories";
 
-export async function getVehicleTypes(input: VehicleTypeListSearchParams) {
-  const { data, isSuccess, error } = await apiClient.getFn<VehicleType[]>(
+export async function getVehicleCategorys(input: VehicleCategoryListSearchParams) {
+  const { data, isSuccess, error } = await apiClient.getFn<VehicleCategory[]>(
     `${endpoint}?limit=${input.perPage}`,
   );
   return { data: isSuccess ? data! : [], error };
 }
 
-export async function getVehicleTypeById(vehicleTypeId: number | string) {
-  return await apiClient.getFn<VehicleType>(`${endpoint}/${vehicleTypeId}`);
+export async function getVehicleCategoryById(categoryId: EntityId) {
+  return await apiClient.getFn<VehicleCategory>(`${endpoint}/${categoryId}`);
 }
 
-export async function deleteVehicleTypeById(vehicleTypeId: number | string) {
-  return await apiClient.deleteFn(`${endpoint}/${vehicleTypeId}`);
+export async function deleteVehicleCategoryById(categoryId: EntityId) {
+  return await apiClient.deleteFn(`${endpoint}/${categoryId}`);
 }
 
-export async function updateVehicleType(data: VehicleTypeUpdateSchemaType) {
-  const { id: vehicleTypeId, ...rest } = data;
-  return await apiClient.putFn<VehicleType>(`${endpoint}/${vehicleTypeId}`, rest);
+export async function updateVehicleCategory(data: VehicleCategoryUpdateSchemaType) {
+  const { id: categoryId, ...rest } = data;
+  return await apiClient.putFn<VehicleCategory>(`${endpoint}/${categoryId}`, rest);
 }
 
-export async function createVehicleType(data: VehicleTypeCreateSchemaType) {
-  return await apiClient.postFn<VehicleType>(endpoint, data);
+export async function createVehicleCategory(data: VehicleCategoryCreateSchemaType) {
+  return await apiClient.postFn<VehicleCategory>(endpoint, data);
 }

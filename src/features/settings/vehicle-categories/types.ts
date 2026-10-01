@@ -1,6 +1,6 @@
 import { EntityId } from "@/schemas";
 
-export type VehicleType = {
+export type VehicleCategory = {
   id: EntityId;
   name: string;
   is_truck: boolean;

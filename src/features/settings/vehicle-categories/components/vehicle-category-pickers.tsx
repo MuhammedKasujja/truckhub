@@ -1,4 +1,4 @@
-import { VehicleType } from "../types"
+import { VehicleCategory } from "../types"
 import { EntityPickerProps } from "@/common/types"
 import {
   FormAutoComplete,
@@ -12,10 +12,10 @@ export function VehicleCategoryPicker({
   value,
   id,
   onSelected,
-}: EntityPickerProps<VehicleType>) {
+}: EntityPickerProps<VehicleCategory>) {
   const { data: vehicleCofig, isLoading } = useVehicleConfigurationsQuery()
   return (
-    <AutoComplete<VehicleType>
+    <AutoComplete<VehicleCategory>
       id={id}
       options={vehicleCofig?.vehicle_types ?? []}
       loading={isLoading}
@@ -39,7 +39,7 @@ export function VehicleCategoryPickerField<TFieldValues extends FieldValues>({
   remote = false,
   control,
   ...props
-}: FormAutoCompleteProps<TFieldValues, VehicleType>) {
+}: FormAutoCompleteProps<TFieldValues, VehicleCategory>) {
   //  const [query, setQuery] = useState("")
   const { data: vehicleCofig, isLoading } = useVehicleConfigurationsQuery()
   return (

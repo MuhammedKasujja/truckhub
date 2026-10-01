@@ -13,7 +13,7 @@ export function useVehicleForm(
   vehicleCofig: VehicleConfigurations | undefined,
   initialData?: z.infer<typeof VehicleUpdateSchema>
 ) {
-  const [vehicleType, setVehicleType] = React.useState<
+  const [vehicleCategory, setVehicleCategory] = React.useState<
     | {
         name: string
         is_truck: boolean
@@ -45,14 +45,14 @@ export function useVehicleForm(
 
   //  Track vehicle type when car model changes to populate drive trains for small cars and trucks
   React.useEffect(() => {
-    const vehicleType = vehicleCofig?.vehicle_types.find((ele) =>
+    const vehicleCategory = vehicleCofig?.vehicle_types.find((ele) =>
       carModels.find((model) => model.vehicle_category_id === ele.id)
     )
-    form.setValue("vehicle_category_id", vehicleType?.id)
-    setVehicleType(vehicleType)
+    form.setValue("vehicle_category_id", vehicleCategory?.id)
+    setVehicleCategory(vehicleCategory)
     setDriveTrains(
       vehicleCofig?.drive_trains.filter(
-        (ele) => ele.is_truck === vehicleType?.is_truck
+        (ele) => ele.is_truck === vehicleCategory?.is_truck
       ) ?? []
     )
     // form.reset({ drive_train_id: undefined, tonnage_id: undefined });
@@ -91,7 +91,7 @@ export function useVehicleForm(
     driveTrains,
     carModels,
     carBrands: vehicleCofig?.car_brands,
-    vehicleType,
+    vehicleCategory,
     toggleFeatures,
   }
 }

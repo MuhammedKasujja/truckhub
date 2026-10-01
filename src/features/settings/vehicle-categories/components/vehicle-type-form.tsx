@@ -15,13 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import z from "zod"
 import {
-  VehicleTypeCreateSchema,
-  VehicleTypeUpdateSchemaType,
-  VehicleTypeUpdateSchema,
+  VehicleCategoryCreateSchema,
+  VehicleCategoryUpdateSchemaType,
+  VehicleCategoryUpdateSchema,
 } from "@/features/settings/vehicle-categories/schemas"
 import {
-  createVehicleTypeFn,
-  updateVehicleTypeFn,
+  createVehicleCategoryFn,
+  updateVehicleCategoryFn,
 } from "@/features/settings/vehicle-categories/services"
 import { SwitchField, TextField } from "@/components/ui/form-fields"
 import React from "react"
@@ -33,7 +33,7 @@ import { ActionIcon } from "@/components/icons"
 
 type Props = {
   trigger?: React.ReactNode
-  initialData?: VehicleTypeUpdateSchemaType
+  initialData?: VehicleCategoryUpdateSchemaType
 }
 
 export function VehicleCategoryForm({ trigger, initialData }: Props) {
@@ -44,7 +44,7 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
 
   const isEdit = !!initialData
 
-  const formSchema = isEdit ? VehicleTypeUpdateSchema : VehicleTypeCreateSchema
+  const formSchema = isEdit ? VehicleCategoryUpdateSchema : VehicleCategoryCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,8 +54,8 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const promise =
       "id" in values
-        ? updateVehicleTypeFn({ data: values })
-        : createVehicleTypeFn({ data: values })
+        ? updateVehicleCategoryFn({ data: values })
+        : createVehicleCategoryFn({ data: values })
 
     const { isSuccess, error, message } = await promise
     if (isSuccess) {
@@ -98,7 +98,7 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
               <SwitchField
                 label="Truck Vehicle"
                 control={form.control}
-                name={"is_truck"}
+                name={"type"}
                 description="When checked indicates this is a truck vehicle"
               />
             </div>

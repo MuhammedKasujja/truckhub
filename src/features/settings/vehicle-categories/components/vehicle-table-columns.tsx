@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { VehicleType } from "@/features/settings/vehicle-categories/types"
+import { VehicleCategory } from "@/features/settings/vehicle-categories/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { VehicleCategoryForm } from "./vehicle-type-form"
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
 
-export function getVehicleTypeColumns(): ColumnDef<VehicleType>[] {
+export function getVehicleCategoryColumns(): ColumnDef<VehicleCategory>[] {
   return [
     {
       accessorKey: "id",

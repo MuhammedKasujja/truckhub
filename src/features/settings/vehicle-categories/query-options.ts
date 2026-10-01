@@ -1,6 +1,6 @@
-import { getVehicleTypesFn } from "./services"
+import { getVehicleCategorysFn } from "./services"
 import { queryOptions } from "@tanstack/react-query"
-import { VehicleTypeListSearchParams } from "./schemas"
+import { VehicleCategoryListSearchParams } from "./schemas"
 
 export const vehicleTypesQueryKeys = {
   all: () => ["vehicle-types"] as const,
@@ -9,10 +9,10 @@ export const vehicleTypesQueryKeys = {
   detail: (id: string) => [...vehicleTypesQueryKeys.details(), id] as const,
 } as const
 
-export const createVehicleTypesQueryOptions = (
-  search: VehicleTypeListSearchParams
+export const createVehicleCategorysQueryOptions = (
+  search: VehicleCategoryListSearchParams
 ) =>
   queryOptions({
     queryKey: [...vehicleTypesQueryKeys.list(), search],
-    queryFn: () => getVehicleTypesFn({ data: { ...search, perPage: 50 } }),
+    queryFn: () => getVehicleCategorysFn({ data: { ...search, perPage: 50 } }),
   })

@@ -12,7 +12,7 @@ useEntityPicker          →  headless hook: resolve-by-id, search, infinite scr
 createEntityPicker       →  factory: binds a config to AutoComplete + RHF wiring
 ```
 
-Concrete pickers (`ClientPicker`, `VehicleTypePicker`, …) are just
+Concrete pickers (`ClientPicker`, `VehicleCategoryPicker`, …) are just
 **configured instances** of `createEntityPicker`, not separate
 implementations. New entity → new config object, not new code.
 
@@ -354,18 +354,18 @@ function BookingForm() {
 }
 ```
 
-## Concrete example — `VehicleTypePicker` (local, static)
+## Concrete example — `VehicleCategoryPicker` (local, static)
 
 ```tsx
-export const { Picker: VehicleTypePicker, PickerField: VehicleTypePickerField } =
-  createEntityPicker<VehicleType>({
-    entityName: "vehicleType",
-    detailQueryOptions: vehicleTypeDetailQueryOptions,
+export const { Picker: VehicleCategoryPicker, PickerField: VehicleCategoryPickerField } =
+  createEntityPicker<VehicleCategory>({
+    entityName: "vehicleCategory",
+    detailQueryOptions: vehicleCategoryDetailQueryOptions,
     defaultSearchParams: { search: "" },
     getOptionValue: (t) => t.id,
     renderOption: (t) => t.name,
     mode: "local",
-    staticOptions: () => getVehicleTypesFn({ perPage: 200 }).then((res) => res.data),
+    staticOptions: () => getVehicleCategorysFn({ perPage: 200 }).then((res) => res.data),
     filterFn: (t, q) => t.name.toLowerCase().includes(q.toLowerCase()),
   })
 ```
@@ -395,18 +395,18 @@ Per-instance override (e.g. compact usage in a table row):
   doesn't warrant its own `create*Picker` export.
 
 ```tsx
-function VehicleTypeChips({ value, onChange }: {
-  value: VehicleType | string | null
-  onChange: (v: VehicleType | null) => void
+function VehicleCategoryChips({ value, onChange }: {
+  value: VehicleCategory | string | null
+  onChange: (v: VehicleCategory | null) => void
 }) {
   const p = useEntityPicker(
     {
-      entityName: "vehicleType",
-      detailQueryOptions: vehicleTypeDetailQueryOptions,
+      entityName: "vehicleCategory",
+      detailQueryOptions: vehicleCategoryDetailQueryOptions,
       defaultSearchParams: { search: "" },
       getOptionValue: (t) => t.id,
       mode: "local",
-      staticOptions: () => getVehicleTypesFn({ perPage: 200 }).then((res) => res.data),
+      staticOptions: () => getVehicleCategorysFn({ perPage: 200 }).then((res) => res.data),
     },
     value,
     onChange

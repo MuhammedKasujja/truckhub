@@ -6,20 +6,20 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { getVehicleTypeColumns } from "./vehicle-table-columns"
+import { getVehicleCategoryColumns } from "./vehicle-table-columns"
 import { VehicleCategoryForm } from "./vehicle-type-form"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { createVehicleTypesQueryOptions } from "../query-options"
+import { createVehicleCategorysQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 
-export function VehicleTypeTable() {
+export function VehicleCategoryTable() {
   const search = useSearch({
     from: "/_admin/settings/vehicle-config/vehicle-types/",
   })
-  const { data } = useSuspenseQuery(createVehicleTypesQueryOptions(search))
-  const columns = React.useMemo(() => getVehicleTypeColumns(), [])
+  const { data } = useSuspenseQuery(createVehicleCategorysQueryOptions(search))
+  const columns = React.useMemo(() => getVehicleCategoryColumns(), [])
 
   useFetchEror(data.error)
 
@@ -50,6 +50,6 @@ export function VehicleTypeTable() {
   )
 }
 
-export function VehicleTypeTableSkeleton() {
+export function VehicleCategoryTableSkeleton() {
   return <DataTableSkeleton columnCount={2} filterCount={1} shrinkZero />
 }
