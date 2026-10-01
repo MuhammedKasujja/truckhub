@@ -92,7 +92,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           </Can>
         </PageAction>
       </PageHeader>
-      <div className="grid grid-flow-col gap-5 md:grid-cols-5">
+      <div className="grid grid-flow-col gap-5 md:grid-cols-5 my-6">
         <Card className="md:col-span-3">
           <CardHeader>
             <CardTitle className="capitalize">{driver?.fullname}</CardTitle>

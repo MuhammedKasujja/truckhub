@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button"
 import {
   CreditCard,
-  EyeIcon,
   MailIcon,
   MoreVertical,
 } from "lucide-react"
@@ -16,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { InvoiceTableRowAction } from "../types"
-import { isNotInEnum } from "@/common/types"
 import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
 import { ActionIcon } from "@/components/icons"
 
@@ -68,7 +66,7 @@ export function InvoiceTableActions({
             </DropdownMenuItem>
           </Can>
           <Can permission={"payments:create"}>
-            {isNotInEnum(invoice.status, ["paid"]) && (
+            {invoice.is_payable && (
               <DropdownMenuItem
                 onClick={() =>
                   setRowAction({ row: invoiceRow.row, variant: "makePayment" })

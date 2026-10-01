@@ -1,9 +1,15 @@
+import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
+import { Invoice } from "@/features/invoices/types"
+import { EnterPaymentModal } from "@/features/payments/components"
+import { useTranslation } from "@/i18n"
 import { formatDate, formatMoney } from "@/lib/format"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import Decimal from "decimal.js"
+import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
   component: RouteComponent,
@@ -16,6 +22,9 @@ export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
 function RouteComponent() {
   const { data: invoice } = Route.useLoaderData()
   const { sendInvoiceEmail } = useSendInvoiceEmail()
+  const [openModal, setOpenModal] = useState(false)
+
+  const tr = useTranslation()
   return (
     <div className="w-full">
       <div className="mx-auto space-y-6">
@@ -33,6 +42,25 @@ function RouteComponent() {
             </p>
           </div>
           <div className="flex gap-2">
+            {invoice.is_payable && (
+              <Can permission={"payments:create"}>
+                <Button
+                  variant={"secondary"}
+                  onClick={() => setOpenModal(true)}
+                >
+                  <ActionIcon action="create" />
+                  {tr("payments.form.enterPayment")}
+                </Button>
+                <EnterPaymentModal
+                  open={openModal}
+                  onOpenChange={() => setOpenModal(false)}
+                  initialData={{
+                    type: "invoice",
+                    entity_id: invoice.id,
+                  }}
+                />
+              </Can>
+            )}
             <Button variant={"outline"} asChild>
               <Link
                 to="/invoices/$invoiceId/pdf"
@@ -42,7 +70,10 @@ function RouteComponent() {
               </Link>
             </Button>
             <Button variant={"outline"}>Download PDF</Button>
-            <Button onClick={() => sendInvoiceEmail(invoice.id)}>
+            <Button
+              variant={"outline"}
+              onClick={() => sendInvoiceEmail(invoice.id)}
+            >
               Send Email
             </Button>
           </div>
@@ -186,7 +217,7 @@ function RouteComponent() {
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: Invoice["status"] }) {
   const variantClasses = {
     paid: "bg-primary text-primary-foreground",
     unpaid: "bg-destructive text-destructive-foreground",

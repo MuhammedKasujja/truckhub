@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas"
+import { InvoiceStatus } from "./enums"
 import { DataTableRowAction } from "@/types/data-table"
 
 export type InvoiceLineItem = {
@@ -16,10 +17,13 @@ export type Invoice = {
   id: EntityId
   number: string
   total: string
-  status: string
+  status: InvoiceStatus
+  is_payable: boolean
   amount_paid: string | null
   balance_due: string
   discount: string | null
+  subtotal: string | null
+  tax_amount: string | null
   due_date: Date
   purpose: string | null
   created_at: Date

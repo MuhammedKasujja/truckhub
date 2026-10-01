@@ -33,7 +33,7 @@ export const { Picker: VehiclePicker, PickerField: VehiclePickerField } =
     renderValue:(v) => (
       <div>
         <div>
-          {v.car_model.car_brand.name} {v.car_model.name} {v.year}
+          {v.car_model.car_brand.name} {v.car_model.name} {v.year} <span className="text-muted-foreground text-xs">({v.plate_number})</span>
         </div>
       </div>
     ),
