@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_admin/shipments/confirmed/")({
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
-    context.queryClient.ensureQueryData(shipmentsConfirmedQueryOptions(search)),
+    context.queryClient.prefetchQuery(shipmentsConfirmedQueryOptions(search)),
 })
 
 function RouteComponent() {

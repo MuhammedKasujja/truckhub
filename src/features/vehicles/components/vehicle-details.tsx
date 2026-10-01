@@ -107,9 +107,9 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
 
         <Card>
           <CardContent className="space-y-2 p-4">
-            <p className="text-sm text-muted-foreground">Tank Capacity</p>
+            <p className="text-sm text-muted-foreground">Engine Capacity</p>
             <p className="text-2xl font-bold">
-              {formatNumber(vehicle.tank_capacity)} L
+              {formatNumber(vehicle.tank_capacity)} cc
             </p>
           </CardContent>
         </Card>

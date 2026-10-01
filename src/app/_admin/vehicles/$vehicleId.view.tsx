@@ -7,7 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 export const Route = createFileRoute("/_admin/vehicles/$vehicleId/view")({
   component: RouteComponent,
   loader: ({ context, params }) =>
-    context.queryClient.ensureQueryData(
+    context.queryClient.prefetchQuery(
       vehicleDetailsQueryOptions(params.vehicleId)
     ),
 })

@@ -10,7 +10,7 @@ export const Route = createFileRoute(
   validateSearch: VehicleTypeSearchParamsCache,
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps: search }) =>
-    context.queryClient.ensureQueryData(createVehicleTypesQueryOptions(search)),
+    context.queryClient.prefetchQuery(createVehicleTypesQueryOptions(search)),
 })
 
 function RouteComponent() {
