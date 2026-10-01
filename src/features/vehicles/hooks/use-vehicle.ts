@@ -7,7 +7,7 @@ export function useVehicleDetailsQuery(vehicleId: EntityId) {
     vehicleDetailsQueryOptions(vehicleId)
   )
 
-  return { data, error: error, isLoading }
+  return { data: data?.data, error: error, isLoading }
 }
 
 export function useVehicleDetailsSuspenseQuery(vehicleId: EntityId) {
@@ -15,5 +15,5 @@ export function useVehicleDetailsSuspenseQuery(vehicleId: EntityId) {
     vehicleDetailsQueryOptions(vehicleId)
   )
 
-  return { data, error, isLoading }
+  return { data: data.data!, error, isLoading }
 }

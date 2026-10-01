@@ -6,13 +6,14 @@ import {
   getVehicleStatisticsFn,
   getVehicleDetailsByIdFn,
 } from "./services"
+import { EntityId } from "@/schemas"
 
 export const vehicleQueryKeys = {
   all: () => ["vehicles"],
   list: () => [...vehicleQueryKeys.all(), "list"],
   statistics: () => [...vehicleQueryKeys.list(), "statistics"],
   details: () => [...vehicleQueryKeys.all(), "detail"],
-  detail: (id: string) => [...vehicleQueryKeys.details(), id],
+  detail: (id: EntityId) => [...vehicleQueryKeys.details(), id],
   search: (params: VehicleListSearchParams) => [
     ...vehicleQueryKeys.list(),
     "search",
@@ -28,7 +29,7 @@ export const createVehiclesListQueryOptions = (
     queryFn: () => getVehiclesFn({ data: search }),
   })
 
-export const vehicleDetailsQueryOptions = (vehicleId: string) =>
+export const vehicleDetailsQueryOptions = (vehicleId: EntityId) =>
   queryOptions({
     queryKey: vehicleQueryKeys.detail(vehicleId),
     queryFn: () => getVehicleDetailsByIdFn({ data: { id: vehicleId } }),

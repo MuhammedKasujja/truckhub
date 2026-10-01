@@ -9,10 +9,10 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
   component: RouteComponent,
   beforeLoad: () => requirePermission("vehicles:edit"),
   loader: async ({ context, params }) => {
-    const vehicle = await context.queryClient.ensureQueryData(
+    const {data} = await context.queryClient.ensureQueryData(
       vehicleDetailsQueryOptions(params.vehicleId)
     )
-    return mapEditVehicle(vehicle)
+    return mapEditVehicle(data)
   },
 })
 
