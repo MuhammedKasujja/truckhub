@@ -44,7 +44,9 @@ export function IslandEditForm({ trigger, initialData }: Props) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData ? { ...initialData } : { locations: [] },
+    defaultValues: initialData
+      ? { ...initialData }
+      : { locations: [{ value: "" }] },
   })
 
   const locationFields = useFieldArray({
@@ -73,7 +75,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
+            <ActionIcon action="create" />
             Island
           </Button>
         )}
@@ -108,7 +110,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
                           locationFields.remove(locationIndex)
                       }}
                     >
-                      <ActionIcon action="delete"/>
+                      <ActionIcon action="delete" />
                     </Button>
                   )}
                 </Field>
@@ -116,7 +118,7 @@ export function IslandEditForm({ trigger, initialData }: Props) {
               <Field>
                 <Button
                   type="button"
-                  variant={"secondary"}
+                  variant={"outline"}
                   onClick={() => locationFields.append({ value: "" })}
                 >
                   Add Location

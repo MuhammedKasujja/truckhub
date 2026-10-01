@@ -8,7 +8,7 @@ import { VehicleCategory } from "@/features/settings/vehicle-categories/types"
 export const VehicleCategoryCreateSchema = z.object({
   name: z.string(),
   type: z.enum(vehicleTypesList),
-  parent_category_id: IDSchema.optional(),
+  parent_category_id: IDSchema.optional().nullable(),
 })
 
 export const VehicleCategoryUpdateSchema = z.object({

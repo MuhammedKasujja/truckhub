@@ -16,4 +16,9 @@ export const en = {
   transmission: "Transmission",
   year_of_manufacture: "Year of Manufacture",
   seating_capacity: "Seating Capacity",
-} as const;
+  vehicleTypes: {
+    car: "Car",
+    truck: "Truck",
+    van: "Van",
+  },
+} as const

@@ -23,13 +23,14 @@ import {
   createVehicleCategoryFn,
   updateVehicleCategoryFn,
 } from "@/features/settings/vehicle-categories/services"
-import { SwitchField, TextField } from "@/components/ui/form-fields"
+import { SelectField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
 import { ActionIcon } from "@/components/icons"
+import { vehicleTypesList } from "../enums"
 
 type Props = {
   trigger?: React.ReactNode
@@ -44,7 +45,9 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
 
   const isEdit = !!initialData
 
-  const formSchema = isEdit ? VehicleCategoryUpdateSchema : VehicleCategoryCreateSchema
+  const formSchema = isEdit
+    ? VehicleCategoryUpdateSchema
+    : VehicleCategoryCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,7 +75,7 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
+            <ActionIcon action="create" />
             Vehicle Category
           </Button>
         )}
@@ -95,11 +98,15 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
                 required={false}
                 description="Leave blank if this is the main category"
               />
-              <SwitchField
-                label="Truck Vehicle"
+              <SelectField
+                label={"Type"}
                 control={form.control}
                 name={"type"}
-                description="When checked indicates this is a truck vehicle"
+                placeholder="Select type"
+                options={vehicleTypesList.map((opt) => ({
+                  label: tr(`vehicleTypes.${opt}`),
+                  value: opt,
+                }))}
               />
             </div>
           </div>
