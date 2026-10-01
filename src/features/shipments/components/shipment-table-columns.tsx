@@ -9,6 +9,7 @@ import {
   ShipmentTableActions,
 } from "./shipment-table-actions"
 import { Button } from "@/components/ui/button"
+import { CopyIcon } from "lucide-react"
 
 type Props = {
   tr: TFunction
@@ -26,14 +27,17 @@ export function getShipmentTableColumns({
       size: 20,
       maxSize: 16,
       cell: ({ row }) => (
-        <Button
-          variant={"ghost"}
-          size={"sm"}
-          onClick={() => setRowAction({ row, variant: "view" })}
-          className="cursor-pointer"
-        >
-          {row.original.number}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => setRowAction({ row, variant: "view" })}
+            className="cursor-pointer"
+          >
+            {row.original.number}
+          </Button>
+          <CopyIcon className="size-3.5" />
+        </div>
         // <ShipmentTableActions
         //   shipmentRow={{ row }}
         //   setRowAction={setRowAction}
@@ -47,9 +51,15 @@ export function getShipmentTableColumns({
         const driver = row.original.driver
         if (!driver) return <p>-</p>
         return (
-          <Link to="/drivers/$driverId/view" params={{ driverId: driver?.id }}>
-            {driver?.fullname}
-          </Link>
+          <div className="space-y-0.5">
+            <Link
+              to="/drivers/$driverId/view"
+              params={{ driverId: driver?.id }}
+            >
+              {driver?.fullname}
+            </Link>
+            <div className="text-xs text-muted-foreground">{driver.phone}</div>
+          </div>
         )
       },
     },

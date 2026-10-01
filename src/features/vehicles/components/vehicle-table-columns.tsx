@@ -32,10 +32,18 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       },
     },
     {
-      accessorKey: "plate_number",
-      header: "License",
+      id: "model",
+      header: "Make/Model",
       cell: ({ row }) => {
-        return <>{row.original.plate_number}</>
+        const vehicle = row.original
+        return (
+          <div className="space-y-1">
+            <div>
+              {vehicle.car_model.car_brand.name}/{vehicle.car_model.name}
+            </div>
+            <div className="text-muted-foreground text-xs">{vehicle.plate_number}</div>
+          </div>
+        )
       },
     },
     {
@@ -98,13 +106,13 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
         )
       },
     },
-    {
-      accessorKey: "created_at",
-      header: "Date",
-      cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
-      },
-    },
+    // {
+    //   accessorKey: "created_at",
+    //   header: "Date",
+    //   cell: ({ row }) => {
+    //     return <p>{formatDateTime(row.original.created_at)}</p>
+    //   },
+    // },
     {
       id: "actions",
       cell: ({ row }) => {

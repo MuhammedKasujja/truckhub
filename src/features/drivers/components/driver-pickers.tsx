@@ -32,7 +32,17 @@ export function DriverPicker({
       filterFn={(u, q) => u.fullname.toLowerCase().includes(q.toLowerCase())}
       label="Driver"
       getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.fullname}</span>}
+      renderOption={(u) => (
+        <div>
+          <div>{u.fullname}</div>
+          <div className="text-muted-foreground">{u.phone}</div>
+        </div>
+      )}
+      renderValue={(u) => (
+        <div>
+          <div>{u.fullname}</div>
+        </div>
+      )}
     />
   )
 }
