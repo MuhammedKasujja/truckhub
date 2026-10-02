@@ -3,6 +3,7 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -30,8 +31,15 @@ import { Shipment } from "@/features/shipments/types"
 import { IconFilter2 } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { cn } from "cn"
-import { RefreshCcwIcon, SearchIcon, UserIcon } from "lucide-react"
-import { useState } from "react"
+import {
+  RefreshCcwIcon,
+  RouteIcon,
+  SearchIcon,
+  TimerIcon,
+  TruckIcon,
+  UserIcon,
+} from "lucide-react"
+import { useEffect, useState } from "react"
 
 const activeShipmentStatuses = [
   "dispatched",
@@ -58,6 +66,10 @@ function RouteComponent() {
   const [selectedShipment, setSelectedShipment] = useState<Shipment>()
   const [status, setStatus] = useState<ActiveShipmentStatus>()
 
+  useEffect(() => {
+    setSelectedShipment(shipments?.at(0))
+  }, [shipments])
+
   return (
     <div className="space-y-6">
       <PageHeader className="pb-0">
@@ -68,6 +80,56 @@ function RouteComponent() {
           </Button>
         </PageAction>
       </PageHeader>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="space-y-2">
+              <div className="text-sm font-normal">Active Trips</div>
+              <div className="text-3xl font-bold">{shipments?.length ?? 0}</div>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Across all orders
+            </CardDescription>
+            <CardAction className="rounded-xl bg-info/10 p-2 text-info">
+              <TruckIcon />
+            </CardAction>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="space-y-2">
+              <div className="text-sm font-normal">On Route</div>
+              <div className="text-3xl font-bold">
+                {shipments?.filter(
+                  (s) => s.status == "dispatched" || s.status == "in_progress"
+                ).length ?? 0}
+              </div>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              On route to next stop
+            </CardDescription>
+            <CardAction className="rounded-xl bg-success/10 p-2 text-success">
+              <RouteIcon />
+            </CardAction>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="space-y-2">
+              <div className="text-sm font-normal">Delayed</div>
+              <div className="text-3xl font-bold">
+                {shipments?.filter((s) => s.status == "delayed").length ?? 0}
+              </div>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Require attention
+            </CardDescription>
+            <CardAction className="rounded-xl bg-warning/10 p-2 text-warning">
+              <TimerIcon />
+            </CardAction>
+          </CardHeader>
+        </Card>
+      </div>
       <Card>
         <CardContent className="grid gap-5 md:grid-cols-5">
           <div className="text-lg font-semibold">
