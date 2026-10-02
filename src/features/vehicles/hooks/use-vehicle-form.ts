@@ -51,9 +51,11 @@ export function useVehicleForm(
     form.setValue("vehicle_category_id", vehicleCategory?.id)
     setVehicleCategory(vehicleCategory)
     setDriveTrains(
-      vehicleCofig?.drive_trains.filter(
-        (ele) => ele.is_truck === vehicleCategory?.is_truck
-      ) ?? []
+      vehicleCofig?.drive_trains
+      // .filter(
+      //   (ele) => ele.is_truck === vehicleCategory?.is_truck
+      // )
+       ?? []
     )
     // form.reset({ drive_train_id: undefined, tonnage_id: undefined });
   }, [vehicleCofig, selectedCarModelId])

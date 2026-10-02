@@ -267,7 +267,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     }
                   />
                   <AutoCompleteField
-                    disabled={!vehicleCategory}
+                    // disabled={!vehicleCategory}
                     label={tr("common.drive_train")}
                     control={form.control}
                     name={"drive_train_id"}
