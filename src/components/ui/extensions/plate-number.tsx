@@ -46,7 +46,9 @@ export function PlateNumber({
       mask={plateMask}
       placeholder="UA 567PL or UAN 789K"
       value={field.value}
-      onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
+      onValueChange={(masked, _unmasked) => {
+        field.onChange(masked)
+      }}
       onBlur={field.onBlur}
       invalid={invalid}
       readOnly={readOnly}

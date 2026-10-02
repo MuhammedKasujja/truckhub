@@ -20,6 +20,7 @@ import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
 import { Route as DashboardRoute } from "@/app/_admin/dashboard"
 import { Route as ShipmentRoute } from "@/app/_admin/shipments/requests"
+import { Route as LiveMapRoute } from "@/app/_admin/live-map"
 import { Route as BookingsRoute } from "@/app/_admin/bookings"
 import { Route as PaymentsRoute } from "@/app/_admin/payments"
 import { Route as ServicesRoute } from "@/app/_admin/services"
@@ -41,6 +42,12 @@ export const sibebarModules: SidebarItem[] = [
   },
   {
     title: "routes.dispatch",
+    url: LiveMapRoute.to,
+    icon: getModuleIcon("Dispatches"),
+    permission: "dashboard:view",
+  },
+  {
+    title: "routes.shipments",
     url: ShipmentRoute.to,
     icon: getModuleIcon("Shipments"),
     permission: "dashboard:view",

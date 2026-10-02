@@ -45,7 +45,7 @@ export function LiveRideMap() {
     });
 
   return (
-    <div className="h-125 w-full relative">
+    <div className="h-[80vh] w-full relative rounded-2xl">
       <Map
         ref={mapRef}
         center={[4.69, 52.14]}
@@ -53,6 +53,7 @@ export function LiveRideMap() {
         styles={{
           light: MAP_LIGHT_STYLE_URL,
         }}
+        className="rounded-2xl"
       >
         {sortedRoutes.map(({ route, index }) => {
           const isSelected = index === selectedIndex;

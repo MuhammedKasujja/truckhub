@@ -158,6 +158,7 @@ const en = {
     quotations: "Quotations",
     invoices: "Invoices",
     dispatch: "Dispatch",
+    shipments: "Shipments",
   },
   users: "Users",
   roles: "Roles",

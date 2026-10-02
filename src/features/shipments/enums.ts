@@ -9,6 +9,7 @@ export const shipmentStatuses = [
   "invoiced",
   "cancelled",
   "delayed",
+  "idel",
 ] as const
 
 export type ShipmentStatus = (typeof shipmentStatuses)[number]

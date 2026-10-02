@@ -2,13 +2,11 @@ import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/auth"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import {
-  SidebarProvider,
-  SidebarInset,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
-import { NavigationActions, NavigationButtons } from "@/components/navigation-actions"
+  NavigationActions,
+  NavigationButtons,
+} from "@/components/navigation-actions"
 import { GlobalSearchDialog } from "@/components/global-search-dialog"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
@@ -44,7 +42,7 @@ function RouteComponent() {
             <div className="flex w-full items-center justify-between gap-4">
               {/* <div></div> */}
               <NavigationButtons />
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
                 <GlobalSearchDialog />
                 <CreateEntityDialog />
               </div>

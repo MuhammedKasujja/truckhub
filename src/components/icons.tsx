@@ -20,6 +20,7 @@ import {
   PanelTopCloseIcon,
   MailIcon,
   EyeIcon,
+  MapIcon,
 } from "lucide-react"
 import { ComponentType, SVGProps } from "react"
 
@@ -28,6 +29,7 @@ export type IconComponent = ComponentType<SVGProps<SVGSVGElement>>
 type Module =
   | "Dashboard"
   | "Clients"
+  | "Dispatches"
   | "Shipments"
   | "Drivers"
   | "Vehicles"
@@ -57,6 +59,7 @@ type Actions =
 export function getModuleIcon(module: Module): IconComponent {
   const moduleIcons: Record<Module, IconComponent> = {
     Dashboard: LayoutDashboard,
+    Dispatches: MapIcon,
     Shipments: IconAssembly,
     Rides: DatabaseSearch,
     Bookings: CalendarCheck,

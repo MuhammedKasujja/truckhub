@@ -63,7 +63,7 @@ function RouteComponent() {
           </Button>
           <Can permission="rides:active">
             <Button size={"sm"} asChild>
-              <Link to={"/shipments/live"}>
+              <Link to={"/live-map"}>
                 <MapIcon />
                 Live Map
               </Link>

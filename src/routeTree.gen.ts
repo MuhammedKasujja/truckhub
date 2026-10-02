@@ -25,12 +25,12 @@ import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/inde
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
+import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
 import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/index'
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
-import { Route as AdminShipmentsLiveRouteImport } from './app/_admin/shipments/live'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
 import { Route as AdminInvoicesCreateRouteImport } from './app/_admin/invoices/create'
@@ -176,6 +176,11 @@ const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   path: '/payments/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminLiveMapIndexRoute = AdminLiveMapIndexRouteImport.update({
+  id: '/live-map/',
+  path: '/live-map/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminInvoicesIndexRoute = AdminInvoicesIndexRouteImport.update({
   id: '/invoices/',
   path: '/invoices/',
@@ -200,11 +205,6 @@ const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
   getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminShipmentsLiveRoute = AdminShipmentsLiveRouteImport.update({
-  id: '/live',
-  path: '/live',
-  getParentRoute: () => AdminShipmentsRouteRoute,
 } as any)
 const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
   id: '/rides/new',
@@ -600,12 +600,12 @@ export interface FileRoutesByFullPath {
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
-  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
   '/drivers/': typeof AdminDriversIndexRoute
   '/invoices/': typeof AdminInvoicesIndexRoute
+  '/live-map/': typeof AdminLiveMapIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
@@ -688,12 +688,12 @@ export interface FileRoutesByTo {
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
-  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
   '/drivers': typeof AdminDriversIndexRoute
   '/invoices': typeof AdminInvoicesIndexRoute
+  '/live-map': typeof AdminLiveMapIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
@@ -778,12 +778,12 @@ export interface FileRoutesById {
   '/_admin/invoices/create': typeof AdminInvoicesCreateRoute
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
-  '/_admin/shipments/live': typeof AdminShipmentsLiveRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
   '/_admin/drivers/': typeof AdminDriversIndexRoute
   '/_admin/invoices/': typeof AdminInvoicesIndexRoute
+  '/_admin/live-map/': typeof AdminLiveMapIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
@@ -868,12 +868,12 @@ export interface FileRouteTypes {
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
-    | '/shipments/live'
     | '/bookings/'
     | '/clients/'
     | '/dashboard/'
     | '/drivers/'
     | '/invoices/'
+    | '/live-map/'
     | '/payments/'
     | '/quotations/'
     | '/reports/'
@@ -956,12 +956,12 @@ export interface FileRouteTypes {
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
-    | '/shipments/live'
     | '/bookings'
     | '/clients'
     | '/dashboard'
     | '/drivers'
     | '/invoices'
+    | '/live-map'
     | '/payments'
     | '/quotations'
     | '/reports'
@@ -1045,12 +1045,12 @@ export interface FileRouteTypes {
     | '/_admin/invoices/create'
     | '/_admin/rides/live'
     | '/_admin/rides/new'
-    | '/_admin/shipments/live'
     | '/_admin/bookings/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
     | '/_admin/drivers/'
     | '/_admin/invoices/'
+    | '/_admin/live-map/'
     | '/_admin/payments/'
     | '/_admin/quotations/'
     | '/_admin/reports/'
@@ -1240,6 +1240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPaymentsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/live-map/': {
+      id: '/_admin/live-map/'
+      path: '/live-map'
+      fullPath: '/live-map/'
+      preLoaderRoute: typeof AdminLiveMapIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/invoices/': {
       id: '/_admin/invoices/'
       path: '/invoices'
@@ -1274,13 +1281,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/bookings/'
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/shipments/live': {
-      id: '/_admin/shipments/live'
-      path: '/live'
-      fullPath: '/shipments/live'
-      preLoaderRoute: typeof AdminShipmentsLiveRouteImport
-      parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/rides/new': {
       id: '/_admin/rides/new'
@@ -1874,7 +1874,6 @@ const AdminSettingsRouteRouteWithChildren =
   AdminSettingsRouteRoute._addFileChildren(AdminSettingsRouteRouteChildren)
 
 interface AdminShipmentsRouteRouteChildren {
-  AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
   AdminShipmentsActiveIndexRoute: typeof AdminShipmentsActiveIndexRoute
   AdminShipmentsCompletedIndexRoute: typeof AdminShipmentsCompletedIndexRoute
   AdminShipmentsConfirmedIndexRoute: typeof AdminShipmentsConfirmedIndexRoute
@@ -1882,7 +1881,6 @@ interface AdminShipmentsRouteRouteChildren {
 }
 
 const AdminShipmentsRouteRouteChildren: AdminShipmentsRouteRouteChildren = {
-  AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
   AdminShipmentsActiveIndexRoute: AdminShipmentsActiveIndexRoute,
   AdminShipmentsCompletedIndexRoute: AdminShipmentsCompletedIndexRoute,
   AdminShipmentsConfirmedIndexRoute: AdminShipmentsConfirmedIndexRoute,
@@ -1906,6 +1904,7 @@ interface AdminRouteRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminDriversIndexRoute: typeof AdminDriversIndexRoute
   AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
+  AdminLiveMapIndexRoute: typeof AdminLiveMapIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -1955,6 +1954,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminDriversIndexRoute: AdminDriversIndexRoute,
   AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
+  AdminLiveMapIndexRoute: AdminLiveMapIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
