@@ -1,4 +1,5 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { ModuleIcon } from "@/components/icons"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,7 +30,7 @@ import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { Shipment } from "@/features/shipments/types"
 import { IconFilter2 } from "@tabler/icons-react"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { cn } from "cn"
 import {
   RefreshCcwIcon,
@@ -77,6 +78,11 @@ function RouteComponent() {
         <PageAction>
           <Button variant={"ghost"} onClick={() => refetch()}>
             <RefreshCcwIcon /> Refresh
+          </Button>
+          <Button asChild>
+            <Link to="/shipments/active">
+              <ModuleIcon module="Shipments" /> Shipments
+            </Link>
           </Button>
         </PageAction>
       </PageHeader>
@@ -195,7 +201,7 @@ function RouteComponent() {
               <div
                 key={shp.id}
                 className={cn(
-                  "cursor-pointer space-y-2 border-y border-l-6 border-l-transparent px-2.5 py-4",
+                  "cursor-pointer space-y-2 border-y border-l-6 border-l-transparent px-2.5 py-4 hover:bg-background/20",
                   selectedShipment?.id === shp.id &&
                     "border-y-0 border-primary bg-background"
                 )}

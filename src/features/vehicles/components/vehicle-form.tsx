@@ -7,6 +7,7 @@ import {
   PlateNumberField,
   SelectField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
@@ -174,9 +175,10 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     />
                   </Field>
                   <Field className="" orientation={"horizontal"}>
-                    <TextField
+                    <YearPickerField
                       label={tr("common.year")}
                       name={"year"}
+                      placeholder="Select"
                       control={form.control}
                     />
                     <SelectField

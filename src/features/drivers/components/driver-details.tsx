@@ -139,7 +139,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
               </Can>
             </CardAction>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 grid md:grid-cols-2">
             <DetailItem label="Vehicle Number" value={vehicle.number} />
 
             <DetailItem label="Plate Number" value={vehicle.plate_number} />
@@ -154,8 +154,8 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
             <DetailItem label="Seats" value={vehicle.seats} />
 
             <DetailItem
-              label="Tank Capacity"
-              value={`${vehicle.tank_capacity} L`}
+              label="Engine Capacity"
+              value={`${vehicle.tank_capacity} cc`}
             />
 
             <DetailItem label="Exterior Color" value={vehicle.color} />

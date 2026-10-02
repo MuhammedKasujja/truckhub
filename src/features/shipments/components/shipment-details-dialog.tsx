@@ -17,7 +17,6 @@ import {
   MapPin,
   Phone,
   PlusIcon,
-  ReceiptPoundSterlingIcon,
   Truck,
   User,
 } from "lucide-react"
@@ -34,6 +33,8 @@ import { Empty, EmptyContent } from "@/components/ui/empty"
 import { useShipmentDetails } from "../hooks/use-shipment-details"
 import { cn } from "@/lib/utils"
 import Decimal from "decimal.js"
+import { IconReceiptTax, IconSend } from "@tabler/icons-react"
+
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -65,6 +66,7 @@ export function ShipmentDetailsDialog({
                   variant={"outline"}
                   onClick={() => setOpenModal("dispatch")}
                 >
+                  <IconSend/>
                   Dispatch
                 </Button>
                 {!shipment?.vehicle && (
@@ -93,7 +95,7 @@ export function ShipmentDetailsDialog({
                   variant={"outline"}
                   onClick={() => setOpenModal("record")}
                 >
-                  <ReceiptPoundSterlingIcon />
+                  <IconReceiptTax />
                   Record Details
                 </Button>
               </ButtonGroup>
