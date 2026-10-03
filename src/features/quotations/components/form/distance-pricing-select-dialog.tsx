@@ -66,7 +66,7 @@ export function DistancePricingSelectDialog({
 }: DistancePricingDialogProps) {
   const { data: response, isLoading } = useDistanceTonnagePricing()
 
-  const data= response?.pricings ??[]
+  const data = response?.pricings ?? []
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -126,222 +126,214 @@ export function DistancePricingSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[95vh] min-h-[95vh] flex-col overflow-hidden p-0 md:min-w-[95vw]">
-        <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-          <DialogTitle className="text-lg font-semibold tracking-tight">
-            Distance Pricing
-          </DialogTitle>
+      <DialogContent className="flex max-h-[95vh] min-h-[95vh] overflow-hidden p-0 md:min-w-[95vw]">
+        <form className="flex w-full flex-col">
+          <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              Distance Pricing
+            </DialogTitle>
 
-          <DialogDescription className="flex items-center justify-between gap-4">
-            <span className="text-sm text-muted-foreground">
-              Distance {distanceKm} km/l
-            </span>
-            <div className="flex gap-4">
-              <Controller
-                name={`is_round_trip`}
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field
-                    data-invalid={fieldState.invalid}
-                    orientation={"horizontal"}
-                    className="gap-2"
-                  >
-                    <FieldLabel htmlFor={field.name} className="text-sm">
-                      Round Trip
-                    </FieldLabel>
-                    <Checkbox
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                      checked={field.value ?? false}
-                      onCheckedChange={(state: boolean) =>
-                        field.onChange(state)
-                      }
-                    />
-                    {fieldState.invalid && (
-                      <FieldError
-                        className="text-xs"
-                        errors={[fieldState.error]}
-                      />
-                    )}
-                  </Field>
-                )}
-              />
-
-              <Button
-                type="button"
-                className="shrink-0"
-                onClick={form.handleSubmit((data) => {
-                  onLineItemAdded(data)
-                  onOpenChange(false)
-                })}
-              >
-                Accept
-              </Button>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="grid flex-1 overflow-hidden md:grid-cols-6">
-          {/* LEFT SIDE */}
-          <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-4">
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <InputGroup className="flex-1">
-                <InputGroupInput
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search by origin or destination..."
-                />
-                <InputGroupAddon>
-                  <Search />
-                </InputGroupAddon>
-              </InputGroup>
-              {/* <Select items={data?.tonnages ?? []}>
-                <SelectTrigger className="sm:w-48">
-                  <SelectValue placeholder="Filter by tonnage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {data?.tonnages?.map((item) => (
-                      <SelectItem
-                        key={item.min_tons}
-                        value={item.min_tons.toString()}
-                      >
-                        {formatNumber(item.min_tons)} –{" "}
-                        {formatNumber(item.max_tons)} TONS
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select> */}
-              <NumberField
-                className="w-32"
-                control={form.control}
-                name={"distance_km"}
-              />
-              <NumberField
-                className="w-32"
-                control={form.control}
-                name={"tonnage"}
-              />
-            </div>
-
-            {isLoading && (
-              <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground">
-                Loading routes...
-              </div>
-            )}
-
-            {!isLoading && filteredRoutes.length === 0 && (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground">
-                <PackageOpen className="h-8 w-8" />
-                <p className="text-sm">No routes match your search.</p>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-3">
-              {filteredRoutes.map((pricing) => (
-                <Item
-                  key={pricing.id}
-                  variant="outline"
-                  className="flex-col items-stretch gap-3 p-4"
-                  onClick={() => handleSelect(pricing)}
-                >
-                  <ItemContent>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                      <ItemTitle className="text-base">
-                        {pricing.distance_min_km} km
-                        <span className="mx-1.5 text-muted-foreground">→</span>
-                        {pricing.distance_max_km} km
-                      </ItemTitle>
-                    </div>
-
-                    <ItemDescription>
-                      {formatMoney(pricing.min_price)} –{" "}
-                      {formatMoney(pricing.max_price)} hrs &nbsp;•&nbsp;
-                      {pricing.tonnage_min} - {pricing.tonnage_max} tons
-                    </ItemDescription>
-                  </ItemContent>
-                </Item>
-              ))}
-            </div>
-          </div>
-
-          {/* RIGHT SIDE (SORTABLE) */}
-          <div className="flex flex-col gap-3 overflow-y-auto p-6 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Selected routes
-              </h3>
-              <span className="text-xs text-muted-foreground">
-                {tonnage} tons
+            <DialogDescription className="flex items-center justify-between gap-4">
+              <span className="text-sm text-muted-foreground">
+                Distance {distanceKm} km/l
               </span>
+              <div className="flex gap-4">
+                <Controller
+                  name={`is_round_trip`}
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      orientation={"horizontal"}
+                      className="gap-2"
+                    >
+                      <Checkbox
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        checked={field.value ?? false}
+                        onCheckedChange={(state: boolean) =>
+                          field.onChange(state)
+                        }
+                      />
+                      <FieldLabel htmlFor={field.name} className="text-sm">
+                        Round Trip
+                      </FieldLabel>
+                      {fieldState.invalid && (
+                        <FieldError
+                          className="text-xs"
+                          errors={[fieldState.error]}
+                        />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Button
+                  type="button"
+                  className="shrink-0"
+                  onClick={form.handleSubmit((data) => {
+                    onLineItemAdded(data)
+                    onOpenChange(false)
+                  })}
+                >
+                  Add to quote
+                </Button>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid flex-1 overflow-hidden md:grid-cols-6">
+            {/* LEFT SIDE */}
+            <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <InputGroup className="flex-1">
+                  <InputGroupInput
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search by origin or destination..."
+                  />
+                  <InputGroupAddon>
+                    <Search />
+                  </InputGroupAddon>
+                </InputGroup>
+                <NumberField
+                  className="w-32"
+                  control={form.control}
+                  name={"distance_km"}
+                />
+                <NumberField
+                  className="w-32"
+                  control={form.control}
+                  name={"tonnage"}
+                />
+              </div>
+
+              {isLoading && (
+                <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground">
+                  Loading routes...
+                </div>
+              )}
+
+              {!isLoading && filteredRoutes.length === 0 && (
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground">
+                  <PackageOpen className="h-8 w-8" />
+                  <p className="text-sm">No routes match your search.</p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3">
+                {filteredRoutes.map((pricing) => (
+                  <Item
+                    key={pricing.id}
+                    variant="outline"
+                    className="flex-col items-stretch gap-3 p-4"
+                    onClick={() => handleSelect(pricing)}
+                  >
+                    <ItemContent>
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                        <ItemTitle className="text-base">
+                          {pricing.distance_min_km} km
+                          <span className="mx-1.5 text-muted-foreground">
+                            →
+                          </span>
+                          {pricing.distance_max_km} km
+                        </ItemTitle>
+                      </div>
+
+                      <ItemDescription>
+                        {formatMoney(pricing.min_price)} –{" "}
+                        {formatMoney(pricing.max_price)} hrs &nbsp;•&nbsp;
+                        {pricing.tonnage_min} - {pricing.tonnage_max} tons
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center text-muted-foreground">
-              <PackageOpen className="h-6 w-6" />
-              <p className="text-sm">
-                Pick a price on the left to add a route here.
-              </p>
+
+            {/* RIGHT SIDE (SORTABLE) */}
+            <div className="col-span-2 flex flex-col overflow-hidden">
+              <div className="flex-1 space-y-2 overflow-y-auto p-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Selected routes
+                  </h3>
+                  <span className="text-xs text-muted-foreground">
+                    {tonnage} tons
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                  <PackageOpen className="h-6 w-6" />
+                  <p className="text-sm">
+                    Pick a price on the left to add a route here.
+                  </p>
+                </div>
+                <Field orientation={"horizontal"} className="items-end">
+                  <SelectField
+                    label={"Engine"}
+                    control={form.control}
+                    name={"engine_mode"}
+                    required={false}
+                    placeholder="Select engine"
+                    options={ENGINE_MODES.map((opt) => ({
+                      label: `${opt}`,
+                      value: `${opt}`,
+                    }))}
+                  />
+                  <SwitchField
+                    label={"Driver"}
+                    name={"with_driver"}
+                    control={form.control}
+                  />
+                  <SwitchField
+                    label={"Loaders"}
+                    name={"with_loaders"}
+                    control={form.control}
+                  />
+                </Field>
+                <NumberField
+                  label="Consumption (km/l)"
+                  control={form.control}
+                  name="estimated_consumption_rate_km"
+                />
+              </div>
+              <div className="space-y-4 bg-accent p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <Field orientation={"horizontal"}>
+                  <NumberField
+                    label="quantity"
+                    control={form.control}
+                    name="quantity"
+                  />
+                  <MoneyField
+                    required={false}
+                    label="Discount"
+                    control={form.control}
+                    name="discount"
+                  />
+                </Field>
+                <NumberField
+                  label="Unit Price"
+                  control={form.control}
+                  name="unit_price"
+                />
+                <MoneyField
+                  readOnly
+                  required={false}
+                  label="Subtotal"
+                  control={form.control}
+                  name="subtotal"
+                />
+                <MoneyField
+                  readOnly
+                  required={false}
+                  label="Line total"
+                  control={form.control}
+                  name="line_total"
+                />
+              </div>
             </div>
-            <Field orientation={"horizontal"} className="items-end">
-              <SwitchField
-                label={"Driver"}
-                name={"with_driver"}
-                control={form.control}
-              />
-              <SwitchField
-                label={"Loaders"}
-                name={"with_loaders"}
-                control={form.control}
-              />
-              <SelectField
-                label={"Engine"}
-                control={form.control}
-                name={"engine_mode"}
-                placeholder="Select engine"
-                options={ENGINE_MODES.map((opt) => ({
-                  label: `${opt}`,
-                  value: `${opt}`,
-                }))}
-              />
-            </Field>
-            <NumberField
-              label="Consumption Rate (km/l)"
-              control={form.control}
-              name="estimated_consumption_rate_km"
-            />
-            <NumberField
-              label="quantity"
-              control={form.control}
-              name="quantity"
-            />
-            <NumberField
-              label="Unit Price"
-              control={form.control}
-              name="unit_price"
-            />
-            <MoneyField
-              required={false}
-              label="Discount"
-              control={form.control}
-              name="discount"
-            />
-            <MoneyField
-              readOnly
-              required={false}
-              label="Subtotal"
-              control={form.control}
-              name="subtotal"
-            />
-            <MoneyField
-              readOnly
-              required={false}
-              label="Line total"
-              control={form.control}
-              name="line_total"
-            />
           </div>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   )

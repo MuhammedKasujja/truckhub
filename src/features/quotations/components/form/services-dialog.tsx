@@ -139,9 +139,6 @@ export function ServicesDialog({
                       orientation={"horizontal"}
                       className="gap-2"
                     >
-                      <FieldLabel htmlFor={field.name} className="text-sm">
-                        Round Trip
-                      </FieldLabel>
                       <Checkbox
                         id={field.name}
                         aria-invalid={fieldState.invalid}
@@ -150,6 +147,9 @@ export function ServicesDialog({
                           field.onChange(state)
                         }
                       />
+                      <FieldLabel htmlFor={field.name} className="text-sm">
+                        Round Trip
+                      </FieldLabel>
                       {fieldState.invalid && (
                         <FieldError
                           className="text-xs"
@@ -172,7 +172,7 @@ export function ServicesDialog({
                     }
                   )}
                 >
-                  Confirm
+                  Add to quote
                 </Button>
               </div>
             </DialogDescription>
@@ -207,7 +207,7 @@ export function ServicesDialog({
                     />
                     <NumberField
                       required={false}
-                      label={"Vehicle Consumption (km/l)"}
+                      label={"Consumption (km/l)"}
                       name={"estimated_consumption_rate_km"}
                       control={form.control}
                     />
@@ -224,7 +224,7 @@ export function ServicesDialog({
                       }))}
                     />
                     <SwitchField
-                      label={"Include Driver"}
+                      label={"Driver"}
                       name={"with_driver"}
                       control={form.control}
                     />
