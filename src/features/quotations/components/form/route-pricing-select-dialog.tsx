@@ -9,19 +9,13 @@ import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-rou
 import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   createTruckQuotationLineItemSchema,
   routePricingsSchema,
   RoutePricingStruct,
   TruckLineItemRequest,
 } from "@/features/quotations/schemas"
-import {
-  Sortable,
-  SortableContent,
-  SortableItem,
-  SortableItemHandle,
-} from "@/components/ui/sortable"
 import { Button } from "@/components/ui/button"
 import { GripVertical, PackageOpen } from "lucide-react"
 import z from "zod"
@@ -41,6 +35,7 @@ import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-di
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
 import Decimal from "decimal.js"
+import { Card, CardContent } from "@/components/ui/card"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
@@ -70,6 +65,7 @@ export function RoutePricingSelectDialog({
 }: RoutePricingDialogProps) {
   const { data: clientPricings, isLoading } = useClientRoutingPricing(clientId)
   const { data: companyPricings } = useRouteTonnagePricing()
+  const pricingRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const pricings = useMemo(() => {
     // if (isFetching) return undefined
@@ -96,6 +92,9 @@ export function RoutePricingSelectDialog({
   const quantity = watch("quantity")
   const isRoundTrip = watch("is_round_trip")
   const tonnage = watch("tonnage")
+  const subtotal = watch("subtotal")
+  const discount = watch("discount")
+  const lineTotal = watch("line_total")
   const [selectedRoutes, setSelectedRoutes] = useState<RoutePricingRow[]>([])
 
   useEffect(() => {
@@ -132,6 +131,26 @@ export function RoutePricingSelectDialog({
       form.reset({ ...lineItem, routes: [] })
     }
   }, [lineItem, form])
+
+  useEffect(() => {
+    if (tonnage == null) return
+
+    routes.forEach((route) => {
+      const pricing = route.pricings.find(
+        (p) => tonnage >= Number(p.minTons) && tonnage <= Number(p.maxTons)
+      )
+
+      if (!pricing) return
+
+      const key = `${route.routeId}-${pricing.minTons}-${pricing.maxTons}`
+
+      pricingRefs.current[key]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      })
+    })
+  }, [tonnage, routes])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -220,106 +239,130 @@ export function RoutePricingSelectDialog({
 
             {/* RIGHT SIDE (SORTABLE) */}
             <div className="flex flex-col gap-3 overflow-y-auto md:col-span-2">
-              <div className="flex-1 space-y-2 overflow-y-auto p-6">
+              <div className="flex-1 space-y-4 overflow-y-auto p-6">
                 {selectedRoutes.length === 0 && (
-                  <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                  <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-8 text-center text-muted-foreground">
                     <PackageOpen className="h-6 w-6" />
                     <p className="text-sm">
                       Pick a price on the left to add a route here.
                     </p>
                   </div>
                 )}
-
-                <Sortable
-                  value={routes}
-                  onValueChange={(updated) =>
-                    form.setValue("routes", updated, {
-                      shouldDirty: true,
-                    })
-                  }
-                  getItemValue={(item) => item.routeId}
-                >
-                  <SortableContent className="flex flex-col gap-2">
-                    {routes.map((r) => (
-                      <SortableItem
-                        key={r.routeId}
-                        value={r.routeId}
-                        className="flex items-start gap-2 rounded-lg border bg-background/20 p-3 shadow-sm"
-                      >
-                        <SortableItemHandle asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="mt-1 size-8 shrink-0 cursor-grab text-muted-foreground active:cursor-grabbing"
-                          >
-                            <GripVertical className="h-4 w-4" />
-                          </Button>
-                        </SortableItemHandle>
-                        <div className="space-y-1.5">
-                          <div className="flex items-center gap-2">
-                            <div className="leading-tight font-medium">
-                              {r.origin} -- {r.destination}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              &nbsp;•&nbsp;{formatNumber(r.distanceKm)} km
-                              {/* {formatMoney(r.pricing.price)} */}
-                            </div>
-                          </div>
-                          <div className="space-y-1">
-                            {r.pricings.map((p) => (
-                              <p key={p.price} className="text-xs">
-                                {p.minTons} - {p.maxTons} T ||{" "}
-                                {formatMoney(p.price)}
-                              </p>
-                            ))}
-                          </div>
+                {routes.map((r) => (
+                  <div
+                    key={r.routeId}
+                    className="overflow-hidden rounded-lg border bg-background/20 p-3 shadow-sm"
+                  >
+                    <div className="min-w-0 space-y-2.5">
+                      {/* Route header */}
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0 truncate text-lg font-medium">
+                          {r.origin} → {r.destination}
                         </div>
-                      </SortableItem>
-                    ))}
-                  </SortableContent>
-                </Sortable>
-                <Field orientation={"horizontal"} className="items-end">
-                  <SelectField
-                    label={"Engine"}
-                    control={form.control}
-                    name={"engine_mode"}
-                    required={false}
-                    placeholder="Select engine"
-                    options={ENGINE_MODES.map((opt) => ({
-                      label: `${opt}`,
-                      value: `${opt}`,
-                    }))}
-                  />
-                  <SwitchField
-                    label={"Driver"}
-                    name={"with_driver"}
-                    control={form.control}
-                  />
-                  <SwitchField
-                    label={"Loaders"}
-                    name={"with_loaders"}
-                    control={form.control}
-                  />
-                </Field>
-                <Field orientation={"horizontal"}>
-                  <NumberField
-                    label="Tonnage"
-                    control={form.control}
-                    name="tonnage"
-                  />
-                  <NumberField
-                    label="Consumption (km/l)"
-                    control={form.control}
-                    name="estimated_consumption_rate_km"
-                  />
-                </Field>
+
+                        <div className="shrink-0 text-sm text-muted-foreground">
+                          {formatNumber(r.distanceKm)} km
+                        </div>
+                      </div>
+
+                      {/* Pricing scroll area */}
+                      <div className="min-w-0 overflow-x-auto pb-1">
+                        <div className="flex w-max gap-2">
+                          {r.pricings.map((p) => {
+                            const key = `${r.routeId}-${p.minTons}-${p.maxTons}`
+
+                            const isSelected =
+                              tonnage != null &&
+                              tonnage >= Number(p.minTons) &&
+                              tonnage <= Number(p.maxTons)
+                            return (
+                              <div
+                                key={key}
+                                ref={(el) => {
+                                  pricingRefs.current[key] = el
+                                }}
+                                className={cn(
+                                  "flex min-w-[110px] shrink-0 flex-col items-center gap-1 rounded-lg border px-4 py-2 transition-all",
+                                  isSelected &&
+                                    "border-primary bg-primary/10 ring-2 ring-primary/30"
+                                )}
+                              >
+                                <div className="text-xs text-muted-foreground">
+                                  {p.minTons} – {p.maxTons} T
+                                </div>
+
+                                <div
+                                  className={cn(
+                                    "text-sm font-semibold whitespace-nowrap",
+                                    isSelected && "text-primary"
+                                  )}
+                                >
+                                  {formatMoney(p.price)}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <Card>
+                  <CardContent className="space-y-4">
+                    <Field orientation={"horizontal"}>
+                      <NumberField
+                        required={false}
+                        label="Tonnage"
+                        control={form.control}
+                        name="tonnage"
+                      />
+                      <NumberField
+                        required={false}
+                        label="Consumption (km/l)"
+                        control={form.control}
+                        name="estimated_consumption_rate_km"
+                      />
+                    </Field>
+                    <Field orientation={"horizontal"} className="items-end">
+                      <SelectField
+                        label={"Engine"}
+                        control={form.control}
+                        name={"engine_mode"}
+                        required={false}
+                        placeholder="Select engine"
+                        options={ENGINE_MODES.map((opt) => ({
+                          label: `${opt}`,
+                          value: `${opt}`,
+                        }))}
+                      />
+                      <NumberField
+                        required={false}
+                        label="Quantity"
+                        control={form.control}
+                        name="quantity"
+                      />
+                    </Field>
+                    <Field orientation={"horizontal"}>
+                      <SwitchField
+                        label={"Driver"}
+                        name={"with_driver"}
+                        control={form.control}
+                      />
+                      <SwitchField
+                        label={"Loaders"}
+                        name={"with_loaders"}
+                        control={form.control}
+                      />
+                    </Field>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="space-y-4 bg-accent p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <div className="space-y-4 bg-card p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
                 <Field orientation={"horizontal"}>
-                  <NumberField
-                    label="Quantity"
+                  <MoneyField
+                    label="Unit Price"
                     control={form.control}
-                    name="quantity"
+                    name="unit_price"
                   />
                   <MoneyField
                     required={false}
@@ -328,25 +371,22 @@ export function RoutePricingSelectDialog({
                     name="discount"
                   />
                 </Field>
-                <MoneyField
-                  label="Unit Price"
-                  control={form.control}
-                  name="unit_price"
-                />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label="Subtotal"
-                  control={form.control}
-                  name="subtotal"
-                />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label="Line total"
-                  control={form.control}
-                  name="line_total"
-                />
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Subtotal</div>
+                  <div className="text-sm">{formatMoney(subtotal)}</div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Discount</div>
+                  <div className="text-sm">
+                    {discount ? -formatMoney(discount) : "__"}
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="font-semibold">Line total</div>
+                  <div className="text-xl font-bold text-primary">
+                    {formatMoney(lineTotal)}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -41,6 +41,7 @@ import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use
 import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
+import { Card, CardContent } from "@/components/ui/card"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -86,6 +87,9 @@ export function DistancePricingSelectDialog({
   const tonnage = watch("tonnage")
   const distanceKm = watch("distance_km")
   const unitPrice = watch("unit_price")
+  const subtotal = watch("subtotal")
+  const discount = watch("discount")
+  const lineTotal = watch("line_total")
 
   const [query, setQuery] = useState("")
 
@@ -268,36 +272,56 @@ export function DistancePricingSelectDialog({
                     Pick a price on the left to add a route here.
                   </p>
                 </div>
-                <Field orientation={"horizontal"} className="items-end">
-                  <SelectField
-                    label={"Engine"}
-                    control={form.control}
-                    name={"engine_mode"}
-                    required={false}
-                    placeholder="Select engine"
-                    options={ENGINE_MODES.map((opt) => ({
-                      label: `${opt}`,
-                      value: `${opt}`,
-                    }))}
-                  />
-                  <SwitchField
-                    label={"Driver"}
-                    name={"with_driver"}
-                    control={form.control}
-                  />
-                  <SwitchField
-                    label={"Loaders"}
-                    name={"with_loaders"}
-                    control={form.control}
-                  />
-                </Field>
-                <NumberField
-                  label="Consumption (km/l)"
-                  control={form.control}
-                  name="estimated_consumption_rate_km"
-                />
+                <Card>
+                  <CardContent className="space-y-4">
+                    <Field orientation={"horizontal"}>
+                      <NumberField
+                        required={false}
+                        label="Distance"
+                        control={form.control}
+                        name={"distance_km"}
+                      />
+                      <NumberField
+                        required={false}
+                        label="Tonnage"
+                        control={form.control}
+                        name={"tonnage"}
+                      />
+                    </Field>
+                    <Field orientation={"horizontal"}>
+                      <SelectField
+                        label={"Engine"}
+                        control={form.control}
+                        name={"engine_mode"}
+                        required={false}
+                        placeholder="Select engine"
+                        options={ENGINE_MODES.map((opt) => ({
+                          label: `${opt}`,
+                          value: `${opt}`,
+                        }))}
+                      />
+                      <NumberField
+                        label="Consumption (km/l)"
+                        control={form.control}
+                        name="estimated_consumption_rate_km"
+                      />
+                    </Field>
+                    <Field orientation={"horizontal"}>
+                      <SwitchField
+                        label={"Driver"}
+                        name={"with_driver"}
+                        control={form.control}
+                      />
+                      <SwitchField
+                        label={"Loaders"}
+                        name={"with_loaders"}
+                        control={form.control}
+                      />
+                    </Field>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="space-y-4 bg-accent p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <div className="space-y-4 p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:bg-accent">
                 <Field orientation={"horizontal"}>
                   <NumberField
                     label="quantity"
@@ -316,20 +340,22 @@ export function DistancePricingSelectDialog({
                   control={form.control}
                   name="unit_price"
                 />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label="Subtotal"
-                  control={form.control}
-                  name="subtotal"
-                />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label="Line total"
-                  control={form.control}
-                  name="line_total"
-                />
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Subtotal</div>
+                  <div className="text-sm">{formatMoney(subtotal)}</div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Discount</div>
+                  <div className="text-sm">
+                    {discount ? -formatMoney(discount) : "__"}
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="font-semibold">Line total</div>
+                  <div className="text-xl font-bold text-primary">
+                    {formatMoney(lineTotal)}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

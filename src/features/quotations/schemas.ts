@@ -46,7 +46,7 @@ const createRouteSchema = z.object({
 const lineItemBase = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
-  quantity: z.int().positive(),
+  quantity: z.int("Required").min(1, "Minimum value is 1"),
   unit_price: MoneySchema.nullable(),
   subtotal: MoneySchema.nullable(),
   line_total: MoneySchema.nullable(),
@@ -73,7 +73,9 @@ export const createTruckQuotationLineItemSchema = z.object({
   locations: z.array(createDistancePricingSchema).min(1),
   item_type: z.literal("truck"),
   with_loaders: z.boolean(),
-  estimated_consumption_rate_km: z.number().min(1, "Required"),
+  estimated_consumption_rate_km: z
+    .number("Required")
+    .min(0.5, "Minimum tonnage is 0.5"),
   tonnage: z.number("Required").min(0.1, "Required"),
   ...lineItemBase.shape,
 })

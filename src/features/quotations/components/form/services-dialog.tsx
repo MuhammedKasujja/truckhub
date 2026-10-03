@@ -41,7 +41,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Status } from "@/components/ui/status"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -73,6 +74,8 @@ export function ServicesDialog({
   const quantity = form.watch("quantity")
   const isRoundTrip = form.watch("is_round_trip")
   const discount = form.watch("discount")
+  const lineTotal = form.watch("line_total")
+  const subtotal = form.watch("subtotal")
   const locations = form.watch("locations")
   const serviceId = form.watch("service_id")
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -236,7 +239,7 @@ export function ServicesDialog({
                   onSelected={handleLocationSelected}
                 />
               </div>
-              <div className="space-y-4 bg-accent p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <div className="space-y-4 border-t p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:bg-accent">
                 <Field
                   orientation={"horizontal"}
                   className="grid gap-4 md:grid-cols-2"
@@ -259,20 +262,22 @@ export function ServicesDialog({
                   name={"unit_price"}
                   control={form.control}
                 />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label={"Sub total"}
-                  name={"subtotal"}
-                  control={form.control}
-                />
-                <MoneyField
-                  readOnly
-                  required={false}
-                  label={"Line Total"}
-                  name={"line_total"}
-                  control={form.control}
-                />
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Subtotal</div>
+                  <div className="text-sm">{formatMoney(subtotal)}</div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="text-muted-foreground">Discount</div>
+                  <div className="text-sm">
+                    {discount ? -formatMoney(discount) : "__"}
+                  </div>
+                </div>
+                <div className="flex items-baseline justify-between gap-4">
+                  <div className="font-semibold">Line total</div>
+                  <div className="text-xl font-bold text-primary">
+                    {formatMoney(lineTotal)}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -320,7 +325,7 @@ function ServiceList({
 
   return (
     <div className="@container">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {services.map((service) => {
           const isSelected = selectedIds.includes(service.id)
 
@@ -332,9 +337,9 @@ function ServiceList({
               aria-pressed={selectable ? isSelected : undefined}
               onClick={selectable ? () => handleSelected(service) : undefined}
               className={cn(
-                "rounded-2xl shadow-sm transition hover:shadow-md",
+                "rounded-2xl shadow-sm transition hover:shadow-md hover:bg-primary/5",
                 selectable && "cursor-pointer",
-                isSelected && "ring-2 ring-primary"
+                isSelected && "ring-2 ring-primary bg-primary/5"
               )}
             >
               <CardHeader>
@@ -346,7 +351,7 @@ function ServiceList({
                       } (${service.car_model?.manufacture_year})`}
                   </CardTitle>
 
-                  <Badge variant="default">{service.category}</Badge>
+                  {/* <Badge variant="default">{service.category}</Badge> */}
                 </div>
 
                 <CardDescription>{service.description}</CardDescription>
@@ -356,36 +361,22 @@ function ServiceList({
                 <div className="h-40 rounded-sm border bg-accent" />
 
                 <div className="space-y-1">
-                  <div className="flex w-full justify-between">
-                    <div className="text-muted-foreground">
-                      {tr("services.price")}
-                    </div>
-                    <div className="text-end font-semibold">
-                      {formatMoney(service.base_fare)}
-                    </div>
-                  </div>
-
-                  <div className="flex w-full justify-between py-0">
-                    <div className="text-muted-foreground">
-                      {tr("services.last_price")}
-                    </div>
-
-                    <div className="text-end font-semibold">
-                      {formatMoney(service.min_fare)}
-                    </div>
-                  </div>
-
-                  {!service.is_truck && (
-                    <div className="flex w-full justify-between">
-                      <div className="text-muted-foreground">
-                        {tr("services.seating_capacity")}
+                  <div className="flex items-baseline-last justify-between gap-2">
+                    <div className="space-y-1.5">
+                      <div className="text-start text-xl font-semibold">
+                        {formatMoney(service.base_fare)}
                       </div>
-
-                      <div className="text-end font-semibold">
-                        {service.seats}
+                      <div className="flex w-full gap-1 text-sm text-muted-foreground">
+                        <div className="text-sm">
+                          {tr("services.last_price")}
+                        </div>
+                        <div>{formatMoney(service.min_fare)}</div>
                       </div>
                     </div>
-                  )}
+                    {!service.is_truck && (
+                      <Status>{service.seats} seats</Status>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
