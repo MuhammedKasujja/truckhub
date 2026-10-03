@@ -5,21 +5,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
-import { formatMoney } from "@/lib/format"
+import { formatMoney, formatNumber } from "@/lib/format"
 import { EntityId } from "@/schemas"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   createDistanceTonnageLineItemSchema,
   DistanceLineItemRequest,
 } from "@/features/quotations/schemas"
 import { Button } from "@/components/ui/button"
-import { MapPin, Search, PackageOpen } from "lucide-react"
+import { Search, PackageOpen } from "lucide-react"
 import z from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -42,6 +36,7 @@ import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { Card, CardContent } from "@/components/ui/card"
+import { DistanceRatePricingTable } from "./distance-rates-pricing-table"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -66,6 +61,8 @@ export function DistancePricingSelectDialog({
   onLineItemAdded,
 }: DistancePricingDialogProps) {
   const { data: response, isLoading } = useDistanceTonnagePricing()
+  const [selectedDistanceRange, setSelectedDistanceRange] =
+    useState<DistanceTonnagePricingItem>()
 
   const data = response?.pricings ?? []
 
@@ -93,21 +90,9 @@ export function DistancePricingSelectDialog({
 
   const [query, setQuery] = useState("")
 
-  const filteredRoutes = useMemo(() => {
-    return (data ?? []).filter((route) => {
-      const q = query.toLowerCase()
-      return (
-        route.max_price.toString().toLowerCase().includes(q) ||
-        route.min_price.toString().toLowerCase().includes(q) ||
-        route.distance_max_km?.toString().toLowerCase().includes(q) ||
-        route.distance_min_km?.toString().toLowerCase().includes(q)
-      )
-    })
-  }, [query, data, tonnage, distanceKm])
-
   useEffect(() => {
     const subtotal = new Decimal(unitPrice ?? 0)
-      .times(quantity)
+      .times(quantity ?? "0")
       .times(isRoundTrip ? 2 : 1)
     const lineTotal = subtotal
     form.setValue("unit_price", unitPrice)
@@ -115,11 +100,16 @@ export function DistancePricingSelectDialog({
     form.setValue("line_total", lineTotal.toString())
   }, [quantity, isRoundTrip, unitPrice])
 
-  const isSelected = (pricingId: EntityId) =>
-    (data ?? []).find((r) => r.id === pricingId)
-
   function handleSelect(pricing: DistanceTonnagePricingItem) {
+    setSelectedDistanceRange(pricing)
     form.setValue("unit_price", pricing.max_price)
+    form.setValue("tonnage", pricing.tonnage_max)
+    form.setValue(
+      "distance_km",
+      pricing.distance_max_km
+        ? pricing.distance_max_km
+        : pricing.distance_min_km
+    )
   }
 
   useEffect(() => {
@@ -217,60 +207,50 @@ export function DistancePricingSelectDialog({
                 </div>
               )}
 
-              {!isLoading && filteredRoutes.length === 0 && (
-                <div className="flex flex-1 flex-col items-center justify-center gap-2 py-12 text-center text-muted-foreground">
-                  <PackageOpen className="h-8 w-8" />
-                  <p className="text-sm">No routes match your search.</p>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-3">
-                {filteredRoutes.map((pricing) => (
-                  <Item
-                    key={pricing.id}
-                    variant="outline"
-                    className="flex-col items-stretch gap-3 p-4"
-                    onClick={() => handleSelect(pricing)}
-                  >
-                    <ItemContent>
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                        <ItemTitle className="text-base">
-                          {pricing.distance_min_km} km
-                          <span className="mx-1.5 text-muted-foreground">
-                            →
-                          </span>
-                          {pricing.distance_max_km} km
-                        </ItemTitle>
-                      </div>
-
-                      <ItemDescription>
-                        {formatMoney(pricing.min_price)} –{" "}
-                        {formatMoney(pricing.max_price)} hrs &nbsp;•&nbsp;
-                        {pricing.tonnage_min} - {pricing.tonnage_max} tons
-                      </ItemDescription>
-                    </ItemContent>
-                  </Item>
-                ))}
-              </div>
+              <DistanceRatePricingTable
+                data={data}
+                selectedId={selectedDistanceRange?.id}
+                onSelect={handleSelect}
+                distanceKm={distanceKm}
+                loadTons={tonnage}
+              />
             </div>
 
             {/* RIGHT SIDE (SORTABLE) */}
             <div className="col-span-2 flex flex-col overflow-hidden">
               <div className="flex-1 space-y-2 overflow-y-auto p-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    Selected routes
-                  </h3>
-                  <span className="text-xs text-muted-foreground">
-                    {tonnage} tons
-                  </span>
-                </div>
-                <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-dashed py-12 text-center text-muted-foreground">
-                  <PackageOpen className="h-6 w-6" />
-                  <p className="text-sm">
-                    Pick a price on the left to add a route here.
-                  </p>
+                <div className="rounded-lg border border-dashed p-4">
+                  {selectedDistanceRange ? (
+                    <div className="flex flex-col items-start gap-2">
+                      <div className="flex w-full justify-between text-muted-foreground">
+                        <div className="text-muted-foreground">
+                          Selected rate
+                        </div>
+                        <Button
+                          type="button"
+                          variant={"ghost"}
+                          size={"sm"}
+                          onClick={() => setSelectedDistanceRange(undefined)}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+
+                      <div className="text-lg font-semibold">
+                        {selectedDistanceRange.distance_min_km} -{" "}
+                        {selectedDistanceRange.distance_max_km} km{" "}
+                        {formatNumber(selectedDistanceRange.tonnage_min)} -{" "}
+                        {formatNumber(selectedDistanceRange.tonnage_max)} tons
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-0.5">
+                      <PackageOpen className="h-6 w-6" />
+                      <p className="text-sm">
+                        Pick a price on the left to add a route here.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <Card>
                   <CardContent className="space-y-4">

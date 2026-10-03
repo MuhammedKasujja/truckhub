@@ -17,9 +17,9 @@ import {
   TruckLineItemRequest,
 } from "@/features/quotations/schemas"
 import { Button } from "@/components/ui/button"
-import { GripVertical, PackageOpen } from "lucide-react"
+import { PackageOpen } from "lucide-react"
 import z from "zod"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateTruckEmptyLineItem } from "../../utils"
