@@ -65,7 +65,9 @@ const steps = [
     description: "Select car added-on features",
     fields: ["features"] as const,
   },
-]
+] as const
+
+type Step = (typeof steps)
 
 export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()

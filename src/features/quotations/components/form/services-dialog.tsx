@@ -19,6 +19,7 @@ import {
   SelectField,
   SwitchField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import { generateEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
@@ -171,7 +172,7 @@ export function ServicesDialog({
                     }
                   )}
                 >
-                  Done
+                  Confirm
                 </Button>
               </div>
             </DialogDescription>
@@ -191,81 +192,88 @@ export function ServicesDialog({
                 }}
               />
             </div>
-            <div className="col-span-2 space-y-2 overflow-y-auto p-6">
-              <Field
-                orientation={"horizontal"}
-                className="grid gap-4 md:grid-cols-2"
-              >
-                <TextField
-                  required={false}
-                  label={"Year Make"}
-                  name={"vehicle_year"}
-                  control={form.control}
+            <div className="col-span-2 flex flex-col overflow-hidden">
+              <div className="flex-1 space-y-2 overflow-y-auto p-6">
+                <div className="space-y-2.5 rounded-lg border border-dashed bg-background p-4">
+                  <Field
+                    orientation={"horizontal"}
+                    className="grid gap-4 md:grid-cols-2"
+                  >
+                    <YearPickerField
+                      required={false}
+                      label={"Year Make"}
+                      name={"vehicle_year"}
+                      control={form.control}
+                    />
+                    <NumberField
+                      required={false}
+                      label={"Vehicle Consumption (km/l)"}
+                      name={"estimated_consumption_rate_km"}
+                      control={form.control}
+                    />
+                  </Field>
+                  <Field orientation={"horizontal"} className="items-end">
+                    <SelectField
+                      label={"Engine"}
+                      control={form.control}
+                      name={"engine_mode"}
+                      placeholder="Select engine"
+                      options={ENGINE_MODES.map((opt) => ({
+                        label: `${opt}`,
+                        value: `${opt}`,
+                      }))}
+                    />
+                    <SwitchField
+                      label={"Include Driver"}
+                      name={"with_driver"}
+                      control={form.control}
+                    />
+                  </Field>
+                </div>
+                <ServiceRoutesDialog
+                  selectedRoutes={locationsFields.fields}
+                  clientId={clientId}
+                  onSelected={handleLocationSelected}
                 />
-                <NumberField
-                  required={false}
-                  label={"Vehicle Consumption (km/l)"}
-                  name={"estimated_consumption_rate_km"}
-                  control={form.control}
-                />
-              </Field>
-              <Field orientation={"horizontal"} className="items-end">
-                <SelectField
-                  label={"Engine"}
-                  control={form.control}
-                  name={"engine_mode"}
-                  placeholder="Select engine"
-                  options={ENGINE_MODES.map((opt) => ({
-                    label: `${opt}`,
-                    value: `${opt}`,
-                  }))}
-                />
-                <SwitchField
-                  label={"Include Driver"}
-                  name={"with_driver"}
-                  control={form.control}
-                />
-              </Field>
-              <Field
-                orientation={"horizontal"}
-                className="grid gap-4 md:grid-cols-3"
-              >
-                <NumberField
-                  label={"Quantity"}
-                  name={"quantity"}
-                  control={form.control}
-                />
+              </div>
+              <div className="space-y-4 bg-accent p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <Field
+                  orientation={"horizontal"}
+                  className="grid gap-4 md:grid-cols-2"
+                >
+                  <NumberField
+                    label={"Quantity"}
+                    name={"quantity"}
+                    control={form.control}
+                  />
+
+                  <MoneyField
+                    required={false}
+                    label={"Discount"}
+                    name={"discount"}
+                    control={form.control}
+                  />
+                </Field>
                 <MoneyField
                   label={"Unit Price"}
                   name={"unit_price"}
                   control={form.control}
                 />
                 <MoneyField
+                  readOnly
                   required={false}
-                  label={"Discount"}
-                  name={"discount"}
+                  label={"Sub total"}
+                  name={"subtotal"}
                   control={form.control}
                 />
-              </Field>
-              <MoneyField
-                readOnly
-                required={false}
-                label={"Sub total"}
-                name={"subtotal"}
-                control={form.control}
-              />
-              <MoneyField
-                readOnly
-                required={false}
-                label={"Line Total"}
-                name={"line_total"}
-                control={form.control}
-              />
-              <ServiceRoutesDialog
-                selectedRoutes={locationsFields.fields}
-                clientId={clientId}
-                onSelected={handleLocationSelected}
-              />
+                <MoneyField
+                  readOnly
+                  required={false}
+                  label={"Line Total"}
+                  name={"line_total"}
+                  control={form.control}
+                />
+              </div>
             </div>
           </div>
         </form>
