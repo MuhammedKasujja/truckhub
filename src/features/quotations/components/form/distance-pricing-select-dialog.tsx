@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import {
   createDistanceTonnageLineItemSchema,
   DistanceLineItemRequest,
+  Route,
 } from "@/features/quotations/schemas"
 import { Button } from "@/components/ui/button"
 import { Search, PackageOpen } from "lucide-react"
@@ -37,6 +38,7 @@ import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { Card, CardContent } from "@/components/ui/card"
 import { DistanceRatePricingTable } from "./distance-rates-pricing-table"
+import { RouteSummary } from "./routes-dialog"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -63,6 +65,7 @@ export function DistancePricingSelectDialog({
   const { data: response, isLoading } = useDistanceTonnagePricing()
   const [selectedDistanceRange, setSelectedDistanceRange] =
     useState<DistanceTonnagePricingItem>()
+  const [route, setRoute] = useState<Route>()
 
   const data = response?.pricings ?? []
 
@@ -218,7 +221,7 @@ export function DistancePricingSelectDialog({
 
             {/* RIGHT SIDE (SORTABLE) */}
             <div className="col-span-2 flex flex-col overflow-hidden">
-              <div className="flex-1 space-y-2 overflow-y-auto p-6">
+              <div className="flex-1 space-y-4 overflow-y-auto p-6">
                 <div className="rounded-lg border border-dashed p-4">
                   {selectedDistanceRange ? (
                     <div className="flex flex-col items-start gap-2">
@@ -300,11 +303,12 @@ export function DistancePricingSelectDialog({
                     </Field>
                   </CardContent>
                 </Card>
+                <RouteSummary route={route} onEdit={setRoute} />
               </div>
-              <div className="space-y-4 p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:bg-accent">
+              <div className="space-y-4 p-5 border-t dark:bg-accent">
                 <Field orientation={"horizontal"}>
                   <NumberField
-                    label="quantity"
+                    label="Quantity"
                     control={form.control}
                     name="quantity"
                   />

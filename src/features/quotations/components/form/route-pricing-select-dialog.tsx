@@ -12,6 +12,7 @@ import { EntityId } from "@/schemas"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   createTruckQuotationLineItemSchema,
+  Route,
   routePricingsSchema,
   RoutePricingStruct,
   TruckLineItemRequest,
@@ -36,13 +37,12 @@ import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
 import Decimal from "decimal.js"
 import { Card, CardContent } from "@/components/ui/card"
+import { RouteSummary } from "./routes-dialog"
 
 const formSchema = z.object({
   ...createTruckQuotationLineItemSchema.shape,
   routes: z.array(routePricingsSchema).min(1, "At least one route required"),
 })
-
-type RoutePricing = RoutePricingRow & { tempId: string }
 
 type FormValues = z.infer<typeof formSchema>
 
@@ -63,9 +63,10 @@ export function RoutePricingSelectDialog({
   lineItem,
   onLineItemAdded,
 }: RoutePricingDialogProps) {
-  const { data: clientPricings, isLoading } = useClientRoutingPricing(clientId)
+  const { data: clientPricings } = useClientRoutingPricing(clientId)
   const { data: companyPricings } = useRouteTonnagePricing()
   const pricingRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const [route, setRoute] = useState<Route>()
 
   const pricings = useMemo(() => {
     // if (isFetching) return undefined
@@ -162,7 +163,7 @@ export function RoutePricingSelectDialog({
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
               <span className="text-sm text-muted-foreground">
-                Destinations - {selectedRoutes.length}
+                Total - {formatMoney(lineTotal)}
               </span>
               <div className="flex gap-4">
                 <Controller
@@ -356,8 +357,9 @@ export function RoutePricingSelectDialog({
                     </Field>
                   </CardContent>
                 </Card>
+                <RouteSummary route={route} onEdit={setRoute} />
               </div>
-              <div className="space-y-4 bg-card p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+              <div className="space-y-4 bg-card p-5 border-t">
                 <Field orientation={"horizontal"}>
                   <MoneyField
                     label="Unit Price"

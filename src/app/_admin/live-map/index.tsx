@@ -29,6 +29,7 @@ import { useActiveShipments } from "@/features/shipments/hooks/use-shipments"
 import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { Shipment } from "@/features/shipments/types"
+import { formatDate } from "@/lib/format"
 import { IconFilter2 } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { cn } from "cn"
@@ -150,7 +151,12 @@ function RouteComponent() {
           <div className="">
             <Status>{selectedShipment?.status}</Status>
           </div>
-          <div className=""></div>
+          <div className="flex items-center gap-1.5">
+            <TimerIcon className="size-4 text-muted-foreground" />
+            <span className="font-semibold">
+              {formatDate(selectedShipment?.actual_start)}
+            </span>
+          </div>
           <div className=""></div>
         </CardContent>
       </Card>

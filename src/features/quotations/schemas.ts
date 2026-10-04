@@ -15,6 +15,14 @@ export const QuotationSearchParams = z.object({
   ...DefaultSearchParamsSchema.shape,
 })
 
+export const RouteSchema = z.object({
+  origin: z.string().min(1),
+  checkpoints: z.array(z.string().min(1)).default([]),
+  destination: z.string().min(1),
+})
+
+export type Route = z.infer<typeof RouteSchema>
+
 export type QuotationListSearchParams = z.infer<typeof QuotationSearchParams>
 
 const createTaxRateSchema = z.object({

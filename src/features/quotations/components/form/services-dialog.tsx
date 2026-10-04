@@ -7,10 +7,10 @@ import {
 } from "@/components/ui/dialog"
 import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import {
   createCarQuotationLineItemSchema,
-  RouteServiceInput,
+  Route,
   SmallLineItemRequest,
 } from "@/features/quotations/schemas"
 import {
@@ -27,7 +27,6 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { formatMoney } from "@/lib/format"
-import { ServiceRoutesDialog } from "./service-routes"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { useQuotationServiceProducts } from "@/features/quotations/hooks/use-quotation-pricings"
@@ -41,8 +40,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Status } from "@/components/ui/status"
+import { RouteSummary } from "./routes-dialog"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -69,6 +68,7 @@ export function ServicesDialog({
   })
 
   const { pricing: services } = useQuotationServiceProducts(clientId)
+  const [route, setRoute] = useState<Route>()
 
   const unitPrice = form.watch("unit_price")
   const quantity = form.watch("quantity")
@@ -76,20 +76,8 @@ export function ServicesDialog({
   const discount = form.watch("discount")
   const lineTotal = form.watch("line_total")
   const subtotal = form.watch("subtotal")
-  const locations = form.watch("locations")
   const serviceId = form.watch("service_id")
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-
-  const locationsFields = useFieldArray({
-    control: form.control,
-    name: "locations",
-  })
-
-  function handleLocationSelected(route: RouteServiceInput) {
-    const index = locations.findIndex((r) => r.route_id === route.route_id)
-    if (index > -1) locationsFields.remove(index)
-    else locationsFields.prepend(route)
-  }
 
   useEffect(() => {
     const price = new Decimal(unitPrice ?? 0)
@@ -129,8 +117,7 @@ export function ServicesDialog({
             </DialogTitle>
             <DialogDescription className="flex items-center justify-between gap-4">
               <span className="text-sm text-muted-foreground">
-                {formatMoney(form.watch("line_total"))} - locations{" "}
-                {locationsFields.fields.length}
+                {formatMoney(form.watch("line_total"))}
               </span>
               <div className="flex gap-4">
                 <Controller
@@ -196,50 +183,53 @@ export function ServicesDialog({
               />
             </div>
             <div className="col-span-2 flex flex-col overflow-hidden">
-              <div className="flex-1 space-y-2 overflow-y-auto p-6">
-                <div className="space-y-2.5 rounded-lg border border-dashed bg-background p-4">
-                  <Field
-                    orientation={"horizontal"}
-                    className="grid gap-4 md:grid-cols-2"
-                  >
-                    <YearPickerField
-                      required={false}
-                      label={"Year Make"}
-                      name={"vehicle_year"}
-                      control={form.control}
-                    />
-                    <NumberField
-                      required={false}
-                      label={"Consumption (km/l)"}
-                      name={"estimated_consumption_rate_km"}
-                      control={form.control}
-                    />
-                  </Field>
-                  <Field orientation={"horizontal"} className="items-end">
-                    <SelectField
-                      label={"Engine"}
-                      control={form.control}
-                      name={"engine_mode"}
-                      placeholder="Select engine"
-                      options={ENGINE_MODES.map((opt) => ({
-                        label: `${opt}`,
-                        value: `${opt}`,
-                      }))}
-                    />
-                    <SwitchField
-                      label={"Driver"}
-                      name={"with_driver"}
-                      control={form.control}
-                    />
-                  </Field>
-                </div>
-                <ServiceRoutesDialog
+              <div className="flex-1 space-y-4 overflow-y-auto p-6">
+                <Card>
+                  <CardContent className="space-y-2.5">
+                    <Field
+                      orientation={"horizontal"}
+                      className="grid gap-4 md:grid-cols-2"
+                    >
+                      <YearPickerField
+                        required={false}
+                        label={"Year Make"}
+                        name={"vehicle_year"}
+                        control={form.control}
+                      />
+                      <NumberField
+                        required={false}
+                        label={"Consumption (km/l)"}
+                        name={"estimated_consumption_rate_km"}
+                        control={form.control}
+                      />
+                    </Field>
+                    <Field orientation={"horizontal"} className="items-end">
+                      <SelectField
+                        label={"Engine"}
+                        control={form.control}
+                        name={"engine_mode"}
+                        placeholder="Select engine"
+                        options={ENGINE_MODES.map((opt) => ({
+                          label: `${opt}`,
+                          value: `${opt}`,
+                        }))}
+                      />
+                      <SwitchField
+                        label={"Driver"}
+                        name={"with_driver"}
+                        control={form.control}
+                      />
+                    </Field>
+                  </CardContent>
+                </Card>
+                {/* <ServiceRoutesDialog
                   selectedRoutes={locationsFields.fields}
                   clientId={clientId}
                   onSelected={handleLocationSelected}
-                />
+                /> */}
+                <RouteSummary route={route} onEdit={setRoute} />
               </div>
-              <div className="space-y-4 border-t p-5 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] dark:bg-accent">
+              <div className="space-y-4 border-t p-5 ">
                 <Field
                   orientation={"horizontal"}
                   className="grid gap-4 md:grid-cols-2"
@@ -337,9 +327,9 @@ function ServiceList({
               aria-pressed={selectable ? isSelected : undefined}
               onClick={selectable ? () => handleSelected(service) : undefined}
               className={cn(
-                "rounded-2xl shadow-sm transition hover:shadow-md hover:bg-primary/5",
+                "rounded-2xl shadow-sm transition hover:bg-primary/5 hover:shadow-md",
                 selectable && "cursor-pointer",
-                isSelected && "ring-2 ring-primary bg-primary/5"
+                isSelected && "bg-primary/5 ring-3 ring-primary"
               )}
             >
               <CardHeader>
