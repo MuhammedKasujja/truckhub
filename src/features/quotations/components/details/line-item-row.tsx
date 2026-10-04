@@ -1,13 +1,8 @@
 import { ArrowRight, Package, Truck } from "lucide-react"
-import { LineItemResponse } from "../../schemas"
+import { LineItemResponse, Route } from "../../schemas"
 import { formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { MouseEventHandler } from "react"
-
-type RouteLeg = {
-  origin: string
-  destination: string
-}
 
 type Props = {
   item: LineItemResponse
@@ -34,7 +29,7 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
             <Package className="h-3.5 w-3.5 shrink-0 text-primary" />
           )}
           <span className="text-sm font-semibold text-foreground">
-            {isService ? "Chauffeured vehicle hire" : "Freight haulage"}
+            {item.display_title ? item.display_title : "Vehicle hire"}
           </span>
         </div>
         <div className="mb-1.5 flex flex-wrap gap-1.5">
@@ -44,20 +39,20 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
                 variant="outline"
                 className="font-mono text-[10px] font-normal"
               >
-                {item.engine_mode === "wet" ? "wet lease" : "dry lease"}
+                {item.engine_mode === "wet" ? "Wet Hire" : "Dry Hire"}
               </Badge>
               <Badge
                 variant="outline"
                 className="font-mono text-[10px] font-normal"
               >
-                {item.with_driver ? "with driver" : "self-drive"}
+                {item.with_driver ? "With driver" : "Self drive"}
               </Badge>
               {item.vehicle_year && (
                 <Badge
                   variant="outline"
                   className="font-mono text-[10px] font-normal"
                 >
-                  MY {item.vehicle_year}
+                  Year {item.vehicle_year}
                 </Badge>
               )}
             </>
@@ -67,24 +62,18 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
                 variant="outline"
                 className="font-mono text-[10px] font-normal"
               >
-                {item.tonnage}t capacity
+                {item.tonnage} Tons
               </Badge>
               <Badge
                 variant="outline"
                 className="font-mono text-[10px] font-normal"
               >
-                {item.with_loaders ? "with loaders" : "no loaders"}
+                {item.with_loaders ? "with loaders" : "No loaders"}
               </Badge>
             </>
           )}
         </div>
-        {item.locations?.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {item.locations.map((leg, i) => (
-              <RouteChip key={i} leg={leg} />
-            ))}
-          </div>
-        )}
+        <RouteChip leg={item.route} />
       </td>
       <td className="px-3 py-3 text-right font-mono text-xs whitespace-nowrap text-muted-foreground">
         {formatMoney(item.unit_price)}
@@ -104,12 +93,18 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
   )
 }
 
-function RouteChip({ leg }: { leg: RouteLeg }) {
+function RouteChip({ leg }: { leg: Route }) {
   return (
     <span className="inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-muted-foreground">
-      {leg.origin}
+      {leg?.origin}
+      {leg?.checkpoints.map((c) => (
+        <p className="flex items-center">
+          <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
+          <span className="pl-1">{c}</span>
+        </p>
+      ))}
       <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
-      {leg.destination}
+      {leg?.destination}
     </span>
   )
 }

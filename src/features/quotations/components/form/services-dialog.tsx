@@ -153,7 +153,9 @@ export function ServicesDialog({
                   className="shrink-0"
                   onClick={form.handleSubmit(
                     (data) => {
-                      onLineItemAdded(data)
+                      const selectedService = services?.find((s) => data.service_id === s.id)
+                      const title = `${selectedService?.display_name}`
+                      onLineItemAdded({...data, display_title: title})
                       onOpenChange(false)
                     },
                     (error) => {

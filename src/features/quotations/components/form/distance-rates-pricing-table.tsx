@@ -144,7 +144,7 @@ export function DistanceRatePricingTable({
                 onClick={() => onSelect(price)}
                 className={[
                   "min-h-11 w-full rounded-lg border px-3 text-left text-sm transition-colors",
-                  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f6b5c]",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f6b5c]",
                   isSelected
                     ? "border-2 border-[#0f6b5c] bg-[#d6ece6] font-semibold text-[#0b5a4d]"
                     : "border-slate-200 bg-white text-slate-800 hover:border-[#0f6b5c]",

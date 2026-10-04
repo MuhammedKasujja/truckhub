@@ -192,8 +192,9 @@ export function RoutePricingSelectDialog({
                   className="shrink-0"
                   onClick={form.handleSubmit(
                     (data) => {
+                      const title = `${data.routes?.at(0)?.origin} -> ${data.routes?.at(0)?.destination}`
                       const { routes: _, ...rest } = data
-                      onLineItemAdded(rest)
+                      onLineItemAdded({ ...rest, display_title: title })
                       onOpenChange(false)
                     },
                     (errors) => {

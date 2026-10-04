@@ -52,6 +52,7 @@ const lineItemBase = z.object({
   discount: z.string().optional().nullable(),
   engine_mode: z.enum(ENGINE_MODES),
   with_driver: z.boolean(),
+  display_title: z.string().optional().nullable(),
 })
 
 export const createServiceQuotationLineItemSchema = z.object({
