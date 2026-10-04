@@ -9,7 +9,7 @@ import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import {
-  createCarQuotationLineItemSchema,
+  createServiceQuotationLineItemSchema,
   Route,
   ServiceLineItemRequest,
 } from "@/features/quotations/schemas"
@@ -18,7 +18,6 @@ import {
   NumberField,
   SelectField,
   SwitchField,
-  TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
 import { generateServiceEmptyLineItem } from "@/features/quotations/utils"
@@ -59,7 +58,7 @@ export function ServicesDialog({
   onLineItemAdded,
 }: ServiceSelectDialogProps) {
   const form = useForm<ServiceLineItemRequest>({
-    resolver: zodResolver(createCarQuotationLineItemSchema),
+    resolver: zodResolver(createServiceQuotationLineItemSchema),
     defaultValues: lineItem
       ? { ...lineItem }
       : {
@@ -222,14 +221,15 @@ export function ServicesDialog({
                     </Field>
                   </CardContent>
                 </Card>
-                {/* <ServiceRoutesDialog
-                  selectedRoutes={locationsFields.fields}
-                  clientId={clientId}
-                  onSelected={handleLocationSelected}
-                /> */}
-                <RouteSummary route={route} onEdit={setRoute} />
+                <RouteSummary
+                  route={route}
+                  onEdit={(route) => {
+                    form.setValue("route", route)
+                    setRoute(route)
+                  }}
+                />
               </div>
-              <div className="space-y-4 border-t p-5 ">
+              <div className="space-y-4 border-t p-5">
                 <Field
                   orientation={"horizontal"}
                   className="grid gap-4 md:grid-cols-2"

@@ -15,13 +15,13 @@ export const QuotationSearchParams = z.object({
   ...DefaultSearchParamsSchema.shape,
 })
 
-export const RouteSchema = z.object({
+export const routeSchema = z.object({
   origin: z.string().min(1),
-  checkpoints: z.array(z.string().min(1)).default([]),
+  checkpoints: z.array(z.string().min(1)),
   destination: z.string().min(1),
 })
 
-export type Route = z.infer<typeof RouteSchema>
+export type Route = z.infer<typeof routeSchema>
 
 export type QuotationListSearchParams = z.infer<typeof QuotationSearchParams>
 
@@ -34,15 +34,6 @@ const createTaxRateSchema = z.object({
 const createVehicleAddonSchema = z.object({
   id: IDSchema,
   name: z.string(),
-})
-
-const createDistancePricingSchema = z.object({
-  route_id: IDSchema,
-  origin: z.string(),
-  destination: z.string().optional(),
-  price: z.number().positive(),
-  min_tons: z.number().positive(),
-  max_tons: z.number().positive(),
 })
 
 const createRouteSchema = z.object({
@@ -63,9 +54,9 @@ const lineItemBase = z.object({
   with_driver: z.boolean(),
 })
 
-export const createCarQuotationLineItemSchema = z.object({
+export const createServiceQuotationLineItemSchema = z.object({
   source: z.literal("service"),
-  locations: z.array(createRouteSchema).min(1),
+  route: routeSchema,
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
   vehicle_year: z.string().optional().nullable(),
@@ -78,9 +69,10 @@ export const createCarQuotationLineItemSchema = z.object({
 
 export const createRouteQuotationLineItemSchema = z.object({
   source: z.literal("route"),
-  locations: z.array(createDistancePricingSchema).min(1),
+  route: routeSchema,
   item_type: z.literal("truck"),
   with_loaders: z.boolean(),
+  route_id: IDSchema,
   estimated_consumption_rate_km: z
     .number("Required")
     .min(0.5, "Minimum tonnage is 0.5"),
@@ -90,7 +82,7 @@ export const createRouteQuotationLineItemSchema = z.object({
 
 export const createDistanceTonnageLineItemSchema = z.object({
   source: z.literal("distance"),
-  locations: z.array(createDistancePricingSchema),
+  route: routeSchema,
   item_type: z.literal("truck"),
   distance_km: z.number("Required").positive("Required").min(0.1),
   with_loaders: z.boolean(),
@@ -100,7 +92,7 @@ export const createDistanceTonnageLineItemSchema = z.object({
 })
 
 const createLineItemSchema = z.discriminatedUnion("source", [
-  createCarQuotationLineItemSchema,
+  createServiceQuotationLineItemSchema,
   createRouteQuotationLineItemSchema,
   createDistanceTonnageLineItemSchema,
 ])
@@ -170,7 +162,7 @@ export type LineItemRequest = z.infer<typeof createLineItemSchema>
 export type LineItemResponse = LineItemRequest
 
 export type ServiceLineItemRequest = z.infer<
-  typeof createCarQuotationLineItemSchema
+  typeof createServiceQuotationLineItemSchema
 >
 export type RouteLineItemRequest = z.infer<
   typeof createRouteQuotationLineItemSchema
@@ -179,42 +171,6 @@ export type RouteLineItemRequest = z.infer<
 export type DistanceLineItemRequest = z.infer<
   typeof createDistanceTonnageLineItemSchema
 >
-
-const loactionBasedSchema = z.object({
-  // source: z.literal("location"),
-  source: z.literal("small"),
-  ...createRouteSchema.shape,
-})
-
-const routePricingBasedSchema = z.object({
-  source: z.literal("route"),
-  ...createRouteSchema.shape,
-})
-
-const distancePricingBasedSchema = z.object({
-  source: z.literal("distance"),
-  ...createRouteSchema.shape,
-})
-
-export type LocationServiceResponse = z.infer<typeof loactionBasedSchema>
-
-export type PricingRouteServiceResponse = z.infer<
-  typeof routePricingBasedSchema
->
-
-export type DistanceRouteServiceResponse = z.infer<
-  typeof distancePricingBasedSchema
->
-
-const locationServiceSchema = z.discriminatedUnion("source", [
-  loactionBasedSchema,
-  routePricingBasedSchema,
-  distancePricingBasedSchema,
-])
-
-const locationSourceSchema = z.array(locationServiceSchema)
-
-export type LocationSourceResponse = z.infer<typeof locationSourceSchema>
 
 export const quotationShipmentParams = z.object({
   quotation_id: IDSchema,

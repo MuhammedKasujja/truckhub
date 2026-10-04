@@ -103,15 +103,6 @@ export function RoutePricingSelectDialog({
       "routes",
       selectedRoutes.map((r) => ({ ...r, tempId: r.routeId }))
     )
-    const locations = selectedRoutes.map((route) => ({
-      route_id: route.routeId,
-      origin: route.origin,
-      destination: route.destination,
-      price: 600,
-      min_tons: 6,
-      max_tons: 6,
-    }))
-    form.setValue("locations", locations)
   }, [selectedRoutes])
 
   useEffect(() => {
@@ -234,7 +225,10 @@ export function RoutePricingSelectDialog({
                   pricings?.effective_date ?? new Date().toDateString()
                 }
                 title="Company Pricing"
-                onRowSelect={setSelectedRoutes}
+                onRowSelect={(rows) => {
+                  setSelectedRoutes(rows)
+                  form.setValue("route_id", rows?.at(0)?.routeId ?? "")
+                }}
               />
             </div>
 
@@ -283,7 +277,7 @@ export function RoutePricingSelectDialog({
                                   pricingRefs.current[key] = el
                                 }}
                                 className={cn(
-                                  "flex min-w-[110px] shrink-0 flex-col items-center gap-1 rounded-lg border px-4 py-2 transition-all",
+                                  "flex min-w-27.5 shrink-0 flex-col items-center gap-1 rounded-lg border px-4 py-2 transition-all",
                                   isSelected &&
                                     "border-primary bg-primary/10 ring-2 ring-primary/30"
                                 )}
@@ -357,9 +351,15 @@ export function RoutePricingSelectDialog({
                     </Field>
                   </CardContent>
                 </Card>
-                <RouteSummary route={route} onEdit={setRoute} />
+                <RouteSummary
+                  route={route}
+                  onEdit={(r) => {
+                    form.setValue("route", r)
+                    setRoute(r)
+                  }}
+                />
               </div>
-              <div className="space-y-4 bg-card p-5 border-t">
+              <div className="space-y-4 border-t bg-card p-5">
                 <Field orientation={"horizontal"}>
                   <MoneyField
                     label="Unit Price"

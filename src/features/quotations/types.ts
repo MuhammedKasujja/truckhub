@@ -6,7 +6,6 @@ import {
   LineItemResponse,
   RouteLineItemRequest,
   ServiceLineItemRequest,
-  LocationSourceResponse,
   DistanceLineItemRequest,
 } from "./schemas"
 
@@ -32,7 +31,7 @@ type QuotationLineItemResponse = {
   unit_price: string
   subtotal: string
   line_total: string
-  services: LocationSourceResponse
+  services: Record<string, unknown>
   vehicle_addons: {
     id: string
     name: string

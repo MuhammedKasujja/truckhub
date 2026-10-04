@@ -56,7 +56,6 @@ type DistancePricingDialogProps = {
 }
 
 export function DistancePricingSelectDialog({
-  clientId,
   open,
   lineItem,
   onOpenChange,
@@ -303,9 +302,15 @@ export function DistancePricingSelectDialog({
                     </Field>
                   </CardContent>
                 </Card>
-                <RouteSummary route={route} onEdit={setRoute} />
+                <RouteSummary
+                  route={route}
+                  onEdit={(r) => {
+                    form.setValue("route", r)
+                    setRoute(r)
+                  }}
+                />
               </div>
-              <div className="space-y-4 p-5 border-t dark:bg-accent">
+              <div className="space-y-4 border-t p-5 dark:bg-accent">
                 <Field orientation={"horizontal"}>
                   <NumberField
                     label="Quantity"
