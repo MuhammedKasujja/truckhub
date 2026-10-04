@@ -11,11 +11,11 @@ import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
-  createTruckQuotationLineItemSchema,
+  createRouteQuotationLineItemSchema,
   Route,
   routePricingsSchema,
   RoutePricingStruct,
-  TruckLineItemRequest,
+  RouteLineItemRequest,
 } from "@/features/quotations/schemas"
 import { Button } from "@/components/ui/button"
 import { PackageOpen } from "lucide-react"
@@ -23,7 +23,7 @@ import z from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { generateTruckEmptyLineItem } from "../../utils"
+import { generateRouteEmptyLineItem } from "../../utils"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   MoneyField,
@@ -40,7 +40,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { RouteSummary } from "./routes-dialog"
 
 const formSchema = z.object({
-  ...createTruckQuotationLineItemSchema.shape,
+  ...createRouteQuotationLineItemSchema.shape,
   routes: z.array(routePricingsSchema).min(1, "At least one route required"),
 })
 
@@ -51,8 +51,8 @@ type RoutePricingDialogProps = {
   open: boolean
   selectedPricings: RoutePricingStruct[]
   onOpenChange: (v: boolean) => void
-  lineItem?: TruckLineItemRequest
-  onLineItemAdded: (lineItem: TruckLineItemRequest) => void
+  lineItem?: RouteLineItemRequest
+  onLineItemAdded: (lineItem: RouteLineItemRequest) => void
 }
 
 export function RoutePricingSelectDialog({
@@ -81,7 +81,7 @@ export function RoutePricingSelectDialog({
     defaultValues: lineItem
       ? { ...lineItem, routes: selectedPricings ?? [] }
       : {
-          ...generateTruckEmptyLineItem(),
+          ...generateRouteEmptyLineItem(),
           routes: selectedPricings ?? [],
         },
     mode: "onChange",

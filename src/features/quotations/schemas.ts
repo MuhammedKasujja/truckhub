@@ -76,7 +76,7 @@ export const createCarQuotationLineItemSchema = z.object({
   ...lineItemBase.shape,
 })
 
-export const createTruckQuotationLineItemSchema = z.object({
+export const createRouteQuotationLineItemSchema = z.object({
   source: z.literal("route"),
   locations: z.array(createDistancePricingSchema).min(1),
   item_type: z.literal("truck"),
@@ -101,7 +101,7 @@ export const createDistanceTonnageLineItemSchema = z.object({
 
 const createLineItemSchema = z.discriminatedUnion("source", [
   createCarQuotationLineItemSchema,
-  createTruckQuotationLineItemSchema,
+  createRouteQuotationLineItemSchema,
   createDistanceTonnageLineItemSchema,
 ])
 
@@ -169,11 +169,11 @@ export type RouteServiceInput = z.infer<typeof createRouteSchema>
 export type LineItemRequest = z.infer<typeof createLineItemSchema>
 export type LineItemResponse = LineItemRequest
 
-export type SmallLineItemRequest = z.infer<
+export type ServiceLineItemRequest = z.infer<
   typeof createCarQuotationLineItemSchema
 >
-export type TruckLineItemRequest = z.infer<
-  typeof createTruckQuotationLineItemSchema
+export type RouteLineItemRequest = z.infer<
+  typeof createRouteQuotationLineItemSchema
 >
 
 export type DistanceLineItemRequest = z.infer<

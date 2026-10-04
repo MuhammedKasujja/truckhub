@@ -36,8 +36,8 @@ import {
   createQuotationSchema,
   DistanceLineItemRequest,
   LineItemRequest,
-  SmallLineItemRequest,
-  TruckLineItemRequest,
+  ServiceLineItemRequest,
+  RouteLineItemRequest,
 } from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
@@ -329,7 +329,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             <RoutePricingSelectDialog
               clientId={selectedClient?.id ?? ""}
               open={openModal === "route"}
-              lineItem={selectedLineItem as TruckLineItemRequest}
+              lineItem={selectedLineItem as RouteLineItemRequest}
               selectedPricings={[]}
               onOpenChange={() => handleSourceChange(null)}
               onLineItemAdded={handleUpdateLineItems}
@@ -337,7 +337,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             <ServicesDialog
               clientId={selectedClient?.id ?? ""}
               open={openModal === "service"}
-              lineItem={selectedLineItem as SmallLineItemRequest}
+              lineItem={selectedLineItem as ServiceLineItemRequest}
               onOpenChange={() => handleSourceChange(null)}
               onLineItemAdded={handleUpdateLineItems}
             />

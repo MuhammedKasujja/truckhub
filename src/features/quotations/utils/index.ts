@@ -2,14 +2,14 @@ import { Quotation } from "../types"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import {
   LineItemResponse,
-  SmallLineItemRequest,
-  TruckLineItemRequest,
+  RouteLineItemRequest,
+  ServiceLineItemRequest,
   CreateQuotationRequest,
   DistanceLineItemRequest,
 } from "../schemas"
 
-export function generateEmptyLineItem() {
-  const emptyLineItem: SmallLineItemRequest = {
+export function generateServiceEmptyLineItem() {
+  const emptyLineItem: ServiceLineItemRequest = {
     tempId: makeId("__car_line_item__"),
     is_round_trip: false,
     unit_price: null,
@@ -20,7 +20,6 @@ export function generateEmptyLineItem() {
     item_type: "small",
     quantity: 1,
     discount: null,
-    car_brand_id: "",
     source: "service",
     car_model_id: "",
     with_driver: false,
@@ -30,8 +29,8 @@ export function generateEmptyLineItem() {
   return emptyLineItem
 }
 
-export function generateTruckEmptyLineItem() {
-  const emptyLineItem: TruckLineItemRequest = {
+export function generateRouteEmptyLineItem() {
+  const emptyLineItem: RouteLineItemRequest = {
     tempId: makeId("__route_line_item__"),
     is_round_trip: false,
     unit_price: null,

@@ -11,7 +11,7 @@ import { Controller, useForm } from "react-hook-form"
 import {
   createCarQuotationLineItemSchema,
   Route,
-  SmallLineItemRequest,
+  ServiceLineItemRequest,
 } from "@/features/quotations/schemas"
 import {
   MoneyField,
@@ -21,7 +21,7 @@ import {
   TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
-import { generateEmptyLineItem } from "@/features/quotations/utils"
+import { generateServiceEmptyLineItem } from "@/features/quotations/utils"
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { useEffect, useState } from "react"
@@ -47,8 +47,8 @@ type ServiceSelectDialogProps = {
   clientId: EntityId
   open: boolean
   onOpenChange: (v: boolean) => void
-  lineItem?: SmallLineItemRequest
-  onLineItemAdded: (lineItem: SmallLineItemRequest) => void
+  lineItem?: ServiceLineItemRequest
+  onLineItemAdded: (lineItem: ServiceLineItemRequest) => void
 }
 
 export function ServicesDialog({
@@ -58,12 +58,12 @@ export function ServicesDialog({
   lineItem,
   onLineItemAdded,
 }: ServiceSelectDialogProps) {
-  const form = useForm<SmallLineItemRequest>({
+  const form = useForm<ServiceLineItemRequest>({
     resolver: zodResolver(createCarQuotationLineItemSchema),
     defaultValues: lineItem
       ? { ...lineItem }
       : {
-          ...generateEmptyLineItem(),
+          ...generateServiceEmptyLineItem(),
         },
   })
 

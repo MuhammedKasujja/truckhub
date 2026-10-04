@@ -4,8 +4,8 @@ import { DataTableRowAction } from "@/types/data-table"
 import { EngineMode, LineItemType } from "@/common/enums"
 import {
   LineItemResponse,
-  SmallLineItemRequest,
-  TruckLineItemRequest,
+  RouteLineItemRequest,
+  ServiceLineItemRequest,
   LocationSourceResponse,
   DistanceLineItemRequest,
 } from "./schemas"
@@ -23,8 +23,8 @@ interface LineItemOut {
   with_driver: boolean
 }
 
-export type ServiceLineItem = SmallLineItemRequest
-export type RouteLineItem = TruckLineItemRequest
+export type ServiceLineItem = ServiceLineItemRequest
+export type RouteLineItem = RouteLineItemRequest
 export type DistanceLineItem = DistanceLineItemRequest
 
 type QuotationLineItemResponse = {
