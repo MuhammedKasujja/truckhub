@@ -155,15 +155,16 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     )
     let total = subtotal
     setSubtotal(subtotal.toString())
-    if (taxRates.length > 0) {
-      const rates = taxRates.reduce(
-        (curr, tax) => curr.plus(tax.rate),
-        new Decimal(0)
-      )
-      const taxAmount = total.times(rates.div(100))
-      total = total.plus(taxAmount)
-      setTaxAmount(taxAmount.toString())
-    }
+    
+    const rates =
+      taxRates.length > 0
+        ? taxRates.reduce((curr, tax) => curr.plus(tax.rate), new Decimal(0))
+        : new Decimal(defaultTaxRate?.rate ?? "0")
+
+    const taxAmount = total.times(rates.div(100))
+    total = total.plus(taxAmount)
+    setTaxAmount(taxAmount.toString())
+
     return total.toString()
   }, [taxRates, lineItems])
 

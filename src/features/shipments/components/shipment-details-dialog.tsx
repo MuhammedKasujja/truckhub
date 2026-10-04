@@ -66,7 +66,7 @@ export function ShipmentDetailsDialog({
                   variant={"outline"}
                   onClick={() => setOpenModal("dispatch")}
                 >
-                  <IconSend/>
+                  <IconSend />
                   Dispatch
                 </Button>
                 {!shipment?.vehicle && (
@@ -238,16 +238,17 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   const totalDue = new Decimal(shipment.item.unit_price ?? "0")
     .minus(shipment.item.discount ?? "0")
     .toString()
-    
+
   return (
     <div className="space-y-4">
       {/* Route */}
       <Card className="bg-background/30">
         <CardContent className="pt-4">
           <SectionLabel>Route</SectionLabel>
-          {trip?.item.locations.map((r, i) => (
-            <RouteRow key={i} origin={r.origin} destination={r.destination} />
-          ))}
+          <RouteRow
+            origin={trip.item.route.origin}
+            destination={trip.item.route.destination}
+          />
           <div className="mt-4 flex flex-wrap gap-2">
             {[
               trip.item.is_round_trip ? "Round trip" : "One-way",

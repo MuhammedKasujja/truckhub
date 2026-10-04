@@ -219,11 +219,9 @@ function RouteComponent() {
                 </div>
                 <div>{shp.driver?.fullname}</div>
                 <div className="text-muted-foreground">
-                  {shp.item.locations.map((loc) => (
-                    <div>
-                      {loc?.origin} - {loc.destination}
-                    </div>
-                  ))}
+                  <div>
+                    {shp.item.route?.origin} - {shp.item.route?.destination}
+                  </div>
                 </div>
               </div>
             ))}
