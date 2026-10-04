@@ -22,6 +22,7 @@ export function generateServiceEmptyLineItem() {
     discount: null,
     source: "service",
     car_model_id: "",
+    service_id: "",
     with_driver: false,
     estimated_consumption_rate_km: undefined,
     engine_mode: "wet",

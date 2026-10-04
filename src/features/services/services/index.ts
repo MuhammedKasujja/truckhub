@@ -16,7 +16,14 @@ import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getServicesFn = createServerFn().handler(async () => {
   const { data } = await apiResponseTransform(getServices())
-  return data ?? []
+  return (data ?? []).map((service) => ({
+    ...service,
+    display_name:
+      service.vehicle_category?.name ??
+      `${service.car_model?.car_brand.name} ${
+        service.car_model?.name
+      } (${service.car_model?.manufacture_year})`,
+  }))
 })
 
 export const getServicesByQueryFn = createServerFn()

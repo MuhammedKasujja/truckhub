@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/card"
 import { Status } from "@/components/ui/status"
 import { RouteSummary } from "./routes-dialog"
+import { toast } from "sonner"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -106,6 +107,28 @@ export function ServicesDialog({
     }
   }, [lineItem, form])
 
+  function handleConfirmService() {
+    const selectedService = services?.find(
+      (s) => form.getValues("service_id") === s.id
+    )
+
+    if (!selectedService) {
+      toast.error("Please select a vehicle first")
+      return
+    }
+
+    form.handleSubmit(
+      (data) => {
+        const title = `${selectedService?.display_name}`
+        onLineItemAdded({ ...data, display_title: title })
+        onOpenChange(false)
+      },
+      (error) => {
+        console.log("error", error)
+      }
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[95vh] min-h-[95vh] overflow-hidden p-0 md:min-w-[95vw]">
@@ -153,9 +176,12 @@ export function ServicesDialog({
                   className="shrink-0"
                   onClick={form.handleSubmit(
                     (data) => {
-                      const selectedService = services?.find((s) => data.service_id === s.id)
+                      const selectedService = services?.find(
+                        (s) => form.getValues("service_id") === s.id
+                      )
+
                       const title = `${selectedService?.display_name}`
-                      onLineItemAdded({...data, display_title: title})
+                      onLineItemAdded({ ...data, display_title: title })
                       onOpenChange(false)
                     },
                     (error) => {
@@ -176,10 +202,7 @@ export function ServicesDialog({
                 selectedIds={selectedIds}
                 onSelectedIdsChange={(ids) => {
                   setSelectedIds(ids)
-                  form.setValue(
-                    "service_id",
-                    ids.length > 0 ? ids[0] : undefined
-                  )
+                  form.setValue("service_id", ids.length > 0 ? ids[0] : "")
                 }}
               />
             </div>
@@ -337,10 +360,7 @@ function ServiceList({
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">
-                    {service.vehicle_category?.name ??
-                      `${service.car_model?.car_brand.name} ${
-                        service.car_model?.name
-                      } (${service.car_model?.manufacture_year})`}
+                    {service.display_name}
                   </CardTitle>
 
                   {/* <Badge variant="default">{service.category}</Badge> */}
