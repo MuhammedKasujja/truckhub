@@ -34,6 +34,7 @@ import { useShipmentDetails } from "../hooks/use-shipment-details"
 import { cn } from "@/lib/utils"
 import Decimal from "decimal.js"
 import { IconReceiptTax, IconSend } from "@tabler/icons-react"
+import { ShimpmentRouteDetails } from "./shipment-route-details"
 
 type ShipmentDialogProps = {
   shipment?: Shipment
@@ -239,32 +240,30 @@ function ShipmentOverviewDetails({ shipment }: Props) {
     .toString()
 
   return (
-    <div className="space-y-4">
-      {/* Route */}
-      <Card className="bg-background/30">
-        <CardContent className="pt-4">
-          <SectionLabel>Route</SectionLabel>
-          <RouteRow
-            origin={trip.item.route.origin}
-            destination={trip.item.route.destination}
-          />
-          <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              trip.item.is_round_trip ? "Round trip" : "One-way",
-              `${trip.item.item_type} item`,
-              `${trip.item.engine_mode} hire`,
-              `Scheduled ${trip.item.scheduled_start} – ${trip.item.scheduled_end}`,
-            ].map((opt) => (
-              <span
-                key={opt}
-                className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase"
-              >
-                {opt}
-              </span>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-5">
+      <div className="grid gap-5 md:grid-cols-2">
+        <Card className="bg-background/30">
+          <CardContent className="pt-4">
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                trip.item.is_round_trip ? "Round trip" : "One-way",
+                `${trip.item.item_type} item`,
+                `${trip.item.engine_mode} hire`,
+                `Scheduled ${trip.item.scheduled_start} – ${trip.item.scheduled_end}`,
+              ].map((opt) => (
+                <span
+                  key={opt}
+                  className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase"
+                >
+                  {opt}
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <ShimpmentRouteDetails route={trip.item.route} />
+      </div>
+
       {/* Odometer & consumption */}
       {trip.consumption && (
         <Card className="bg-background/15">
@@ -291,7 +290,10 @@ function ShipmentOverviewDetails({ shipment }: Props) {
             </div>
             {distance && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <StatBox label="Distance" value={`${formatNumber(distance)} km`} />
+                <StatBox
+                  label="Distance"
+                  value={`${formatNumber(distance)} km`}
+                />
                 <StatBox
                   label="Fuel Rate"
                   value={`${formatMoney(trip?.consumption?.fuel_rate)} / L`}
