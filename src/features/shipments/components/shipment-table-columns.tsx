@@ -83,7 +83,11 @@ export function getShipmentTableColumns({
       accessorKey: "status",
       header: tr("common.status"),
       cell: ({ row }) => {
-        return <Badge variant={"outline"}>{row.original.status}</Badge>
+        return (
+          <Badge variant={"outline"}>
+            {tr(`shipments.status.${row.original.status}`)}
+          </Badge>
+        )
       },
     },
     {

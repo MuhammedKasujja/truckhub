@@ -42,7 +42,8 @@ import {
   ItemHeader,
   ItemTitle,
 } from "@/components/ui/item"
-import { ShipmentHistoryTimeline } from "./shipment-history"
+import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
+import { useTranslation } from "@/i18n"
 
 type ShipmentDialogProps = {
   shipment?: Shipment
@@ -59,6 +60,7 @@ export function ShipmentDetailsDialog({
     "dispatch" | "record" | "assign-vehicle" | "asign-driver" | "end-shipment"
   >()
   const { shipment } = useShipmentDetails(rest.shipment)
+  const tr = useTranslation()
 
   return (
     <>
@@ -67,7 +69,10 @@ export function ShipmentDetailsDialog({
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Shipment<span className="mx-1 text-muted-foreground">•</span>
-              {shipment?.number} <Badge>{shipment?.status}</Badge>
+              {shipment?.number}{" "}
+              {shipment && (
+                <Badge>{tr(`shipments.status.${shipment?.status}`)}</Badge>
+              )}
             </DialogTitle>
             <DialogDescription className="flex items-center gap-4">
               <ButtonGroup>

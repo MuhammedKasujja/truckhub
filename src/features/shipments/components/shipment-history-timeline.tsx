@@ -12,12 +12,14 @@ import {
 import { ShipmentHistory } from "../types"
 import { CircleDotIcon } from "lucide-react"
 import { formatDate } from "@/lib/format"
+import { useTranslation } from "@/i18n"
 
 type Props = {
   history: ShipmentHistory[]
 }
 
 export function ShipmentHistoryTimeline({ history }: Props) {
+  const tr = useTranslation()
   return (
     <Timeline
       activeIndex={history.length - 1}
@@ -31,7 +33,7 @@ export function ShipmentHistoryTimeline({ history }: Props) {
           <TimelineConnector />
           <TimelineContent>
             <TimelineHeader>
-              <TimelineTitle>{item.status}</TimelineTitle>
+              <TimelineTitle>{tr(`shipments.status.${item.status}`)}</TimelineTitle>
               <TimelineTime dateTime={item.created_at.toString()}>
                 {formatDate(item.created_at)}
               </TimelineTime>
