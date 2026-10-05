@@ -35,6 +35,14 @@ import { cn } from "@/lib/utils"
 import Decimal from "decimal.js"
 import { IconReceiptTax, IconSend } from "@tabler/icons-react"
 import { ShimpmentRouteDetails } from "./shipment-route-details"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item"
+import { ShipmentHistoryTimeline } from "./shipment-history"
 
 type ShipmentDialogProps = {
   shipment?: Shipment
@@ -129,11 +137,6 @@ export function ShipmentDetailsDialog({
                         label="Model Year"
                         value={shipment.vehicle.vehicle_year}
                       />
-                      <PanelField
-                        icon={Fuel}
-                        label="Rated Consumption"
-                        value={`${shipment.vehicle.fuel_consumption_rate} KM/L`}
-                      />
                     </div>
                   ) : (
                     <Empty className="border border-dashed">
@@ -193,6 +196,9 @@ export function ShipmentDetailsDialog({
                   )}
                 </CardContent>
               </Card>
+              {shipment?.history && (
+                <ShipmentHistoryTimeline history={shipment?.history} />
+              )}
             </div>
           </div>
         </DialogContent>
@@ -283,8 +289,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           <CardContent className="pt-4">
             <SectionLabel>Odometer &amp; Consumption</SectionLabel>
             <div className="mb-5 flex items-center justify-center gap-5 rounded-md bg-accent p-5">
-              <div className="text-center">
-                <div className="rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+              <div className="min-w-40 text-center">
+                <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.start_mileage.toLocaleString()}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">
@@ -292,8 +298,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 </p>
               </div>
               <ArrowRight className="mb-5 size-5" />
-              <div className="text-center">
-                <div className="rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+              <div className="min-w-40 text-center">
+                <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
                   {trip?.consumption?.end_mileage?.toLocaleString()}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">

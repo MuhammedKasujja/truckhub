@@ -35,6 +35,13 @@ export type ShipmentVehicleConsumption = {
   consumed_fuel_rates: string[]
 }
 
+export type ShipmentHistory = {
+  status: ShipmentStatus
+  note: string | null
+  changed_by: EntityId
+  created_at: Date
+}
+
 export type Shipment = {
   id: EntityId
   number: string | null
@@ -61,6 +68,7 @@ export type Shipment = {
   item: ShipmentLineItem
   consumption: ShipmentVehicleConsumption | null
   updated_at: string
+  history: ShipmentHistory[] | null
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<
