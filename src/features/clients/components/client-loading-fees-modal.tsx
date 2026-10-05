@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ClientPricingSearchParam } from "../schemas"
 import { useClientPricingDates } from "../hooks/use-client"
+import { useActivateClientLoadingPricing } from "../hooks/use-client-pricings"
 
 type ClientPricingProps = {
   clientId: EntityId
@@ -30,7 +31,6 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
   const [search, setSearch] = useState<ClientPricingSearchParam>({ clientId })
 
   const { data } = useClientLoadingOffloadingFees({ ...search })
-  console.log("Data maped", data)
   const { createClientLoadingFees, isPending } = useCreateClientLoadingFees()
 
   async function handleSubmit(values: LoadingOffloadingPricingRequest) {
@@ -38,6 +38,7 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
   }
 
   const { data: pricingConfig } = useClientPricingDates(clientId)
+  const { activatePricing } = useActivateClientLoadingPricing()
 
   return (
     <>
@@ -74,10 +75,11 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
                 disabled={isPending}
                 onClick={() => {
                   if (search?.referenceDate) {
+                    activatePricing({
+                      clientId,
+                      effectiveDate: search?.referenceDate,
+                    })
                   }
-                  // activateLoadingPricing({
-                  //   effectiveDate: search?.referenceDate,
-                  // })
                 }}
               >
                 Set Active

@@ -1,5 +1,6 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
+import { CLIENT_PRICING_TYPES } from "./enums"
 import { Client } from "@/features/clients/types"
 import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
@@ -77,3 +78,13 @@ export const clientPricingSearchParams = z.object({
 })
 
 export type ClientPricingSearchParam = z.infer<typeof clientPricingSearchParams>
+
+export const ActivateClientPricingSchema = z.object({
+  effectiveDate: z.string(),
+  source: z.enum(CLIENT_PRICING_TYPES),
+  clientId: IDSchema
+})
+
+export type ActivateClientPricing = z.infer<typeof ActivateClientPricingSchema>
+
+

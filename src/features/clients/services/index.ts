@@ -4,6 +4,7 @@ import {
   ClientSearchParamsCache,
   ClientServiceCreateSchema,
   clientPricingSearchParams,
+  ActivateClientPricingSchema,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -34,6 +35,7 @@ import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "@/features/settings/pricing/schemas"
+import { activateClientPricing } from "./pricings"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
@@ -170,3 +172,7 @@ export const createClientServiceFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     return createClientService(data)
   })
+
+export const activateClientPricingFn = createServerFn()
+  .inputValidator(ActivateClientPricingSchema)
+  .handler(({ data }) => apiResponseTransform(activateClientPricing(data)))
