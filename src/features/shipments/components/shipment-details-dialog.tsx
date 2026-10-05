@@ -55,7 +55,7 @@ export function ShipmentDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
+        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col gap-0 overflow-hidden p-0 md:min-w-[90vw]">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Shipment<span className="mx-1 text-muted-foreground">•</span>
@@ -103,11 +103,10 @@ export function ShipmentDetailsDialog({
             </DialogDescription>
           </DialogHeader>
           <div className="grid flex-1 gap-0 overflow-hidden md:grid-flow-col md:grid-cols-6">
-            <div className="flex flex-col gap-4 overflow-y-auto p-6 md:col-span-4">
+            <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-4">
               {shipment && <ShipmentOverviewDetails shipment={shipment} />}
             </div>
-            {/* <Separator orientation="vertical" className="shrink"/> */}
-            <div className="w-full space-y-6 overflow-y-auto p-6 md:col-span-2">
+            <div className="w-full space-y-6 overflow-y-auto bg-background/95 p-6 backdrop-blur supports-backdrop-filter:bg-background/80 md:col-span-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-primary">Vehicle</CardTitle>
@@ -234,16 +233,21 @@ type Props = {
 function ShipmentOverviewDetails({ shipment }: Props) {
   const trip = shipment
   const distance = trip?.consumption?.distance_km
-  const rate = parseFloat(trip?.vehicle?.fuel_consumption_rate ?? "")
-  const totalDue = new Decimal(shipment.item.unit_price ?? "0")
-    .minus(shipment.item.discount ?? "0")
-    .toString()
+  const consumptionRate = parseFloat(
+    trip?.vehicle?.fuel_consumption_rate ?? "0"
+  )
+  const fuelRate = new Decimal(shipment.consumption?.fuel_rate ?? "0").times(
+    shipment.consumption?.fuel_used_litres ?? "0"
+  )
+  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(fuelRate)
+
+  const totalDue = subtotal.minus(shipment.item.discount ?? "0").toString()
 
   return (
     <div className="space-y-5">
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="bg-background/30">
-          <CardContent className="pt-4">
+          <CardContent className="space-y-1.5 pt-4">
             <div className="mt-4 flex flex-wrap gap-2">
               {[
                 trip.item.is_round_trip ? "Round trip" : "One-way",
@@ -259,6 +263,15 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 </span>
               ))}
             </div>
+            {trip.actual_start && (
+              <>
+                <div>Started</div>
+                <div>
+                  {trip.actual_start && formatDate(trip.actual_start)} -{" "}
+                  {trip.actual_end ? formatDate(trip.actual_end) : "on going"}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
         <ShimpmentRouteDetails route={trip.item.route} />
@@ -301,7 +314,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 <StatBox
                   label="Est. Fuel Used"
                   value={`${trip.consumption.fuel_used_litres} L`}
-                  note={`${formatNumber(distance)}km / ${rate} (consumption rate)`}
+                  note={`${formatNumber(distance)}km / ${consumptionRate} (consumption rate)`}
                 />
               </div>
             )}
@@ -316,10 +329,13 @@ function ShipmentOverviewDetails({ shipment }: Props) {
             label="Unit price"
             value={formatMoney(shipment.item.unit_price)}
           />
-          <BillLine label="Item type" value={shipment.item.item_type} />
+          <BillLine
+            label={`Fuel Consumption @${consumptionRate} km/l`}
+            value={formatMoney(fuelRate.toString())}
+          />
           <Separator className="my-1" />
           <div className="pt-3">
-            <BillLine label="Total due" value={formatMoney(totalDue)} total />
+            <BillLine label="Total due" value={formatMoney(totalDue)} isTotal />
           </div>
         </CardContent>
       </Card>
@@ -330,23 +346,23 @@ function ShipmentOverviewDetails({ shipment }: Props) {
 function BillLine({
   label,
   value,
-  total,
+  isTotal,
 }: {
   label: string
   value: string
-  total?: string | number
+  isTotal?: boolean
 }) {
   return (
     <div
       className={cn(
         "flex items-center justify-between py-2.5",
-        total ? "border-b-0" : "border-b"
+        isTotal ? "border-b-0" : "border-b"
       )}
     >
       <span
         className={cn(
           "text-muted-foreground",
-          total ? "text-sm font-bold tracking-wide" : "text-sm"
+          isTotal ? "text-sm font-bold tracking-wide" : "text-sm"
         )}
       >
         {label}
@@ -354,7 +370,7 @@ function BillLine({
       <span
         className={cn(
           "font-mono",
-          total ? "text-lg font-semibold text-primary" : "text-sm"
+          isTotal ? "text-lg font-semibold text-primary" : "text-sm"
         )}
         // style={{ color: total ? AMBER : TEXT }}
       >
