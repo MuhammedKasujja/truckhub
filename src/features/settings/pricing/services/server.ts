@@ -10,6 +10,7 @@ import {
   LoadingOffloadingPricingRequest,
 } from "../schemas"
 import {
+  ClientPricingDates,
   CompanyPricingDates,
   RoutePricingResponse,
   IslandPricingResponse,
@@ -18,6 +19,7 @@ import {
   LoadingOffloadingPricingResponse,
 } from "../types"
 import { ApiError } from "@/types"
+import { EntityId } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/pricing/routes"
@@ -116,6 +118,10 @@ export async function getRouteTonnagePricing(search: PricingSearchParams) {
 
 export async function getCompanyPricingDates() {
   return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
+}
+
+export async function getClientPricingDates(clientId: EntityId) {
+  return await apiClient.getFn<ClientPricingDates>(`/v1/pricing/dates/client/${clientId}`)
 }
 
 export async function activateCompanyPricing(input: ActivatePricingInput) {

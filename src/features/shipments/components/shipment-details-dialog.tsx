@@ -128,14 +128,9 @@ export function ShipmentDetailsDialog({
                   {shipment?.vehicle ? (
                     <div>
                       <PanelField
-                        icon={MapPin}
-                        label="Plate"
-                        value={shipment.vehicle.plate_number}
-                      />
-                      <PanelField
                         icon={Truck}
-                        label="Vehicle No."
-                        value={shipment.vehicle.number}
+                        label="Vehicle"
+                        value={`${shipment.vehicle.number} • ${shipment.vehicle.plate_number}`}
                       />
                       <PanelField
                         icon={Gauge}
@@ -179,11 +174,6 @@ export function ShipmentDetailsDialog({
                         icon={Mail}
                         label="Email"
                         value={shipment.driver.email}
-                      />
-                      <PanelField
-                        icon={Truck}
-                        label="Driver No."
-                        value={shipment.driver.number}
                       />
                     </div>
                   ) : (

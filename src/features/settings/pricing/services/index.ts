@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getIslandsPricings,
+  getClientPricingDates,
   getRouteTonnagePricing,
   getCompanyPricingDates,
   activateCompanyPricing,
@@ -24,6 +25,7 @@ import {
   ActivePricingSearchParamsCache,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
+import { EntityIdSchema } from "@/schemas"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn()
@@ -121,6 +123,13 @@ export const getIslandPricingsFn = createServerFn()
 export const getCompanyPricingDatesFn = createServerFn().handler(
   async () => await getCompanyPricingDates()
 )
+
+export const getClientPricingDatesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const response = await apiResponseTransform(getClientPricingDates(data.id))
+    return response.data
+  })
 
 export const activateCompanyPricingFn = createServerFn()
   .inputValidator(ActivatePricingSchema)

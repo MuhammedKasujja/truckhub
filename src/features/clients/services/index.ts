@@ -3,6 +3,7 @@ import {
   ClientCreateSchema,
   ClientSearchParamsCache,
   ClientServiceCreateSchema,
+  clientPricingSearchParams,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -26,6 +27,7 @@ import {
   createClientBatchRoutePricing,
   getClientLoadingOffloadingFrees,
   createClientLoadingOffloadingPricing,
+  getClientActiveLoadingOffloadingFrees,
 } from "./server"
 import { ApiError } from "@/types"
 import {
@@ -129,9 +131,15 @@ export const getClientRoutePricingFn = createServerFn()
   })
 
 export const getClientLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(clientPricingSearchParams)
+  .handler(async ({ data }) => {
+    return getClientLoadingOffloadingFrees(data)
+  })
+
+export const getClientActiveLoadingOffloadingFreesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getClientLoadingOffloadingFrees(data.id)
+    return getClientActiveLoadingOffloadingFrees(data.id)
   })
 
 export const createClientLoadingOffloadingPricingFn = createServerFn()

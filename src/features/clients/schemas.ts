@@ -3,6 +3,7 @@ import { IDSchema } from "@/schemas"
 import { Client } from "@/features/clients/types"
 import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { PricingSearchParamsCache } from "../settings/pricing/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { ServiceCreateSchema, ServiceUpdateSchema } from "../services/schemas"
 
@@ -69,3 +70,10 @@ export const ClientServiceCreateSchema = z.object({
 })
 
 export type ClientServiceCreateInput = z.infer<typeof ClientServiceCreateSchema>
+
+export const clientPricingSearchParams = z.object({
+  ...PricingSearchParamsCache.partial().shape,
+  clientId: IDSchema,
+})
+
+export type ClientPricingSearchParam = z.infer<typeof clientPricingSearchParams>

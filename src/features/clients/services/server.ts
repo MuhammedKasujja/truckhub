@@ -9,6 +9,7 @@ import {
   ClientCreateInput,
   ClientListSearchParams,
   ClientServiceCreateInput,
+  ClientPricingSearchParam,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
@@ -23,8 +24,8 @@ import {
 } from "@/features/settings/pricing/schemas"
 import { Invoice } from "@/features/invoices/types"
 import { Quotation } from "@/features/quotations/types"
-import { RoutePricingResponse } from "@/features/settings/pricing/types"
 import { Service, toServicePricingApiPayload } from "@/features/services/types"
+import { LoadingOffloadingPricingResponse, RoutePricingResponse } from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
 
@@ -110,9 +111,19 @@ export async function getClientRoutePricing(clientId: EntityId) {
   return await apiClient.getFn<RoutePricingResponse>(url)
 }
 
-export async function getClientLoadingOffloadingFrees(clientId: EntityId) {
-  return await apiClient.getFn<LoadingOffloadingPricing[]>(
-    `${endpoint}/${clientId}/loading-offloading/pricing`
+export async function getClientLoadingOffloadingFrees(
+  search: ClientPricingSearchParam
+) {
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(
+    `/v1/pricing/loading-offloading/client/${search.clientId}?reference_date=${search.referenceDate}`
+  )
+}
+
+export async function getClientActiveLoadingOffloadingFrees(
+  clientId: EntityId
+) {
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(
+    `/v1/pricing/loading-offloading/client/${clientId}/active`
   )
 }
 

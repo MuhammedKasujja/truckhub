@@ -106,9 +106,8 @@ export const COMPANY_PRICING_TYPES = [
 ] as const
 
 export type ClientPricingDates = {
-  route_tonnage: PricingDates
-  island: PricingDates
-  loading_offloading: PricingDates
+  routes: PricingDates
+  loading: PricingDates
 }
 
 export type ClientPricingTypes = keyof ClientPricingDates

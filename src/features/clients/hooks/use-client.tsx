@@ -8,7 +8,11 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query"
-import { clientProfileQueryOptions, clientQueryKeys } from "../query-options"
+import {
+  clientPricingDatesQueryOptions,
+  clientProfileQueryOptions,
+  clientQueryKeys,
+} from "../query-options"
 
 const useCreateClientBase = createEntityActionHook(
   createClientFn,
@@ -114,4 +118,8 @@ export function useClientProfileSuspenseQuery(clientId: EntityId) {
   } = useSuspenseQuery(clientProfileQueryOptions(clientId))
 
   return { data: response.data!, error, isLoading }
+}
+
+export function useClientPricingDates(clientId: EntityId) {
+  return useQuery(clientPricingDatesQueryOptions(clientId))
 }
