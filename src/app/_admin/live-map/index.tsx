@@ -64,7 +64,7 @@ export const Route = createFileRoute("/_admin/live-map/")({
 
 function RouteComponent() {
   const search = Route.useSearch()
-  const { shipments, refetch } = useActiveShipments(search)
+  const { shipments, refetch, isRefetching } = useActiveShipments(search)
   const [selectedShipment, setSelectedShipment] = useState<Shipment>()
   const [status, setStatus] = useState<ActiveShipmentStatus>()
 
@@ -74,7 +74,7 @@ function RouteComponent() {
 
   return (
     <div className="space-y-6">
-      <PageHeader className="pb-0">
+      <PageHeader className={cn("pb-0", isRefetching && "border-b-3")}>
         <PageTitle>Live Map</PageTitle>
         <PageAction>
           <Button variant={"ghost"} onClick={() => refetch()}>
@@ -162,7 +162,7 @@ function RouteComponent() {
       </Card>
       <div className="grid gap-6 md:grid-cols-7">
         <Card className="h-[80vh] rounded-xl md:col-span-2">
-          <CardHeader>
+          <CardHeader className="border-b">
             <CardTitle className="py-2">Active fleet</CardTitle>
             <CardDescription className="space-y-2">
               <div className="flex items-center gap-2">

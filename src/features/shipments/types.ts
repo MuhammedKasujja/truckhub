@@ -31,6 +31,7 @@ export type ShipmentVehicleConsumption = {
   distance_km: string | undefined
   fuel_rate: string | null
   days: number | null
+  fuel_used_litres: string | null
   consumed_fuel_rates: string[]
 }
 

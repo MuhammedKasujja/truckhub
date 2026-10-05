@@ -46,7 +46,7 @@ function ProfileDropdown() {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-32">
+      <DropdownMenuContent className="w-32" align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link to="/settings/user-profile">Profile</Link>

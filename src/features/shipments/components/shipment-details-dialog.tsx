@@ -234,7 +234,6 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   const trip = shipment
   const distance = trip?.consumption?.distance_km
   const rate = parseFloat(trip?.vehicle?.fuel_consumption_rate ?? "")
-  const litersUsed = (((distance ?? 0) / 100) * rate).toFixed(1)
   const totalDue = new Decimal(shipment.item.unit_price ?? "0")
     .minus(shipment.item.discount ?? "0")
     .toString()
@@ -255,12 +254,12 @@ function ShipmentOverviewDetails({ shipment }: Props) {
               `${trip.item.item_type} item`,
               `${trip.item.engine_mode} hire`,
               `Scheduled ${trip.item.scheduled_start} – ${trip.item.scheduled_end}`,
-            ].map((t) => (
+            ].map((opt) => (
               <span
-                key={t}
+                key={opt}
                 className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase"
               >
-                {t}
+                {opt}
               </span>
             ))}
           </div>
@@ -292,15 +291,15 @@ function ShipmentOverviewDetails({ shipment }: Props) {
             </div>
             {distance && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <StatBox label="Distance" value={`${distance} km`} />
+                <StatBox label="Distance" value={`${formatNumber(distance)} km`} />
                 <StatBox
                   label="Fuel Rate"
                   value={`${formatMoney(trip?.consumption?.fuel_rate)} / L`}
                 />
                 <StatBox
                   label="Est. Fuel Used"
-                  value={`${litersUsed} L`}
-                  note={`${distance}km × ${rate}L/100km`}
+                  value={`${trip.consumption.fuel_used_litres} L`}
+                  note={`${formatNumber(distance)}km / ${rate} (consumption rate)`}
                 />
               </div>
             )}
