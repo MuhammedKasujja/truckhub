@@ -5,7 +5,7 @@ import {
   useCreateClientLoadingFees,
 } from "../hooks/use-client-loading-fees"
 import { EntityId } from "@/schemas"
-import { Activity, useState } from "react"
+import { Activity, useEffect, useState } from "react"
 import { FieldLabel } from "@/components/ui/field"
 import {
   Select,
@@ -38,6 +38,14 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
   }
 
   const { data: pricingConfig } = useClientPricingDates(clientId)
+
+  useEffect(() => {
+    setSearch({
+      ...search,
+      referenceDate: pricingConfig?.loading.active_date,
+    })
+  }, [pricingConfig])
+
   const { activatePricing } = useActivateClientLoadingPricing()
 
   return (
