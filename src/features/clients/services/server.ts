@@ -109,7 +109,7 @@ export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
 
 export async function getClientRoutePricing(search: ClientPricingSearchParam) {
   return await apiClient.getFn<RoutePricingResponse>(
-    `/v1/pricing/routes/pricing/client/${search.clientId}?reference_date=${search.referenceDate}`
+    `/v1/pricing/routes/client/${search.clientId}?reference_date=${search.referenceDate}`
   )
 }
 

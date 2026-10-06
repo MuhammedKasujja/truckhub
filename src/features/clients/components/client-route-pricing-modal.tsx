@@ -21,6 +21,7 @@ import {
 import { useActivateClientRoutePricing } from "../hooks/use-client-pricings"
 import { useClientPricingDates } from "../hooks/use-client"
 import { ClientPricingSearchParam } from "../schemas"
+import { useClientRoutingPricing } from "../hooks/use-client-route-pricing"
 
 type ClientPricingProps = {
   clientId: string
@@ -31,13 +32,14 @@ export function ClientRouteTonnagePricingModal({
 }: ClientPricingProps) {
   const queryInvaidator = useQueryInvalidator()
   const [view, setView] = useState<"list" | "edit">("list")
-  const [search, setSearch] = useState<ClientPricingSearchParam>()
+  const [search, setSearch] = useState<ClientPricingSearchParam>({ clientId })
 
   const { data: pricingConfig } = useClientPricingDates(clientId)
+  const { data: pricing } = useClientRoutingPricing(search)
 
   useEffect(() => {
     setSearch({
-      clientId,
+      ...search,
       referenceDate: pricingConfig?.routes.active_date,
     })
   }, [pricingConfig])
@@ -113,8 +115,8 @@ export function ClientRouteTonnagePricingModal({
           </Button>
         </div>
         <RouteTonnagePricingGrid
-          key={search?.referenceDate}
-          routes={[]}
+          key={pricing?.effective_date}
+          routes={pricing?.routes ?? []}
           effectiveDate={new Date().toDateString()}
           title={"Current Client Pricing"}
         />
