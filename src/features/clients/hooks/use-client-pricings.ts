@@ -42,12 +42,12 @@ export function useActivateClientLoadingPricing() {
 export function useActivateClientRoutePricing() {
   const { mutate, ...rest } = useActivateClientPricing()
 
-  function activateClientRoutePricing(data: ActivatePricingDto) {
+  function activateRoutePricing(data: ActivatePricingDto) {
     return mutate({
       clientId: data.clientId,
       effectiveDate: data.effectiveDate,
       source: "route",
     })
   }
-  return { activateClientRoutePricing, ...rest }
+  return { activateRoutePricing, ...rest }
 }

@@ -2,14 +2,11 @@ import {
   RoutePricingDataGridForm,
   RouteTonnagePricingGrid,
 } from "@/features/settings/pricing/components"
-import {
-  BatchPricingPayload,
-  PricingSearchParams,
-} from "@/features/settings/pricing/schemas"
+import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
 import { createClientBatchRoutePricingFn } from "../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { Activity, useState } from "react"
+import { Activity, useEffect, useState } from "react"
 import { ActionIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { FieldLabel } from "@/components/ui/field"
@@ -21,7 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useQuery } from "@tanstack/react-query"
+import { useActivateClientRoutePricing } from "../hooks/use-client-pricings"
+import { useClientPricingDates } from "../hooks/use-client"
+import { ClientPricingSearchParam } from "../schemas"
 
 type ClientPricingProps = {
   clientId: string
@@ -32,12 +31,18 @@ export function ClientRouteTonnagePricingModal({
 }: ClientPricingProps) {
   const queryInvaidator = useQueryInvalidator()
   const [view, setView] = useState<"list" | "edit">("list")
-  const [search, setSearch] = useState<PricingSearchParams>()
+  const [search, setSearch] = useState<ClientPricingSearchParam>()
 
-  // const { data: clientPricings } = useQuery(
-  //   companyRoutePricingQueryOptions(search)
-  // )
-  const referenceDate = "" //clientPricings?.effective_date
+  const { data: pricingConfig } = useClientPricingDates(clientId)
+
+  useEffect(() => {
+    setSearch({
+      clientId,
+      referenceDate: pricingConfig?.routes.active_date,
+    })
+  }, [pricingConfig])
+
+  const { activateRoutePricing, isPending } = useActivateClientRoutePricing()
 
   async function handleSubmit(values: BatchPricingPayload) {
     const { error, isSuccess, message } = await createClientBatchRoutePricingFn(
@@ -61,42 +66,42 @@ export function ClientRouteTonnagePricingModal({
             <div className="space-y-2">
               <FieldLabel htmlFor="date">
                 Select pricing date{" "}
-                {/* {data?.route_tonnage.active_date === referenceDate && ( */}
-                <Badge>Current</Badge>
-                {/* )} */}
+                {pricingConfig?.routes.active_date ===
+                  search?.referenceDate && <Badge>Current</Badge>}
               </FieldLabel>
               <Select
-                value={referenceDate}
+                value={search?.referenceDate}
                 onValueChange={(date) => {
-                  setSearch({ ...search, referenceDate: date })
+                  setSearch({ clientId, referenceDate: date })
                 }}
               >
                 <SelectTrigger className="min-w-48" id="date">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {/* {data?.route_tonnage.dates.map((date) => (
+                  {pricingConfig?.routes.dates.map((date) => (
                     <SelectItem key={date} value={date}>
                       {date}
                     </SelectItem>
-                  ))} */}
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            {/* {data?.route_tonnage.active_date !== referenceDate && (
+            {pricingConfig?.routes.active_date !== search?.referenceDate && (
               <Button
                 type="button"
                 disabled={isPending}
                 onClick={() => {
                   if (search?.referenceDate)
                     activateRoutePricing({
+                      clientId,
                       effectiveDate: search?.referenceDate,
                     })
                 }}
               >
                 Set Active
               </Button>
-            )} */}
+            )}
           </div>
           <Button
             variant={"secondary"}
@@ -108,6 +113,7 @@ export function ClientRouteTonnagePricingModal({
           </Button>
         </div>
         <RouteTonnagePricingGrid
+          key={search?.referenceDate}
           routes={[]}
           effectiveDate={new Date().toDateString()}
           title={"Current Client Pricing"}

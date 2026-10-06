@@ -86,7 +86,7 @@ export type LoadingOffloadingPricingSnapshot = LoadingOffloadingPricingResponse
 
 export type PricingDates = {
   dates: string[]
-  active_date: string | null
+  active_date: string | undefined
 }
 
 export type CompanyPricingDates = {

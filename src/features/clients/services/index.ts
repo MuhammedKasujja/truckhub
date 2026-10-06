@@ -25,6 +25,7 @@ import {
   createClientService,
   getClientRoutePricing,
   getCustomerDetailsById,
+  getClientActiveRoutePricing,
   createClientBatchRoutePricing,
   getClientLoadingOffloadingFrees,
   createClientLoadingOffloadingPricing,
@@ -127,9 +128,19 @@ export const createClientBatchRoutePricingFn = createServerFn()
   })
 
 export const getClientRoutePricingFn = createServerFn()
+  .inputValidator(clientPricingSearchParams)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getClientRoutePricing(data))
+    return result.data!
+  })
+
+export const getClientActiveRoutePricingFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getClientRoutePricing(data.id)
+    const result = await apiResponseTransform(
+      getClientActiveRoutePricing(data.id)
+    )
+    return result.data!
   })
 
 export const getClientLoadingOffloadingFreesFn = createServerFn()

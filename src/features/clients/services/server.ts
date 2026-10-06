@@ -19,13 +19,15 @@ import {
   BatchPayload,
   BatchPricingPayload,
   DistancePricingRequest,
-  LoadingOffloadingPricing,
   LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
 import { Invoice } from "@/features/invoices/types"
 import { Quotation } from "@/features/quotations/types"
 import { Service, toServicePricingApiPayload } from "@/features/services/types"
-import { LoadingOffloadingPricingResponse, RoutePricingResponse } from "@/features/settings/pricing/types"
+import {
+  RoutePricingResponse,
+  LoadingOffloadingPricingResponse,
+} from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
 
@@ -105,7 +107,13 @@ export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
   )
 }
 
-export async function getClientRoutePricing(clientId: EntityId) {
+export async function getClientRoutePricing(search: ClientPricingSearchParam) {
+  return await apiClient.getFn<RoutePricingResponse>(
+    `/v1/pricing/routes/pricing/client/${search.clientId}?reference_date=${search.referenceDate}`
+  )
+}
+
+export async function getClientActiveRoutePricing(clientId: EntityId) {
   // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
   const url = `${endpoint}/${clientId}/routes/pricing`
   return await apiClient.getFn<RoutePricingResponse>(url)

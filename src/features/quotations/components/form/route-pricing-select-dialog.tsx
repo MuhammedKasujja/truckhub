@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
+import { useClientActiveRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
 import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
@@ -63,7 +63,7 @@ export function RoutePricingSelectDialog({
   lineItem,
   onLineItemAdded,
 }: RoutePricingDialogProps) {
-  const { data: clientPricings } = useClientRoutingPricing(clientId)
+  const { data: clientPricings } = useClientActiveRoutingPricing(clientId)
   const { data: companyPricings } = useRouteTonnagePricing()
   const pricingRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [route, setRoute] = useState<Route>()

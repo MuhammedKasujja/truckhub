@@ -11,6 +11,7 @@ import {
   getClientServicesFn,
   getClientQuotationsFn,
   getClientRoutePricingFn,
+  getClientActiveRoutePricingFn,
   getClientLoadingOffloadingFreesFn,
   getClientActiveLoadingOffloadingFreesFn,
 } from "./services"
@@ -39,9 +40,15 @@ export const clientQueryKeys = {
     ...clientQueryKeys.detail(id),
     "services-products",
   ],
-  routePricing: (id: EntityId) => [
+  routePricing: (search: ClientPricingSearchParam) => [
+    ...clientQueryKeys.detail(search.clientId),
+    "route_pricing",
+    `${search.referenceDate}`,
+  ],
+  routeActivePricing: (id: EntityId) => [
     ...clientQueryKeys.detail(id),
     "route_pricing",
+    "active",
   ],
   loadingFees: (search: ClientPricingSearchParam) => [
     ...clientQueryKeys.detail(search.clientId),
@@ -114,10 +121,21 @@ export const clientQuotationsQueryOptions = (clientId: EntityId) =>
     queryFn: () => getClientQuotationsFn({ data: { id: clientId } }),
   })
 
-export const clientRoutePricingQueryOptions = (clientId: EntityId) =>
+export const clientRoutePricingQueryOptions = (
+  search: ClientPricingSearchParam
+) =>
   queryOptions({
-    queryKey: clientQueryKeys.routePricing(clientId),
-    queryFn: () => getClientRoutePricingFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.routePricing(search),
+    queryFn: () => getClientRoutePricingFn({ data: { ...search } }),
+    enabled: !!search.referenceDate,
+    staleTime: 60 * 60 * 1000,
+  })
+
+export const clientActiveRoutePricingQueryOptions = (clientId: EntityId) =>
+  queryOptions({
+    queryKey: clientQueryKeys.routeActivePricing(clientId),
+    queryFn: () => getClientActiveRoutePricingFn({ data: { id: clientId } }),
+    staleTime: 60 * 60 * 1000,
   })
 
 export const clientLoadingFeesQueryOptions = (
@@ -141,10 +159,11 @@ export const clientServiceProductsQueryOptions = (clientId: EntityId) =>
     enabled: !!clientId,
     queryFn: () => getClientServicesFn({ data: { id: clientId } }),
   })
-  
+
 export const clientPricingDatesQueryOptions = (clientId: EntityId) =>
   queryOptions({
     queryKey: clientQueryKeys.pricingDates(clientId),
     enabled: !!clientId,
     queryFn: () => getClientPricingDatesFn({ data: { id: clientId } }),
+    staleTime: 2 * 60 * 60 * 1000,
   })

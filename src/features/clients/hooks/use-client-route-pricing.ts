@@ -1,9 +1,15 @@
 import { EntityId } from "@/schemas"
 import { useQuery } from "@tanstack/react-query"
-import { clientRoutePricingQueryOptions } from "../query-options"
+import { ClientPricingSearchParam } from "../schemas"
+import {
+  clientRoutePricingQueryOptions,
+  clientActiveRoutePricingQueryOptions,
+} from "../query-options"
 
-export function useClientRoutingPricing(clientId: EntityId) {
-  const { data, isLoading, isFetching } = useQuery(clientRoutePricingQueryOptions(clientId))
+export function useClientRoutingPricing(search: ClientPricingSearchParam) {
+  return useQuery(clientRoutePricingQueryOptions(search))
+}
 
-  return { isLoading, data: data?.data, isFetching }
+export function useClientActiveRoutingPricing(clientId: EntityId) {
+  return useQuery(clientActiveRoutePricingQueryOptions(clientId))
 }

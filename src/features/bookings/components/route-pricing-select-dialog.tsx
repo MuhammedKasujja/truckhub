@@ -12,7 +12,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item"
-import { useClientRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
+import { useClientActiveRoutingPricing } from "@/features/clients/hooks/use-client-route-pricing"
 import { TonnagePricing } from "@/features/settings/pricing"
 import { formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
@@ -71,7 +71,7 @@ export function RoutePricingSelectDialog({
   onSelectedPricings,
   onLiveChange,
 }: RoutePricingDialogProps) {
-  const { data, isLoading } = useClientRoutingPricing(clientId)
+  const { data, isLoading } = useClientActiveRoutingPricing(clientId)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
