@@ -4,7 +4,7 @@ import {
 } from "@/features/settings/pricing/components"
 import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { toast } from "sonner"
-import { createClientBatchRoutePricingFn } from "../services"
+import { createClientBatchRoutePricingFn } from "../../services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { Activity, useEffect, useState } from "react"
 import { ActionIcon } from "@/components/icons"
@@ -18,10 +18,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useActivateClientRoutePricing } from "../hooks/use-client-pricings"
-import { useClientPricingDates } from "../hooks/use-client"
-import { ClientPricingSearchParam } from "../schemas"
-import { useClientRoutingPricing } from "../hooks/use-client-route-pricing"
+import { useActivateClientRoutePricing } from "../../hooks/use-client-pricings"
+import { useClientPricingDates } from "../../hooks/use-client"
+import { ClientPricingSearchParam } from "../../schemas"
+import { useClientRoutingPricing } from "../../hooks/use-client-route-pricing"
 
 type ClientPricingProps = {
   clientId: string

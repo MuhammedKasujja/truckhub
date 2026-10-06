@@ -3,7 +3,7 @@ import { LoadingOffloadingPricingRequest } from "@/features/settings/pricing/sch
 import {
   useClientLoadingOffloadingFees,
   useCreateClientLoadingFees,
-} from "../hooks/use-client-loading-fees"
+} from "@/features/clients/hooks/use-client-loading-fees"
 import { EntityId } from "@/schemas"
 import { Activity, useEffect, useState } from "react"
 import { FieldLabel } from "@/components/ui/field"
@@ -18,9 +18,9 @@ import { ActionIcon } from "@/components/icons"
 import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-offloading-pricing-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ClientPricingSearchParam } from "../schemas"
-import { useClientPricingDates } from "../hooks/use-client"
-import { useActivateClientLoadingPricing } from "../hooks/use-client-pricings"
+import { ClientPricingSearchParam } from "@/features/clients/schemas"
+import { useClientPricingDates } from "@/features/clients/hooks/use-client"
+import { useActivateClientLoadingPricing } from "@/features/clients/hooks/use-client-pricings"
 
 type ClientPricingProps = {
   clientId: EntityId

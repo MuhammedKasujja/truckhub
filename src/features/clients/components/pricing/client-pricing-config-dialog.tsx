@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/dialog"
 import { useClientProfileQuery } from "@/features/clients/hooks/use-client"
 import { EntityId } from "@/schemas"
-import { ClientLoadingFeesModal } from "../client-loading-fees-modal"
+import { ClientLoadingFeesModal } from "./client-loading-fees-modal"
 import { Activity, useState } from "react"
-import { ClientRouteTonnagePricingModal } from "../client-route-pricing-modal"
+import { ClientRouteTonnagePricingModal } from "./client-route-pricing-modal"
 import {
   Toolbar,
   ToolbarButton,
