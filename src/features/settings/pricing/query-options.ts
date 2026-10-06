@@ -3,6 +3,7 @@ import {
   getIslandPricingsFn,
   getRouteTonnagePricingFn,
   getCompanyPricingDatesFn,
+  getActiveIslandPricingsFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
   getActiveRouteTonnagePricingFn,
@@ -33,7 +34,9 @@ export const pricingQueryKeys = {
     ] as const,
   islands: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "islands-fees", filter] as const,
-  companyDates: () => [...pricingQueryKeys.list(), "islands-fees"] as const,
+  islandsActive: () =>
+    [...pricingQueryKeys.list(), "islands-fees", "active"] as const,
+  companyDates: () => [...pricingQueryKeys.list(), "company-dates"] as const,
 } as const
 
 export const distancePricingQueryOptions = (data?: PricingSearchParams) =>
@@ -41,6 +44,7 @@ export const distancePricingQueryOptions = (data?: PricingSearchParams) =>
     queryKey: pricingQueryKeys.distances(data),
     queryFn: () => getDistanceTonnagePricingFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: !!data?.referenceDate,
   })
 
 export const companyActiveDistancePricingQueryOptions = () =>
@@ -55,6 +59,7 @@ export const companyRoutePricingQueryOptions = (data?: PricingSearchParams) =>
     queryKey: pricingQueryKeys.routes(data),
     queryFn: () => getRouteTonnagePricingFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: !!data?.referenceDate,
   })
 
 export const companyActiveRoutePricingQueryOptions = () =>
@@ -89,6 +94,14 @@ export const createCompanyIslandPricingQueryOptions = (
     queryKey: pricingQueryKeys.islands(data),
     queryFn: () => getIslandPricingsFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: Boolean(data?.referenceDate),
+  })
+
+export const companyActiveIslandPricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.islandsActive(),
+    queryFn: () => getActiveIslandPricingsFn(),
+    staleTime: 60 * 60 * 1000, // Cache for 30 minutes
   })
 
 export const companyPricingDatesQueryOptions = () =>

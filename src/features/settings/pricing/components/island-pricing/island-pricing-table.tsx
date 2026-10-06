@@ -18,7 +18,11 @@ const columns: ColumnDef<IslandPricingItem>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const name = row.original.name
-      return <div className="font-semibold items-start justify-items-start">{name}</div>
+      return (
+        <div className="items-start justify-items-start font-semibold">
+          {name}
+        </div>
+      )
     },
   },
   {
@@ -55,7 +59,7 @@ const columns: ColumnDef<IslandPricingItem>[] = [
 
 export function IslandPricingTable({ pricings }: IslandsPricingTableProp) {
   const { table } = useDataTable({
-    data: pricings!,
+    data: pricings ?? [],
     columns,
     // getRowId: (row) => row.id,
     enableSearch: true,

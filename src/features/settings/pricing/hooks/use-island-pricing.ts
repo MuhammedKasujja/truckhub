@@ -2,14 +2,10 @@ import { useQuery } from "@tanstack/react-query"
 import { IslandsListPricingRequest } from "../schemas"
 import { createBatchIslandPricingsFn } from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
-import { createCompanyIslandPricingQueryOptions } from "../query-options"
+import { companyActiveIslandPricingQueryOptions, createCompanyIslandPricingQueryOptions } from "../query-options"
 
 export function useCompanyIslandsPricing() {
-  const { data, isLoading, error } = useQuery(
-    createCompanyIslandPricingQueryOptions()
-  )
-
-  return { isLoading, data: data, error }
+  return useQuery(createCompanyIslandPricingQueryOptions())
 }
 
 const useCreateIslandPricingBase = createEntityActionHook(
@@ -26,4 +22,9 @@ export function useCreateIslandPricing() {
     return execute({ data })
   }
   return { isPending, createIslandPricing, error }
+}
+
+
+export function useCompanyActiveIslandsPricing() {
+  return useQuery(companyActiveIslandPricingQueryOptions())
 }

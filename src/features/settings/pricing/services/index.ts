@@ -6,6 +6,7 @@ import {
   getCompanyPricingDates,
   activateCompanyPricing,
   createBatchIslandPricing,
+  getActiveIslandsPricings,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
@@ -110,23 +111,22 @@ export const createBatchIslandPricingsFn = createServerFn()
 export const getIslandPricingsFn = createServerFn()
   .inputValidator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
-    const response = await getIslandsPricings(data)
-    if (response.data) {
-      const pricings: IslandPricingRequest[] = response.data.pricings.map(
-        (p) => ({
-          island_id: p.island_id,
-          name: p.name,
-          priceRate: p.general_price,
-          locations: p.locations.map((l) => ({ value: l })),
-        })
-      )
-      return {
-        pricings: response.data.pricings,
-        validFromDate: response.data.effective_date,
-      }
+    const response = await apiResponseTransform(getIslandsPricings(data))
+    return {
+      pricings: response?.data?.pricings ?? [],
+      validFromDate: response?.data?.effective_date,
     }
-    return undefined
   })
+
+export const getActiveIslandPricingsFn = createServerFn().handler(
+  async () => {
+    const response = await apiResponseTransform(getActiveIslandsPricings())
+    return {
+      pricings: response?.data?.pricings ?? [],
+      validFromDate: response?.data?.effective_date,
+    }
+  }
+)
 
 export const getCompanyPricingDatesFn = createServerFn().handler(
   async () => await getCompanyPricingDates()

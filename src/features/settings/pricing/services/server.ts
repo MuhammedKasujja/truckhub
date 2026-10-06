@@ -101,6 +101,10 @@ export async function getIslandsPricings(search: PricingSearchParams) {
   return await apiClient.getFn<IslandPricingResponse>(modified)
 }
 
+export async function getActiveIslandsPricings() {
+  return await apiClient.getFn<IslandPricingResponse>("/v1/pricing/islands/active")
+}
+
 export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
   return await apiClient.postFn<IslandPricingResponse[]>(
     "/v1/pricing/islands",
