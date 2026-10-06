@@ -5,6 +5,7 @@ import {
   getCompanyPricingDatesFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
+  getActiveRouteTonnagePricingFn,
   getActiveLoadingOffloadingFreesFn,
   getCompanyActiveDistancePricingFn,
 } from "./services"
@@ -19,6 +20,8 @@ export const pricingQueryKeys = {
     [...pricingQueryKeys.list(), "distances", "active"] as const,
   routes: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "routes", filter] as const,
+  routesActivePricing: () =>
+    [...pricingQueryKeys.list(), "routes", "active"] as const,
   loadingOffloading: (filter?: PricingSearchParams | undefined) =>
     [...pricingQueryKeys.list(), "loading-offloading", filter] as const,
   activeLoadingOffloading: (filter?: ActivePricingSearchParams | undefined) =>
@@ -52,6 +55,13 @@ export const companyRoutePricingQueryOptions = (data?: PricingSearchParams) =>
     queryKey: pricingQueryKeys.routes(data),
     queryFn: () => getRouteTonnagePricingFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+  })
+
+export const companyActiveRoutePricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.routesActivePricing(),
+    queryFn: () => getActiveRouteTonnagePricingFn(),
+    gcTime: 60 * 60 * 1000, // Cache for 1 hour
   })
 
 export const createCompanyLoadingFreesQueryOptions = (

@@ -3,8 +3,8 @@ import {
   CompanyRoutePricingConfigurationDialog,
   RouteTonnagePricingGrid,
 } from "@/features/settings/pricing/components"
-import { companyRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
-import { useQuery } from "@tanstack/react-query"
+import { useCompanyActiveRoutePricings } from "@/features/settings/pricing/hooks/use-company-routes-pricings"
+import { companyActiveRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(
@@ -12,12 +12,12 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: ({ context }) => {
-    context.queryClient.prefetchQuery(companyRoutePricingQueryOptions())
+    context.queryClient.prefetchQuery(companyActiveRoutePricingQueryOptions())
   },
 })
 
 function RouteComponent() {
-  const { data: companyPricings } = useQuery(companyRoutePricingQueryOptions())
+  const { data: companyPricings } = useCompanyActiveRoutePricings()
 
   return (
     <div className="space-y-4">

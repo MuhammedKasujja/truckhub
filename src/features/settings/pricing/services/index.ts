@@ -10,6 +10,7 @@ import {
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
   createBatchDistancePricing,
+  getActiveRouteTonnagePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
   getActiveLoadingOffloadingFrees,
@@ -65,6 +66,13 @@ export const getRouteTonnagePricingFn = createServerFn()
     const result = await apiResponseTransform(getRouteTonnagePricing(data))
     return result.data
   })
+
+export const getActiveRouteTonnagePricingFn = createServerFn().handler(
+  async () => {
+    const result = await apiResponseTransform(getActiveRouteTonnagePricing())
+    return result.data
+  }
+)
 
 export const createBatchLoadingPricingFn = createServerFn()
   .inputValidator(LoadingOffloadingPricingSchema)

@@ -114,9 +114,7 @@ export async function getClientRoutePricing(search: ClientPricingSearchParam) {
 }
 
 export async function getClientActiveRoutePricing(clientId: EntityId) {
-  // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
-  const url = `${endpoint}/${clientId}/routes/pricing`
-  return await apiClient.getFn<RoutePricingResponse>(url)
+  return await apiClient.getFn<RoutePricingResponse>(`/v1/pricing/routes/client/${clientId}/active`)
 }
 
 export async function getClientLoadingOffloadingFrees(

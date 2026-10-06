@@ -116,6 +116,10 @@ export async function getRouteTonnagePricing(search: PricingSearchParams) {
   return await apiClient.getFn<RoutePricingResponse>(url)
 }
 
+export async function getActiveRouteTonnagePricing() {
+  return await apiClient.getFn<RoutePricingResponse>("/v1/pricing/routes/active")
+}
+
 export async function getCompanyPricingDates() {
   return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
 }

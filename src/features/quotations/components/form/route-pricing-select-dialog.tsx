@@ -32,7 +32,7 @@ import {
   SwitchField,
 } from "@/components/ui/form-fields"
 import { ENGINE_MODES } from "@/common/config"
-import { useRouteTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
+import { useCompanyActiveRoutePricings } from "@/features/settings/pricing/hooks/use-company-routes-pricings"
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
 import Decimal from "decimal.js"
@@ -64,7 +64,7 @@ export function RoutePricingSelectDialog({
   onLineItemAdded,
 }: RoutePricingDialogProps) {
   const { data: clientPricings } = useClientActiveRoutingPricing(clientId)
-  const { data: companyPricings } = useRouteTonnagePricing()
+  const { data: companyPricings } = useCompanyActiveRoutePricings()
   const pricingRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const [route, setRoute] = useState<Route>()
 
