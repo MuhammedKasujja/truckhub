@@ -61,7 +61,6 @@ export const IDLE_TIMEOUT_MS = 5 * 60 * 1000 // total idle time before logout [ 
  * Show warning 4 min before logout. One minute less of `IDLE_TIMEOUT_MS`
  */
 export const IDLE_PROMPT_MS = 4 * 60 * 1000 // show warning 4 min before logout
-export const COUNTDOWN_SECONDS = (IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000
 
 export const DATE_FORMATS = [
   "DD/MMM/YYYY",

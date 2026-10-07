@@ -114,22 +114,6 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     setValue("client_id", client?.id ?? "")
   }
 
-  function handleUpdateTaxRates(taxRate?: TaxRate | null) {
-    setTaxRate(taxRate)
-    form.setValue(
-      "tax_rates",
-      taxRate
-        ? [
-            {
-              tax_name: taxRate.name,
-              rate: taxRate.rate,
-              id: taxRate.id,
-            },
-          ]
-        : []
-    )
-  }
-
   useEffect(() => {
     setTaxRate(defaultTaxRate)
     form.setValue(
@@ -387,7 +371,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                     // onClick={()=>handleSourceChange(item.source, item)}
                     item={item}
                     idx={index}
-                    key={index}
+                    key={item.tempId}
                     actions={
                       <div>
                         <Button

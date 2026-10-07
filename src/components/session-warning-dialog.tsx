@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,31 +25,30 @@ export function SessionIdleWarningDialog({
   onStayLoggedIn,
 }: SessionIdleWarningDialogProps) {
   const [remaining, setRemaining] = useState(countdownSeconds)
-  const remainingRef = useRef(countdownSeconds)
 
   useEffect(() => {
     if (!open) return
-    setRemaining(countdownSeconds)
-    remainingRef.current = countdownSeconds
 
-    let interval = setInterval(() => {
-      remainingRef.current = Math.max(0, remainingRef.current - 1)
-      setRemaining(remainingRef.current)
+    const deadline = Date.now() + countdownSeconds * 1000
+    const tick = () =>
+      setRemaining(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)))
 
-      if (remainingRef.current <= 0) {
-        clearInterval(interval)
-        // defer logout to avoid triggering state updates during render
-        setTimeout(() => onLogoutNow(), 0)
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [open, countdownSeconds, onLogoutNow])
+    tick()
+    const id = setInterval(tick, 500)
+    return () => clearInterval(id)
+  }, [open, countdownSeconds])
 
   if (!open) return null
 
   return (
-    <AlertDialog open={open}>
+    <AlertDialog
+      open={open}
+      // Fires on outside tap/click and Escape. It does NOT fire when the
+      // parent sets `open` to false, so there's no loop.
+      onOpenChange={(next) => {
+        if (!next) onStayLoggedIn()
+      }}
+    >
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogTitle>Still there?</AlertDialogTitle>
@@ -63,7 +62,7 @@ export function SessionIdleWarningDialog({
           <AlertDialogCancel onClick={onStayLoggedIn}>
             Stay Logged-in
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onLogoutNow} variant={'destructive'}>
+          <AlertDialogAction onClick={onLogoutNow} variant={"destructive"}>
             Logout now
           </AlertDialogAction>
         </AlertDialogFooter>
