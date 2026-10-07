@@ -216,8 +216,8 @@ export function useEntityPicker<
         } as unknown as ListResponse<T>)),
     initialPageParam: listConfig?.initialPageParam ?? 1,
     getNextPageParam: (lastPage: ListResponse<T>) =>
-      getHasMore(lastPage.pagination)
-        ? lastPage.pagination.page + 1
+      getHasMore(lastPage?.pagination)
+        ? (lastPage?.pagination?.page ?? 0) + 1
         : undefined,
     enabled: shouldFetchRemote,
   })
