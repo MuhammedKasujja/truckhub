@@ -77,12 +77,12 @@ export async function createSession(payload: AuthResponse) {
 export const verifySession = cache(async () => {
   const session = await getAuthSession()
 
-  if (!session?.access_token) {
+  if (!session?.accessToken) {
     throw redirect({ to: "/login", replace: true })
   }
 
   return {
-    access_token: session.access_token,
+    access_token: session.accessToken,
     user: session.user,
   }
 })
@@ -92,14 +92,10 @@ export async function getAuthSession() {
   return !session
     ? undefined
     : {
-        access_token: session.data.accessToken,
+        accessToken: session.data.accessToken,
+        refreshToken: session.data.refreshToken,
         user: session.data.user,
       }
-}
-
-export async function getAccessToken(): Promise<string | undefined> {
-  const session = await useAppSession()
-  return session.data.accessToken
 }
 
 export function isExpiringSoon(
@@ -107,5 +103,5 @@ export function isExpiringSoon(
   bufferMs = 60_000
 ): boolean {
   if (!expiresAt) return false
-  return Date.now() > (expiresAt - bufferMs)
+  return Date.now() > expiresAt - bufferMs
 }

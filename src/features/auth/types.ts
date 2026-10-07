@@ -26,6 +26,8 @@ export type TokenResponse = {
   expires_in: number
 }
 
+export type TokenRefreshResponse = TokenResponse
+
 export type UserSession = {
   accessToken: string
   refreshToken: string
