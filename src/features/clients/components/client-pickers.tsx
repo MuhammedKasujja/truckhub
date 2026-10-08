@@ -9,7 +9,7 @@ export const { Picker: ClientPicker, PickerField: ClientPickerField } =
     listQueryOptions: clientListQueryOptions,
     detailQueryOptions: clientProfileQueryOptions,
     defaultSearchParams: { search: "", perPage: 10 },
-    getOptionValue: (c) => c.id,
+    getOptionValue: (c) => c?.id,
     renderOption: (c) => c.name,
     createRoute: "/clients/new",
   })

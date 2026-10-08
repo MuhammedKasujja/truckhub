@@ -94,13 +94,12 @@ export function DistancePricingSelectDialog({
 
   useEffect(() => {
     const subtotal = new Decimal(unitPrice ?? 0)
-      .times(quantity ?? "0")
+      .times(quantity ?? 0)
       .times(isRoundTrip ? 2 : 1)
-    const lineTotal = subtotal
-    form.setValue("unit_price", unitPrice)
-    form.setValue("subtotal", subtotal.toString())
-    form.setValue("line_total", lineTotal.toString())
-  }, [quantity, isRoundTrip, unitPrice])
+    const lineTotal = subtotal.minus(discount ?? 0)
+    form.setValue("subtotal", subtotal.toFixed(2))
+    form.setValue("line_total", lineTotal.toFixed(2))
+  }, [quantity, isRoundTrip, unitPrice, discount])
 
   function handleSelect(pricing: DistanceTonnagePricingItem) {
     setSelectedDistanceRange(pricing)
@@ -115,10 +114,18 @@ export function DistancePricingSelectDialog({
   }
 
   useEffect(() => {
+    if (!open) return
     if (lineItem) {
       form.reset({ ...lineItem })
+      setRoute(lineItem.route)
+    } else {
+      form.reset({ ...generateDistanceEmptyLineItem() })
+      setRoute(undefined)
     }
-  }, [lineItem, form])
+    setSelectedDistanceRange(undefined)
+    setQuery("")
+    // setRouteError(false)
+  }, [open, lineItem])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

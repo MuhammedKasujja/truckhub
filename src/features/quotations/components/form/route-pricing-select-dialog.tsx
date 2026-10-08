@@ -119,10 +119,16 @@ export function RoutePricingSelectDialog({
   }, [tonnage, routes, isRoundTrip, quantity])
 
   useEffect(() => {
+    if (!open) return
     if (lineItem) {
       form.reset({ ...lineItem, routes: [] })
+      setRoute(lineItem.route)
+    } else {
+      form.reset({ ...generateRouteEmptyLineItem(), routes: [] })
+      setRoute(undefined)
     }
-  }, [lineItem, form])
+    setSelectedRoutes([])
+  }, [open, lineItem])
 
   useEffect(() => {
     if (tonnage == null) return

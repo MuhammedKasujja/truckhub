@@ -332,7 +332,7 @@ export const { Picker: ClientPicker, PickerField: ClientPickerField } =
     listQueryOptions: clientSearchQueryOptions,
     detailQueryOptions: clientDetailQueryOptions,
     defaultSearchParams: { search: "", perPage: 20 },
-    getOptionValue: (c) => c.id,
+    getOptionValue: (c) => c?.id,
     renderOption: (c) => c.name,
     renderValue: (c) => c.name,
     createMutation: createClientFn,
