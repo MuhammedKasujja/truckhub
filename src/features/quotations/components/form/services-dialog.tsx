@@ -97,6 +97,8 @@ export function ServicesDialog({
   }, [serviceId])
 
   useEffect(() => {
+    if (!open) return
+
     if (lineItem) {
       form.reset({
         ...lineItem,
@@ -104,10 +106,16 @@ export function ServicesDialog({
         vehicle_addons: [],
         item_type: "small",
       })
+      setSelectedIds(lineItem.service_id ? [lineItem.service_id] : [])
+      setRoute(lineItem.route)
+    } else {
+      form.reset(generateServiceEmptyLineItem())
+      setSelectedIds([])
+      setRoute(undefined)
     }
-  }, [lineItem, form])
+  }, [lineItem, open])
 
-  function handleConfirmService() {
+  async function handleConfirmService() {
     const selectedService = services?.find(
       (s) => form.getValues("service_id") === s.id
     )
@@ -117,7 +125,7 @@ export function ServicesDialog({
       return
     }
 
-    form.handleSubmit(
+     form.handleSubmit(
       (data) => {
         const title = `${selectedService?.display_name}`
         onLineItemAdded({ ...data, display_title: title })
@@ -284,7 +292,7 @@ export function ServicesDialog({
                 <div className="flex items-baseline justify-between gap-4">
                   <div className="text-muted-foreground">Discount</div>
                   <div className="text-sm">
-                    {discount ? -formatMoney(discount) : "__"}
+                    {discount ? `-${formatMoney(discount)}` : "__"}
                   </div>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">

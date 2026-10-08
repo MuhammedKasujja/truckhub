@@ -243,7 +243,7 @@ export function useEntityPicker<
   // rather than replacing the current one
   const rawOptions = isEffectivelyLocal
     ? (localQuery.data ?? [])
-    : (remoteQuery.data?.pages.flatMap((page) => page.data) ?? [])
+    : (remoteQuery.data?.pages.flatMap((page) => page?.data) ?? [])
 
   const options = useMemo(() => {
     if (!resolved) return rawOptions
