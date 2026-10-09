@@ -23,6 +23,7 @@ export const getServicesFn = createServerFn().handler(async () => {
       `${service.car_model?.car_brand.name} ${
         service.car_model?.name
       } (${service.car_model?.manufacture_year})`,
+    source: service.vehicle_category?.type ?? service.car_model?.vehicle_category?.type
   }))
 })
 

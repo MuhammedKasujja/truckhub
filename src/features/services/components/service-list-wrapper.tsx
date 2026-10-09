@@ -3,7 +3,7 @@ import { Grid3X3Icon, ListIcon, SearchIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ServiceTable } from "./service-table"
 import { ServiceList } from "./service-list"
-import React, { Activity, useMemo } from "react"
+import React, { Activity, useMemo, useState } from "react"
 import { Can } from "@/components/has-permission"
 import { Link } from "@tanstack/react-router"
 import { PageTitle, PageHeader, PageAction } from "@/components/page-header"
@@ -17,6 +17,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { ActionIcon } from "@/components/icons"
+import { VehicleType } from "@/features/settings/vehicle-categories/enums"
 
 type ServiceListWrapperProps = {
   services: Service[]
@@ -24,14 +25,8 @@ type ServiceListWrapperProps = {
 
 export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
   const [view, setView] = React.useState<"card" | "list">("card")
-
-  const totalNormalServices = React.useMemo(() => {
-    return services.filter((s) => !s.is_truck)
-  }, [services])
-
-  const totalTrucksServices = React.useMemo(() => {
-    return services.filter((s) => s.is_truck)
-  }, [services])
+  const [search, setSearch] = useState("")
+  const [vehicleType, setVehicleType] = useState<VehicleType>()
 
   const groupedServices: ServiceGroup[] = useMemo(() => {
     const grouped = Object.groupBy(
@@ -45,6 +40,28 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
       services: services ?? [],
     }))
   }, [services])
+
+  const { trucksTotal, vansTotal, carsTotal } = useMemo(() => {
+    const trucksTotal = services.filter((s) => s.source === "truck").length
+    const vansTotal = services.filter((s) => s.source === "van").length
+    const carsTotal = services.filter((s) => s.source === "car").length
+    return {
+      trucksTotal,
+      vansTotal,
+      carsTotal,
+    }
+  }, [services])
+
+  const filteredServices = useMemo(() => {
+    return services.filter((service) => {
+      const matchesSearch = service.display_name
+        .toLowerCase()
+        .includes(search.toLowerCase())
+
+      const matchesSource = !vehicleType || service.source === vehicleType
+      return matchesSearch && matchesSource
+    })
+  }, [services, search, vehicleType])
 
   return (
     <div className="space-y-4">
@@ -96,17 +113,24 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
             <InputGroupAddon>
               <SearchIcon />
             </InputGroupAddon>
-            <InputGroupInput placeholder="Search services"></InputGroupInput>
+            <InputGroupInput
+              placeholder="Search services"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            ></InputGroupInput>
           </InputGroup>
-          <Button>
+
+          <Button variant={"outline"}>
+            <Badge variant={"outline"}>{trucksTotal}</Badge> Trucks
+          </Button>
+          <Button variant={"outline"}>
+            <Badge variant={"outline"}>{vansTotal}</Badge> Vans
+          </Button>
+          <Button variant={"outline"}>
+            <Badge variant={"outline"}>{carsTotal}</Badge> Cars
+          </Button>
+          <Button variant={"outline"}>
             <Badge variant={"outline"}>{services.length}</Badge> Total
-          </Button>
-          <Button>
-            <Badge variant={"outline"}>{totalNormalServices.length}</Badge> Cars
-          </Button>
-          <Button>
-            <Badge variant={"outline"}>{totalTrucksServices.length}</Badge>{" "}
-            Trucks
           </Button>
         </div>
         <Separator />
@@ -115,7 +139,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         <ServiceTable services={groupedServices} />
       </Activity>
       <Activity mode={view === "card" ? "visible" : "hidden"}>
-        <ServiceList services={services} />
+        <ServiceList services={filteredServices} />
       </Activity>
     </div>
   )

@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { ServiceCreateSchemaInput } from "./schemas"
+import { VehicleType } from "@/features/settings/vehicle-categories/enums"
 
 export const DistanceUnitList = ["km", "miles"] as const
 
@@ -8,6 +9,7 @@ export type DistanceUnit = (typeof DistanceUnitList)[number]
 type VehicleCategory = {
   id: EntityId
   name: string
+  type: VehicleType
 }
 
 type CarModel = {
@@ -20,6 +22,7 @@ type CarModel = {
     id: EntityId
     name: string
   }
+  vehicle_category: VehicleCategory
 }
 
 export type Service = {
@@ -41,6 +44,7 @@ export type Service = {
   updated_at: Date
   vehicle_category: VehicleCategory | null
   car_model: CarModel | null
+  source: VehicleType
 }
 
 export type ServiceGroup = {

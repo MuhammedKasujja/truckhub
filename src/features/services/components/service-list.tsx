@@ -56,7 +56,7 @@ export function ServiceList({
                 <CardTitle className="text-lg">
                   {service.display_name}
                 </CardTitle>
-                <Badge variant="default">{service.category}</Badge>
+                <Badge variant="default">{service.source}</Badge>
               </div>
               <CardDescription>{service.description}</CardDescription>
             </CardHeader>
