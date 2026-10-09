@@ -344,7 +344,7 @@ export function DistancePricingSelectDialog({
                 <div className="flex items-baseline justify-between gap-4">
                   <div className="text-muted-foreground">Discount</div>
                   <div className="text-sm">
-                    {discount ? -formatMoney(discount) : "__"}
+                    {discount ? -`${formatMoney(discount)}` : "__"}
                   </div>
                 </div>
                 <div className="flex items-baseline justify-between gap-4">

@@ -39,7 +39,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
         <CardTitle>Recent Invoices</CardTitle>
         <CardAction>
           <Can permission="bookings:view">
-            <Button type="button" variant={"outline"} asChild>
+            <Button type="button" variant={"link"} asChild>
               <Link to={"/invoices"}>
                 View All
               </Link>

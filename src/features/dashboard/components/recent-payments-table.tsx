@@ -40,7 +40,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
         <CardTitle>Recent Payments</CardTitle>
         <CardAction>
           <Can permission="payments:view">
-            <Button type="button" variant={"outline"} asChild>
+            <Button type="button" variant={"link"} asChild>
               <Link to={"/payments"}>
                 View All
               </Link>

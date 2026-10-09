@@ -64,7 +64,7 @@ function RouteComponent() {
         </PageAction>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Stat>
+        <Stat className="space-y-4">
           <StatLabel>Payments</StatLabel>
           <StatValue>
             {formatMoney(data.statistics.payments.total_amount)}
@@ -82,7 +82,7 @@ function RouteComponent() {
         </Stat>
 
         <Stat>
-          <StatLabel>Customers</StatLabel>
+          <StatLabel>Clients</StatLabel>
           <StatValue>{data.statistics.clients.total}</StatValue>
           <StatIndicator variant="badge" color="info">
             +24
@@ -95,7 +95,6 @@ function RouteComponent() {
           <StatIndicator variant="icon" color="warning">
             <TrendingUp />
           </StatIndicator>
-          <StatTrend trend="down">Capacity threshold reached</StatTrend>
         </Stat>
       </div>
       {/* <div className="flex">

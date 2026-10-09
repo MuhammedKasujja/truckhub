@@ -39,7 +39,7 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
         <CardTitle>Recent Quotations</CardTitle>
         <CardAction>
           <Can permission="quotations:view">
-            <Button type="button" variant={"outline"} asChild>
+            <Button type="button" variant={"link"} asChild>
               <Link to={"/quotations"}>
                 View All
               </Link>
