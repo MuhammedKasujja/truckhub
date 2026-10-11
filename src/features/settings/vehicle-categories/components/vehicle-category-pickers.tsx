@@ -20,11 +20,11 @@ export function VehicleCategoryPicker({
       options={vehicleCofig?.vehicle_types ?? []}
       loading={isLoading}
       value={value}
-      onChange={(driver) => {
-        onSelected?.(driver)
+      onChange={(cat) => {
+        onSelected?.(cat)
       }}
       filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
-      label="Car Brand"
+      label="Vehicle Category"
       getOptionValue={(u) => u.id}
       renderOption={(u) => <span>{u.name}</span>}
     />
@@ -32,6 +32,60 @@ export function VehicleCategoryPicker({
 }
 
 export function VehicleCategoryPickerField<TFieldValues extends FieldValues>({
+  name,
+  onSelected,
+  label,
+  description,
+  remote = false,
+  control,
+  ...props
+}: FormAutoCompleteProps<TFieldValues, VehicleCategory>) {
+  //  const [query, setQuery] = useState("")
+  const { data: vehicleCofig, isLoading } = useVehicleConfigurationsQuery()
+  return (
+    <FormAutoComplete
+      name={name}
+      loading={isLoading}
+      description={description}
+      options={vehicleCofig?.vehicle_types ?? []}
+      control={control}
+      label={label}
+      remote={remote}
+      //   onSearch={(q) => setQuery(q)}
+      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.name}</span>}
+      onSelected={onSelected}
+      {...props}
+    />
+  )
+}
+
+
+export function VehicleSubCategoryPicker({
+  value,
+  id,
+  onSelected,
+}: EntityPickerProps<VehicleCategory>) {
+  const { data: vehicleCofig, isLoading } = useVehicleConfigurationsQuery()
+  return (
+    <AutoComplete<VehicleCategory>
+      id={id}
+      options={vehicleCofig?.vehicle_types ?? []}
+      loading={isLoading}
+      value={value}
+      onChange={(cat) => {
+        onSelected?.(cat)
+      }}
+      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      label="Vehicle Category"
+      getOptionValue={(u) => u.id}
+      renderOption={(u) => <span>{u.name}</span>}
+    />
+  )
+}
+
+export function VehicleSubCategoryPickerField<TFieldValues extends FieldValues>({
   name,
   onSelected,
   label,

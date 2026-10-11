@@ -1,9 +1,7 @@
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
-  AutoCompleteField,
   MoneyField,
   NumberField,
-  TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
@@ -16,7 +14,6 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
 import { CarBrandPickerField } from "@/features/settings/car-brand/components"
 import { CarModelPickerField } from "@/features/settings/car-model/components"
 import { BaseFormProps } from "@/common/types"
@@ -28,6 +25,7 @@ import {
 } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import { useMemo } from "react"
+import { VehicleCategoryPickerField } from "@/features/settings/vehicle-categories/components"
 
 type ServiceFormProps = BaseFormProps<
   ServiceCreateSchemaInput,
@@ -40,8 +38,6 @@ export function ServiceForm({
   onSubmit,
 }: ServiceFormProps) {
   const tr = useTranslation()
-  const { data } = useVehicleConfigurations()
-
   const isEdit = mode === "edit"
 
   const formSchema = isEdit ? ServiceUpdateSchema : ServiceCreateSchema
@@ -117,18 +113,11 @@ export function ServiceForm({
       <div className="@container pb-6">
         <FieldGroup className="grid grid-flow-row grid-cols-1 @md:grid-cols-2">
           {target === "category" && (
-            <AutoCompleteField
+            <VehicleCategoryPickerField
               label={tr("common.vehicleCaterory")}
               control={form.control}
               name={"vehicle_category_id"}
-              placeholder="Select Vehicle"
-              emptyPlaceholder="No vehicles found"
-              options={
-                data?.vehicle_types.map((opt) => ({
-                  label: opt.name,
-                  value: opt.id,
-                })) ?? []
-              }
+              placeholder="Select Vehicle category"
             />
           )}
           {target === "model" && (

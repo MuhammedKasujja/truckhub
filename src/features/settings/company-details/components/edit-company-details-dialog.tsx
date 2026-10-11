@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { TelephoneField, TextField } from "@/components/ui/form-fields"
+import { EmailField, TelephoneField, TextField } from "@/components/ui/form-fields"
 import { useForm } from "react-hook-form"
 import { Company, CompanySchema } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -30,7 +30,11 @@ export function EditCompanyDetailsDialog({
   const invalidator = useQueryInvalidator()
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
-    defaultValues: { ...company, phone: company.phone ?? "" },
+    defaultValues: {
+      ...company,
+      phone: company.phone ?? "",
+      phone_2: company.phone_2 ?? "",
+    },
   })
 
   async function onSubmit(data: z.infer<typeof CompanySchema>) {
@@ -64,8 +68,27 @@ export function EditCompanyDetailsDialog({
               control={form.control}
               name="name"
             />
-            <TelephoneField label="Phone" control={form.control} name="phone" />
-            <TextField label="Email" control={form.control} name="email" />
+            <Field orientation={"horizontal"} className="gap-4">
+              <TelephoneField
+                label="Phone"
+                control={form.control}
+                name="phone"
+              />
+              <TelephoneField
+                label="Phone 2"
+                control={form.control}
+                name="phone_2"
+              />
+            </Field>
+            <Field orientation={"horizontal"} className="gap-4">
+              <EmailField label="Email" control={form.control} name="email" />
+              <EmailField
+                label="Email 2"
+                control={form.control}
+                name="email_2"
+                required={false}
+              />
+            </Field>
             <TextField
               label="Address"
               control={form.control}

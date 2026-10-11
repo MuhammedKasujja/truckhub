@@ -28,6 +28,7 @@ export const Route = createFileRoute("/_admin/settings/company-details/")({
 
 function RouteComponent() {
   const { settings, error, isLoading } = useSettings()
+  console.log("settings", settings?.company)
 
   if (isLoading) {
     return <div>Loading....</div>
@@ -39,6 +40,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-5">
+      {/* for a rebuild when settings change */}
       <CompanyDetailsView company={settings?.company} />
       <Card>
         <CardHeader>

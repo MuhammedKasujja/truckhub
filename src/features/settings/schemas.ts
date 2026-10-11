@@ -5,7 +5,9 @@ import { TaxRate } from "./tax-rates/types"
 export const CompanySchema = z.object({
   name: z.string().trim().min(2, "Required"),
   email: z.email().trim(),
+  email_2: z.email().trim().optional().nullable(),
   phone: z.string().trim().min(2, "Required"),
+  phone_2: z.string().trim().optional().nullable(),
   website: z
     .url({ protocol: /^https?$/, hostname: z.regexes.domain })
     .trim()
