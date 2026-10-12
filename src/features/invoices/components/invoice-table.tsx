@@ -51,7 +51,7 @@ export function InvoiceTable() {
         open={rowAction?.variant == "makePayment"}
         onOpenChange={() => setRowAction(null)}
         initialData={{
-          entity_id: rowAction?.row.id,
+          entityId: rowAction?.row.id,
           amount: rowAction?.row.original.balance_due,
           type: "invoice",
         }}

@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getPayments,
-  updatePayment,
   createPayment,
   getPaymentById,
   deletePaymentById,
@@ -9,7 +8,7 @@ import {
   getPaymentsStatistics,
 } from "./server"
 import {
-  EditPaymentSchema,
+  paymentRequestSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
 import { ApiError } from "@/types"
@@ -44,14 +43,8 @@ export const deletePaymentFn = createServerFn()
     return deletePaymentById(data.id)
   })
 
-export const updatePaymentFn = createServerFn()
-  .inputValidator(EditPaymentSchema)
-  .handler(async ({ data }) => {
-    return updatePayment(data)
-  })
-
 export const createPaymentFn = createServerFn()
-  .inputValidator(EditPaymentSchema.omit({ id: true }))
+  .inputValidator(paymentRequestSchema)
   .handler(async ({ data }) => {
     return createPayment(data)
   })

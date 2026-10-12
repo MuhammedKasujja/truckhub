@@ -31,7 +31,7 @@ export function PaymentTable() {
       sorting: [{ id: "paid_at", desc: true }],
       //   columnPinning: { right: ["actions"] },
     },
-    getRowId: (originalRow) => originalRow.payment_id.toString(),
+    getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
   })

@@ -261,7 +261,7 @@ export function CustomerDetailsWrapper({
                                   onOpenChange={() => setOpenModal(false)}
                                   initialData={{
                                     type: "invoice",
-                                    client_id: client.id
+                                    clientId: client.id
                                   }}
                                 />
                               </Can>

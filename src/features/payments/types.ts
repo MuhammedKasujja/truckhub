@@ -25,10 +25,9 @@ export type PaymentCustomer = {
 
 export type Payment = {
   id: EntityId;
-  payment_id: EntityId;
   amount: number;
   number: string;
-  payment_mode: PaymentMode;
+  method: PaymentMode;
   applied: number;
   refunded: number;
   entity_id: EntityId;

@@ -10,25 +10,29 @@ import {
 } from "@/config/constants"
 
 export const EditPaymentBaseSchema = z.object({
-  id: IDSchema.optional().nullable(),
-  entity_id: IDSchema,
-  payment_mode: z.enum(PaymentModeList),
-  client_id: IDSchema.optional(),
-  transaction_ref: z.string().optional().nullable(),
+  entityId: IDSchema,
+  paymentMethod: z.enum(PaymentModeList),
+  clientId: IDSchema.optional(),
+  paidAt: z.date().optional().nullable(),
+  transactionRef: z.string().optional().nullable(),
   type: z.enum(PaymentEntityList),
 })
 
-export const EditPaymentSchema = z.object({
+export const paymentInputSchema = z.object({
   amount: MoneySchema,
   ...EditPaymentBaseSchema.shape,
 })
 
-export const createEditPaymentSchema = z.object({
-  amount: MoneySchema,
-  ...EditPaymentBaseSchema.shape,
+export const paymentRequestSchema = z.object({
+  ...paymentInputSchema.shape,
+  idempotencyKey: z.string().trim().min(4),
 })
 
-export type PaymentEditSchemaType = z.infer<typeof createEditPaymentSchema>
+export type PaymentEditSchemaType = z.infer<typeof paymentInputSchema>
+
+export type PaymentRequestInput = z.infer<typeof paymentRequestSchema>
+
+export type PaymentInput = z.infer<typeof paymentInputSchema>
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),

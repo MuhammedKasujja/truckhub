@@ -57,11 +57,11 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       enableColumnFilter: true,
     },
     {
-      id: "payment_method",
-      accessorKey: "payment_mode",
+      id: "method",
+      accessorKey: "method",
       header: tr("payments.method"),
       cell: ({ row }) => {
-        const method = row.original.payment_mode
+        const method = row.original.method
         return (
           <Badge variant="outline">{tr(`payments.methods.${method}`)}</Badge>
         )

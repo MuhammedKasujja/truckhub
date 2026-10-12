@@ -1,6 +1,6 @@
 import { api } from "@/lib/api"
-import { AxiosError } from "axios"
 import { logoutFn } from "@/features/auth/services"
+import { AxiosError, RawAxiosRequestHeaders } from "axios"
 import type {
   Prettify,
   StatusCode,
@@ -53,13 +53,19 @@ export async function getPaginatedFn<T>(
   }
 }
 
+type Headers = { headers?: RawAxiosRequestHeaders }
+
 export async function postFn<T>(
   url: string,
   data: unknown,
-  headers?: Record<string, unknown>
+  config?: Headers
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await api.post(url, data)
+    const response = await api.post(
+      url,
+      data,
+      config?.headers ? { headers: config?.headers } : undefined
+    )
     return {
       isSuccess: true,
       data: response.data.data,

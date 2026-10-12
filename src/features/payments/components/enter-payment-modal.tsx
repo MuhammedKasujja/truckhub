@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
   PaymentEditSchemaType,
-  createEditPaymentSchema,
+  paymentInputSchema,
 } from "@/features/payments/schemas"
 import z from "zod"
 import { FieldGroup } from "@/components/ui/field"
@@ -24,13 +24,12 @@ import {
   MoneyField,
 } from "@/components/ui/form-fields"
 import { toast } from "sonner"
-import { updatePaymentFn, createPaymentFn } from "@/features/payments/services"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { BookingPickerField } from "@/features/bookings/components/booking-picker"
 import { RidePickerField } from "@/features/ride-requests/components"
 import { InvoicePickerField } from "@/features/invoices/components/invoice-picker"
+import { useCreatePayment } from "../hooks/use-payments"
 
 type PaymentFormProps = {
   initialData?: Partial<PaymentEditSchemaType>
@@ -46,31 +45,18 @@ export function EnterPaymentModal({
   const isMobile = useIsMobile()
 
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
+  const { pay: submitPayment, isSuccess, error } = useCreatePayment()
 
-  // const isEdit = !!initialData && "id" in initialData
-
-  const formSchema = createEditPaymentSchema
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof paymentInputSchema>>({
+    resolver: zodResolver(paymentInputSchema),
     defaultValues: initialData,
     mode: "onChange",
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updatePaymentFn({ data: values })
-        : createPaymentFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
+  async function onSubmit(values: z.infer<typeof paymentInputSchema>) {
+    await submitPayment(values)
     if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.payments.invalidate({
-        entityId: initialData?.entity_id ?? "",
-        type: initialData?.type ?? "booking",
-      })
+      toast.success("Payment created successfully")
       form.reset()
       onOpenChange(false)
     } else {
@@ -100,7 +86,7 @@ export function EnterPaymentModal({
                 <BookingPickerField
                   label="Booking"
                   control={form.control}
-                  name={"entity_id"}
+                  name={"entityId"}
                   onSelected={(booking) => {
                     const balanceDue = booking?.balance ?? ""
                     form.setValue("amount", balanceDue)
@@ -110,7 +96,7 @@ export function EnterPaymentModal({
               {initialData?.type === "ride" && (
                 <RidePickerField
                   label={"Ride"}
-                  name={"entity_id"}
+                  name={"entityId"}
                   control={form.control}
                   onSelected={(ride) => {
                     const balanceDue = ride?.balance ?? ""
@@ -121,16 +107,16 @@ export function EnterPaymentModal({
               {initialData?.type === "invoice" && (
                 <InvoicePickerField
                   label={"Invoice"}
-                  name={"entity_id"}
+                  name={"entityId"}
                   control={form.control}
                   filters={{
                     status: ["draft", "partial"],
-                    client_id: initialData.client_id,
+                    client_id: initialData.clientId,
                   }}
                   onChange={(invoice) => {
                     const balanceDue = invoice?.balance_due ?? ""
                     form.setValue("amount", balanceDue)
-                    form.setValue("client_id", invoice?.client.id)
+                    form.setValue("clientId", invoice?.client.id)
                   }}
                 />
               )}
@@ -142,7 +128,7 @@ export function EnterPaymentModal({
               <AutoCompleteField
                 label={"Payment Method"}
                 control={form.control}
-                name={"payment_mode"}
+                name={"paymentMethod"}
                 placeholder="Select payment method"
                 emptyPlaceholder="No payment method found"
                 options={
@@ -154,7 +140,7 @@ export function EnterPaymentModal({
               />
               <TextareaField
                 label={"Transaction Ref"}
-                name={"transaction_ref"}
+                name={"transactionRef"}
                 control={form.control}
                 required={false}
               />

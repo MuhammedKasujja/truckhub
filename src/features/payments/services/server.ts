@@ -1,11 +1,9 @@
-"use server"
-
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { Payment, PaymentStatistics } from "@/features/payments/types"
 import {
-  PaymentEditSchemaType,
+  PaymentRequestInput,
   PaymentListSearchParams,
 } from "@/features/payments/schemas"
 
@@ -39,31 +37,25 @@ export async function deletePaymentById(paymentId: EntityId) {
   return await apiClient.deleteFn(`/v1/payments/${paymentId}`)
 }
 
-export async function updatePayment(data: PaymentEditSchemaType) {
-  const { id: serviceId, ...rest } = data
-  return await apiClient.putFn<Payment>(`/v1/payments/${serviceId}`, rest)
-}
-
-export async function createPayment(data: PaymentEditSchemaType) {
+export async function createPayment(data: PaymentRequestInput) {
   const payload = {
-    client_id: data.client_id,
+    client_id: data.clientId,
     amount: data.amount,
-    method: data.payment_mode,
-    transaction_ref: data.transaction_ref,
+    method: data.paymentMethod,
+    transaction_ref: data.transactionRef,
     // paid_at: "2026-10-12T13:23:12.381Z",
     targets: [
       {
         kind: "invoice",
-        target_id: data.entity_id,
+        target_id: data.entityId,
         amount: data.amount,
       },
     ],
     auto_allocate: true,
   }
-  return await apiClient.postFn<Payment>(
-    "/v1/billing/invoice-payments",
-    payload
-  )
+  return await apiClient.postFn<Payment>("/v1/billing/payments", payload, {
+    headers: { "Idempotency-Key": data.idempotencyKey },
+  })
 }
 
 export async function getPaymentsStatistics() {

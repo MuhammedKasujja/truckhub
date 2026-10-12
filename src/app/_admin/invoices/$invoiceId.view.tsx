@@ -56,7 +56,7 @@ function RouteComponent() {
                   onOpenChange={() => setOpenModal(false)}
                   initialData={{
                     type: "invoice",
-                    entity_id: invoice.id,
+                    entityId: invoice.id,
                   }}
                 />
               </Can>
