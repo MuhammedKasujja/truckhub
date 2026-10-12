@@ -23,7 +23,6 @@ import {
   TextareaField,
   MoneyField,
 } from "@/components/ui/form-fields"
-import { toast } from "sonner"
 import { PaymentModeList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { BookingPickerField } from "@/features/bookings/components/booking-picker"
@@ -45,7 +44,7 @@ export function EnterPaymentModal({
   const isMobile = useIsMobile()
 
   const tr = useTranslation()
-  const { pay: submitPayment, isSuccess, error } = useCreatePayment()
+  const { pay: submitPayment } = useCreatePayment()
 
   const form = useForm<z.infer<typeof paymentInputSchema>>({
     resolver: zodResolver(paymentInputSchema),
@@ -54,14 +53,12 @@ export function EnterPaymentModal({
   })
 
   async function onSubmit(values: z.infer<typeof paymentInputSchema>) {
-    await submitPayment(values)
-    if (isSuccess) {
-      toast.success("Payment created successfully")
-      form.reset()
-      onOpenChange(false)
-    } else {
-      toast.error(error?.message)
-    }
+    submitPayment(values, {
+      onSuccess: () => {
+        form.reset()
+        onOpenChange(false)
+      },
+    })
   }
   return (
     <Drawer

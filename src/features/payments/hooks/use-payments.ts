@@ -1,4 +1,5 @@
 import { useRef } from "react"
+import { toast } from "sonner"
 import { ApiError } from "@/types"
 import { useServerFn } from "@tanstack/react-start"
 import { useMutation } from "@tanstack/react-query"
@@ -44,20 +45,28 @@ export function useCreatePayment() {
         entityId: input?.entityId ?? "",
         type: input?.type ?? "invoice",
       })
+      toast.success("Payment created successfully")
     },
     onError: (err) => {
-      if (err instanceof ApiError && err.statusCode === 422)
+      if (err instanceof ApiError && err.statusCode === 422) {
         keyRef.current = null
+        toast.success(err.message)
+      } else {
+        toast.error("Payment failed")
+      }
     },
     onSettled: () => {
       inFlight.current = false
     },
   })
 
-  const pay = (input: PaymentInput) => {
+  const pay = (
+    input: PaymentInput,
+    opts?: Parameters<typeof mutation.mutate>[1]
+  ) => {
     if (inFlight.current || mutation.isPending) return
     inFlight.current = true
-    return mutation.mutateAsync(input)
+    return mutation.mutate(input, opts)
   }
 
   const resetKey = () => {
