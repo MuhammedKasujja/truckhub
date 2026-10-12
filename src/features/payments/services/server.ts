@@ -12,11 +12,11 @@ import {
 export async function getPayments(input: PaymentListSearchParams) {
   const params = generateApiSearchParams(input)
   const response = await apiClient.getPaginatedFn<Payment[]>(
-    `/v1/payments?${params}`
+    `/v1/billing/invoice-payments?${params}`
   )
 
   if (response.success) {
-    return  { data: response.data, pagination: response.pagination }
+    return { data: response.data, pagination: response.pagination }
   }
 
   return { error: response.error }
@@ -26,7 +26,7 @@ export async function getPaymentsByQuery(query: SearchQuery) {
   const params = generateApiSearchParams(query)
 
   const { data, isSuccess, error } = await apiClient.getFn<Payment[]>(
-    `/v1/payments?${params}`
+    `/v1/billing/invoice-payments?${params}`
   )
   return { data: isSuccess ? data! : [], error }
 }
@@ -45,7 +45,25 @@ export async function updatePayment(data: PaymentEditSchemaType) {
 }
 
 export async function createPayment(data: PaymentEditSchemaType) {
-  return await apiClient.postFn<Payment>("/v1/payments", data)
+  const payload = {
+    client_id: data.client_id,
+    amount: data.amount,
+    method: data.payment_mode,
+    transaction_ref: data.transaction_ref,
+    // paid_at: "2026-10-12T13:23:12.381Z",
+    targets: [
+      {
+        kind: "invoice",
+        target_id: data.entity_id,
+        amount: data.amount,
+      },
+    ],
+    auto_allocate: true,
+  }
+  return await apiClient.postFn<Payment>(
+    "/v1/billing/invoice-payments",
+    payload
+  )
 }
 
 export async function getPaymentsStatistics() {

@@ -32,14 +32,14 @@ export const Route = createFileRoute("/_admin/payments/")({
   beforeLoad: () => requirePermission("payments:module"),
   loader: async ({ context: { queryClient }, deps: { search } }) => {
     await queryClient.ensureQueryData(paymentsQueryOptions(search))
-    return queryClient.ensureQueryData(paymentStatisticsQueryOptions())
+    // return queryClient.ensureQueryData(paymentStatisticsQueryOptions())
   },
 })
 
 function RouteComponent() {
   const [openModal, setOpenModal] = useState(false)
 
-  const { data } = useQuery(paymentStatisticsQueryOptions())
+  // const { data } = useQuery(paymentStatisticsQueryOptions())
   const tr = useTranslation()
   return (
     <>
@@ -64,7 +64,7 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
-      <PaymentStatisticsCard statistics={data?.data} />
+      {/* <PaymentStatisticsCard statistics={data?.data} /> */}
       <PaymentTable />
     </>
   )

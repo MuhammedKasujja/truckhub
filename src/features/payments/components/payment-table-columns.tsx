@@ -88,7 +88,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       accessorKey: "date",
       header: tr("payments.date"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.date)}</p>
+        return <p>{formatDate(row.original.paid_at)}</p>
       },
       meta: {
         label: tr("payments.date"),

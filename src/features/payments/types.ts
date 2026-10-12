@@ -25,6 +25,7 @@ export type PaymentCustomer = {
 
 export type Payment = {
   id: EntityId;
+  payment_id: EntityId;
   amount: number;
   number: string;
   payment_mode: PaymentMode;
@@ -33,7 +34,7 @@ export type Payment = {
   entity_id: EntityId;
   entity_type: PaymentType;
   status: PaymentStatus;
-  date: Date;
+  paid_at: Date;
   transaction_ref: string | null;
   entity: PaymentableEntity;
   client: PaymentCustomer;

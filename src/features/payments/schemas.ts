@@ -12,7 +12,7 @@ import {
 export const EditPaymentBaseSchema = z.object({
   id: IDSchema.optional().nullable(),
   entity_id: IDSchema,
-  payment_mode: z.string(),
+  payment_mode: z.enum(PaymentModeList),
   client_id: IDSchema.optional(),
   transaction_ref: z.string().optional().nullable(),
   type: z.enum(PaymentEntityList),

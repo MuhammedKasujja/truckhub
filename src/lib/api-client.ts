@@ -38,7 +38,9 @@ export async function getPaginatedFn<T>(
   } catch (error) {
     await logoutOnServerActions(error)
     const errorCode = handleErrorCodes(error)
-    const statusCode = (error instanceof AxiosError ? error.status : 400) as StatusCode
+    const statusCode = (
+      error instanceof AxiosError ? error.status : 400
+    ) as StatusCode
     return {
       success: false,
       error: {
@@ -53,7 +55,8 @@ export async function getPaginatedFn<T>(
 
 export async function postFn<T>(
   url: string,
-  data: unknown
+  data: unknown,
+  headers?: Record<string, unknown>
 ): Promise<ApiResponse<T>> {
   try {
     const response = await api.post(url, data)
@@ -118,7 +121,9 @@ export async function deleteFn<T = null>(url: string): Promise<ApiResponse<T>> {
 
 function _handleApiException<T>(error: unknown): ApiResponse<T> {
   const statusMessage = handleErrorCodes(error)
-  const errorCode = (error instanceof AxiosError ? error.status : 400) as StatusCode
+  const errorCode = (
+    error instanceof AxiosError ? error.status : 400
+  ) as StatusCode
   return {
     isSuccess: false,
     error: {

@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
@@ -30,10 +28,10 @@ export function PaymentTable() {
     columns,
     pageCount: pagination.totalPages,
     initialState: {
-      sorting: [{ id: "date", desc: true }],
+      sorting: [{ id: "paid_at", desc: true }],
       //   columnPinning: { right: ["actions"] },
     },
-    getRowId: (originalRow) => originalRow.id.toString(),
+    getRowId: (originalRow) => originalRow.payment_id.toString(),
     shallow: false,
     clearOnDefault: true,
   })

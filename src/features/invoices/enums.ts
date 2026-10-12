@@ -2,7 +2,7 @@ export const invoiceStatuses = [
   "draft",
   "paid",
   "unpaid",
-  "partially_paid",
+  "partial",
   "refunded",
   "cancelled",
   "voided",
