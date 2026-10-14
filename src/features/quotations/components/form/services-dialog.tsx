@@ -128,7 +128,7 @@ export function ServicesDialog({
      form.handleSubmit(
       (data) => {
         const title = `${selectedService?.display_name}`
-        onLineItemAdded({ ...data, display_title: title })
+        onLineItemAdded({ ...data, display_name: title })
         onOpenChange(false)
       },
       (error) => {
@@ -189,7 +189,7 @@ export function ServicesDialog({
                       )
 
                       const title = `${selectedService?.display_name}`
-                      onLineItemAdded({ ...data, display_title: title })
+                      onLineItemAdded({ ...data, display_name: title })
                       onOpenChange(false)
                     },
                     (error) => {

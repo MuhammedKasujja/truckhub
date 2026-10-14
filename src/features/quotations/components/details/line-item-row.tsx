@@ -29,7 +29,7 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
             <Package className="h-3.5 w-3.5 shrink-0 text-primary" />
           )}
           <span className="text-sm font-semibold text-foreground">
-            {item.display_title ? item.display_title : "Vehicle hire"}
+            {item.display_name ? item.display_name : "Vehicle hire"}
           </span>
         </div>
         <div className="mb-1.5 flex flex-wrap gap-1.5">

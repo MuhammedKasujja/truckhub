@@ -175,7 +175,7 @@ export function DistancePricingSelectDialog({
                   className="shrink-0"
                   onClick={form.handleSubmit((data) => {
                     const title = `${data.distance_km} km`
-                    onLineItemAdded({ ...data, display_title: title })
+                    onLineItemAdded({ ...data, display_name: title })
                     onOpenChange(false)
                   })}
                 >

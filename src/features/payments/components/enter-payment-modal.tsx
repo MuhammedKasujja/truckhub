@@ -44,7 +44,7 @@ export function EnterPaymentModal({
   const isMobile = useIsMobile()
 
   const tr = useTranslation()
-  const { pay: submitPayment } = useCreatePayment()
+  const { pay } = useCreatePayment()
 
   const form = useForm<z.infer<typeof paymentInputSchema>>({
     resolver: zodResolver(paymentInputSchema),
@@ -53,7 +53,7 @@ export function EnterPaymentModal({
   })
 
   async function onSubmit(values: z.infer<typeof paymentInputSchema>) {
-    submitPayment(values, {
+    pay(values, {
       onSuccess: () => {
         form.reset()
         onOpenChange(false)

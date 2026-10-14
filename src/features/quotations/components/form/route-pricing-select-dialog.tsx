@@ -200,7 +200,7 @@ export function RoutePricingSelectDialog({
                     (data) => {
                       const title = `${data.routes?.at(0)?.origin} -> ${data.routes?.at(0)?.destination}`
                       const { routes: _, ...rest } = data
-                      onLineItemAdded({ ...rest, display_title: title })
+                      onLineItemAdded({ ...rest, display_name: title })
                       onOpenChange(false)
                     },
                     (errors) => {
