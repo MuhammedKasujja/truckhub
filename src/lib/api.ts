@@ -28,7 +28,6 @@ const apiOptions = {
   baseURL: `${process.env.BACKEND_URL}`,
   timeout: 15000, // ← prevents hanging forever after 15 secs
   headers: {
-    "Content-Type": "application/json",
     Accept: "application/json",
   },
 }
