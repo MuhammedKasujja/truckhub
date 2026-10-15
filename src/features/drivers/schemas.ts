@@ -1,5 +1,5 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
+import { IDSchema, ImageSchema } from "@/schemas"
 import { Driver } from "@/features/drivers/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -11,6 +11,7 @@ export const DriverCreateSchema = z.object({
   phone: z.string().trim().min(3, "Required"),
   email: z.email().trim(),
   password: z.string().trim().min(3, "Required"),
+  file: ImageSchema.optional(),
 })
 
 export const DriverUpdateSchema = z.object({
