@@ -30,17 +30,12 @@ export function ServicePicker({
         onSelected?.(booking)
       }}
       onSearch={(q) => setQuery(q)}
-      filterFn={(s, q) => s.name.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(s, q) =>
+        s.display_name.toLowerCase().includes(q.toLowerCase())
+      }
       label={label}
       getOptionValue={(s) => s.id}
-      renderOption={(s) => (
-        <p>
-          {s.name}
-          <span className="ml-2 text-muted-foreground">
-            ({formatMoney(s.base_fare)})
-          </span>
-        </p>
-      )}
+      renderOption={(s) => <p>{s.display_name}</p>}
     />
   )
 }

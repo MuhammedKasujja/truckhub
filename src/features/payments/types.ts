@@ -37,6 +37,7 @@ export type Payment = {
   transaction_ref: string | null;
   entity: PaymentableEntity;
   client: PaymentCustomer;
+  created_at: Date
 };
 
 type PaymentStat = {

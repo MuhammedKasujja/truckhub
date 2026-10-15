@@ -15,6 +15,7 @@ export const AuditLogSearchParamsCache = z.object({
   // advanced filter
   filters: getFiltersStateSchema<AuditLog>().optional(),
   ...DefaultSearchParamsSchema.shape,
+  perPage: z.number().default(25)
 })
 
 export const deleteLogsSchema = z.object({

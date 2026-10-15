@@ -72,9 +72,9 @@ function RouteComponent() {
     }, new Decimal(0))
   }, [lineItems])
 
-  const fuelPrice = useMemo(() => {
+  const totalFuelCharge = useMemo(() => {
     return lineItems.reduce((curr, item) => {
-      const total = new Decimal(item.consumption?.fuel_rate ?? 0)
+      const total = new Decimal(item.consumption?.total_fuel_charge ?? 0)
       return total.plus(curr)
     }, new Decimal(0))
   }, [lineItems])
@@ -85,8 +85,8 @@ function RouteComponent() {
   }, [subtotal])
 
   const grandTotal = useMemo(() => {
-    return subtotal.plus(taxAmount).plus(fuelPrice)
-  }, [subtotal, taxAmount, fuelPrice])
+    return subtotal.plus(taxAmount).plus(totalFuelCharge)
+  }, [subtotal, taxAmount, totalFuelCharge])
 
   function onItemSelected(itemId: EntityId) {
     setLineItems((prev) => {
@@ -269,9 +269,9 @@ function RouteComponent() {
                       <Separator />
                       <ItemDescription className="grid grid-cols-4 gap-4">
                         <div className="space-y-2">
-                          <div>Fuel Rate</div>
+                          <div>Fuel Charge</div>
                           <div className="text-foreground">
-                            {formatMoney(trip.consumption?.fuel_rate)}
+                            {formatMoney(trip.consumption?.total_fuel_charge)}
                           </div>
                         </div>
                         <div className="space-y-2">
@@ -341,11 +341,11 @@ function RouteComponent() {
                     </div>
                   </div>
                 )}
-                {fuelPrice && (
+                {totalFuelCharge && (
                   <div className="flex justify-between py-2">
                     <div className="text-muted-foreground">Fuel Rate</div>
                     <div className="text-foreground">
-                      {formatMoney(fuelPrice.toString())}
+                      {formatMoney(totalFuelCharge.toString())}
                     </div>
                   </div>
                 )}

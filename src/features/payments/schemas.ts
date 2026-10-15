@@ -38,7 +38,7 @@ export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),
   payment_method: z.array(z.enum(PaymentModeList)).optional(),
   // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
-  sort: getSortingStateSchema<Payment>().optional(),
+  sort: getSortingStateSchema<Payment>().default([{id: 'created_at', desc: true}]),
   date: z.number().optional().nullable(),
   // advanced filter
   filters: getFiltersStateSchema().optional(),

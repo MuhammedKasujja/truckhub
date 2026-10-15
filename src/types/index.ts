@@ -47,7 +47,7 @@ export type SuccessResponse<T> = {
 export type Pagination = {
   total: number
   page: number
-  perPage: number
+  per_page: number
   totalPages: number
 }
 

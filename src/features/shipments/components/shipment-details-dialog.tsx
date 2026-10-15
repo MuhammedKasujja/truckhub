@@ -237,10 +237,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   const consumptionRate = parseFloat(
     trip?.vehicle?.fuel_consumption_rate ?? "0"
   )
-  const fuelRate = new Decimal(shipment.consumption?.fuel_rate ?? "0").times(
-    shipment.consumption?.fuel_used_litres ?? "0"
-  )
-  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(fuelRate)
+  const totalFuelCharge = new Decimal(shipment.consumption?.total_fuel_charge ?? "0")
+  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(totalFuelCharge)
 
   const totalDue = subtotal.minus(shipment.item.discount ?? "0").toString()
 
@@ -248,7 +246,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
     <div className="space-y-5">
       <div className="grid gap-5 md:grid-cols-2">
         <Card className="bg-background/30">
-          <CardContent className="space-y-1.5 pt-4">
+          <CardContent className="space-y-1.5">
+            {shipment.item.display_name ?? "Service"}
             <div className="mt-4 flex flex-wrap gap-2">
               {[
                 trip.item.is_round_trip ? "Round trip" : "One-way",
@@ -332,7 +331,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           />
           <BillLine
             label={`Fuel Consumption @${consumptionRate} km/l`}
-            value={formatMoney(fuelRate.toString())}
+            value={formatMoney(totalFuelCharge.toString())}
           />
           <Separator className="my-1" />
           <div className="pt-3">

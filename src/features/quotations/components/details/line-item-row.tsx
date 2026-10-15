@@ -62,7 +62,8 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
                 variant="outline"
                 className="font-mono text-[10px] font-normal"
               >
-                {item.tonnage} Tons
+                {item.source === "distance" && `${item.display_name} km  -  ${item.tonnage} Tons`}
+                {item.source === "route" && `Route Service -  ${item.tonnage} Tons`}
               </Badge>
               <Badge
                 variant="outline"

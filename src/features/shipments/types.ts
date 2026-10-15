@@ -33,6 +33,7 @@ export type ShipmentVehicleConsumption = {
   days: number | null
   fuel_used_litres: string | null
   consumed_fuel_rates: string[]
+  total_fuel_charge: string | null
 }
 
 export type ShipmentHistory = {
