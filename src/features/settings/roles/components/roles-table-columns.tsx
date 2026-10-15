@@ -26,7 +26,7 @@ export function getRoleColumns(): ColumnDef<Role>[] {
               initialData={{ ...Role }}
               trigger={
                 <Button variant={"outline"} size={"icon"}>
-                  <ActionIcon action="view" />
+                  <ActionIcon action="edit" />
                 </Button>
               }
             />

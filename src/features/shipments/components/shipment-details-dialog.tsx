@@ -295,14 +295,19 @@ function ShipmentOverviewDetails({ shipment }: Props) {
               </div>
               <div className="w-full space-y-1.5 rounded bg-accent p-4">
                 <div className="flex items-center gap-2">
-                  <CircleCheckIcon className="size-4 text-primary"/>
+                  <CircleCheckIcon className="size-4 text-primary" />
                   <span>Actual</span>
                 </div>
-                <div>{formatDateTime(trip.actual_start)}</div>
                 <div>
-                  {trip.actual_start && trip.actual_end
-                    ? formatDateTime(trip.actual_end)
-                    : "on going"}
+                  {trip.actual_start
+                    ? formatDateTime(trip.actual_start)
+                    : "Not started"}
+                </div>
+                <div>
+                  {trip.actual_start &&
+                    (trip.actual_end
+                      ? formatDateTime(trip.actual_end)
+                      : "on going")}
                 </div>
               </div>
             </div>
@@ -368,7 +373,11 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           />
           <Separator className="my-1" />
           <div className="pt-3">
-            <BillLine label="Total due (before tax)" value={formatMoney(totalDue)} isTotal />
+            <BillLine
+              label="Total due (before tax)"
+              value={formatMoney(totalDue)}
+              isTotal
+            />
           </div>
         </CardContent>
       </Card>
