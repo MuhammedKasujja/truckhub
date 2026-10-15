@@ -1,4 +1,4 @@
-import { IconAssembly, IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
+import { IconAccessPoint, IconAssembly, IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
 import { cn } from "cn"
 import {
   DatabaseSearch,
@@ -55,6 +55,7 @@ type Actions =
   | "cancel"
   | "download-pdf"
   | "view-pdf"
+  | "accept"
 
 export function getModuleIcon(module: Module): IconComponent {
   const moduleIcons: Record<Module, IconComponent> = {
@@ -90,6 +91,7 @@ export function getActionIcon(action: Actions): IconComponent {
     cancel: PanelTopCloseIcon,
     "download-pdf": IconFileTypePdf,
     "view-pdf": IconFileTypePdf,
+    "accept": IconAccessPoint,
   }
   return actionIcons[action]
 }

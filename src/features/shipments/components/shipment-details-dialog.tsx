@@ -11,12 +11,14 @@ import { ButtonGroup } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
+  CircleCheckIcon,
   Fuel,
   Gauge,
   Mail,
   MapPin,
   Phone,
   PlusIcon,
+  TimerIcon,
   Truck,
   User,
 } from "lucide-react"
@@ -28,7 +30,12 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
-import { formatDate, formatMoney, formatNumber } from "@/lib/format"
+import {
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  formatNumber,
+} from "@/lib/format"
 import { Empty, EmptyContent } from "@/components/ui/empty"
 import { useShipmentDetails } from "../hooks/use-shipment-details"
 import { cn } from "@/lib/utils"
@@ -237,8 +244,12 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   const consumptionRate = parseFloat(
     trip?.vehicle?.fuel_consumption_rate ?? "0"
   )
-  const totalFuelCharge = new Decimal(shipment.consumption?.total_fuel_charge ?? "0")
-  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(totalFuelCharge)
+  const totalFuelCharge = new Decimal(
+    shipment.consumption?.total_fuel_charge ?? "0"
+  )
+  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(
+    totalFuelCharge
+  )
 
   const totalDue = subtotal.minus(shipment.item.discount ?? "0").toString()
 
@@ -253,7 +264,6 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 trip.item.is_round_trip ? "Round trip" : "One-way",
                 `${trip.item.item_type} item`,
                 `${trip.item.engine_mode} hire`,
-                `Scheduled ${trip.item.scheduled_start} – ${trip.item.scheduled_end}`,
               ].map((opt) => (
                 <span
                   key={opt}
@@ -262,21 +272,44 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                   {opt}
                 </span>
               ))}
+              {trip.item.source === "route" ||
+                (trip.item.source === "distance" && (
+                  <span className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase">
+                    {trip.item.tonnage} Tons
+                  </span>
+                ))}
+              {trip.item.source === "distance" && (
+                <span className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase">
+                  {trip.item.distance_km} km
+                </span>
+              )}
             </div>
-            {trip.actual_start && (
-              <>
-                <div>Started</div>
-                <div>
-                  {trip.actual_start && formatDate(trip.actual_start)} -{" "}
-                  {trip.actual_end ? formatDate(trip.actual_end) : "on going"}
+            <div className="flex w-full gap-2">
+              <div className="w-full space-y-1.5 rounded bg-accent p-4">
+                <div className="flex items-center gap-2">
+                  <TimerIcon className="size-4 text-muted-foreground" />
+                  <span>Scheduled</span>
                 </div>
-              </>
-            )}
+                <div>{formatDate(trip.item.scheduled_start)}</div>
+                <div>{formatDate(trip.item.scheduled_end)}</div>
+              </div>
+              <div className="w-full space-y-1.5 rounded bg-accent p-4">
+                <div className="flex items-center gap-2">
+                  <CircleCheckIcon className="size-4 text-primary"/>
+                  <span>Actual</span>
+                </div>
+                <div>{formatDateTime(trip.actual_start)}</div>
+                <div>
+                  {trip.actual_start && trip.actual_end
+                    ? formatDateTime(trip.actual_end)
+                    : "on going"}
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
         <ShimpmentRouteDetails route={trip.item.route} />
       </div>
-
       {/* Odometer & consumption */}
       {trip.consumption && (
         <Card className="bg-background/15">
@@ -285,7 +318,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
             <div className="mb-5 flex items-center justify-center gap-5 rounded-md bg-accent p-5">
               <div className="min-w-40 text-center">
                 <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
-                  {trip?.consumption?.start_mileage.toLocaleString()}
+                  {formatNumber(trip?.consumption?.start_mileage)}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">
                   Start (km)
@@ -294,7 +327,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
               <ArrowRight className="mb-5 size-5" />
               <div className="min-w-40 text-center">
                 <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
-                  {trip?.consumption?.end_mileage?.toLocaleString()}
+                  {formatNumber(trip?.consumption?.end_mileage)}
                 </div>
                 <p className="mt-2 text-[10px] tracking-widest uppercase">
                   End (km)
@@ -313,8 +346,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
                 />
                 <StatBox
                   label="Est. Fuel Used"
-                  value={`${trip.consumption.fuel_used_litres} L`}
-                  note={`${formatNumber(distance)}km / ${consumptionRate} (consumption rate)`}
+                  value={`${formatNumber(trip.consumption.fuel_used_litres)} L`}
+                  note={`${formatNumber(distance)} km / ${consumptionRate} (consumption rate)`}
                 />
               </div>
             )}
@@ -335,7 +368,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
           />
           <Separator className="my-1" />
           <div className="pt-3">
-            <BillLine label="Total due" value={formatMoney(totalDue)} isTotal />
+            <BillLine label="Total due (before tax)" value={formatMoney(totalDue)} isTotal />
           </div>
         </CardContent>
       </Card>

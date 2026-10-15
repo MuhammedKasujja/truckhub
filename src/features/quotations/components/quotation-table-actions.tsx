@@ -111,8 +111,8 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
               to={"/quotations/$quotationId/pdf"}
               params={{ quotationId: quotation.id }}
             >
-              <DownloadCloud />
-              Pdf
+              <ActionIcon action="view-pdf"/>
+              View Pdf
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

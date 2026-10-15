@@ -2,7 +2,6 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
-import { IconAccessPoint, IconFileTypePdf } from "@tabler/icons-react"
 import { Quotation } from "../../types"
 import { Link } from "@tanstack/react-router"
 import {
@@ -43,7 +42,7 @@ export function QuotationDetailsPageHeader({ quotation }: Props) {
             size={"sm"}
             onClick={() => acceptQuotation(quotationId)}
           >
-            <IconAccessPoint />
+            <ActionIcon action={"accept"} />
             Accept
           </Button>
           <Button
@@ -56,8 +55,8 @@ export function QuotationDetailsPageHeader({ quotation }: Props) {
           </Button>
           <Button variant={"outline"} size={"sm"} asChild>
             <Link to="/quotations/$quotationId/pdf" params={{ quotationId }}>
-              <IconFileTypePdf />
-              PDF
+              <ActionIcon action={"view-pdf"}/>
+              View PDF
             </Link>
           </Button>
         </ButtonGroup>

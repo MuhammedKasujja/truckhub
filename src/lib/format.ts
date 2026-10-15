@@ -21,15 +21,17 @@ export function formatMoney(
 }
 
 export function formatNumber(
-  value: number | string | undefined,
-  options?: Intl.NumberFormatOptions
+  value: number | string | undefined | null,
 ) {
   // return Number(value).toLocaleString(undefined, {
   //   minimumFractionDigits: 0,
   //   maximumFractionDigits: 2,
   // });
-  const formatter = new Intl.NumberFormat(undefined, options)
-  return formatter.format(Number(value))
+  // const formatter = new Intl.NumberFormat(undefined)
+  // return formatter.format(Number(value))
+
+  if(!value) return ""
+  return Number(value).toString()
 }
 
 export function formatDate(
@@ -43,7 +45,7 @@ export function formatDate(
       // day: opts.day ?? "numeric",
       // year: opts.year ?? "numeric",
       dateStyle: "medium",
-      timeStyle: "short",
+      timeStyle: undefined,
       ...opts,
     }).format(new Date(date))
   } catch (_) {

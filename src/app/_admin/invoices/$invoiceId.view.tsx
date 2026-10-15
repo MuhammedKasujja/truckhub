@@ -66,6 +66,7 @@ function RouteComponent() {
                 to="/invoices/$invoiceId/pdf"
                 params={{ invoiceId: invoice.id }}
               >
+                <ActionIcon action={"view-pdf"} />
                 View PDF
               </Link>
             </Button>
@@ -74,6 +75,7 @@ function RouteComponent() {
               variant={"outline"}
               onClick={() => sendInvoiceEmail(invoice.id)}
             >
+              <ActionIcon action="email" />
               Send Email
             </Button>
           </div>
