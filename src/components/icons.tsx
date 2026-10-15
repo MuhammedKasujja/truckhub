@@ -90,7 +90,7 @@ export function getActionIcon(action: Actions): IconComponent {
     email: MailIcon,
     cancel: PanelTopCloseIcon,
     "download-pdf": IconFileTypePdf,
-    "view-pdf": IconFileTypePdf,
+    "view-pdf": FileTextIcon,
     "accept": IconAccessPoint,
   }
   return actionIcons[action]

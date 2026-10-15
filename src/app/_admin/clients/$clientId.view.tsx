@@ -65,7 +65,7 @@ function RouteComponent() {
             <Can permission={"clients:edit"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
-                  <IconEdit />
+                  <ActionIcon action={"edit"}/>
                   Edit
                 </Link>
               </Button>
@@ -110,7 +110,7 @@ function RouteComponent() {
             )}
             <Button asChild variant={"secondary"}>
               <Link to="/clients/$clientId/pdf" params={{ clientId }}>
-                <FileTextIcon />
+                <ActionIcon action={"view-pdf"}/>
                 View Pdf
               </Link>
             </Button>

@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DriverPicker } from "@/features/drivers/components"
-import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
@@ -25,6 +24,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { formatNumber } from "@/lib/format"
 import { VehicleStatusIndicator } from "./vehicle-status-indicator"
+import { ActionIcon } from "@/components/icons"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -80,7 +80,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 to="/vehicles/$vehicleId/edit"
                 params={{ vehicleId: vehicle.id }}
               >
-                <Edit2Icon />
+                <ActionIcon action={"edit"} />
               </Link>
             </Button>
           </Can>

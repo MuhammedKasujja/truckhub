@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Invoice } from "../types"
 import { TFunction } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDate, formatDateTime, formatMoney } from "@/lib/format"
 import {
   InvoiceTableActions,
   SetInvoiceTableAction,
@@ -85,7 +85,7 @@ export function getInvoiceTableColumns({
       accessorKey: "created_at",
       header: () => <p className="uppercase">{tr("common.created")}</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
   ]
