@@ -1,4 +1,3 @@
-"use client"
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
 import {
+  AvatarField,
   EmailField,
   PasswordField,
   TelephoneField,
@@ -17,44 +17,39 @@ import {
 import { useTranslation } from "@/i18n"
 import {
   DriverCreateSchema,
+  DriverCreateSchemaType,
   DriverUpdateSchema,
+  DriverUpdateSchemaType,
 } from "@/features/drivers/schemas"
-import { createDriverFn, updateDriverFn } from "@/features/drivers/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { BaseFormProps } from "@/common/types"
 
-type DriverFormProps = {
-  initialData?: z.infer<typeof DriverUpdateSchema>
-}
+type DriverFormProps = BaseFormProps<
+  DriverCreateSchemaType,
+  DriverUpdateSchemaType
+>
 
-export function DriverForm({ initialData }: DriverFormProps) {
+export function DriverForm({ mode, defaultValues, onSubmit }: DriverFormProps) {
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
-  const isEdit = !!initialData
+  const isEdit = !!defaultValues
 
   const formSchema = isEdit ? DriverUpdateSchema : DriverCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateDriverFn({ data: values })
-        : createDriverFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.drivers.list.invalidate()
+  async function handleSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(DriverUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(DriverCreateSchema.parse(values))
     }
   }
 
@@ -65,12 +60,13 @@ export function DriverForm({ initialData }: DriverFormProps) {
         <CardDescription>Create new driver</CardDescription>
       </CardHeader>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
           console.log(errors)
         })}
       >
         <CardContent className="pb-6">
           <FieldGroup>
+            <AvatarField control={form.control} name={"avatar"} />
             <TextField
               label={tr("common.form.first_name")}
               name={"first_name"}

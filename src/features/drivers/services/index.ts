@@ -15,6 +15,8 @@ import {
   getDriverDetailsById,
 } from "./server"
 import { ApiError } from "@/types"
+import { formInput } from "@/lib/form-utils"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getDriversFn = createServerFn()
   .inputValidator(DriverSearchParamsCache)
@@ -56,21 +58,14 @@ export const deleteDriverFn = createServerFn()
     return deleteDriverById(data.id)
   })
 
-export const updateDriverFn = createServerFn()
-  .inputValidator(DriverUpdateSchema)
+export const updateDriverFn = createServerFn({ method: "POST" })
+  .inputValidator(formInput(DriverUpdateSchema))
   .handler(async ({ data }) => {
-    return updateDriver(data)
+    return apiResponseTransform(updateDriver(data))
   })
 
-export const createDriverFn = createServerFn()
-  .inputValidator(DriverCreateSchema)
+export const createDriverFn = createServerFn({ method: "POST" })
+  .inputValidator(formInput(DriverCreateSchema))
   .handler(async ({ data }) => {
-    const { file, ...fields } = data
-    const fd = new FormData()
-    Object.entries(fields).forEach(([k, v]) => {
-      if (v !== undefined) fd.append(k, String(v))
-    })
-    if (file) fd.append("file", file, file.name)
-    console.log("Form data....", [...fd.keys()])
-    return createDriver(fd)
+    return apiResponseTransform(createDriver(data))
   })

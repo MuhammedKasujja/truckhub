@@ -53,6 +53,6 @@ export const MAP_LIGHT_STYLE_URL = "https://tiles.openfreemap.org/styles/bright"
 
 export const MAP_DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"
 
-export const SUPPORTED_IMAGE_EXTENSIONS = ["image/png", "image/jpeg"]
+export const SUPPORTED_IMAGE_EXTENSIONS = ["image/jpeg", "image/png", "image/webp"];
 
 export const SUPPORTED_DOC_EXTENSIONS = ["application/pdf"]

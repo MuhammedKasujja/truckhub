@@ -11,7 +11,7 @@ export const DriverCreateSchema = z.object({
   phone: z.string().trim().min(3, "Required"),
   email: z.email().trim(),
   password: z.string().trim().min(3, "Required"),
-  file: ImageSchema.optional(),
+  avatar: ImageSchema.nullable().optional(),
 })
 
 export const DriverUpdateSchema = z.object({

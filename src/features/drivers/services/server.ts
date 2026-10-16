@@ -1,10 +1,12 @@
 import * as apiClient from "@/lib/api-client"
 import { Driver } from "@/features/drivers/types"
 import {
+  DriverCreateSchemaType,
   DriverListSearchParams,
   DriverUpdateSchemaType,
 } from "@/features/drivers/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
+import { objectToFormData } from "@/lib/form-utils"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
@@ -47,10 +49,11 @@ export async function deleteDriverById(driverId: EntityId) {
 }
 
 export async function updateDriver(data: DriverUpdateSchemaType) {
-  const { id: driverId, ...rest } = data
-  return await apiClient.putFn<Driver>(`/v1/drivers/${driverId}`, rest)
+  const { id: driverId, ...fields } = data
+  const fd = objectToFormData(fields)
+  return await apiClient.putFn<Driver>(`/v1/drivers/${driverId}`, fd)
 }
 
-export async function createDriver(data: FormData) {
-  return await apiClient.postFn<Driver>("/v1/drivers", data)
+export async function createDriver(input: DriverCreateSchemaType) {
+  return await apiClient.postFn<Driver>("/v1/drivers", objectToFormData(input))
 }

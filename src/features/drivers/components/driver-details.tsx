@@ -31,6 +31,7 @@ import {
 import { Can } from "@/components/has-permission"
 import { Vehicle } from "@/features/vehicles/types"
 import { ActionIcon } from "@/components/icons"
+import { Attachment, AttachmentMedia } from "@/components/ui/attachment"
 
 type DriverDetailsProps = {
   driver: Driver
@@ -92,13 +93,18 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           </Can>
         </PageAction>
       </PageHeader>
-      <div className="grid grid-flow-col gap-5 md:grid-cols-5 my-6">
+      <div className="my-6 grid grid-flow-col gap-5 md:grid-cols-5">
         <Card className="md:col-span-3">
           <CardHeader>
             <CardTitle className="capitalize">{driver?.fullname}</CardTitle>
             <CardDescription>{driver.number}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <Attachment orientation="vertical">
+              <AttachmentMedia variant={"image"}>
+                <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=900&auto=format&fit=crop&q=100" />
+              </AttachmentMedia>
+            </Attachment>
             <div>{driver?.email}</div>
             <div>{driver?.phone}</div>
           </CardContent>
@@ -139,7 +145,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
               </Can>
             </CardAction>
           </CardHeader>
-          <CardContent className="space-y-4 grid md:grid-cols-2">
+          <CardContent className="grid space-y-4 md:grid-cols-2">
             <DetailItem label="Vehicle Number" value={vehicle.number} />
 
             <DetailItem label="Plate Number" value={vehicle.plate_number} />
