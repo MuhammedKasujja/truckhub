@@ -1,5 +1,5 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
+import { IDSchema, ImageSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { CarModel } from "@/features/settings/car-model/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
@@ -10,6 +10,7 @@ export const CarModelCreateSchema = z.object({
   vehicle_category_id: IDSchema,
   consumption_rate: z.number(),
   manufacture_year: z.string().optional().nullable(),
+  image: ImageSchema.optional().nullable(),
 })
 
 export const CarModelUpdateSchema = z.object({

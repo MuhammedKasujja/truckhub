@@ -1,4 +1,3 @@
-"use client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -76,51 +75,54 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
       <DialogTrigger asChild>
         {trigger ?? (
           <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
+            <ActionIcon action="create" />
             Car Model
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-3xl">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
-                <ActionIcon action="create"/>
+                <ActionIcon action="create" />
               </Button>
               Car Model
             </DialogTitle>
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
-          <FieldGroup>
-            <CarBrandPickerField
-              label={tr("common.car_brand")}
-              control={form.control}
-              name={"car_brand_id"}
-              placeholder="Select car brand"
-              // emptyPlaceholder="No Car Brand found"
-            />
-            <TextField label="Model" control={form.control} name={"name"} />
-            <VehicleCategoryPickerField
-              label={tr("common.vehicleCaterory")}
-              control={form.control}
-              name={"vehicle_category_id"}
-              placeholder="Select Vehicle category"
-            />
-            <Field orientation={"horizontal"}>
-              <NumberField
-                label="Consumption Rate"
+          <div className="grid gap-4 grid-cols-4">
+            <div className="col-span-2"></div>
+            <FieldGroup className="col-span-2">
+              <CarBrandPickerField
+                label={tr("common.car_brand")}
                 control={form.control}
-                name={"consumption_rate"}
+                name={"car_brand_id"}
+                placeholder="Select car brand"
+                // emptyPlaceholder="No Car Brand found"
               />
-              <YearPickerField
-                required={false}
-                label="Year"
+              <TextField label="Model" control={form.control} name={"name"} />
+              <VehicleCategoryPickerField
+                label={tr("common.vehicleCaterory")}
                 control={form.control}
-                name={"manufacture_year"}
+                name={"vehicle_category_id"}
+                placeholder="Select Vehicle category"
               />
-            </Field>
-          </FieldGroup>
+              <Field orientation={"horizontal"}>
+                <NumberField
+                  label="Consumption Rate"
+                  control={form.control}
+                  name={"consumption_rate"}
+                />
+                <YearPickerField
+                  required={false}
+                  label="Year"
+                  control={form.control}
+                  name={"manufacture_year"}
+                />
+              </Field>
+            </FieldGroup>
+          </div>
           <DialogFooter className="sm:justify-end">
             <SubmitButton
               text={tr("common.form.submit")}

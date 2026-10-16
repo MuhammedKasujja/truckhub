@@ -1,29 +1,21 @@
 import { useId } from "react"
 import {
   Controller,
-  useWatch,
   type Control,
   type FieldPath,
   type FieldValues,
 } from "react-hook-form"
-import { z } from "zod"
 import { cn } from "cn"
 import {
   AvatarUploader,
   type AvatarValue,
-} from "@/components/ui/extensions/avatar-uploader-field"
+} from "@/components/ui/extensions/avatar-uploader"
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
 } from "@/components/ui/field"
-
-/**
- * Drop-in zod schema for the field.
- *   undefined -> unchanged, null -> removed, File -> new image
- */
-export const avatarSchema = z.instanceof(File).nullable().optional()
 
 type AvatarFieldProps<T extends FieldValues> = {
   name: FieldPath<T>
@@ -68,7 +60,6 @@ export function AvatarField<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState }) => {
-
         return (
           <Field className={cn("space-y-2", className)}>
             {label && (
@@ -95,9 +86,7 @@ export function AvatarField<T extends FieldValues>({
             />
 
             {description && (
-              <FieldDescription
-                className="text-sm text-muted-foreground"
-              >
+              <FieldDescription className="text-sm text-muted-foreground">
                 {description}
               </FieldDescription>
             )}
