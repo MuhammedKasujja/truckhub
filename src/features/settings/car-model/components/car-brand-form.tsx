@@ -23,6 +23,7 @@ import {
   updateCarModelFn,
 } from "@/features/settings/car-model/services"
 import {
+  ImageField,
   NumberField,
   TextField,
   YearPickerField,
@@ -81,8 +82,8 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-3xl">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <DialogHeader className="border-b">
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
                 <ActionIcon action="create" />
@@ -91,8 +92,14 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             </DialogTitle>
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 grid-cols-4">
-            <div className="col-span-2"></div>
+          <div className="grid grid-cols-4 gap-4">
+            <ImageField
+              control={form.control}
+              name={"image"}
+              className="col-span-2"
+              aspect={16 / 9}
+              width="full"
+            />
             <FieldGroup className="col-span-2">
               <CarBrandPickerField
                 label={tr("common.car_brand")}

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Camera, Trash2, Upload } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Camera, ImagePlus, Trash2, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,12 +11,11 @@ import {
 } from "@/components/ui/dialog"
 import { Slider } from "@/components/ui/slider"
 import { cn } from "@/lib/utils"
-import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 
 /**
  * Value semantics:
  *   undefined -> unchanged (show `src`)
- *   null      -> removed   (show fallback initials)
+ *   null      -> removed   (show empty state)
  *   File      -> new, cropped image
  */
 export type ImageValue = File | null | undefined
@@ -25,37 +23,42 @@ export type ImageValue = File | null | undefined
 export type ImageUploaderProps = {
   value?: ImageValue
   onChange: (value: ImageValue) => void
-  /** Saved avatar URL, shown while value is undefined */
+  /** Saved image URL, shown while value is undefined */
   src?: string | null
-  /** Used for the fallback initials */
-  name?: string
+  /** Width / height. 1 = square, 16 / 9 = landscape, 3 / 4 = portrait */
+  aspect?: number
+  /** Display width in px, or "full" to fill the parent (height follows the aspect ratio) */
+  width?: number | "full"
+  /** Long side of the saved image in px */
+  outputSize?: number
+  /** Corner style. "full" only makes sense when aspect is 1 */
+  radius?: "none" | "md" | "xl" | "full"
   maxSizeMB?: number
   disabled?: boolean
   className?: string
-  // forwarded by shadcn's <FormControl> so labels and errors link up
+  // forwarded by form wrappers so labels and errors link up
   id?: string
   "aria-invalid"?: boolean
   "aria-describedby"?: string
 }
 
-const OUTPUT_SIZE = 512 // final avatar is 512x512
-const PREVIEW_SIZE = 280 // crop box size on screen
+const CROP_MAX = 320 // long side of the crop box on screen
 
-function initials(name?: string) {
-  if (!name) return "?"
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("")
-}
+const RADIUS = {
+  none: "rounded-none",
+  md: "rounded-lg",
+  xl: "rounded-2xl",
+  full: "rounded-full",
+} as const
 
 export function ImageUploader({
   value,
   onChange,
   src,
-  name,
+  aspect = 1,
+  width = 240,
+  outputSize = 1024,
+  radius = "md",
   maxSizeMB = 5,
   disabled,
   className,
@@ -63,10 +66,19 @@ export function ImageUploader({
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: ImageUploaderProps) {
+  const r = RADIUS[radius === "full" && aspect !== 1 ? "xl" : radius]
+
+  // crop box and output dimensions follow the aspect ratio
+  const cropW = aspect >= 1 ? CROP_MAX : CROP_MAX * aspect
+  const cropH = aspect >= 1 ? CROP_MAX / aspect : CROP_MAX
+  const outW = Math.round(aspect >= 1 ? outputSize : outputSize * aspect)
+  const outH = Math.round(outW / aspect)
+
   const inputRef = useRef<HTMLInputElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
   const [raw, setRaw] = useState<string | null>(null) // image being cropped
+  const rawType = useRef("image/jpeg") // mime type of the picked file
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -101,6 +113,7 @@ export function ImageUploader({
     if (file.size > maxSizeMB * 1024 * 1024)
       return setError(`Image must be under ${maxSizeMB}MB.`)
     setError(null)
+    rawType.current = file.type
     setRaw(URL.createObjectURL(file))
     setZoom(1)
     setPos({ x: 0, y: 0 })
@@ -111,7 +124,7 @@ export function ImageUploader({
   const baseScale = () => {
     const img = imgRef.current
     if (!img) return 1
-    return PREVIEW_SIZE / Math.min(img.naturalWidth, img.naturalHeight)
+    return Math.max(cropW / img.naturalWidth, cropH / img.naturalHeight)
   }
 
   // keep the image from leaving the crop box
@@ -119,8 +132,8 @@ export function ImageUploader({
     const img = imgRef.current
     if (!img) return p
     const s = baseScale() * z
-    const maxX = Math.max(0, (img.naturalWidth * s - PREVIEW_SIZE) / 2)
-    const maxY = Math.max(0, (img.naturalHeight * s - PREVIEW_SIZE) / 2)
+    const maxX = Math.max(0, (img.naturalWidth * s - cropW) / 2)
+    const maxY = Math.max(0, (img.naturalHeight * s - cropH) / 2)
     return {
       x: Math.min(maxX, Math.max(-maxX, p.x)),
       y: Math.min(maxY, Math.max(-maxY, p.y)),
@@ -145,33 +158,43 @@ export function ImageUploader({
 
     const s = baseScale() * zoom
     // visible region of the source image, in natural pixels
-    const sw = PREVIEW_SIZE / s
+    const sw = cropW / s
+    const sh = cropH / s
     const sx = img.naturalWidth / 2 - sw / 2 - pos.x / s
-    const sy = img.naturalHeight / 2 - sw / 2 - pos.y / s
+    const sy = img.naturalHeight / 2 - sh / 2 - pos.y / s
 
     const canvas = document.createElement("canvas")
-    canvas.width = canvas.height = OUTPUT_SIZE
-    canvas
-      .getContext("2d")!
-      .drawImage(img, sx, sy, sw, sw, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE)
+    canvas.width = outW
+    canvas.height = outH
+    canvas.getContext("2d")!.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH)
+
+    // JPEG stays JPEG. PNG/WebP keep their transparency (saved as WebP, or PNG
+    // on browsers that can't encode WebP), so nothing gets a baked-in background.
+    const type = rawType.current === "image/jpeg" ? "image/jpeg" : "image/webp"
 
     canvas.toBlob(
       (blob) => {
         if (!blob) return setError("Couldn't process that image. Try another.")
-        onChange(new File([blob], "avatar.jpg", { type: "image/jpeg" }))
+        const ext =
+          blob.type === "image/jpeg"
+            ? "jpg"
+            : blob.type === "image/webp"
+              ? "webp"
+              : "png"
+        onChange(new File([blob], `image.${ext}`, { type: blob.type }))
         setOpen(false)
       },
-      "image/jpeg",
+      type,
       0.9
     )
   }
 
   return (
-    <div className={cn("flex items-center gap-5", className)}>
+    <div className={cn("flex flex-col items-start gap-3", className)}>
       <input
         ref={inputRef}
         type="file"
-        accept={SUPPORTED_IMAGE_EXTENSIONS.join(",")}
+        accept="image/png,image/jpeg,image/webp"
         className="hidden"
         disabled={disabled}
         onChange={(e) => {
@@ -180,33 +203,42 @@ export function ImageUploader({
         }}
       />
 
-      {/* Avatar with camera overlay */}
+      {/* Image box (or empty state) */}
       <button
         id={id}
         type="button"
         disabled={disabled}
         aria-invalid={ariaInvalid}
         aria-describedby={ariaDescribedBy}
-        aria-label="Change profile picture"
+        aria-label={display ? "Change image" : "Add image"}
         onClick={() => inputRef.current?.click()}
+        style={{
+          width: width === "full" ? "100%" : width,
+          maxWidth: "100%",
+          aspectRatio: aspect,
+        }}
         className={cn(
-          "group relative rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
-          ariaInvalid && "ring-2 ring-destructive"
+          "group relative overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
+          r,
+          display
+            ? "border bg-muted"
+            : "border-2 border-dashed bg-muted/40 hover:border-primary/60 hover:bg-muted/60",
+          ariaInvalid && "border-destructive ring-1 ring-destructive"
         )}
       >
-        <Avatar className="h-24 w-24">
-          {display && (
-            <AvatarImage
-              src={display}
-              alt={name ?? "Profile picture"}
-              className="object-cover"
-            />
-          )}
-          <AvatarFallback className="text-xl">{initials(name)}</AvatarFallback>
-        </Avatar>
-        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          <Camera className="h-6 w-6 text-white" />
-        </span>
+        {display ? (
+          <>
+            <img src={display} alt="" className="h-full w-full object-cover" />
+            <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+              <Camera className="h-6 w-6 text-white" />
+            </span>
+          </>
+        ) : (
+          <span className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted-foreground">
+            <ImagePlus className="h-7 w-7" />
+            <span className="text-sm">Click to add image</span>
+          </span>
+        )}
       </button>
 
       <div className="space-y-2">
@@ -218,7 +250,7 @@ export function ImageUploader({
             onClick={() => inputRef.current?.click()}
           >
             <Upload className="mr-2 h-4 w-4" />
-            {display ? "Change photo" : "Upload photo"}
+            {display ? "Change image" : "Upload image"}
           </Button>
           {display && (
             <Button
@@ -241,9 +273,9 @@ export function ImageUploader({
 
       {/* Crop dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Adjust your photo</DialogTitle>
+            <DialogTitle>Adjust your image</DialogTitle>
             <DialogDescription>
               Drag to reposition. Use the slider to zoom.
             </DialogDescription>
@@ -251,8 +283,11 @@ export function ImageUploader({
 
           <div className="flex flex-col items-center gap-4">
             <div
-              className="relative cursor-grab touch-none overflow-hidden rounded-full bg-muted select-none active:cursor-grabbing"
-              style={{ width: PREVIEW_SIZE, height: PREVIEW_SIZE }}
+              className={cn(
+                "relative cursor-grab touch-none overflow-hidden bg-muted select-none active:cursor-grabbing",
+                r
+              )}
+              style={{ width: cropW, height: cropH }}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
@@ -296,7 +331,7 @@ export function ImageUploader({
               Cancel
             </Button>
             <Button type="button" onClick={save}>
-              Save photo
+              Save image
             </Button>
           </DialogFooter>
         </DialogContent>

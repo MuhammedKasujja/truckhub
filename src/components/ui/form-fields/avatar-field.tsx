@@ -1,6 +1,7 @@
 import { useId } from "react"
 import {
   Controller,
+  useWatch,
   type Control,
   type FieldPath,
   type FieldValues,
@@ -48,12 +49,12 @@ export function AvatarField<T extends FieldValues>({
   const errId = `${uid}-error`
 
   // hooks can't be conditional, so always watch something and ignore it if unused
-  // const watched = useWatch({
-  //   control: control,
-  //   name: (nameField ?? name) as FieldPath<T>,
-  // })
-  // const displayName =
-  //   nameField && typeof watched === "string" ? watched : undefined
+  const watched = useWatch({
+    control: control,
+    name: (nameField ?? name) as FieldPath<T>,
+  })
+  const displayName =
+    nameField && typeof watched === "string" ? watched : undefined
 
   return (
     <Controller
@@ -79,7 +80,7 @@ export function AvatarField<T extends FieldValues>({
                 field.onBlur() // mark as touched so "onTouched" modes validate
               }}
               src={src}
-              // name={displayName}
+              name={displayName}
               maxSizeMB={maxSizeMB}
               disabled={disabled}
               aria-invalid={fieldState.invalid}

@@ -7,6 +7,7 @@ import {
 import { cn } from "cn"
 import {
   ImageUploader,
+  ImageUploaderProps,
   type ImageValue,
 } from "@/components/ui/extensions/image-uploader"
 import {
@@ -16,30 +17,24 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 
-type ImageFieldProps<T extends FieldValues> = {
-  name: FieldPath<T>
-  control: Control<T>
-  label?: string
-  description?: string
-  /** Name of another field to build the fallback initials from, e.g. "name" */
-  nameField?: FieldPath<T>
-  /** Saved avatar URL */
-  src?: string | null
-  maxSizeMB?: number
-  disabled?: boolean
-  className?: string
-}
+type ImageFieldProps<T extends FieldValues> = Pick<
+  ImageUploaderProps,
+  "src" | "aspect" | "width" | "outputSize" | "radius" | "maxSizeMB" | "disabled"
+> & {
+  name: FieldPath<T>;
+  control: Control<T>;
+  label?: string;
+  description?: string;
+  className?: string;
+};
 
-export function ImageUploaderField<T extends FieldValues>({
+export function ImageField<T extends FieldValues>({
   name,
   control,
-  label = "Image file",
+  label,
   description,
-  nameField,
-  src,
-  maxSizeMB,
-  disabled,
   className,
+  ...uploaderProps
 }: ImageFieldProps<T>) {
 
   // hooks can't be conditional, so always watch something and ignore it if unused
@@ -73,10 +68,7 @@ export function ImageUploaderField<T extends FieldValues>({
                 field.onChange(v)
                 field.onBlur() // mark as touched so "onTouched" modes validate
               }}
-              src={src}
-              // name={displayName}
-              maxSizeMB={maxSizeMB}
-              disabled={disabled}
+              {...uploaderProps}
               aria-invalid={fieldState.invalid}
             />
 

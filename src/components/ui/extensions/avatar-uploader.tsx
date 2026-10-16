@@ -31,6 +31,10 @@ export type AvatarUploaderProps = {
   name?: string
   maxSizeMB?: number
   disabled?: boolean
+  /** circle, rounded (square with soft corners) or square (sharp corners) */
+  shape?: "circle" | "rounded" | "square"
+  /** Width and height of the image in px */
+  size?: number
   className?: string
   // forwarded by shadcn's <FormControl> so labels and errors link up
   id?: string
@@ -58,11 +62,26 @@ export function AvatarUploader({
   name,
   maxSizeMB = 5,
   disabled,
+  shape = "circle",
+  size = 100,
   className,
   id,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: AvatarUploaderProps) {
+  // full class names so Tailwind can see them
+  const radius = {
+    circle: "rounded-full",
+    rounded: "rounded-2xl",
+    square: "rounded-none",
+  }[shape]
+  // newer shadcn Avatar draws a circular border with an ::after element
+  const afterRadius = {
+    circle: "after:rounded-full",
+    rounded: "after:rounded-2xl",
+    square: "after:rounded-none",
+  }[shape]
+
   const inputRef = useRef<HTMLInputElement>(null)
   const imgRef = useRef<HTMLImageElement>(null)
 
@@ -190,21 +209,32 @@ export function AvatarUploader({
         aria-label="Change profile picture"
         onClick={() => inputRef.current?.click()}
         className={cn(
-          "group relative rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
+          "group relative focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
+          radius,
           ariaInvalid && "ring-2 ring-destructive"
         )}
       >
-        <Avatar className="h-24 w-24">
+        <Avatar
+          className={cn("shrink-0", radius, afterRadius)}
+          style={{ width: size, height: size }}
+        >
           {display && (
             <AvatarImage
               src={display}
               alt={name ?? "Profile picture"}
-              className="object-cover"
+              className={cn("aspect-square h-full w-full object-cover", radius)}
             />
           )}
-          <AvatarFallback className="text-xl">{initials(name)}</AvatarFallback>
+          <AvatarFallback className={cn("text-xl", radius)}>
+            {initials(name)}
+          </AvatarFallback>
         </Avatar>
-        <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+        <span
+          className={cn(
+            "absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+            radius
+          )}
+        >
           <Camera className="h-6 w-6 text-white" />
         </span>
       </button>
@@ -251,7 +281,10 @@ export function AvatarUploader({
 
           <div className="flex flex-col items-center gap-4">
             <div
-              className="relative cursor-grab touch-none overflow-hidden rounded-full bg-muted select-none active:cursor-grabbing"
+              className={cn(
+                "relative cursor-grab touch-none overflow-hidden bg-muted select-none active:cursor-grabbing",
+                radius
+              )}
               style={{ width: PREVIEW_SIZE, height: PREVIEW_SIZE }}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
