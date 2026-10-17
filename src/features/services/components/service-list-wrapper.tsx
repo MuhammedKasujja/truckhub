@@ -17,7 +17,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group"
 import { ActionIcon } from "@/components/icons"
-import { VehicleType } from "@/features/settings/vehicle-categories/enums"
+import { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
 
 type ServiceListWrapperProps = {
   services: Service[]

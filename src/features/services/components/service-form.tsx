@@ -14,8 +14,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import z from "zod"
-import { CarBrandPickerField } from "@/features/settings/car-brand/components"
-import { CarModelPickerField } from "@/features/settings/car-model/components"
+import { CarBrandPickerField } from "@/features/settings/vehicle-config/car-brand/components"
+import { CarModelPickerField } from "@/features/settings/vehicle-config/car-model/components"
 import { BaseFormProps } from "@/common/types"
 import {
   Item,
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/item"
 import { cn } from "@/lib/utils"
 import { useMemo } from "react"
-import { VehicleCategoryPickerField } from "@/features/settings/vehicle-categories/components"
+import { VehicleCategoryPickerField } from "@/features/settings/vehicle-config/vehicle-categories/components"
 
 type ServiceFormProps = BaseFormProps<
   ServiceCreateSchemaInput,

@@ -1,6 +1,6 @@
-import { DriveTrainTable } from "@/features/settings/drive-trains/components/drive-train-table"
-import { createDriveTrainsListQueryOptions } from "@/features/settings/drive-trains/query-options"
-import { DriveTrainSearchParamsCache } from "@/features/settings/drive-trains/schemas"
+import { DriveTrainTable } from "@/features/settings/vehicle-config/drive-trains/components/drive-train-table"
+import { createDriveTrainsListQueryOptions } from "@/features/settings/vehicle-config/drive-trains/query-options"
+import { DriveTrainSearchParamsCache } from "@/features/settings/vehicle-config/drive-trains/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(

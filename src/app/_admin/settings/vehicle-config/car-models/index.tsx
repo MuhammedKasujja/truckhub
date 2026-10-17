@@ -1,6 +1,6 @@
-import { CarModelTable, CarModelTableSkeleton } from "@/features/settings/car-model/components"
-import { createCarModelsListQueryOptions } from "@/features/settings/car-model/query-options"
-import { CarModelSearchParamsCache } from "@/features/settings/car-model/schemas"
+import { CarModelTable, CarModelTableSkeleton } from "@/features/settings/vehicle-config/car-model/components"
+import { createCarModelsListQueryOptions } from "@/features/settings/vehicle-config/car-model/query-options"
+import { CarModelSearchParamsCache } from "@/features/settings/vehicle-config/car-model/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(

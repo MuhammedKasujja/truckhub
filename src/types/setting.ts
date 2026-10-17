@@ -1,5 +1,5 @@
 import { type EntityId } from "@/schemas"
-import { VehicleType } from "@/features/settings/vehicle-categories/enums"
+import { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
 
 export type Setting = {
   key: string

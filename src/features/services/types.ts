@@ -1,6 +1,6 @@
 import { EntityId } from "@/schemas"
 import { ServiceCreateSchemaInput } from "./schemas"
-import { VehicleType } from "@/features/settings/vehicle-categories/enums"
+import { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
 
 export const DistanceUnitList = ["km", "miles"] as const
 
