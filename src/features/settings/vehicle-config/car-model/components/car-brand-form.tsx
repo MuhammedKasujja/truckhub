@@ -18,7 +18,6 @@ import {
 } from "@/features/settings/vehicle-config/car-model/schemas"
 import {
   ImageField,
-  NumberField,
   TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
@@ -115,7 +114,7 @@ export function CarModelForm({
                 placeholder="Select Vehicle category"
               />
               <Field orientation={"horizontal"}>
-                <NumberField
+                <TextField
                   label="Consumption Rate"
                   control={form.control}
                   name={"consumption_rate"}

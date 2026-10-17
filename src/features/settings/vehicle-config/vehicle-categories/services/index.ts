@@ -33,13 +33,13 @@ export const deleteVehicleCategoryFn = createServerFn()
     return deleteVehicleCategoryById(data.id)
   })
 
-export const updateVehicleCategoryFn = createServerFn()
+export const updateVehicleCategoryFn = createServerFn({ method: "POST" })
   .inputValidator(formInput(VehicleCategoryUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateVehicleCategory(data))
   })
 
-export const createVehicleCategoryFn = createServerFn()
+export const createVehicleCategoryFn = createServerFn({ method: "POST" })
   .inputValidator(formInput(VehicleCategoryCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createVehicleCategory(data))

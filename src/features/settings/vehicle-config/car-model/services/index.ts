@@ -33,13 +33,13 @@ export const deleteCarModelFn = createServerFn()
     return deleteCarModelById(data.id)
   })
 
-export const updateCarModelFn = createServerFn()
+export const updateCarModelFn = createServerFn({ method: "POST" })
   .inputValidator(formInput(CarModelUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateCarModel(data))
   })
 
-export const createCarModelFn = createServerFn()
+export const createCarModelFn = createServerFn({ method: "POST" })
   .inputValidator(formInput(CarModelCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createCarModel(data))
