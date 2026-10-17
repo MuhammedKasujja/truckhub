@@ -6,8 +6,8 @@ export type CarModel = {
   name: string;
   car_brand_id: EntityId;
   vehicle_category_id: EntityId;
-  consumption_rate: number;
-  manufacture_year: number | null;
+  consumption_rate: string | undefined;
+  manufacture_year: string | undefined;
   image_url: string | null
   car_brand: {
     id: EntityId

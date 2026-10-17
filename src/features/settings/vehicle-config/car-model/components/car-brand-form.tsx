@@ -76,7 +76,7 @@ export function CarModelForm({
       </DialogTrigger>
       <DialogContent className="max-h-[95vh] min-h-[95vh] overflow-hidden sm:max-w-3xl">
         <form
-          onSubmit={form.handleSubmit(handleSubmit, (error)=>{
+          onSubmit={form.handleSubmit(handleSubmit, (error) => {
             console.log(error)
           })}
           className="max-h-[90vh] space-y-5 overflow-y-auto"
@@ -96,6 +96,7 @@ export function CarModelForm({
               name={"image"}
               className="col-span-2"
               aspect={16 / 9}
+              src={form.getValues("image_url")}
               width="full"
             />
             <FieldGroup className="col-span-2">

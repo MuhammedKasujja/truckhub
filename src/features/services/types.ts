@@ -45,6 +45,7 @@ export type Service = {
   vehicle_category: VehicleCategory | null
   car_model: CarModel | null
   source: VehicleType
+  image_url: string | undefined
 }
 
 export type ServiceGroup = {

@@ -16,6 +16,7 @@ export const CarModelCreateSchema = z.object({
 export const CarModelUpdateSchema = z.object({
   id: IDSchema,
   ...CarModelCreateSchema.partial().shape,
+  image_url: z.string().nullable().optional()
 })
 
 export type CarModelCreateSchemaType = z.infer<typeof CarModelCreateSchema>

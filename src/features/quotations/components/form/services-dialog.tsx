@@ -378,7 +378,9 @@ function ServiceList({
               </CardHeader>
 
               <CardContent className="space-y-2 text-sm">
-                <div className="h-40 rounded-sm bg-accent" />
+                <div className="h-40 rounded-sm bg-accent">
+                  <img src={service.image_url} alt={service.display_name}/>
+                </div>
 
                 <div className="space-y-1">
                   <div className="flex items-baseline-last justify-between gap-2">

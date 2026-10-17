@@ -24,10 +24,7 @@ export function CarModelTableActions({ model }: TableActionsProps) {
         <CarModelForm
           key={model.id}
           mode="edit"
-          defaultValues={{
-            ...model,
-            manufacture_year: model.manufacture_year?.toString(),
-          }}
+          defaultValues={{ ...model }}
           trigger={
             <Button variant={"outline"} size={"icon"}>
               <ActionIcon action="edit" />

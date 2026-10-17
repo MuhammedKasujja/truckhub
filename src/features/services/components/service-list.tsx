@@ -62,7 +62,9 @@ export function ServiceList({
             </CardHeader>
 
             <CardContent className="space-y-2 text-sm">
-              <div className="h-40 rounded-sm border bg-accent"></div>
+              <div className="h-40 rounded-sm border bg-accent">
+                <img src={service.image_url} />
+              </div>
               <div className="space-y-1">
                 <div className="flex w-full justify-between">
                   <div className="text-muted-foreground">
@@ -92,7 +94,6 @@ export function ServiceList({
                 )}
               </div>
               <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
-                <span>{service.is_truck ? "Truck" : "Car"}</span>
                 {!selectable && (
                   <Can permission={"services:edit"}>
                     <Button size="sm" variant="outline" asChild>
