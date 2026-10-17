@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas";
+import { DataTableRowAction } from "@/types/data-table";
 
 export type CarModel = {
   id: EntityId;
@@ -13,3 +14,9 @@ export type CarModel = {
     name: string
   }
 };
+
+
+export interface CarModelTableRowAction extends DataTableRowAction<
+  CarModel,
+  "update" | "view"
+> {}

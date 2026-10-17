@@ -42,6 +42,7 @@ export function CarModelForm({
   trigger,
   defaultValues,
   mode,
+  onSubmit,
 }: CarModelFormProps) {
   const tr = useTranslation()
   const [open, setOpen] = React.useState(false)
@@ -56,7 +57,7 @@ export function CarModelForm({
     defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: Values) {
+  async function handleSubmit(values: Values) {
     if (mode === "edit") {
       onSubmit(CarModelUpdateSchema.parse(values))
     } else {
@@ -76,7 +77,9 @@ export function CarModelForm({
       </DialogTrigger>
       <DialogContent className="max-h-[95vh] min-h-[95vh] overflow-hidden sm:max-w-3xl">
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleSubmit, (error)=>{
+            console.log(error)
+          })}
           className="max-h-[90vh] space-y-5 overflow-y-auto"
         >
           <DialogHeader className="border-b">

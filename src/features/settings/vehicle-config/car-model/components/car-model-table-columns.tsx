@@ -1,10 +1,7 @@
-import { Button } from "@/components/ui/button"
 import { CarModel } from "@/features/settings/vehicle-config/car-model/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { CarModelForm } from "./car-brand-form"
-import { Can } from "@/components/has-permission"
 import { formatNumber } from "@/lib/format"
-import { ActionIcon } from "@/components/icons"
+import { CarModelTableActions } from "./car-model-table-actions"
 
 export function getCarModelColumns(): ColumnDef<CarModel>[] {
   return [
@@ -42,30 +39,7 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
     },
     {
       id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Button variant={"outline"} size={"icon"}>
-              <ActionIcon action="view" />
-            </Button>
-            <Can permission="config:car_model:edit">
-              <CarModelForm
-                mode="edit"
-                defaultValues={{
-                  ...row.original,
-                  manufacture_year: row.original.manufacture_year?.toString(),
-                }}
-                trigger={
-                  <Button variant={"outline"} size={"icon"}>
-                    <ActionIcon action="edit" />
-                  </Button>
-                }
-                onSubmit={(data) => {}}
-              />
-            </Can>
-          </div>
-        )
-      },
+      cell: ({ row }) => <CarModelTableActions model={row.original} />,
     },
   ]
 }

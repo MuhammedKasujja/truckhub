@@ -1,7 +1,7 @@
 import { EditSettingsForm } from "@/features/settings"
 import { useSettings } from "@/features/settings/hooks/use-settings"
 import { settingsQueryOptions } from "@/features/settings/query-options"
-import { EditVehicleFeatureForm } from "@/features/settings/vehicle-features/components"
+import { EditVehicleFeatureForm } from "@/features/settings/vehicle-config/vehicle-features/components"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/advanced/")({

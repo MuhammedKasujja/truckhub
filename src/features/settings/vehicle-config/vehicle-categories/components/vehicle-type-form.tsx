@@ -36,6 +36,7 @@ export function VehicleCategoryForm({
   trigger,
   defaultValues,
   mode,
+  onSubmit,
 }: VehicleCategoryFormProps) {
   const tr = useTranslation()
   const [open, setOpen] = React.useState(false)
@@ -50,7 +51,7 @@ export function VehicleCategoryForm({
     defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function handleSubmit(values: z.infer<typeof formSchema>) {
     if (mode === "edit") {
       onSubmit(VehicleCategoryUpdateSchema.parse(values))
     } else {
@@ -69,7 +70,7 @@ export function VehicleCategoryForm({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <DialogHeader>
             <DialogTitle>
               {isEdit ? "Edit Vehicle Category" : "New Vehicle Category"}
