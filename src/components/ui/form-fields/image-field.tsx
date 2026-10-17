@@ -19,14 +19,21 @@ import {
 
 type ImageFieldProps<T extends FieldValues> = Pick<
   ImageUploaderProps,
-  "src" | "aspect" | "width" | "outputSize" | "radius" | "maxSizeMB" | "disabled"
+  | "src"
+  | "aspect"
+  | "width"
+  | "maxWidth"
+  | "outputSize"
+  | "radius"
+  | "maxSizeMB"
+  | "disabled"
 > & {
-  name: FieldPath<T>;
-  control: Control<T>;
-  label?: string;
-  description?: string;
-  className?: string;
-};
+  name: FieldPath<T>
+  control: Control<T>
+  label?: string
+  description?: string
+  className?: string
+}
 
 export function ImageField<T extends FieldValues>({
   name,
@@ -36,7 +43,6 @@ export function ImageField<T extends FieldValues>({
   className,
   ...uploaderProps
 }: ImageFieldProps<T>) {
-
   // hooks can't be conditional, so always watch something and ignore it if unused
   // const watched = useWatch({
   //   control: control,

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { Camera, ImagePlus, Trash2, Upload } from "lucide-react"
+import { Camera, ImagePlus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,8 +27,10 @@ export type ImageUploaderProps = {
   src?: string | null
   /** Width / height. 1 = square, 16 / 9 = landscape, 3 / 4 = portrait */
   aspect?: number
-  /** Display width in px, or "full" to fill the parent (height follows the aspect ratio) */
+  /** Display width in px, or "full" (default) to fill the parent. Height always follows the aspect ratio. */
   width?: number | "full"
+  /** Optional cap in px so a full-width box does not get huge on wide screens */
+  maxWidth?: number
   /** Long side of the saved image in px */
   outputSize?: number
   /** Corner style. "full" only makes sense when aspect is 1 */
@@ -56,7 +58,8 @@ export function ImageUploader({
   onChange,
   src,
   aspect = 1,
-  width = 240,
+  width = "full",
+  maxWidth,
   outputSize = 1024,
   radius = "md",
   maxSizeMB = 5,
@@ -81,6 +84,7 @@ export function ImageUploader({
   const rawType = useRef("image/jpeg") // mime type of the picked file
   const [open, setOpen] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [dragging, setDragging] = useState(false)
 
   // crop state
   const [zoom, setZoom] = useState(1)
@@ -190,7 +194,7 @@ export function ImageUploader({
   }
 
   return (
-    <div className={cn("flex flex-col items-start gap-3", className)}>
+    <div className={cn("space-y-2", className)}>
       <input
         ref={inputRef}
         type="file"
@@ -203,73 +207,88 @@ export function ImageUploader({
         }}
       />
 
-      {/* Image box (or empty state) */}
-      <button
-        id={id}
-        type="button"
-        disabled={disabled}
-        aria-invalid={ariaInvalid}
-        aria-describedby={ariaDescribedBy}
-        aria-label={display ? "Change image" : "Add image"}
-        onClick={() => inputRef.current?.click()}
+      {/* Image box: click it, drop a file on it, or use the corner button to remove */}
+      <div
         style={{
           width: width === "full" ? "100%" : width,
-          maxWidth: "100%",
+          maxWidth: maxWidth ?? "100%",
           aspectRatio: aspect,
         }}
+        onDragOver={(e) => {
+          if (disabled) return
+          e.preventDefault()
+          setDragging(true)
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setDragging(false)
+          if (!disabled) pick(e.dataTransfer.files?.[0])
+        }}
         className={cn(
-          "group relative overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
+          "group relative overflow-hidden transition-colors",
           r,
-          display
-            ? "border bg-muted"
-            : "border-2 border-dashed bg-muted/40 hover:border-primary/60 hover:bg-muted/60",
-          ariaInvalid && "border-destructive ring-1 ring-destructive"
+          display ? "border bg-muted" : "border-2 border-dashed bg-muted/40",
+          !display && "hover:border-primary/60 hover:bg-muted/60",
+          dragging && "border-primary bg-primary/10",
+          ariaInvalid && "border-destructive",
+          disabled && "opacity-50"
         )}
       >
-        {display ? (
-          <>
-            <img src={display} alt="" className="h-full w-full object-cover" />
-            <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-              <Camera className="h-6 w-6 text-white" />
-            </span>
-          </>
-        ) : (
-          <span className="flex h-full w-full flex-col items-center justify-center gap-1 text-muted-foreground">
-            <ImagePlus className="h-7 w-7" />
-            <span className="text-sm">Click to add image</span>
-          </span>
-        )}
-      </button>
-
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            disabled={disabled}
-            onClick={() => inputRef.current?.click()}
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            {display ? "Change image" : "Upload image"}
-          </Button>
-          {display && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={disabled}
-              onClick={() => onChange(null)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Remove
-            </Button>
+        <button
+          id={id}
+          type="button"
+          disabled={disabled}
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
+          aria-label={display ? "Change image" : "Add image"}
+          onClick={() => inputRef.current?.click()}
+          className={cn(
+            "absolute inset-0 h-full w-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-inset",
+            r
           )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          JPG, PNG or WEBP. Max {maxSizeMB}MB.
-        </p>
-        {error && <p className="text-xs text-destructive">{error}</p>}
+        >
+          {display ? (
+            <>
+              <img
+                src={display}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+              <span className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 text-sm font-medium text-white opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                <Camera className="h-4 w-4" />
+                Change image
+              </span>
+            </>
+          ) : (
+            <span className="flex h-full w-full flex-col items-center justify-center gap-1 px-4 text-center text-muted-foreground">
+              <ImagePlus className="h-7 w-7" />
+              <span className="text-sm">
+                <span className="font-medium text-foreground">
+                  Click to upload
+                </span>{" "}
+                or drag and drop
+              </span>
+              <span className="text-xs">
+                JPG, PNG or WEBP, max {maxSizeMB}MB
+              </span>
+            </span>
+          )}
+        </button>
+
+        {display && !disabled && (
+          <button
+            type="button"
+            aria-label="Remove image"
+            onClick={() => onChange(null)}
+            className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur transition hover:bg-destructive focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none md:opacity-0 md:group-focus-within:opacity-100 md:group-hover:opacity-100"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
       </div>
+
+      {error && <p className="text-xs text-destructive">{error}</p>}
 
       {/* Crop dialog */}
       <Dialog open={open} onOpenChange={setOpen}>

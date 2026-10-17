@@ -81,8 +81,11 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <DialogContent className="max-h-[95vh] min-h-[95vh] overflow-hidden sm:max-w-3xl">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="max-h-[90vh] space-y-5 overflow-y-auto"
+        >
           <DialogHeader className="border-b">
             <DialogTitle className="flex items-center gap-2">
               <Button variant={"outline"} size={"icon"} type="button">
@@ -92,7 +95,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
             </DialogTitle>
             <DialogDescription>Create new car model</DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="space-y-4">
             <ImageField
               control={form.control}
               name={"image"}
@@ -132,7 +135,7 @@ export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
           </div>
           <DialogFooter className="sm:justify-end">
             <SubmitButton
-              text={tr("common.form.submit")}
+              text={"Create Car model"}
               isSubmitting={form.formState.isSubmitting}
             />
           </DialogFooter>
