@@ -11,17 +11,11 @@ import {
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import z from "zod"
 import {
   CarModelCreateSchema,
-  CarModelUpdateSchemaType,
   CarModelUpdateSchema,
 } from "@/features/settings/vehicle-config/car-model/schemas"
-import {
-  createCarModelFn,
-  updateCarModelFn,
-} from "@/features/settings/vehicle-config/car-model/services"
 import {
   ImageField,
   NumberField,
@@ -32,42 +26,41 @@ import React from "react"
 import { Field, FieldGroup } from "@/components/ui/field"
 import { useTranslation } from "@/i18n"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { CarBrandPickerField } from "@/features/settings/vehicle-config/car-brand/components"
 import { VehicleCategoryPickerField } from "@/features/settings/vehicle-config/vehicle-categories/components"
 import { ActionIcon } from "@/components/icons"
+import { BaseFormProps } from "@/common/types"
 
-type CarModelFormProps = {
+type CarModelFormProps = BaseFormProps<
+  z.infer<typeof CarModelCreateSchema>,
+  z.infer<typeof CarModelUpdateSchema>
+> & {
   trigger?: React.ReactNode
-  initialData?: CarModelUpdateSchemaType
 }
 
-export function CarModelForm({ trigger, initialData }: CarModelFormProps) {
-  const queryInvalidator = useQueryInvalidator()
+export function CarModelForm({
+  trigger,
+  defaultValues,
+  mode,
+}: CarModelFormProps) {
   const tr = useTranslation()
   const [open, setOpen] = React.useState(false)
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
   const formSchema = isEdit ? CarModelUpdateSchema : CarModelCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateCarModelFn({ data: values })
-        : createCarModelFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      form.reset()
-      queryInvalidator.settings.carModels.list()
+  async function onSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(CarModelUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(CarModelCreateSchema.parse(values))
     }
   }
 

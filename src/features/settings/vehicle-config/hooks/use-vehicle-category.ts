@@ -18,7 +18,7 @@ export function useCreateVehicleCategory() {
       return createVehicleCategoryFn({ data: objectToFormData(input) })
     },
     onSuccess: () => {
-      toast.success("Category created successfully")
+      toast.success("Vehicle category created successfully")
       invalidator.drivers.list.invalidate()
     },
     onError: (error) => {
@@ -35,7 +35,7 @@ export function useEditVehicleCategory() {
       return updateVehicleCategoryFn({ data: objectToFormData(input) })
     },
     onSuccess: (_, input) => {
-      toast.success("Category updated successfully")
+      toast.success("Vehicle category updated successfully")
       invalidator.drivers.list.invalidate()
       invalidator.drivers.details(input.id)
     },

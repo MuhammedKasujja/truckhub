@@ -50,7 +50,8 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
             </Button>
             <Can permission="config:car_model:edit">
               <CarModelForm
-                initialData={{
+                mode="edit"
+                defaultValues={{
                   ...row.original,
                   manufacture_year: row.original.manufacture_year?.toString(),
                 }}
@@ -59,6 +60,7 @@ export function getCarModelColumns(): ColumnDef<CarModel>[] {
                     <ActionIcon action="edit" />
                   </Button>
                 }
+                onSubmit={(data) => {}}
               />
             </Can>
           </div>

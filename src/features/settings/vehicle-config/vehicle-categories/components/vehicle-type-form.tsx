@@ -1,4 +1,3 @@
-"use client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -12,38 +11,35 @@ import {
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import z from "zod"
 import {
   VehicleCategoryCreateSchema,
-  VehicleCategoryUpdateSchemaType,
   VehicleCategoryUpdateSchema,
 } from "@/features/settings/vehicle-config/vehicle-categories/schemas"
-import {
-  createVehicleCategoryFn,
-  updateVehicleCategoryFn,
-} from "@/features/settings/vehicle-config/vehicle-categories/services"
 import { SelectField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
 import { ActionIcon } from "@/components/icons"
 import { vehicleTypesList } from "../enums"
+import { BaseFormProps } from "@/common/types"
 
-type Props = {
+type VehicleCategoryFormProps = {
   trigger?: React.ReactNode
-  initialData?: VehicleCategoryUpdateSchemaType
-}
+} & BaseFormProps<
+  z.infer<typeof VehicleCategoryCreateSchema>,
+  z.infer<typeof VehicleCategoryUpdateSchema>
+>
 
-export function VehicleCategoryForm({ trigger, initialData }: Props) {
+export function VehicleCategoryForm({
+  trigger,
+  defaultValues,
+  mode,
+}: VehicleCategoryFormProps) {
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
   const [open, setOpen] = React.useState(false)
-  console.table(initialData)
-
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
   const formSchema = isEdit
     ? VehicleCategoryUpdateSchema
@@ -51,22 +47,14 @@ export function VehicleCategoryForm({ trigger, initialData }: Props) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateVehicleCategoryFn({ data: values })
-        : createVehicleCategoryFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      form.reset()
-      queryInvalidator.settings.vehiclesTypes.list()
+    if (mode === "edit") {
+      onSubmit(VehicleCategoryUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(VehicleCategoryCreateSchema.parse(values))
     }
   }
 

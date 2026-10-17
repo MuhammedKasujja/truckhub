@@ -31,12 +31,14 @@ export function getVehicleCategoryColumns(): ColumnDef<VehicleCategory>[] {
             </Button>
             <Can permission="config:vehicle_types:edit">
               <VehicleCategoryForm
-                initialData={{ ...row.original }}
+                mode="edit"
+                defaultValues={{ ...row.original }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
                     <ActionIcon action="edit" />
                   </Button>
                 }
+                onSubmit={(data)=>{}}
               />
             </Can>
           </div>

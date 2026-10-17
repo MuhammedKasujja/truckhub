@@ -7,6 +7,7 @@ export type CarModel = {
   vehicle_category_id: EntityId;
   consumption_rate: number;
   manufacture_year: number | null;
+  image_url: string | null
   car_brand: {
     id: EntityId
     name: string

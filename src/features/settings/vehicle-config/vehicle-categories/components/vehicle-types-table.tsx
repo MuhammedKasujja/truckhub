@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
@@ -13,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehicleCategorysQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
+import { useCreateVehicleCategory } from "../../hooks/use-vehicle-category"
 
 export function VehicleCategoryTable() {
   const search = useSearch({
@@ -20,6 +19,8 @@ export function VehicleCategoryTable() {
   })
   const { data } = useSuspenseQuery(createVehicleCategorysQueryOptions(search))
   const columns = React.useMemo(() => getVehicleCategoryColumns(), [])
+
+  const { mutate: createCategory } = useCreateVehicleCategory()
 
   useFetchEror(data.error)
 
@@ -42,7 +43,10 @@ export function VehicleCategoryTable() {
     <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
         <Can permission="config:vehicle_types:create">
-          <VehicleCategoryForm />
+          <VehicleCategoryForm
+            mode="create"
+            onSubmit={(data) => createCategory(data)}
+          />
         </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>

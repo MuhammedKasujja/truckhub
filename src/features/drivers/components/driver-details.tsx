@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -102,7 +100,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           <CardContent className="space-y-4">
             <Attachment orientation="vertical">
               <AttachmentMedia variant={"image"}>
-                <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=900&auto=format&fit=crop&q=100" />
+                <img src={driver?.photo_url} />
               </AttachmentMedia>
             </Attachment>
             <div>{driver?.email}</div>

@@ -4,4 +4,5 @@ export type VehicleCategory = {
   id: EntityId;
   name: string;
   is_truck: boolean;
+  image_url: string | null
 };

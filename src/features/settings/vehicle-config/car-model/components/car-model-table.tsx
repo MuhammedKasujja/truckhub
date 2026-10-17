@@ -11,6 +11,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { createCarModelsListQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
+import { useCreateCarModel } from "../../hooks/use-car-model"
 
 export function CarModelTable() {
   const search = useSearch({
@@ -23,6 +24,8 @@ export function CarModelTable() {
   useFetchEror(error)
 
   const columns = React.useMemo(() => getCarModelColumns(), [])
+
+  const { mutate } = useCreateCarModel()
 
   const { table } = useDataTable({
     data: carModels,
@@ -44,7 +47,7 @@ export function CarModelTable() {
     <DataTable table={table}>
       <DataTableToolbar table={table}>
         <Can permission="config:car_model:create">
-          <CarModelForm />
+          <CarModelForm mode="create" onSubmit={(data) => mutate(data)} />
         </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
