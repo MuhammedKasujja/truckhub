@@ -8,6 +8,7 @@ import {
   VehicleCategoryUpdateSchemaType,
 } from "@/features/settings/vehicle-config/vehicle-categories/schemas"
 import { EntityId } from "@/schemas"
+import { objectToFormData } from "@/lib/form-utils"
 
 const endpoint = "/v1/vehicle-categories"
 
@@ -34,12 +35,15 @@ export async function updateVehicleCategory(
   const { id: categoryId, ...rest } = data
   return await apiClient.putFn<VehicleCategory>(
     `${endpoint}/${categoryId}`,
-    rest
+    objectToFormData(rest)
   )
 }
 
 export async function createVehicleCategory(
   data: VehicleCategoryCreateSchemaType
 ) {
-  return await apiClient.postFn<VehicleCategory>(endpoint, data)
+  return await apiClient.postFn<VehicleCategory>(
+    endpoint,
+    objectToFormData(data)
+  )
 }

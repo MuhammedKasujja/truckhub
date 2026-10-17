@@ -12,6 +12,8 @@ import {
   getVehicleCategoryById,
   deleteVehicleCategoryById,
 } from "./server"
+import { formInput } from "@/lib/form-utils"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getVehicleCategorysFn = createServerFn()
   .inputValidator(VehicleCategorySearchParamsCache)
@@ -32,13 +34,13 @@ export const deleteVehicleCategoryFn = createServerFn()
   })
 
 export const updateVehicleCategoryFn = createServerFn()
-  .inputValidator(VehicleCategoryUpdateSchema)
+  .inputValidator(formInput(VehicleCategoryUpdateSchema))
   .handler(async ({ data }) => {
-    return updateVehicleCategory(data)
+    return apiResponseTransform(updateVehicleCategory(data))
   })
 
 export const createVehicleCategoryFn = createServerFn()
-  .inputValidator(VehicleCategoryCreateSchema)
+  .inputValidator(formInput(VehicleCategoryCreateSchema))
   .handler(async ({ data }) => {
-    return createVehicleCategory(data)
+    return apiResponseTransform(createVehicleCategory(data))
   })

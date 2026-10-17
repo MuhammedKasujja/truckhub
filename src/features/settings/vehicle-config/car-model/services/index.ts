@@ -12,6 +12,8 @@ import {
   getCarModelById,
   deleteCarModelById,
 } from "./server"
+import { formInput } from "@/lib/form-utils"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCarModelsFn = createServerFn()
   .inputValidator(CarModelSearchParamsCache)
@@ -32,13 +34,13 @@ export const deleteCarModelFn = createServerFn()
   })
 
 export const updateCarModelFn = createServerFn()
-  .inputValidator(CarModelUpdateSchema)
+  .inputValidator(formInput(CarModelUpdateSchema))
   .handler(async ({ data }) => {
-    return updateCarModel(data)
+    return apiResponseTransform(updateCarModel(data))
   })
 
 export const createCarModelFn = createServerFn()
-  .inputValidator(CarModelCreateSchema)
+  .inputValidator(formInput(CarModelCreateSchema))
   .handler(async ({ data }) => {
-    return createCarModel(data)
+    return apiResponseTransform(createCarModel(data))
   })

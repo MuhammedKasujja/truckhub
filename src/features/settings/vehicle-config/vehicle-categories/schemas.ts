@@ -1,6 +1,6 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
 import { vehicleTypesList } from "./enums"
+import { IDSchema, ImageSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { VehicleCategory } from "@/features/settings/vehicle-config/vehicle-categories/types"
@@ -9,6 +9,7 @@ export const VehicleCategoryCreateSchema = z.object({
   name: z.string(),
   type: z.enum(vehicleTypesList),
   parent_category_id: IDSchema.optional().nullable(),
+  image: ImageSchema.optional().nullable(),
 })
 
 export const VehicleCategoryUpdateSchema = z.object({

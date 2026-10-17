@@ -7,6 +7,7 @@ import {
   CarModelListSearchParams,
   CarModelUpdateSchemaType,
 } from "@/features/settings/vehicle-config/car-model/schemas"
+import { objectToFormData } from "@/lib/form-utils"
 
 const endpoint = "/v1/car-models"
 
@@ -25,9 +26,12 @@ export async function deleteCarModelById(carModelId: number | string) {
 
 export async function updateCarModel(data: CarModelUpdateSchemaType) {
   const { id: carModelId, ...rest } = data
-  return await apiClient.putFn<CarModel>(`${endpoint}/${carModelId}`, rest)
+  return await apiClient.putFn<CarModel>(
+    `${endpoint}/${carModelId}`,
+    objectToFormData(rest)
+  )
 }
 
 export async function createCarModel(data: CarModelCreateSchemaType) {
-  return await apiClient.postFn<CarModel>(endpoint, data)
+  return await apiClient.postFn<CarModel>(endpoint, objectToFormData(data))
 }
