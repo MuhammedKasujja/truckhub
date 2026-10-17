@@ -16,7 +16,8 @@ export function useCreateCarModel() {
     },
     onSuccess: () => {
       toast.success("Car Model created successfully")
-      invalidator.drivers.list.invalidate()
+      invalidator.settings.vehiclesTypes.list()
+      invalidator.settings.vehicleConfig()
     },
     onError: (error) => {
       toast.error(error.message)
@@ -31,10 +32,10 @@ export function useEditCarModel() {
     mutationFn: (input: CarModelUpdateSchemaType) => {
       return updateCarModelFn({ data: objectToFormData(input) })
     },
-    onSuccess: (_, input) => {
+    onSuccess: () => {
       toast.success("Car Model updated successfully")
-      invalidator.drivers.list.invalidate()
-      invalidator.drivers.details(input.id)
+      invalidator.settings.vehiclesTypes.list()
+      invalidator.settings.vehicleConfig()
     },
     onError: (error) => {
       toast.error(error.message)

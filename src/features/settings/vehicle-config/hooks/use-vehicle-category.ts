@@ -19,7 +19,8 @@ export function useCreateVehicleCategory() {
     },
     onSuccess: () => {
       toast.success("Vehicle category created successfully")
-      invalidator.drivers.list.invalidate()
+      invalidator.settings.vehiclesTypes.list()
+      invalidator.settings.vehicleConfig()
     },
     onError: (error) => {
       toast.error(error.message)
@@ -34,10 +35,10 @@ export function useEditVehicleCategory() {
     mutationFn: (input: VehicleCategoryUpdateSchemaType) => {
       return updateVehicleCategoryFn({ data: objectToFormData(input) })
     },
-    onSuccess: (_, input) => {
+    onSuccess: () => {
       toast.success("Vehicle category updated successfully")
-      invalidator.drivers.list.invalidate()
-      invalidator.drivers.details(input.id)
+      invalidator.settings.vehiclesTypes.list()
+      invalidator.settings.vehicleConfig()
     },
     onError: (error) => {
       toast.error(error.message)

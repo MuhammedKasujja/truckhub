@@ -174,6 +174,12 @@ export class QueryInvalidator {
       })
     },
 
+    vehicleConfig: () => {
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.settings.vehiclesConfig(),
+      })
+    },
+
     routes: {
       all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
       list: () =>
@@ -341,9 +347,9 @@ export class QueryInvalidator {
           queryKey: queryKeys.clients.detail(id),
         }),
       routePricing: {
-        invalidate: () =>
+        invalidate: (clientId: EntityId) =>
           this.queryClient.invalidateQueries({
-            queryKey: queryKeys.clients.routePricing(id),
+            queryKey: queryKeys.clients.routePricing({ clientId }),
           }),
       },
     }),
