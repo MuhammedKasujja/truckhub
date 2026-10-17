@@ -1,4 +1,5 @@
 import { EntityId } from "@/schemas";
+import { DataTableRowAction } from "@/types/data-table";
 
 export type VehicleCategory = {
   id: EntityId;
@@ -6,3 +7,9 @@ export type VehicleCategory = {
   is_truck: boolean;
   image_url: string | null
 };
+
+
+export interface VehicleCategoryTableRowAction extends DataTableRowAction<
+  VehicleCategory,
+  "update" | "view"
+> {}

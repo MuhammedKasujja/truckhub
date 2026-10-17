@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button"
 import { VehicleCategory } from "@/features/settings/vehicle-config/vehicle-categories/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { VehicleCategoryForm } from "./vehicle-type-form"
-import { Can } from "@/components/has-permission"
-import { ActionIcon } from "@/components/icons"
+import { VehicleCategoryTableActions } from "./vehicle-category-table-actions"
 
 export function getVehicleCategoryColumns(): ColumnDef<VehicleCategory>[] {
   return [
@@ -24,25 +21,7 @@ export function getVehicleCategoryColumns(): ColumnDef<VehicleCategory>[] {
     {
       id: "actions",
       cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Button variant={"outline"} size={"icon"}>
-              <ActionIcon action="view" />
-            </Button>
-            <Can permission="config:vehicle_types:edit">
-              <VehicleCategoryForm
-                mode="edit"
-                defaultValues={{ ...row.original }}
-                trigger={
-                  <Button variant={"outline"} size={"icon"}>
-                    <ActionIcon action="edit" />
-                  </Button>
-                }
-                onSubmit={(data)=>{}}
-              />
-            </Can>
-          </div>
-        )
+        return <VehicleCategoryTableActions category={row.original} />
       },
     },
   ]
