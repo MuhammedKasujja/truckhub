@@ -379,7 +379,7 @@ function ServiceList({
 
               <CardContent className="space-y-2 text-sm">
                 <div className="h-40 rounded-sm bg-accent">
-                  <img src={service.image_url} alt={service.display_name}/>
+                  <img src={service.image_url} />
                 </div>
 
                 <div className="space-y-1">

@@ -16,7 +16,7 @@ import {
   VehicleCategoryCreateSchema,
   VehicleCategoryUpdateSchema,
 } from "@/features/settings/vehicle-config/vehicle-categories/schemas"
-import { SelectField, TextField } from "@/components/ui/form-fields"
+import { ImageField, SelectField, TextField } from "@/components/ui/form-fields"
 import React from "react"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useTranslation } from "@/i18n"
@@ -77,27 +77,33 @@ export function VehicleCategoryForm({
             </DialogTitle>
             <DialogDescription>Create new vehicle category</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="grid flex-1 gap-4">
-              <TextField label="Name" control={form.control} name={"name"} />
-              <VehicleCategoryPickerField
-                label="Parent Category"
-                name={"parent_category_id"}
-                control={form.control}
-                required={false}
-                description="Leave blank if this is the main category"
-              />
-              <SelectField
-                label={"Type"}
-                control={form.control}
-                name={"type"}
-                placeholder="Select type"
-                options={vehicleTypesList.map((opt) => ({
-                  label: tr(`vehicleTypes.${opt}`),
-                  value: opt,
-                }))}
-              />
-            </div>
+          <div className="space-y-4">
+            <ImageField
+              control={form.control}
+              name={"image"}
+              className="col-span-2"
+              aspect={16 / 9}
+              src={form.getValues("image_url")}
+              width="full"
+            />
+            <TextField label="Name" control={form.control} name={"name"} />
+            <VehicleCategoryPickerField
+              label="Parent Category"
+              name={"parent_category_id"}
+              control={form.control}
+              required={false}
+              description="Leave blank if this is the main category"
+            />
+            <SelectField
+              label={"Type"}
+              control={form.control}
+              name={"type"}
+              placeholder="Select type"
+              options={vehicleTypesList.map((opt) => ({
+                label: tr(`vehicleTypes.${opt}`),
+                value: opt,
+              }))}
+            />
           </div>
           <DialogFooter className="sm:justify-end">
             <SubmitButton

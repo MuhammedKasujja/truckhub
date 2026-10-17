@@ -10,6 +10,7 @@ export const VehicleCategoryCreateSchema = z.object({
   type: z.enum(vehicleTypesList),
   parent_category_id: IDSchema.optional().nullable(),
   image: ImageSchema.optional().nullable(),
+  image_url: z.string().optional().nullable(),
 })
 
 export const VehicleCategoryUpdateSchema = z.object({
