@@ -11,10 +11,12 @@ import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { useEditQuotation } from "@/features/quotations/hooks/use-edit-quotation"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  beforeLoad: () => requirePermission("quotations:edit"),
   validateSearch: z.object({
     clientId: IDSchema.optional(),
   }),

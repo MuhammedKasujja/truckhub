@@ -36,9 +36,11 @@ import {
   FrameHeader,
   FramePanel,
 } from "@/components/ui/frame"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/invoices/create")({
   component: RouteComponent,
+  beforeLoad: () => requirePermission("invoices:create"),
 })
 
 function RouteComponent() {

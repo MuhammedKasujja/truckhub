@@ -18,10 +18,12 @@ import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-pi
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
 import { dashboardQueryOptions } from "@/features/dashboard/query-options"
 import { CalendarDatePicker } from "@/components/calendar-date-picker"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
   // errorComponent: ErrorComponent,
+  beforeLoad: () => requirePermission("dashboard:view"),
   loader: async ({ context }) =>
     context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })

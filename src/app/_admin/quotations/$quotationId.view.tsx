@@ -10,6 +10,7 @@ import { QuotationStatus } from "@/features/quotations/enums"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
 import { QuotationVersion } from "@/features/quotations/types"
+import { requirePermission } from "@/lib/auth"
 import { formatMoney } from "@/lib/format"
 import { createFileRoute } from "@tanstack/react-router"
 import {
@@ -25,6 +26,7 @@ import { useEffect, useState } from "react"
 export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  beforeLoad: () => requirePermission("quotations:view"),
   loader: ({ context, params }) => {
     return context.queryClient.ensureQueryData(
       quotationDetailsQueryOptions(params.quotationId)

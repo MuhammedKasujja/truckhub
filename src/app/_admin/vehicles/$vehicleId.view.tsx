@@ -2,10 +2,12 @@ import { VehicleDetails } from "@/features/vehicles/components/vehicle-details"
 import { useVehicleDetailsQuery } from "@/features/vehicles/hooks/use-vehicle"
 import { vehicleDetailsQueryOptions } from "@/features/vehicles/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/vehicles/$vehicleId/view")({
   component: RouteComponent,
+  beforeLoad: () => requirePermission("vehicles:view"),
   loader: ({ context, params }) =>
     context.queryClient.prefetchQuery(
       vehicleDetailsQueryOptions(params.vehicleId)

@@ -56,7 +56,7 @@ export const sibebarModules: SidebarItem[] = [
     title: "routes.quotations",
     url: QuotationsRoute.to,
     icon: getModuleIcon("Quotations"),
-    permission: "rides:module",
+    permission: "quotations:module",
   },
   // {
   //   title: "routes.rides",

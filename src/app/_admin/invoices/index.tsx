@@ -10,6 +10,7 @@ import {
   invoiceStatisticsQueryOptions,
 } from "@/features/invoices/query-options"
 import { InvoiceSearchParams } from "@/features/invoices/schemas"
+import { requirePermission } from "@/lib/auth"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
 
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/_admin/invoices/")({
   validateSearch: InvoiceSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   pendingComponent: InvoiceTableSkeleton,
+  beforeLoad: () => requirePermission("invoices:module"),
   component: RouteComponent,
   loader: ({ context, deps: { search } }) => {
     context.queryClient.prefetchQuery(invoiceStatisticsQueryOptions())

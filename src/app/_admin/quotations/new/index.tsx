@@ -4,6 +4,7 @@ import { QuotationForm } from "@/features/quotations/components"
 import { createQuotationFn } from "@/features/quotations/services"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { requirePermission } from "@/lib/auth"
 import { IDSchema } from "@/schemas"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { toast } from "sonner"
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/_admin/quotations/new/")({
     clientId: IDSchema.optional(),
   }),
   component: RouteComponent,
+  beforeLoad: () => requirePermission("quotations:create"),
 })
 
 function RouteComponent() {

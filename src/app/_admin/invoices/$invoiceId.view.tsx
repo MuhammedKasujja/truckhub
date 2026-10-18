@@ -6,6 +6,7 @@ import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { Invoice } from "@/features/invoices/types"
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useTranslation } from "@/i18n"
+import { requirePermission } from "@/lib/auth"
 import { formatDate, formatMoney } from "@/lib/format"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import Decimal from "decimal.js"
@@ -13,6 +14,7 @@ import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
   component: RouteComponent,
+  beforeLoad: () => requirePermission("invoices:view"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
       invoiceDetailsQueryOptions(params.invoiceId)
