@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Quotation } from "../types"
 import { TFunction } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
 import { QuotationTableActions } from "./quotation-table-actions"
@@ -77,7 +77,7 @@ export function getQuotationTableColumns({
       accessorKey: "created_at",
       header: tr("common.createdAt"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
   ]

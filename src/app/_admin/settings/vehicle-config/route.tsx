@@ -26,10 +26,10 @@ const vehicleConfigSections = [
     name: "vehicleCategories",
     route: VehicleTypesRoute.to,
   },
-  {
-    name: "tonnages",
-    route: TonnagesRoute.to,
-  },
+  // {
+  //   name: "tonnages",
+  //   route: TonnagesRoute.to,
+  // },
 ] as const
 
 export const Route = createFileRoute("/_admin/settings/vehicle-config")({

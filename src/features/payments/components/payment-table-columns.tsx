@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
 import { PaymentStatuses, PaymentModeList } from "@/config/constants"
 import { Badge } from "@/components/ui/badge"
@@ -83,12 +83,12 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
     {
       id: "date",
       accessorKey: "date",
-      header: tr("payments.date"),
+      header: tr("payments.paidDate"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.paid_at)}</p>
+        return <p>{formatDateTime(row.original.paid_at)}</p>
       },
       meta: {
-        label: tr("payments.date"),
+        label: tr("payments.paidDate"),
         variant: "dateRange",
       },
       enableColumnFilter: true,

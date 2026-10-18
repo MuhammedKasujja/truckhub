@@ -37,6 +37,8 @@ export const en = {
     partially_refunded: "Partially Refunded",
   },
   method: "Method",
+  paid_at: "Paid at",
+  paidDate: "Paid Date",
   methods: {
     cash: "Cash",
     mobile_money: "Mobile Money",

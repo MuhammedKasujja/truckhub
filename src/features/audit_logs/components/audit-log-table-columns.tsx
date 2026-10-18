@@ -4,7 +4,7 @@ import type {
   AuditLogTableRowAction,
 } from "@/features/audit_logs/types"
 import { TFunction } from "@/i18n"
-import { formatDate } from "@/lib/format"
+import { formatDateTime } from "@/lib/format"
 import { ActionButton } from "@/components/ui/action-button"
 import { AuditLogSource } from "@/config/constants"
 import { Button } from "@/components/ui/button"
@@ -57,7 +57,7 @@ export function getAuditLogTableColumns({
       accessorKey: "created_at",
       header: tr("payments.date"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
       meta: {
         label: tr("payments.date"),
