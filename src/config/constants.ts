@@ -15,7 +15,7 @@ export const PaymentModeList = [
   "cash",
   "mobile_money",
   "bank_transfer",
-  "paypal",
+  // "paypal",
   "credit_card",
 ] as const
 

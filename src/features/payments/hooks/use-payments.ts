@@ -3,9 +3,9 @@ import { toast } from "sonner"
 import { ApiError } from "@/types"
 import { useServerFn } from "@tanstack/react-start"
 import { useMutation } from "@tanstack/react-query"
-import { PaymentInput } from "@/features/payments/schemas"
-import { createPaymentFn } from "@/features/payments/services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { PaymentInput, ReversePaymentInput } from "@/features/payments/schemas"
+import { createPaymentFn, reversePaymentFn } from "@/features/payments/services"
 
 export function useCreatePayment() {
   const payFn = useServerFn(createPaymentFn)
@@ -74,4 +74,22 @@ export function useCreatePayment() {
   }
 
   return { ...mutation, pay, resetKey }
+}
+
+export function usePaymentReverse() {
+  const queryInvalidator = useQueryInvalidator()
+
+  const muttation = useMutation({
+    mutationFn: async (data: ReversePaymentInput) => {
+      return reversePaymentFn({ data })
+    },
+    onSuccess: () => {
+      queryInvalidator.payments.list()
+      toast.success("Payment reversed successfully")
+    },
+    onError: (err) => {
+      toast.success(err.message)
+    },
+  })
+  return { ...muttation }
 }

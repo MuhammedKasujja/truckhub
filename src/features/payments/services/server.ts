@@ -4,6 +4,7 @@ import { generateApiSearchParams } from "@/lib/search-params"
 import { Payment, PaymentStatistics } from "@/features/payments/types"
 import {
   PaymentRequestInput,
+  ReversePaymentInput,
   PaymentListSearchParams,
 } from "@/features/payments/schemas"
 
@@ -60,4 +61,12 @@ export async function createPayment(data: PaymentRequestInput) {
 
 export async function getPaymentsStatistics() {
   return await apiClient.getFn<PaymentStatistics>("/v1/payments/statistics")
+}
+
+export async function reversePayment(data: ReversePaymentInput) {
+  const { paymentId, reason } = data
+  return await apiClient.postFn<Payment>(
+    `/v1/billing/payments/${paymentId}/reverse`,
+    { reason: "Payment reversed" }
+  )
 }

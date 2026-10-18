@@ -1,15 +1,12 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { formatDate, formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
-import { PaymentViewModal } from "./payment-view-modal"
 import { PaymentStatuses, PaymentModeList } from "@/config/constants"
 import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
-import { Can } from "@/components/has-permission"
 import { PaymentStatusIndicator } from "./payment-status-indicator"
-import { ActionIcon } from "@/components/icons"
+import { PaymentTableActions } from "./payment-table-actions"
 
 export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
   return [
@@ -99,23 +96,8 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
     {
       id: "actions",
       cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <PaymentViewModal payment={row.original} />
-            <Can permission="payments:delete">
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  return { error: true, message: "Not implemented yet...." }
-                }}
-              >
-                <ActionIcon action="delete" />
-              </ActionButton>
-            </Can>
-          </div>
-        )
+        const pay = row.original
+        return <PaymentTableActions key={pay.id} payment={pay} />
       },
       size: 100,
     },

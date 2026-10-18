@@ -88,7 +88,7 @@ export function VehicleCategoryForm({
             />
             <TextField label="Name" control={form.control} name={"name"} />
             <VehicleCategoryPickerField
-              label="Parent Category"
+              label="Main Category"
               name={"parent_category_id"}
               control={form.control}
               required={false}

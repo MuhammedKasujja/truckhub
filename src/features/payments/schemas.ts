@@ -46,3 +46,10 @@ export const PaymentSearchParamsCache = z.object({
 })
 
 export type PaymentListSearchParams = z.infer<typeof PaymentSearchParamsCache>
+
+export const reversePaymentSchema = z.object({
+  paymentId: IDSchema,
+  reason: z.string().trim().nullable().optional()
+})
+
+export type ReversePaymentInput = z.infer<typeof reversePaymentSchema>

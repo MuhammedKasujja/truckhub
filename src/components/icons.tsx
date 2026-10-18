@@ -56,6 +56,7 @@ type Actions =
   | "download-pdf"
   | "view-pdf"
   | "accept"
+  | "reverse"
 
 export function getModuleIcon(module: Module): IconComponent {
   const moduleIcons: Record<Module, IconComponent> = {
@@ -92,6 +93,7 @@ export function getActionIcon(action: Actions): IconComponent {
     "download-pdf": IconFileTypePdf,
     "view-pdf": FileTextIcon,
     "accept": IconAccessPoint,
+    "reverse": IconAccessPoint,
   }
   return actionIcons[action]
 }

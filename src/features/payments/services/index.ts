@@ -3,16 +3,19 @@ import {
   getPayments,
   createPayment,
   getPaymentById,
+  reversePayment,
   deletePaymentById,
   getPaymentsByQuery,
   getPaymentsStatistics,
 } from "./server"
 import {
   paymentRequestSchema,
+  reversePaymentSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
 import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getPaymentsFn = createServerFn()
   .inputValidator(PaymentSearchParamsCache)
@@ -52,3 +55,9 @@ export const createPaymentFn = createServerFn()
 export const getPaymentsStatisticsFn = createServerFn().handler(async () => {
   return getPaymentsStatistics()
 })
+
+export const reversePaymentFn = createServerFn()
+  .inputValidator(reversePaymentSchema)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(reversePayment(data))
+  })
