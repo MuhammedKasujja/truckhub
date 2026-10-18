@@ -39,10 +39,11 @@ import { Route as IslandListRoute } from "@/app/_admin/settings/islands"
 import { Route as BankAccountsRoute } from "@/app/_admin/settings/bank-accounts"
 import { PageHeader, PageTitle, PageTitleIcon } from "@/components/page-header"
 import { cn } from "@/lib/utils"
-import { Can } from "@/components/has-permission"
 import { UserPermission } from "@/features/auth/permissions"
 import { GlobalKeys } from "@/i18n"
 import { IconRouteSquare, IconSandbox } from "@tabler/icons-react"
+import { useAuth } from "@/components/providers/auth-context"
+import { useMemo } from "react"
 
 type SidebarItem = {
   // name: GlobalKeys
@@ -106,7 +107,7 @@ const data: Navbar = {
       name: "Bank Accounts",
       icon: LandmarkIcon,
       route: BankAccountsRoute.to,
-      permission:"config:banks:view",
+      permission: "config:banks:view",
     },
     {
       name: "User Profile",
@@ -118,6 +119,14 @@ const data: Navbar = {
 
 export function SettingsSidebar() {
   const location = useLocation()
+  const { user, hasPermission } = useAuth()
+  const menus = useMemo(
+    () =>
+      data.nav.filter(
+        (item) => item.permission == undefined || hasPermission(item.permission)
+      ),
+    [user, hasPermission]
+  )
   return (
     <Sidebar collapsible="none" className="hidden rounded-xl md:flex">
       <SidebarHeader>
@@ -134,38 +143,22 @@ export function SettingsSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.nav.map((item) => (
+              {menus.map((item) => (
                 <SidebarMenuItem key={item.name}>
-                  {item.permission ? (
-                    <Can permission={item.permission}>
-                      <Link to={item.route}>
-                        <SidebarMenuButton
-                          isActive={item.route == location.pathname}
-                          className={cn("rounded-none",
-                            item.route == location.pathname &&
-                              "border-l-4 border-primary"
-                          )}
-                        >
-                          <item.icon />
-                          <span>{item.name}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </Can>
-                  ) : (
-                    <SidebarMenuButton
-                      asChild
-                      isActive={item.route == location.pathname}
-                      className={cn("rounded-none",
-                        item.route == location.pathname &&
-                          "border-l-4 border-primary"
-                      )}
-                    >
-                      <Link to={item.route}>
-                        <item.icon />
-                        <span>{item.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  )}
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.route == location.pathname}
+                    className={cn(
+                      "rounded-none",
+                      item.route == location.pathname &&
+                        "border-l-4 border-primary"
+                    )}
+                  >
+                    <Link to={item.route}>
+                      <item.icon />
+                      <span>{item.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
