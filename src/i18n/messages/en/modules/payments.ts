@@ -31,7 +31,7 @@ export const en = {
   statuses: {
     pending: "Pending",
     cancelled: "Cancelled",
-    refunded: "Refunded",
+    reversed: "Reversed",
     failed: "Failed",
     completed: "Completed",
     partially_refunded: "Partially Refunded",

@@ -30,7 +30,7 @@ import { DistancePricingDatagridForm } from "./distance-pricing-schedule-form"
 import { DistancePricingScheduleGrid } from "./distance-pricing-schedule-grid"
 import { useCreateDistanceTonnage } from "../../hooks/use-distance-tonnage-pricing"
 
-export function CompanyLoadingPricingConfigurationDialog() {
+export function CompanyDistancePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
   const { activateDistancePricing, isPending } = useActivateDistancePricing()
   const { createDistanceTonnage } = useCreateDistanceTonnage()

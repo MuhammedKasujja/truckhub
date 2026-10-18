@@ -61,7 +61,7 @@ const data: Navbar = {
       name: "Pricing Plans",
       icon: Wallet,
       route: PricingConfigRoute.to,
-      permission: "config:pricing_plans:view",
+      permission: "config:pricing:view",
     },
     {
       name: "Vehicle Config",

@@ -72,7 +72,7 @@ export const en = {
   "config:payment_terms:edit": "Edit Payment Terms",
   "config:roles:assign_permissions": "Assign Role Permissions",
   "config:manage_entity_numbers": "Manage Entity Numbers",
-  "config:pricing_plans:view": "View Pricing Plans",
+  "config:pricing:view": "View Pricing Plans",
   "config:vehicle_config:view": "View Vehicle Configuration",
   "config:user:management": "Manage Users",
   "config:car_model:view": "View Car Models",

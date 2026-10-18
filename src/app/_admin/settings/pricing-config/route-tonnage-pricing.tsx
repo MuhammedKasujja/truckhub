@@ -1,4 +1,4 @@
-import { Label } from "@/components/ui/label"
+import { Can } from "@/components/has-permission"
 import {
   CompanyRoutePricingConfigurationDialog,
   RouteTonnagePricingGrid,
@@ -22,8 +22,10 @@ function RouteComponent() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between">
-        <Label>Active Route Pricing</Label>
-        <CompanyRoutePricingConfigurationDialog />
+        <h1 className="text-xl font-bold">Active Route Pricing</h1>
+        <Can permission={"config:pricing:manage"}>
+          <CompanyRoutePricingConfigurationDialog />
+        </Can>
       </div>
       <RouteTonnagePricingGrid
         routes={companyPricings?.routes ?? []}

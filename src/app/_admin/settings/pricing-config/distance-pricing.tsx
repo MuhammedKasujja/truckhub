@@ -1,4 +1,5 @@
-import { CompanyLoadingPricingConfigurationDialog } from "@/features/settings/pricing/components"
+import { Can } from "@/components/has-permission"
+import { CompanyDistancePricingConfigurationDialog } from "@/features/settings/pricing/components"
 import { DistancePricingScheduleGrid } from "@/features/settings/pricing/components/distance-pricing/distance-pricing-schedule-grid"
 import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use-distance-tonnage-pricing"
 import { companyActiveDistancePricingQueryOptions } from "@/features/settings/pricing/query-options"
@@ -32,7 +33,9 @@ function RouteComponent() {
             {MAX_TONNAGE} MT, and neither axis may overlap itself.
           </p>
         </div>
-        <CompanyLoadingPricingConfigurationDialog />
+        <Can permission={"config:pricing:manage"}>
+          <CompanyDistancePricingConfigurationDialog />
+        </Can>
       </header>
       <DistancePricingScheduleGrid
         pricings={data?.pricings ?? []}

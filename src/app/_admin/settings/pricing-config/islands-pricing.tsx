@@ -1,3 +1,4 @@
+import { Can } from "@/components/has-permission"
 import { CompanyIslandsPricingConfigurationDialog } from "@/features/settings/pricing/components/island-pricing/island-pricing-configurations"
 import { IslandPricingTable } from "@/features/settings/pricing/components/island-pricing/island-pricing-table"
 import { useCompanyActiveIslandsPricing } from "@/features/settings/pricing/hooks/use-island-pricing"
@@ -19,7 +20,9 @@ function RouteComponent() {
 
   return (
     <div className="space-y-5">
-      <CompanyIslandsPricingConfigurationDialog />
+      <Can permission={"config:pricing:manage"}>
+        <CompanyIslandsPricingConfigurationDialog />
+      </Can>
       <IslandPricingTable pricings={data?.pricings} />
     </div>
   )

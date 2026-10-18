@@ -35,7 +35,9 @@ export function PaymentTableActions({ payment }: TableActionsProps) {
         <Button
           size={"icon"}
           variant={"secondary"}
-          onClick={() => reverse({ paymentId: payment.id })}
+          onClick={() =>
+            reverse({ paymentId: payment.id, reason: "Payment reversed" })
+          }
         >
           <ActionIcon action="reverse" />
         </Button>

@@ -1,3 +1,4 @@
+import { Can } from "@/components/has-permission"
 import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-offloading-pricing-table"
 import { CompanyLoadingPricingConfigurationDialog } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-pricing-configurations"
 import { activeLoadingFreesQueryOptions } from "@/features/settings/pricing/query-options"
@@ -20,12 +21,14 @@ function RouteComponent() {
 
   return (
     <div className="space-y-5">
-      <CompanyLoadingPricingConfigurationDialog />
+      <Can permission={"config:pricing:manage"}>
+        <CompanyLoadingPricingConfigurationDialog />
+      </Can>
       <LoadingOffloadingPricingTable
         pricings={
           data
             ? {
-                pricings: data.data?.pricings ??[],
+                pricings: data.data?.pricings ?? [],
                 effective_date: data?.data?.effective_date,
               }
             : undefined

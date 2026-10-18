@@ -24,7 +24,7 @@ export const PaymentStatuses = [
   "pending",
   "cancelled",
   "partially_refunded",
-  "refunded",
+  "reversed",
   "failed",
 ] as const // ["pending", "processing", "paid", "failed"]
 

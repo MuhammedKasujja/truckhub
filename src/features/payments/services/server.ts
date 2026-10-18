@@ -67,6 +67,6 @@ export async function reversePayment(data: ReversePaymentInput) {
   const { paymentId, reason } = data
   return await apiClient.postFn<Payment>(
     `/v1/billing/payments/${paymentId}/reverse`,
-    { reason: "Payment reversed" }
+    { reason }
   )
 }
