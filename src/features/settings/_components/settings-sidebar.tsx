@@ -106,6 +106,7 @@ const data: Navbar = {
       name: "Bank Accounts",
       icon: LandmarkIcon,
       route: BankAccountsRoute.to,
+      permission:"config:banks:view",
     },
     {
       name: "User Profile",

@@ -27,6 +27,7 @@ import { useActivateIslandPricing } from "@/features/settings/pricing/hooks/use-
 import { EditIslandsPricingForm } from "./edit-islands-pricing-form"
 import { IslandPricingTable } from "./island-pricing-table"
 import { useCreateIslandPricing } from "../../hooks/use-island-pricing"
+import { Can } from "@/components/has-permission"
 
 export function CompanyIslandsPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
@@ -88,20 +89,22 @@ export function CompanyIslandsPricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.island.active_date !== referenceDate && (
-                    <Button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => {
-                        if (search?.referenceDate)
-                          activateIslandPricing({
-                            effectiveDate: search?.referenceDate,
-                          })
-                      }}
-                    >
-                      Set Active
-                    </Button>
-                  )}
+                  <Can permission="config:pricing:activate">
+                    {data?.island.active_date !== referenceDate && (
+                      <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => {
+                          if (search?.referenceDate)
+                            activateIslandPricing({
+                              effectiveDate: search?.referenceDate,
+                            })
+                        }}
+                      >
+                        Set Active
+                      </Button>
+                    )}
+                  </Can>
                 </div>
                 <Button
                   variant={"secondary"}
@@ -127,7 +130,7 @@ export function CompanyIslandsPricingConfigurationDialog() {
             <Activity mode={view == "edit" ? "visible" : "hidden"}>
               <EditIslandsPricingForm
                 initialData={{
-                  pricings:[],
+                  pricings: [],
                   validFromDate:
                     companyPricings?.validFromDate ??
                     new Date().toLocaleDateString("en-CA"),

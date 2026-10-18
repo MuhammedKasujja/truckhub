@@ -29,6 +29,7 @@ import { useActivateDistancePricing } from "@/features/settings/pricing/hooks/us
 import { DistancePricingDatagridForm } from "./distance-pricing-schedule-form"
 import { DistancePricingScheduleGrid } from "./distance-pricing-schedule-grid"
 import { useCreateDistanceTonnage } from "../../hooks/use-distance-tonnage-pricing"
+import { Can } from "@/components/has-permission"
 
 export function CompanyDistancePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
@@ -103,20 +104,22 @@ export function CompanyDistancePricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.distance_tonnage.active_date !== referenceDate && (
-                    <Button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => {
-                        if (search?.referenceDate)
-                          activateDistancePricing({
-                            effectiveDate: search?.referenceDate,
-                          })
-                      }}
-                    >
-                      Set Active
-                    </Button>
-                  )}
+                  <Can permission="config:pricing:activate">
+                    {data?.distance_tonnage.active_date !== referenceDate && (
+                      <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => {
+                          if (search?.referenceDate)
+                            activateDistancePricing({
+                              effectiveDate: search?.referenceDate,
+                            })
+                        }}
+                      >
+                        Set Active
+                      </Button>
+                    )}
+                  </Can>
                 </div>
                 <Button
                   variant={"secondary"}
@@ -128,10 +131,9 @@ export function CompanyDistancePricingConfigurationDialog() {
                 </Button>
               </div>
               <DistancePricingScheduleGrid
-                pricings={companyPricings?.pricings ??[]}
+                pricings={companyPricings?.pricings ?? []}
                 initialDate={
-                  companyPricings?.effective_date ??
-                  new Date().toDateString()
+                  companyPricings?.effective_date ?? new Date().toDateString()
                 }
               />
             </Activity>

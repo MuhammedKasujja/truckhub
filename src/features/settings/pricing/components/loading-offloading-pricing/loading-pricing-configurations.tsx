@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge"
 import { useActivateLoadingPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
 import { LoadingOffloadingPricingForm } from "./loading-offloading-pricing-form"
 import { LoadingOffloadingPricingTable } from "./loading-offloading-pricing-table"
+import { Can } from "@/components/has-permission"
 
 export function CompanyLoadingPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
@@ -97,20 +98,22 @@ export function CompanyLoadingPricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.loading_offloading.active_date !== referenceDate && (
-                    <Button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => {
-                        if (search?.referenceDate)
-                          activateLoadingPricing({
-                            effectiveDate: search?.referenceDate,
-                          })
-                      }}
-                    >
-                      Set Active
-                    </Button>
-                  )}
+                  <Can permission="config:pricing:activate">
+                    {data?.loading_offloading.active_date !== referenceDate && (
+                      <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => {
+                          if (search?.referenceDate)
+                            activateLoadingPricing({
+                              effectiveDate: search?.referenceDate,
+                            })
+                        }}
+                      >
+                        Set Active
+                      </Button>
+                    )}
+                  </Can>
                 </div>
                 <Button
                   variant={"secondary"}

@@ -28,6 +28,7 @@ import { ActionIcon } from "@/components/icons"
 import { FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
 import { useActivateRoutePricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
+import { Can } from "@/components/has-permission"
 
 export function CompanyRoutePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
@@ -100,20 +101,22 @@ export function CompanyRoutePricingConfigurationDialog() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {data?.route_tonnage.active_date !== referenceDate && (
-                    <Button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => {
-                        if (search?.referenceDate)
-                          activateRoutePricing({
-                            effectiveDate: search?.referenceDate,
-                          })
-                      }}
-                    >
-                      Set Active
-                    </Button>
-                  )}
+                  <Can permission="config:pricing:activate">
+                    {data?.route_tonnage.active_date !== referenceDate && (
+                      <Button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => {
+                          if (search?.referenceDate)
+                            activateRoutePricing({
+                              effectiveDate: search?.referenceDate,
+                            })
+                        }}
+                      >
+                        Set Active
+                      </Button>
+                    )}
+                  </Can>
                 </div>
                 <Button
                   variant={"secondary"}

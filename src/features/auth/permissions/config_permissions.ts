@@ -79,6 +79,12 @@ export const ConfigModulePermissions = {
     "island_pricings:active",
     "loading_offloading:active",
   ],
+  "config:banks:view": [
+    "banks:view",
+    "banks:read",
+    "bank_accounts:read",
+    "bank_accounts:view",
+  ],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions
