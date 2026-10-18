@@ -12,8 +12,9 @@ export const Route = createFileRoute(
   component: RouteComponent,
   validateSearch: PricingSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(activeLoadingFreesQueryOptions()),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(activeLoadingFreesQueryOptions())
+  },
 })
 
 function RouteComponent() {

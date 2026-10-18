@@ -20,7 +20,7 @@ export function VehicleCategoryTableActions({ category }: TableActionsProps) {
       <Button variant={"outline"} size={"icon"}>
         <ActionIcon action="view" />
       </Button>
-      <Can permission="config:vehicle_types:edit">
+      <Can permission="config:vehicle_config:edit">
         <VehicleCategoryForm
           key={category.id}
           mode="edit"

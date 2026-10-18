@@ -42,7 +42,7 @@ export function VehicleCategoryTable() {
   return (
     <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
-        <Can permission="config:vehicle_types:create">
+        <Can permission="config:vehicle_config:edit">
           <VehicleCategoryForm
             mode="create"
             onSubmit={(data) => createCategory(data)}

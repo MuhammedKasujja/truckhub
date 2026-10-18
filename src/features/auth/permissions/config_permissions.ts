@@ -17,23 +17,33 @@ export const ConfigModulePermissions = {
     "settings:entity_numbers:update",
     "settings:entity_numbers:read",
   ],
-  "config:vehicle_config:view": [],
+  "config:vehicle_config:view": [
+    "car_models:read",
+    "car_models:view",
+    "car_brands:read",
+    "car_brands:view",
+    "vehicle_categories:read",
+    "vehicle_categories:view",
+    "drive_trains:read",
+    "drive_trains:view",
+  ],
+  "config:vehicle_config:edit": [
+    "car_models:create",
+    "car_models:update",
+    "car_brands:create",
+    "car_brands:update",
+    "vehicle_categories:create",
+    "vehicle_categories:update",
+    "drive_trains:create",
+    "drive_trains:update",
+  ],
+  "config:vehicle_config:delete": [
+    "car_models:delete",
+    "car_brands:delete",
+    "vehicle_categories:delete",
+    "drive_trains:delete",
+  ],
   "config:user:management": ["users:view", "users:read", "roles:read"],
-  // car_models routes
-  "config:car_model:view": ["car_models:read", "car_models:view"],
-  "config:car_model:create": ["car_models:create"],
-  "config:car_model:delete": ["car_models:delete"],
-  "config:car_model:edit": ["car_models:update"],
-  // car_brands routes
-  "config:car_brand:view": ["car_brands:read", "car_brands:view"],
-  "config:car_brand:create": ["car_brands:create"],
-  "config:car_brand:delete": ["car_brands:delete"],
-  "config:car_brand:edit": ["car_brands:update"],
-  // vehicle_types routes
-  "config:vehicle_types:view": ["vehicle_types:read", "vehicle_types:view"],
-  "config:vehicle_types:create": ["vehicle_types:create"],
-  "config:vehicle_types:delete": ["vehicle_types:delete"],
-  "config:vehicle_types:edit": ["vehicle_types:update"],
   // tax_rates routes
   "config:tax_rates:view": ["tax_rates:read", "tax_rates:view"],
   "config:tax_rates:create": ["tax_rates:create"],
@@ -50,7 +60,10 @@ export const ConfigModulePermissions = {
   "config:island_pricing:delete": ["island_pricings:delete"],
 
   // Vehicle Features
-  "config:vehicle_features:edit": ["settings:update"],
+  "config:vehicle_features:edit": [
+    "settings:update",
+    "vehicles:features:update",
+  ],
 
   "config:pricing:manage": [
     "island_pricings:create",

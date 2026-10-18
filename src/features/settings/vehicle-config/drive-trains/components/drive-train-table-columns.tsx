@@ -1,10 +1,11 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DriveTrain } from "@/features/settings/vehicle-config/drive-trains/types";
-import { ColumnDef } from "@tanstack/react-table";
-import { CarIcon } from "lucide-react";
-import { DriveTrainForm } from "./drive-train-form";
-import { ActionIcon } from "@/components/icons";
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { DriveTrain } from "@/features/settings/vehicle-config/drive-trains/types"
+import { ColumnDef } from "@tanstack/react-table"
+import { CarIcon } from "lucide-react"
+import { DriveTrainForm } from "./drive-train-form"
+import { ActionIcon } from "@/components/icons"
+import { Can } from "@/components/has-permission"
 
 export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
   return [
@@ -12,14 +13,14 @@ export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
       accessorKey: "id",
       header: "ID",
       cell: ({ row }) => {
-        return <p>{row.original.id}</p>;
+        return <p>{row.original.id}</p>
       },
     },
     {
       accessorKey: "name",
       header: "Name",
       cell: ({ row }) => {
-        return <p>{row.original.name}</p>;
+        return <p>{row.original.name}</p>
       },
     },
     {
@@ -34,7 +35,7 @@ export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
               </Badge>
             )}
           </p>
-        );
+        )
       },
     },
     {
@@ -45,17 +46,19 @@ export function getDriveTrainColumns(): ColumnDef<DriveTrain>[] {
             <Button variant={"outline"} size={"icon"}>
               <ActionIcon action="view" />
             </Button>
-            <DriveTrainForm
-              initialData={{ ...row.original }}
-              trigger={
-                <Button variant={"outline"} size={"icon"}>
-                  <ActionIcon action="edit" />
-                </Button>
-              }
-            />
+            <Can permission="config:vehicle_config:edit">
+              <DriveTrainForm
+                initialData={{ ...row.original }}
+                trigger={
+                  <Button variant={"outline"} size={"icon"}>
+                    <ActionIcon action="edit" />
+                  </Button>
+                }
+              />
+            </Can>
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }

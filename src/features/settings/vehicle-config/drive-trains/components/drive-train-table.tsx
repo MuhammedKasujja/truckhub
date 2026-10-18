@@ -12,7 +12,7 @@ import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createDriveTrainsListQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
-
+import { Can } from "@/components/has-permission"
 
 export function DriveTrainTable() {
   const search = useSearch({
@@ -32,9 +32,9 @@ export function DriveTrainTable() {
     initialState: {
       sorting: [{ id: "id", desc: true }],
       //   columnPinning: { right: ["actions"] },
-      columnVisibility:{
+      columnVisibility: {
         id: false,
-      }
+      },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
@@ -44,7 +44,9 @@ export function DriveTrainTable() {
   return (
     <DataTable table={table} showPagination={false}>
       <DataTableToolbar table={table}>
-        <DriveTrainForm />
+        <Can permission="config:vehicle_config:edit">
+          <DriveTrainForm />
+        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>

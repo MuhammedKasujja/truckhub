@@ -43,7 +43,7 @@ export function CarBrandTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <Can permission="config:car_brand:create">
+        <Can permission="config:vehicle_config:edit">
           <CarBrandForm />
         </Can>
         <DataTableSortList table={table} align="end" />

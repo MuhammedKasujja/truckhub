@@ -20,7 +20,7 @@ export function CarModelTableActions({ model }: TableActionsProps) {
       <Button variant={"outline"} size={"icon"}>
         <ActionIcon action="view" />
       </Button>
-      <Can permission="config:car_model:edit">
+      <Can permission="config:vehicle_config:edit">
         <CarModelForm
           key={model.id}
           mode="edit"

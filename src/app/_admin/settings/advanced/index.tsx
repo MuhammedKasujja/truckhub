@@ -6,8 +6,9 @@ import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/settings/advanced/")({
   component: RouteComponent,
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(settingsQueryOptions()),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(settingsQueryOptions())
+  },
 })
 
 function RouteComponent() {

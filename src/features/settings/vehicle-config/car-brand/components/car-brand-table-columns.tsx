@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { CarBrand } from "@/features/settings/car-brand/types"
+import { CarBrand } from "@/features/settings/vehicle-config/car-brand/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { CarBrandForm } from "./car-brand-form"
 import { Can } from "@/components/has-permission"
@@ -30,7 +30,7 @@ export function getCarBrandColumns(): ColumnDef<CarBrand>[] {
             <Button variant={"outline"} size={"icon"}>
               <ActionIcon action="view" />
             </Button>
-            <Can permission="config:car_brand:edit">
+            <Can permission="config:vehicle_config:edit">
               <CarBrandForm
                 initialData={{ ...brand }}
                 trigger={

@@ -46,7 +46,7 @@ export function CarModelTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <Can permission="config:car_model:create">
+        <Can permission="config:vehicle_config:edit">
           <CarModelForm mode="create" onSubmit={(data) => mutate(data)} />
         </Can>
         <DataTableSortList table={table} align="end" />
