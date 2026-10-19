@@ -31,6 +31,7 @@ import { Vehicle } from "@/features/vehicles/types"
 import { ActionIcon } from "@/components/icons"
 import {
   Attachment,
+  AttachmentDescription,
   AttachmentGroup,
   AttachmentMedia,
   AttachmentTitle,
@@ -109,9 +110,21 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
                   />
                 </AttachmentMedia>
               </Attachment>
-              <div className="space-y-4">
-                <AttachmentTitle className="text-xl">{driver?.email}</AttachmentTitle>
-                <AttachmentTitle>{driver?.phone}</AttachmentTitle>
+              <div className="flex flex-col gap-4">
+                <div className="mt-2 space-y-2">
+                  <AttachmentDescription>Email</AttachmentDescription>
+                  <AttachmentTitle>{driver?.email}</AttachmentTitle>
+                </div>
+                <div className="space-y-2">
+                  <AttachmentDescription>Phone</AttachmentDescription>
+                  <AttachmentTitle>{driver?.phone}</AttachmentTitle>
+                </div>
+                <div className="space-y-2">
+                  <AttachmentDescription>Licence</AttachmentDescription>
+                  <AttachmentTitle>
+                    {driver?.licence_number ?? "_"}
+                  </AttachmentTitle>
+                </div>
               </div>
             </AttachmentGroup>
           </CardContent>

@@ -82,6 +82,11 @@ export function DriverForm({ mode, defaultValues, onSubmit }: DriverFormProps) {
               name={"last_name"}
               control={form.control}
             />
+            <TextField
+              label={tr("common.form.licenceNumber")}
+              name={"licence_number"}
+              control={form.control}
+            />
             <TelephoneField
               label={tr("common.form.phone")}
               name={"phone"}

@@ -135,6 +135,7 @@ const en = {
       amount: "Amount",
       balance: "Balance",
       serviceName: "Service Name",
+      licenceNumber: "Licence Number",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",

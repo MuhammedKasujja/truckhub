@@ -15,4 +15,5 @@ export type Driver = {
   updated_at: Date
   vehicle: VehicleBase | null
   photo_url: string | undefined
+  licence_number: string | undefined
 }
