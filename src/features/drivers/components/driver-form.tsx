@@ -66,7 +66,12 @@ export function DriverForm({ mode, defaultValues, onSubmit }: DriverFormProps) {
       >
         <CardContent className="pb-6">
           <FieldGroup>
-            <AvatarField control={form.control} name={"avatar"} nameField={"first_name"}/>
+            <AvatarField
+              control={form.control}
+              name={"avatar"}
+              nameField={"first_name"}
+              src={form.getValues("photo_url")}
+            />
             <TextField
               label={tr("common.form.first_name")}
               name={"first_name"}

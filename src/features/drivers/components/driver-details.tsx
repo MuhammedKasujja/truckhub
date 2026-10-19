@@ -29,7 +29,13 @@ import {
 import { Can } from "@/components/has-permission"
 import { Vehicle } from "@/features/vehicles/types"
 import { ActionIcon } from "@/components/icons"
-import { Attachment, AttachmentMedia } from "@/components/ui/attachment"
+import {
+  Attachment,
+  AttachmentGroup,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment"
+import { generateAvatorFallback } from "@/lib/format"
 
 type DriverDetailsProps = {
   driver: Driver
@@ -93,18 +99,21 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
       </PageHeader>
       <div className="my-6 grid grid-flow-col gap-5 md:grid-cols-5">
         <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="capitalize">{driver?.fullname}</CardTitle>
-            <CardDescription>{driver.number}</CardDescription>
-          </CardHeader>
           <CardContent className="space-y-4">
-            <Attachment orientation="vertical">
-              <AttachmentMedia variant={"image"}>
-                <img src={driver?.photo_url} />
-              </AttachmentMedia>
-            </Attachment>
-            <div>{driver?.email}</div>
-            <div>{driver?.phone}</div>
+            <AttachmentGroup>
+              <Attachment orientation="vertical" className="size-50">
+                <AttachmentMedia variant={"image"}>
+                  <img
+                    src={driver?.photo_url}
+                    alt={generateAvatorFallback(driver.fullname)}
+                  />
+                </AttachmentMedia>
+              </Attachment>
+              <div className="space-y-4">
+                <AttachmentTitle className="text-xl">{driver?.email}</AttachmentTitle>
+                <AttachmentTitle>{driver?.phone}</AttachmentTitle>
+              </div>
+            </AttachmentGroup>
           </CardContent>
         </Card>
         <Card className="md:col-span-2">

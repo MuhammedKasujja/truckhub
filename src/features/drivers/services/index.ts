@@ -49,7 +49,7 @@ export const getDriverByIdFn = createServerFn()
 export const getDriverProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getDriverDetailsById(data.id)
+    return apiResponseTransform(getDriverDetailsById(data.id))
   })
 
 export const deleteDriverFn = createServerFn()

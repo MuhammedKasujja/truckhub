@@ -8,7 +8,7 @@ export type Driver = {
   first_name: string
   last_name: string
   user_name: string | undefined
-  phone: string
+  phone: string | undefined
   email: string
   rating: number
   created_at: Date
