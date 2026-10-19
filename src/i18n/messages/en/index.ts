@@ -183,7 +183,7 @@ const en = {
       dispatched: "Dispatched",
       in_progress: "In Transit",
       completed: "Completed",
-      captured_details: "Recorded details",
+      captured_details: "Details captured",
       invoiced: "Invoiced",
       cancelled: "Cancelled",
       delayed: "Delayed",

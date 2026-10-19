@@ -42,13 +42,6 @@ import { cn } from "@/lib/utils"
 import Decimal from "decimal.js"
 import { IconReceiptTax, IconSend } from "@tabler/icons-react"
 import { ShimpmentRouteDetails } from "./shipment-route-details"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemHeader,
-  ItemTitle,
-} from "@/components/ui/item"
 import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
 import { useTranslation } from "@/i18n"
 
@@ -117,7 +110,7 @@ export function ShipmentDetailsDialog({
                   onClick={() => setOpenModal("record")}
                 >
                   <IconReceiptTax />
-                  Record Details
+                  Capture Details
                 </Button>
               </ButtonGroup>
             </DialogDescription>

@@ -112,15 +112,15 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
               </Attachment>
               <div className="flex flex-col gap-4">
                 <div className="mt-2 space-y-2">
-                  <AttachmentDescription>Email</AttachmentDescription>
+                  <AttachmentDescription className="text-sm">Email</AttachmentDescription>
                   <AttachmentTitle>{driver?.email}</AttachmentTitle>
                 </div>
                 <div className="space-y-2">
-                  <AttachmentDescription>Phone</AttachmentDescription>
+                  <AttachmentDescription className="text-sm">Phone</AttachmentDescription>
                   <AttachmentTitle>{driver?.phone}</AttachmentTitle>
                 </div>
                 <div className="space-y-2">
-                  <AttachmentDescription>Licence</AttachmentDescription>
+                  <AttachmentDescription className="text-sm">Licence</AttachmentDescription>
                   <AttachmentTitle>
                     {driver?.licence_number ?? "_"}
                   </AttachmentTitle>

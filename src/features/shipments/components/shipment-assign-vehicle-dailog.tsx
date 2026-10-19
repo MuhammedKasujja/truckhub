@@ -91,6 +91,12 @@ export function ShipmentAssignVehicleDialog({
                 <div>{shipment.item.tonnage} Tons</div>
               </div>
             )}
+            {shipment?.item.estimated_fuel_rate_km && (
+              <div>
+                <div className="text-muted-foreground">Consumption Rate</div>
+                <div>{shipment.item.estimated_fuel_rate_km} km / l</div>
+              </div>
+            )}
             <VehiclePickerField
               label="Vehicle"
               name="vehicleId"
