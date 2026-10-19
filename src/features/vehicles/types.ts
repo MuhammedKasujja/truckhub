@@ -1,5 +1,6 @@
 import { EntityId } from "@/schemas"
 import { VehicleStatus } from "./enums"
+import { DataTableRowAction } from "@/types/data-table"
 
 export const EngineTypes = ["petrol", "desel"] as const
 export const vehicleTransmissionList = ["manual", "automatic"] as const
@@ -75,3 +76,8 @@ export type VehicleStatistics = {
   maintenance: number
   on_trip: number
 }
+
+export interface VehicleTableRowAction extends DataTableRowAction<
+  Vehicle,
+  "update" | "view"| "maintanence"
+> {}
