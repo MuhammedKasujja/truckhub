@@ -82,7 +82,7 @@ export function ServiceForm({
             variant={"outline"}
             className={cn(
               "cursor-pointer",
-              target === "model" && "bg-primary/5 dark:bg-primary/10"
+              target === "model" && "bg-primary/5 dark:bg-primary/10 border border-primary"
             )}
             onClick={() => {
               form.setValue("target", "model")
@@ -97,7 +97,7 @@ export function ServiceForm({
             variant={"outline"}
             className={cn(
               "cursor-pointer",
-              target === "category" && "bg-primary/5 dark:bg-primary/10"
+              target === "category" && "bg-primary/5 dark:bg-primary/10 border border-primary"
             )}
             onClick={() => {
               form.setValue("target", "category")
@@ -165,22 +165,6 @@ export function ServiceForm({
             name={"min_fare"}
             control={form.control}
           />
-          {/* <MoneyField
-              label={tr("services.price_per_min")}
-              name={"price_per_min"}
-              control={form.control}
-            />
-            <MoneyField
-              label={tr("services.price_per_unit_distance")}
-              name={"price_per_unit_distance"}
-              control={form.control}
-            /> */}
-          {/* <NumberField
-              label={tr("services.booking_fee")}
-              name={"booking_fee"}
-              control={form.control}
-              required={false}
-            /> */}
         </FieldGroup>
       </div>
     </form>

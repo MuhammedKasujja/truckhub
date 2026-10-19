@@ -164,11 +164,7 @@ export const createClientLoadingOffloadingPricingFn = createServerFn()
 export const changeClientTypeFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await changeClientType(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return apiResponseTransform(changeClientType(data.id))
   })
 
 export const getClientServicesFn = createServerFn()
@@ -181,7 +177,7 @@ export const getClientServicesFn = createServerFn()
 export const createClientServiceFn = createServerFn({ method: "POST" })
   .inputValidator(ClientServiceCreateSchema)
   .handler(async ({ data }) => {
-    return createClientService(data)
+    return apiResponseTransform(createClientService(data))
   })
 
 export const activateClientPricingFn = createServerFn()

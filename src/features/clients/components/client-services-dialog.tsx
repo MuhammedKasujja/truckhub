@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/empty"
 import { IconCloud } from "@tabler/icons-react"
 import { SubmitButton } from "@/components/ui/submit-button"
+import { Field } from "@/components/ui/field"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -102,7 +103,19 @@ export function ClientServicesDialog({
                     createClientService({ ...data, clientId })
                   }}
                 />
-              <SubmitButton form="service-form" isSubmitting={isSaving} />
+                <Field orientation={"horizontal"} className="grid grid-cols-2">
+                  <Button
+                    variant={"outline"}
+                    onClick={() => setShowEdit(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <SubmitButton
+                    form="service-form"
+                    text="Create Service"
+                    isSubmitting={isSaving}
+                  />
+                </Field>
               </div>
             </Activity>
           </div>
