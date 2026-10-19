@@ -1,7 +1,7 @@
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { FieldLabel } from "@/components/ui/field"
-import { useUpdateSettings } from "@/features/settings/hooks/use-settings"
+import { useEditSettings } from "@/features/settings/hooks/use-settings"
 import {
   TaxRatePicker,
   TaxRatesTable,
@@ -9,11 +9,9 @@ import {
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
 import { createTaxRatesQueryOptions } from "@/features/settings/tax-rates/query-options"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { EntityId } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
 import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
 export const Route = createFileRoute("/_admin/settings/tax-rates/")({
   component: RouteComponent,
@@ -22,24 +20,14 @@ export const Route = createFileRoute("/_admin/settings/tax-rates/")({
 })
 
 function RouteComponent() {
-  const queryInvalidator = useQueryInvalidator()
-
   const defaultTaxRate = useDefaultTaxRate()
   const [taxRateId, setTaxRateId] = useState<EntityId>()
   const back = useBackNavigation()
+  const { mutate: updateSettings } = useEditSettings()
 
   async function updateDefaultTaxRate() {
     if (defaultTaxRate?.id === taxRateId) return
-    const { isSuccess, error, message } = await useUpdateSettings({
-      // Explict set to null as Patch drops all undefined keys in the request body
-      default_tax_rate_id: taxRateId ?? null,
-    })
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.settings.refresh()
-    } else {
-      toast.error(error?.message)
-    }
+    updateSettings({ default_tax_rate_id: taxRateId ?? null })
   }
 
   useEffect(() => {
