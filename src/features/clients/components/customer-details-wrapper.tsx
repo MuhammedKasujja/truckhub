@@ -2,7 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate, formatMoney, generateAvatorFallback } from "@/lib/format"
+import {
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  generateAvatorFallback,
+} from "@/lib/format"
 import {
   Table,
   TableBody,
@@ -63,7 +68,7 @@ export function CustomerDetailsWrapper({
   const quotations = quotationsResponse?.data
 
   const latestInvoice = invoices?.find((ele) => ele.total)
-  const latestPayment = payments?.find((ele) => ele.date)
+  const latestPayment = payments?.find((ele) => ele.paid_at)
   const latestQuotation = quotations?.find((ele) => ele.created_at)
 
   return (
@@ -94,7 +99,7 @@ export function CustomerDetailsWrapper({
             {payments && latestPayment ? (
               <div className="space-y-2">
                 <div className="text-sm text-muted-foreground">
-                  {formatDate(latestPayment.date)}
+                  {formatDate(latestPayment.paid_at)}
                 </div>
                 <div className="text-lg font-semibold">
                   {formatMoney(latestPayment.amount)}
@@ -167,7 +172,8 @@ export function CustomerDetailsWrapper({
                 </div>
                 <div className="text-sm">{latestQuotation.status}</div>
                 <div className="text-sm text-muted-foreground">
-                  {latestQuotation.current_version.total_amount} → {latestQuotation.status}
+                  {latestQuotation.current_version.total_amount} →{" "}
+                  {latestQuotation.status}
                 </div>
                 <Button asChild size="sm" variant="outline">
                   <Link
@@ -235,9 +241,11 @@ export function CustomerDetailsWrapper({
                             {tr(`payments.statuses.${payment.status}`)}
                           </TableCell>
                           <TableCell>
-                            {tr(`payments.methods.${payment.payment_mode}`)}
+                            {tr(`payments.methods.${payment.method}`)}
                           </TableCell>
-                          <TableCell>{formatDate(payment.date)}</TableCell>
+                          <TableCell>
+                            {formatDateTime(payment.paid_at)}
+                          </TableCell>
                         </TableRow>
                       ))
                     ) : (
@@ -261,7 +269,7 @@ export function CustomerDetailsWrapper({
                                   onOpenChange={() => setOpenModal(false)}
                                   initialData={{
                                     type: "invoice",
-                                    clientId: client.id
+                                    clientId: client.id,
                                   }}
                                 />
                               </Can>
@@ -294,7 +302,9 @@ export function CustomerDetailsWrapper({
                             {quote.number}
                           </TableCell>
                           <TableCell>{quote.status}</TableCell>
-                          <TableCell>{formatMoney(quote.current_version.total_amount)}</TableCell>
+                          <TableCell>
+                            {formatMoney(quote.current_version.total_amount)}
+                          </TableCell>
                           <TableCell>{formatDate(quote.created_at)}</TableCell>
                         </TableRow>
                       ))

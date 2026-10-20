@@ -38,7 +38,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
       <CardHeader>
         <CardTitle>Recent Invoices</CardTitle>
         <CardAction>
-          <Can permission="bookings:view">
+          <Can permission="invoices:view">
             <Button type="button" variant={"link"} asChild>
               <Link to={"/invoices"}>
                 View All
@@ -57,7 +57,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
                 <TableHead>Status</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Quotation</TableHead>
-                <TableHead>Start Date</TableHead>
+                <TableHead>Due Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -76,7 +76,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
                       <>-</>
                     </TableCell>
                     <TableCell>
-                      {formatDate(invoice.due_date, { timeStyle: undefined })}
+                      {formatDate(invoice.due_date)}
                     </TableCell>
                   </TableRow>
                 ))

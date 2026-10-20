@@ -11,7 +11,7 @@ import {
 export async function getPayments(input: PaymentListSearchParams) {
   const params = generateApiSearchParams(input)
   const response = await apiClient.getPaginatedFn<Payment[]>(
-    `/v1/billing/invoice-payments?${params}`
+    `/v1/billing/payments?${params}`
   )
 
   if (response.success) {
@@ -25,7 +25,7 @@ export async function getPaymentsByQuery(query: SearchQuery) {
   const params = generateApiSearchParams(query)
 
   const { data, isSuccess, error } = await apiClient.getFn<Payment[]>(
-    `/v1/billing/invoice-payments?${params}`
+    `/v1/billing/payments?${params}`
   )
   return { data: isSuccess ? data! : [], error }
 }

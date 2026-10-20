@@ -20,7 +20,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { Link } from "@tanstack/react-router"
@@ -74,9 +74,9 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
                       <PaymentStatusIndicator status={payment.status}/>
                     </TableCell>
                     <TableCell>
-                      {tr(`payments.methods.${payment.payment_mode}`)}
+                      {tr(`payments.methods.${payment.method}`)}
                     </TableCell>
-                    <TableCell>{formatDate(payment.date)}</TableCell>
+                    <TableCell>{formatDateTime(payment.paid_at)}</TableCell>
                   </TableRow>
                 ))
               ) : (

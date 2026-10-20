@@ -33,6 +33,7 @@ export type Payment = {
   entity_id: EntityId
   entity_type: PaymentType
   status: PaymentStatus
+  status_reason: string | null
   paid_at: Date
   transaction_ref: string | null
   entity: PaymentableEntity

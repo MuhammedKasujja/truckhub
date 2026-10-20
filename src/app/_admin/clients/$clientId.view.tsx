@@ -24,9 +24,9 @@ import {
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
-import { IconEdit, IconShieldStar } from "@tabler/icons-react"
+import { IconShieldStar } from "@tabler/icons-react"
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { CreditCardIcon, FileTextIcon } from "lucide-react"
+import { CreditCardIcon } from "lucide-react"
 import { useState } from "react"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
@@ -65,7 +65,7 @@ function RouteComponent() {
             <Can permission={"clients:edit"}>
               <Button asChild variant={"secondary"}>
                 <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
-                  <ActionIcon action={"edit"}/>
+                  <ActionIcon action={"edit"} />
                   Edit
                 </Link>
               </Button>
@@ -110,7 +110,7 @@ function RouteComponent() {
             )}
             <Button asChild variant={"secondary"}>
               <Link to="/clients/$clientId/pdf" params={{ clientId }}>
-                <ActionIcon action={"view-pdf"}/>
+                <ActionIcon action={"view-pdf"} />
                 View Pdf
               </Link>
             </Button>
@@ -118,7 +118,7 @@ function RouteComponent() {
               variant={"secondary"}
               onClick={() => setServicesModal(true)}
             >
-              <ModuleIcon module="Services"/>
+              <ModuleIcon module="Services" />
               Services
             </Button>
             <Button variant={"secondary"} onClick={() => setPricingModal(true)}>
