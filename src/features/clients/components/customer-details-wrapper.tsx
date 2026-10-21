@@ -78,14 +78,14 @@ export function CustomerDetailsWrapper({
           <CardTitle className="capitalize">{client?.name}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-row gap-5 space-y-4">
-          <div className="flex w-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
+          <div className="flex size-40 items-center justify-center rounded-lg bg-muted text-2xl font-extrabold uppercase dark:bg-background/70">
             {client?.short_name ?? generateAvatorFallback(client?.name)}
           </div>
           <div className="space-y-4">
             <div>{client?.email}</div>
             <div>{client?.phone}</div>
-            <div>Balance: {formatMoney(client?.balance)}</div>
-            <div>Paid to Date: {formatMoney(client?.paid_to_date)}</div>
+            <div>Balance: {formatMoney(client?.financial_summary?.balance)}</div>
+            <div>Paid to Date: {formatMoney(client?.financial_summary?.total_paid)}</div>
           </div>
         </CardContent>
       </Card>
