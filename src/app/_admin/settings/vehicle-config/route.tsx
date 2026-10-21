@@ -33,10 +33,10 @@ const vehicleConfigSections = [
 ] as const
 
 export const Route = createFileRoute("/_admin/settings/vehicle-config")({
-  component: RouteComponent,
+  component: VehicleConfigurationsLayout,
 })
 
-function RouteComponent() {
+function VehicleConfigurationsLayout() {
   const location = useLocation()
   const router = useRouter()
   const tr = useTranslation()

@@ -6,10 +6,8 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout"
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "@react-pdf-viewer/default-layout/lib/styles/index.css"
 import { useTheme } from "@/components/theme/provider"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 
-export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
+export default function PdfViewLoader({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
   const [fileUrl] = useState(pdfUrl)
   const layoutPlugin = defaultLayoutPlugin()
   const theme = useTheme()
@@ -31,29 +29,6 @@ export function PdfViewer({ pdfUrl }: { pdfUrl: string | Uint8Array }) {
           defaultScale={1} // 1 = 100%
         />
       </Worker>
-    </div>
-  )
-}
-
-export function SkeletonPdfViewer() {
-  return (
-    <div className="flex min-h-200 w-full items-center justify-center border">
-      <Card className="min-h-190 w-[80%] rounded-none">
-        <CardHeader>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-20 w-full" />
-        </CardContent>
-      </Card>
     </div>
   )
 }

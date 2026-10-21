@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { CreditCard, CalendarDays, MapPin, PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import {
@@ -33,7 +39,10 @@ import {
   clientQuotationsQueryOptions,
 } from "../query-options"
 import { useTranslation } from "@/i18n"
-import { EnterPaymentModal } from "@/features/payments/components"
+import {
+  EnterPaymentModal,
+  PaymentStatusIndicator,
+} from "@/features/payments/components"
 import { useState } from "react"
 import { useClientProfileSuspenseQuery } from "../hooks/use-client"
 import { ModuleIcon } from "@/components/icons"
@@ -84,8 +93,12 @@ export function CustomerDetailsWrapper({
           <div className="space-y-4">
             <div>{client?.email}</div>
             <div>{client?.phone}</div>
-            <div>Balance: {formatMoney(client?.financial_summary?.balance)}</div>
-            <div>Paid to Date: {formatMoney(client?.financial_summary?.total_paid)}</div>
+            <div>
+              Balance: {formatMoney(client?.financial_summary?.balance)}
+            </div>
+            <div>
+              Paid to Date: {formatMoney(client?.financial_summary?.total_paid)}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -104,7 +117,9 @@ export function CustomerDetailsWrapper({
                 <div className="text-lg font-semibold">
                   {formatMoney(latestPayment.amount)}
                 </div>
-                <div className="text-sm">{latestPayment.status}</div>
+                <div className="text-sm">
+                  <PaymentStatusIndicator status={latestPayment.status} />
+                </div>
                 <div className="text-sm text-muted-foreground">
                   {latestPayment.number}
                 </div>
@@ -198,7 +213,8 @@ export function CustomerDetailsWrapper({
 
       <Card>
         <CardHeader>
-          <CardTitle>Client Activity</CardTitle>
+          <CardTitle>Activity</CardTitle>
+          <CardDescription>Latest client activities</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="payments" className="w-full">
@@ -238,7 +254,7 @@ export function CustomerDetailsWrapper({
                           </TableCell>
                           <TableCell>{formatMoney(payment.amount)}</TableCell>
                           <TableCell>
-                            {tr(`payments.statuses.${payment.status}`)}
+                            <PaymentStatusIndicator status={payment.status} />
                           </TableCell>
                           <TableCell>
                             {tr(`payments.methods.${payment.method}`)}

@@ -1,4 +1,4 @@
-import { PdfViewer, SkeletonPdfViewer } from "@/components/pdf-viewer"
+import { PdfViewer } from "@/components/pdf-viewer"
 import { logger } from "@/lib/logger"
 import { EntityId } from "@/schemas"
 import { useState, useEffect } from "react"
@@ -26,9 +26,5 @@ export function InvoicePdf({ invoiceId }: InvoicePdfProps) {
 
     loadPdf()
   }, [])
-
-  if (!pdfData) {
-    return <SkeletonPdfViewer />
-  }
   return <PdfViewer pdfUrl={pdfData} />
 }

@@ -1,5 +1,5 @@
 import { REPORT_TEMPLATES, ReportTemplate } from "@/common/constants"
-import { PdfViewer, SkeletonPdfViewer } from "@/components/pdf-viewer"
+import { PdfViewer } from "@/components/pdf-viewer"
 import {
   Select,
   SelectContent,
@@ -54,8 +54,7 @@ export function ReportPdfTemplatesWrapper() {
           </SelectGroup>
         </SelectContent>
       </Select>
-      {!pdfData && <SkeletonPdfViewer/>}
-      {pdfData && <PdfViewer pdfUrl={pdfData} />}
+      <PdfViewer pdfUrl={pdfData} />
     </div>
   )
 }
