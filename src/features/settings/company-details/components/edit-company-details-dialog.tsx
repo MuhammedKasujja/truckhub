@@ -5,29 +5,33 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { EmailField, TelephoneField, TextField } from "@/components/ui/form-fields"
+import {
+  EmailField,
+  TelephoneField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { useForm } from "react-hook-form"
-import { Company, CompanySchema } from "../../schemas"
+import { Company, CompanySchema } from "@/features/settings/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { Button } from "@/components/ui/button"
-import { Edit } from "lucide-react"
-import { updateCompanyDetailsFn } from "../services"
-import { toast } from "sonner"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useEditCompanyDetails } from "@/features/settings/hooks/use-settings"
 
 type EditCompanyDetailsDialogProps = {
   company: Company
+  isOpen: boolean
+  onOpenChanged: (open: boolean) => void
 }
 
 export function EditCompanyDetailsDialog({
   company,
+  isOpen,
+  onOpenChanged,
 }: EditCompanyDetailsDialogProps) {
-  const invalidator = useQueryInvalidator()
+  const { mutate: editCompany } = useEditCompanyDetails()
+
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
     defaultValues: {
@@ -38,22 +42,11 @@ export function EditCompanyDetailsDialog({
   })
 
   async function onSubmit(data: z.infer<typeof CompanySchema>) {
-    const { message, error } = await updateCompanyDetailsFn({ data })
-    if (error) {
-      toast.error(error.message)
-      invalidator.settings.refresh()
-    } else {
-      toast.success(message)
-    }
+    editCompany(data)
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button type="button" size={"icon"}>
-          <Edit />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onOpenChanged}>
       <DialogContent className="max-w-[90%] ring-4 md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Company Details</DialogTitle>

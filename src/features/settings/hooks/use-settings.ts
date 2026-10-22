@@ -1,9 +1,10 @@
 import { toast } from "sonner"
 import { updateSettingsFn } from "../service"
-import { EditSettingsSchemaType } from "../schemas"
 import { settingsQueryOptions } from "../query-options"
+import { Company, EditSettingsSchemaType } from "../schemas"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { updateCompanyDetailsFn } from "../company-details/services"
 
 export function useSettings() {
   const { data, isLoading } = useQuery(settingsQueryOptions())
@@ -22,6 +23,22 @@ export function useEditSettings() {
   const mutation = useMutation({
     mutationFn: (input: EditSettingsSchemaType) =>
       updateSettingsFn({ data: input }),
+    onSuccess: (data) => {
+      toast.success(data.message)
+      queryInvalidator.settings.refresh()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+  return { ...mutation }
+}
+
+export function useEditCompanyDetails() {
+  const queryInvalidator = useQueryInvalidator()
+
+  const mutation = useMutation({
+    mutationFn: (input: Company) => updateCompanyDetailsFn({ data: input }),
     onSuccess: (data) => {
       toast.success(data.message)
       queryInvalidator.settings.refresh()
