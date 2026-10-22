@@ -1,9 +1,6 @@
-"use client"
-
 import React from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { getDriveTrainColumns } from "./drive-train-table-columns"
@@ -47,7 +44,6 @@ export function DriveTrainTable() {
         <Can permission="config:vehicle_config:edit">
           <DriveTrainForm />
         </Can>
-        <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
   )

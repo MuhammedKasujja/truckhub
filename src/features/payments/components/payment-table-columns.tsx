@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
 import { PaymentStatusIndicator } from "./payment-status-indicator"
 import { PaymentTableActions } from "./payment-table-actions"
+import { Link } from "@tanstack/react-router"
 
 export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
   return [
@@ -77,7 +78,14 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       id: "customer",
       header: tr("client"),
       cell: ({ row }) => {
-        return <p>{row.original.client.fullname}</p>
+        const client = row.original.client
+        return (
+          <div className="flex flex-col gap-0.5">
+            <Link to="/clients/$clientId/view" params={{ clientId: client.id }}>
+              {client.fullname}
+            </Link>
+          </div>
+        )
       },
     },
     {

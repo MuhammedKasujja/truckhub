@@ -48,12 +48,12 @@ export function DispatchShipmentDialog({
           </DialogHeader>
           <div className="space-y-4">
             <NumberField
-              label="Vehicle Mileage"
+              label="Current Mileage"
               name="startMileage"
               control={form.control}
             />
             <TextField
-              label="Contact Name"
+              label="Contact Person"
               name="contactName"
               control={form.control}
             />

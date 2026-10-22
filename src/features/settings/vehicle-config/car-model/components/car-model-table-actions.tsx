@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import { CarModel, CarModelTableRowAction } from "../types"
 import { ActionIcon } from "@/components/icons"
 import { Can } from "@/components/has-permission"
-import { CarModelForm } from "./car-brand-form"
+import { CarModelForm } from "./car-model-form"
 import { useEditCarModel } from "../../hooks/use-car-model"
 
 interface TableActionsProps {
