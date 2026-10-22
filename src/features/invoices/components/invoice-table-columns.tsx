@@ -8,6 +8,7 @@ import {
 } from "./invoice-table-actions"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
+import { InvoiceStatusIndicator } from "./invoice-status-indicator"
 
 type Props = {
   tr: TFunction
@@ -62,14 +63,18 @@ export function getInvoiceTableColumns({
       accessorKey: "balance_due",
       header: () => <p className="uppercase">{tr("common.form.balance")}</p>,
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.balance_due, {showZeroFallaback: true})}</p>
+        return (
+          <p>
+            {formatMoney(row.original.balance_due, { showZeroFallaback: true })}
+          </p>
+        )
       },
     },
     {
       accessorKey: "status",
       header: () => <p className="uppercase">{tr("common.status")}</p>,
       cell: ({ row }) => {
-        return <p>{row.original.status}</p>
+        return <InvoiceStatusIndicator status={row.original.status} />
       },
     },
     {

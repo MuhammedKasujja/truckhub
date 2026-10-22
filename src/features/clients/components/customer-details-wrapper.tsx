@@ -46,6 +46,7 @@ import {
 import { useState } from "react"
 import { useClientProfileSuspenseQuery } from "../hooks/use-client"
 import { ModuleIcon } from "@/components/icons"
+import { InvoiceStatusIndicator } from "@/features/invoices/components"
 
 type ClientDetailsWrapperProps = {
   clientId: EntityId
@@ -148,7 +149,7 @@ export function CustomerDetailsWrapper({
                 <div className="text-lg font-semibold">
                   {latestInvoice.number}
                 </div>
-                <div className="text-sm">{latestInvoice.status}</div>
+                <InvoiceStatusIndicator status={latestInvoice.status} />
                 <div className="text-sm text-muted-foreground">
                   {formatMoney(latestInvoice.total)}
                 </div>
@@ -366,7 +367,9 @@ export function CustomerDetailsWrapper({
                           <TableCell className="font-medium">
                             {inv.number}
                           </TableCell>
-                          <TableCell>{inv.status}</TableCell>
+                          <TableCell>
+                            <InvoiceStatusIndicator status={inv.status} />
+                          </TableCell>
                           <TableCell>{formatMoney(inv.total)}</TableCell>
                           <TableCell>{formatDate(inv.due_date)}</TableCell>
                         </TableRow>

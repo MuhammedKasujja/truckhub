@@ -1,11 +1,12 @@
 export const invoiceStatuses = [
   "draft",
   "paid",
-  "unpaid",
-  "partial",
   "refunded",
   "cancelled",
-  "voided",
+  "void",
+  "mailed",
+  "partially_paid",
+  "over_due",
 ] as const
 
 export type InvoiceStatus = (typeof invoiceStatuses)[number]

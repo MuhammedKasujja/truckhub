@@ -23,10 +23,10 @@ import {
 import { formatDate, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Link } from "@tanstack/react-router"
-import { Badge } from "@/components/ui/badge"
 import { Can } from "@/components/has-permission"
 import { Invoice } from "@/features/invoices/types"
 import { ActionIcon } from "@/components/icons"
+import { InvoiceStatusIndicator } from "@/features/invoices/components"
 
 type RecentInvoiceTableProps = {
   invoices: Invoice[]
@@ -69,7 +69,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
                     </TableCell>
                     <TableCell>{invoice.client.name}</TableCell>
                     <TableCell>
-                      <Badge variant={"outline"}>{invoice.status}</Badge>
+                      <InvoiceStatusIndicator status={invoice.status} />
                     </TableCell>
                     <TableCell>{formatMoney(invoice.total)}</TableCell>
                     <TableCell>

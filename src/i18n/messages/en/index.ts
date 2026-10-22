@@ -198,6 +198,17 @@ const en = {
   invoices: {
     invoiceNumber: "Invoice No.",
     revisions: "Revisions",
+    statuses: {
+      issued: "Issued",
+      draft: "Draft",
+      refunded: "Refunded",
+      partially_paid: "Partially Paid",
+      paid: "Paid",
+      cancelled: "Cancelled",
+      void: "Voided",
+      mailed: "Mailed",
+      over_due: "Over due",
+    },
   },
 } as const
 

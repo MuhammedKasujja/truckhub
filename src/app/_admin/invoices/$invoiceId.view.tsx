@@ -1,9 +1,9 @@
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import { InvoiceStatusIndicator } from "@/features/invoices/components"
 import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
-import { Invoice } from "@/features/invoices/types"
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
@@ -37,7 +37,7 @@ function RouteComponent() {
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">
                 {invoice.number}
               </h1>
-              <StatusBadge status={invoice.status} />
+              <InvoiceStatusIndicator status={invoice.status} />
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
               Invoice ID {invoice.id.slice(0, 8)}
@@ -218,23 +218,6 @@ function RouteComponent() {
         </div>
       </div>
     </div>
-  )
-}
-
-function StatusBadge({ status }: { status: Invoice["status"] }) {
-  const variantClasses = {
-    paid: "bg-primary text-primary-foreground",
-    unpaid: "bg-destructive text-destructive-foreground",
-    partially_paid: "border border-border text-foreground",
-    draft: "bg-secondary text-secondary-foreground",
-  } as const
-  const cls = variantClasses[status] || variantClasses.draft
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${cls}`}
-    >
-      {status}
-    </span>
   )
 }
 
