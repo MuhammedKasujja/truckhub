@@ -10,6 +10,6 @@ export const { Picker: ClientPicker, PickerField: ClientPickerField } =
     detailQueryOptions: clientProfileQueryOptions,
     defaultSearchParams: { search: "", perPage: 10 },
     getOptionValue: (c) => c?.id,
-    renderOption: (c) => c.name,
+    renderOption: (c) => c?.name,
     createRoute: "/clients/new",
   })

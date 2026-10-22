@@ -90,8 +90,6 @@ export function DistancePricingSelectDialog({
   const discount = watch("discount")
   const lineTotal = watch("line_total")
 
-  const [query, setQuery] = useState("")
-
   useEffect(() => {
     const subtotal = new Decimal(unitPrice ?? 0)
       .times(quantity ?? 0)
@@ -123,7 +121,6 @@ export function DistancePricingSelectDialog({
       setRoute(undefined)
     }
     setSelectedDistanceRange(undefined)
-    setQuery("")
     // setRouteError(false)
   }, [open, lineItem])
 
@@ -188,29 +185,6 @@ export function DistancePricingSelectDialog({
           <div className="grid flex-1 overflow-hidden md:grid-cols-6">
             {/* LEFT SIDE */}
             <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <InputGroup className="flex-1">
-                  <InputGroupInput
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search by origin or destination..."
-                  />
-                  <InputGroupAddon>
-                    <Search />
-                  </InputGroupAddon>
-                </InputGroup>
-                <NumberField
-                  className="w-32"
-                  control={form.control}
-                  name={"distance_km"}
-                />
-                <NumberField
-                  className="w-32"
-                  control={form.control}
-                  name={"tonnage"}
-                />
-              </div>
-
               {isLoading && (
                 <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground">
                   Loading routes...

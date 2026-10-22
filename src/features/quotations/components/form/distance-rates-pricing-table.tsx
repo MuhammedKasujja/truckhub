@@ -121,7 +121,7 @@ export function DistanceRatePricingTable({
         header: "Distance",
         filterFn: containsDistance,
         cell: (c) => (
-          <span className="font-medium text-slate-900">{c.getValue()}</span>
+          <span className="font-medium">{c.getValue()}</span>
         ),
       }),
       // One column per tonnage tier, built from the data
@@ -133,7 +133,7 @@ export function DistanceRatePricingTable({
             const price = row.original.cells[tier.key]
             if (!price) {
               return (
-                <span className="px-3 text-sm text-slate-400">No rate</span>
+                <span className="px-3 text-sm text-muted-foreground">No rate</span>
               )
             }
             const isSelected = selectedId === price.id
@@ -144,10 +144,10 @@ export function DistanceRatePricingTable({
                 onClick={() => onSelect(price)}
                 className={[
                   "min-h-11 w-full rounded-lg border px-3 text-left text-sm transition-colors",
-                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f6b5c]",
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
                   isSelected
-                    ? "border-2 border-[#0f6b5c] bg-[#d6ece6] font-semibold text-[#0b5a4d]"
-                    : "border-slate-200 bg-white text-slate-800 hover:border-[#0f6b5c]",
+                    ? "border-2 border-primary bg-primary/5 font-semibold text-primary/95"
+                    : "bg-card text-muted-foreground hover:border-primary dark:text-accent-foreground",
                 ].join(" ")}
               >
                 {num(price.min_price)} – {num(price.max_price)}
@@ -172,11 +172,11 @@ export function DistanceRatePricingTable({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3.5">
-      <p className="text-sm text-slate-600">
-        {rows.length} distance bands. Your distance and load are highlighted.
+      <p className="text-sm text-muted-foreground">
+        Select a distance bands to prefill distance and tonnage.
       </p>
 
-      <div className="min-h-0 flex-1 overflow-auto rounded-xl border border-slate-200">
+      <div className="min-h-0 flex-1 overflow-auto rounded-xl border">
         <table className="w-full table-fixed border-collapse">
           <colgroup>
             <col className="w-36" />
@@ -184,7 +184,7 @@ export function DistanceRatePricingTable({
               <col key={t.key} />
             ))}
           </colgroup>
-          <thead className="sticky top-0 z-10 bg-white">
+          <thead className="sticky top-0 z-10 ">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
                 {hg.headers.map((h) => (
@@ -192,10 +192,10 @@ export function DistanceRatePricingTable({
                     key={h.id}
                     scope="col"
                     className={[
-                      "border-b border-slate-200 px-3 py-2.5 text-left text-xs font-semibold",
+                      "border-b px-3 py-2.5 text-left text-xs font-semibold",
                       matchedTier?.key === h.column.id
                         ? "text-[#0b5a4d]"
-                        : "text-slate-600",
+                        : "text-muted-foreground",
                     ].join(" ")}
                   >
                     {flexRender(h.column.columnDef.header, h.getContext())}
@@ -209,7 +209,7 @@ export function DistanceRatePricingTable({
               <tr>
                 <td
                   colSpan={tiers.length + 1}
-                  className="p-6 text-sm text-slate-600"
+                  className="p-6 text-sm text-muted-foreground"
                 >
                   No band covers {distanceKm} km. Clear the distance or untick
                   “Only show matching band”.
@@ -221,7 +221,7 @@ export function DistanceRatePricingTable({
               return (
                 <tr
                   key={row.id}
-                  className={isMatch ? "bg-[#eaf5f2]" : undefined}
+                  className={isMatch ? "bg-primary/10" : undefined}
                 >
                   {row.getVisibleCells().map((cell, i) => (
                     <td key={cell.id} className="p-1">
@@ -232,7 +232,7 @@ export function DistanceRatePricingTable({
                             cell.getContext()
                           )}
                           {isMatch && (
-                            <div className="text-[11px] font-medium text-[#0b5a4d]">
+                            <div className="text-[11px] font-medium text-primary">
                               Matches {distanceKm} km
                             </div>
                           )}

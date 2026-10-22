@@ -45,6 +45,7 @@ export function useCreatePayment() {
         entityId: input?.entityId ?? "",
         type: input?.type ?? "invoice",
       })
+      queryInvalidator.clients.profile(input.clientId!).invalidate()
       toast.success("Payment created successfully")
     },
     onError: (err) => {

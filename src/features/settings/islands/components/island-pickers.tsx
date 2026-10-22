@@ -14,5 +14,5 @@ export const { Picker: IslandSelector, PickerField: IslandSelectorField } =
     detailQueryOptions: islandDetailsQueryOptions,
     defaultSearchParams: { search: "", perPage: 200 },
     getOptionValue: (c) => c.id,
-    renderOption: (c) => c.name,
+    renderOption: (c) => c?.name,
   })

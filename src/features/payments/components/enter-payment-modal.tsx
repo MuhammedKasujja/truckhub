@@ -107,7 +107,7 @@ export function EnterPaymentModal({
                   name={"entityId"}
                   control={form.control}
                   filters={{
-                    status: ["draft", "partial"],
+                    status: ["draft", "partially_paid", "issued"],
                     client_id: initialData.clientId,
                   }}
                   onChange={(invoice) => {
