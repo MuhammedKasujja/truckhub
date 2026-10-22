@@ -28,7 +28,7 @@ import { useVehicleForm } from "../hooks/use-vehicle-form"
 import { useVehicleConfigurationsSuspense } from "@/features/settings/hooks/use-vehicle-configurations"
 import { CAR_COLOR_OPTIONS } from "@/common/config"
 import { VehicleFeature } from "@/types/setting"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Stepper,
   StepperContent,
@@ -67,7 +67,7 @@ const steps = [
   },
 ] as const
 
-type Step = (typeof steps)
+type Step = typeof steps
 
 export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()
@@ -115,12 +115,18 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.vehicles.list.invalidate()
+      if ("id" in values)
+        queryInvalidator.vehicles.details(values.id).invalidate()
       setStep("details")
       form.reset()
     } else {
       toast.error(error?.message)
     }
   }
+
+  useEffect(() => {
+    form.reset(initialData)
+  }, [initialData])
 
   return (
     <form

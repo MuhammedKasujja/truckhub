@@ -51,7 +51,10 @@ export const getVehicleByIdFn = createServerFn()
 export const getVehicleDetailsByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-   return apiResponseTransform(getVehicleDetailsById(data.id))
+    const { data: vehicle, message } = await apiResponseTransform(
+      getVehicleDetailsById(data.id)
+    )
+    return { data: vehicle!, message: message }
   })
 
 export const deleteVehicleFn = createServerFn()

@@ -17,7 +17,7 @@ export function useAuthSession() {
     refetch,
     isLoading,
   } = useQuery({
-    queryKey: [CURRENT_USER_KEY],
+    queryKey: CURRENT_USER_KEY,
     queryFn: () => fetchUser(),
     staleTime: 10 * 60 * 1000, // serve from cache for 10 min
     refetchInterval: 5 * 60 * 1000, // poll every 5 min
@@ -39,7 +39,7 @@ export function useAuthSession() {
     hadUser.current = false
 
     try {
-      queryClient.setQueryData([CURRENT_USER_KEY], null)
+      queryClient.setQueryData(CURRENT_USER_KEY, null)
       await logoutFn()
     } catch {
       // Server call failed (offline, 5xx). The local session is already
