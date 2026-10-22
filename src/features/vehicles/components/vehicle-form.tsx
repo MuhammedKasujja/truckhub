@@ -17,7 +17,7 @@ import {
 import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
 import { EngineTypes, vehicleTransmissionList } from "@/features/vehicles/types"
 import { toast } from "sonner"
-import z from "zod"
+import z, { keyof } from "zod"
 import { AxlesList, VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"

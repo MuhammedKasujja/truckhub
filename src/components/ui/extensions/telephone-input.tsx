@@ -38,7 +38,9 @@ export function TelephoneInput({
       placeholder="+256 772 123456"
       inputMode="numeric"
       value={field.value}
-      onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
+      onValueChange={(masked, _unmasked) => {
+        field.onChange(masked)
+      }}
       onBlur={field.onBlur}
       invalid={invalid}
       readOnly={readOnly}
