@@ -43,7 +43,7 @@ function RouteComponent() {
           <Badge variant={"outline"}>v{quotation.versions.length}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"} onClick={back}>
+          <Button type="button" variant={"outline"} onClick={back}>
             Cancel
           </Button>
           <SubmitButton

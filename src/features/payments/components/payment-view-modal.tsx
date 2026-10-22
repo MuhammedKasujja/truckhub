@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DataList, DataListItem, DataListItemLabel, DataListItemValue } from "@/components/ui/data-list"
+import {
+  DataList,
+  DataListItem,
+  DataListItemLabel,
+  DataListItemValue,
+} from "@/components/ui/data-list"
 import {
   Drawer,
   DrawerClose,
@@ -9,33 +14,38 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { Payment } from "@/features/payments/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useTranslation } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { useNavigate } from "@tanstack/react-router"
-import { EyeIcon } from "lucide-react"
 
-export function PaymentViewModal({ payment }: { payment: Payment }) {
+type Props = {
+  payment: Payment
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function PaymentViewModal({ payment, open, onOpenChange }: Props) {
   const isMobile = useIsMobile()
   const tr = useTranslation()
   const navigate = useNavigate()
   return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button variant={"outline"} size={"icon"}>
-          <EyeIcon />
-        </Button>
-      </DrawerTrigger>
+    <Drawer
+      direction={isMobile ? "bottom" : "right"}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>
             {tr("payment")} - {payment.number}
           </DrawerTitle>
-          <DrawerDescription>{formatDate(payment.date)}</DrawerDescription>
+          <DrawerDescription>
+            {formatDateTime(payment.paid_at)}
+          </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <Card>
@@ -65,7 +75,7 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
           <Card>
             <CardHeader>
               <CardTitle
-               className="cursor-pointer"
+                className="cursor-pointer"
                 onClick={() =>
                   navigate({
                     from: "/invoices/$invoiceId/view",
@@ -89,7 +99,9 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
               <DataList>
                 <DataListItem>
                   <DataListItemLabel>Name</DataListItemLabel>
-                  <DataListItemValue>{payment.client.fullname}</DataListItemValue>
+                  <DataListItemValue>
+                    {payment.client.fullname}
+                  </DataListItemValue>
                 </DataListItem>
                 <DataListItem>
                   <DataListItemLabel>Email</DataListItemLabel>
