@@ -11,7 +11,7 @@ export function TinNumberInput({
   invalid,
   id,
   readOnly,
-  placeholder
+  placeholder,
 }: {
   field: { value: string; onChange: (v: string) => void; onBlur: () => void }
   invalid: boolean
@@ -25,7 +25,7 @@ export function TinNumberInput({
       mask={ugandaTinMask}
       inputMode="numeric"
       placeholder="0106438743"
-      value={field.value}
+      value={field.value ?? ""}
       onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
       onBlur={field.onBlur}
       maxLength={10}

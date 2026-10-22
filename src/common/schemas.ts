@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { PLATE_REGEX } from "@/common/constants"
 
 export const DefaultSearchParamsSchema = z.object({
   page: z.number().int().min(1).default(1),
@@ -19,11 +20,8 @@ export type EntityPickerSearchParamsInput = z.infer<
 >
 
 export const plateNumberSchema = z
-  .string()
-  // .refine(
-  //   (v) => /^[A-Z]{2}\d{3}[A-Z]{2}$/.test(v) || /^[A-Z]{3}\d{3}[A-Z]$/.test(v),
-  //   "Invalid plate number"
-  // )
+  .string("Required")
+  .regex(PLATE_REGEX, "Use format UA 567PL or UAN 789K")
 
 export const tinNumberSchema = z
   .string()

@@ -90,3 +90,5 @@ export const MONTH_OPTIONS = Object.entries(MONTHS).map(([key, value]) => ({
   label: key,
   value: value.toString(),
 }));
+
+export const PLATE_REGEX = /^([A-Z]{2} \d{3}[A-Z]{2}|[A-Z]{3} \d{3}[A-Z])$/;
