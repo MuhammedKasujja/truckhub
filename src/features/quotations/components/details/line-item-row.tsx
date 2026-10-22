@@ -98,8 +98,8 @@ function RouteChip({ leg }: { leg: Route }) {
   return (
     <span className="inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-muted-foreground">
       {leg?.origin}
-      {leg?.checkpoints.map((c) => (
-        <p className="flex items-center">
+      {leg?.checkpoints.map((c, i) => (
+        <p className="flex items-center" key={`${c}_${i}`}>
           <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
           <span className="pl-1">{c}</span>
         </p>

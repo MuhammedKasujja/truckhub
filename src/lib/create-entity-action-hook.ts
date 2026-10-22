@@ -18,7 +18,7 @@ export function createEntityActionHook<
     const invalidator = useQueryInvalidator()
     const queryClient = useQueryClient()
 
-    const { isPending, mutateAsync, isSuccess, error } = useMutation({
+    const mutation = useMutation({
       mutationKey: options?.mutationKeys, // Can be used to dedupe/cancel Requests
       mutationFn,
       onSuccess: (result, input) => {
@@ -29,6 +29,6 @@ export function createEntityActionHook<
       onError: (error) => toast.error(error.message ?? "Something went wrong"),
     })
 
-    return { isPending, execute: mutateAsync, isSuccess, error }
+    return { ...mutation, execute: mutation.mutateAsync }
   }
 }

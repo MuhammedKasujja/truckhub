@@ -1,13 +1,12 @@
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/ui/submit-button"
 import { QuotationForm } from "@/features/quotations/components"
-import { createQuotationFn } from "@/features/quotations/services"
+import { useCreateQuotation } from "@/features/quotations/hooks/use-edit-quotation"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { requirePermission } from "@/lib/auth"
 import { IDSchema } from "@/schemas"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { toast } from "sonner"
 import z from "zod"
 
 export const Route = createFileRoute("/_admin/quotations/new/")({
@@ -19,9 +18,9 @@ export const Route = createFileRoute("/_admin/quotations/new/")({
 })
 
 function RouteComponent() {
-  const queryInvalidator = useQueryInvalidator()
   const navigate = useNavigate()
   const handleBack = useBackNavigation()
+  const { createQuotation, isPending } = useCreateQuotation()
 
   return (
     <div>
@@ -31,28 +30,25 @@ function RouteComponent() {
           <Button variant={"outline"} onClick={handleBack}>
             Cancel
           </Button>
-          <Button type="submit" form="form-quotation">
-            Create quotation
-          </Button>
+          <SubmitButton
+            isSubmitting={isPending}
+            type="submit"
+            form="form-quotation"
+            text="Create quotation"
+          />
         </PageAction>
       </PageHeader>
       <QuotationForm
         onSubmit={async (values) => {
-          const { isSuccess, error, data } = await createQuotationFn({
-            data: values,
-          })
-          if (isSuccess) {
-            toast.success("Quotation has been created successfully")
-            queryInvalidator.quotations.list.invalidate()
-            if (data) {
+          createQuotation(values, {
+            onSuccess: ({ data }) => {
+              // toast.success("Quotation has been created successfully")
               navigate({
                 from: "/quotations/$quotationId/view",
-                params: { quotationId: data.id },
+                params: { quotationId: data!.id },
               })
-            }
-          } else {
-            toast.error(error!.message)
-          }
+            },
+          })
         }}
       />
     </div>

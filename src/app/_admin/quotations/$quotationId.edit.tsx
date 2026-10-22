@@ -12,6 +12,7 @@ import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { useEditQuotation } from "@/features/quotations/hooks/use-edit-quotation"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
 import { requirePermission } from "@/lib/auth"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
@@ -31,7 +32,7 @@ function RouteComponent() {
   const { quotationId } = Route.useParams()
   const { data: quotation } = useQuotaionDetailsSuspenseQuery(quotationId)
   const back = useBackNavigation()
-  const { editQuotation } = useEditQuotation()
+  const { editQuotation, isPending } = useEditQuotation()
   const navigate = useNavigate()
 
   return (
@@ -45,9 +46,12 @@ function RouteComponent() {
           <Button variant={"outline"} onClick={back}>
             Cancel
           </Button>
-          <Button type="submit" form="form-quotation">
-            Save quotation
-          </Button>
+          <SubmitButton
+            type="submit"
+            isSubmitting={isPending}
+            text="Save Quotation"
+            form="form-quotation"
+          />
         </PageAction>
       </PageHeader>
       <QuotationForm
@@ -56,7 +60,7 @@ function RouteComponent() {
           editQuotation(
             { ...data, quotationId },
             {
-              onSuccess() {
+              onSuccess: () => {
                 navigate({
                   to: "/quotations/$quotationId/view",
                   params: { quotationId },

@@ -10,15 +10,15 @@ const useEditQuotationBase = createEntityActionHook(
   }
 )
 
-type Props = {
-  onSuccess?: () => void
-}
-
 export function useEditQuotation() {
-  const { isPending, execute } = useEditQuotationBase()
+  const { isPending, mutate } = useEditQuotationBase()
 
-  function editQuotation(data: UpdateQuotationRequest, { onSuccess }: Props) {
-    return execute({ data }, { onSuccess })
+  function editQuotation(
+    data: UpdateQuotationRequest,
+    opts?: Parameters<typeof mutate>[1]
+  ) {
+    if (isPending) return
+    return mutate({ data }, opts)
   }
   return { isPending, editQuotation }
 }
@@ -31,10 +31,14 @@ const useCreateQuotationBase = createEntityActionHook(
 )
 
 export function useCreateQuotation() {
-  const { isPending, execute, isSuccess } = useCreateQuotationBase()
+  const { isPending, isSuccess, mutate } = useCreateQuotationBase()
 
-  function editQuotation(data: CreateQuotationRequest, { onSuccess }: Props) {
-    return execute({ data }, { onSuccess })
+  function createQuotation(
+    data: CreateQuotationRequest,
+    opts?: Parameters<typeof mutate>[1]
+  ) {
+    if (isPending) return
+    return mutate({ data }, opts)
   }
-  return { isPending, editQuotation, isSuccess }
+  return { isPending, createQuotation, isSuccess }
 }
