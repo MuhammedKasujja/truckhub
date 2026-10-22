@@ -30,7 +30,7 @@ export function EditCompanyDetailsDialog({
   isOpen,
   onOpenChanged,
 }: EditCompanyDetailsDialogProps) {
-  const { mutate: editCompany } = useEditCompanyDetails()
+  const { editCompany } = useEditCompanyDetails()
 
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
@@ -42,7 +42,12 @@ export function EditCompanyDetailsDialog({
   })
 
   async function onSubmit(data: z.infer<typeof CompanySchema>) {
-    editCompany(data)
+    editCompany(data, {
+      onSuccess: () => {
+        form.reset()
+        onOpenChanged(false)
+      },
+    })
   }
 
   return (

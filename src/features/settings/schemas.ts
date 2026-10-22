@@ -47,6 +47,8 @@ export type EditInvoiceTermsRequest = z.infer<typeof EditInvoiceTermsSchema>
 
 export type Company = z.infer<typeof CompanySchema>
 
+export type CompanyInput = z.infer<typeof CompanySchema>
+
 export interface CompanySettings extends Settings {
   company: Company
   default_tax_rate: TaxRate | null
