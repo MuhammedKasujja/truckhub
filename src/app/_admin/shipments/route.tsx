@@ -39,7 +39,7 @@ const shipmentTabs = [
 
 export const Route = createFileRoute("/_admin/shipments")({
   component: RouteComponent,
-  beforeLoad: ()=> requirePermission("shipments:module")
+  beforeLoad: () => requirePermission("shipments:module"),
 })
 
 function RouteComponent() {
@@ -57,10 +57,14 @@ function RouteComponent() {
           <Button variant={"outline"} size={"sm"} onClick={handleBack}>
             Back
           </Button>
-          <Button variant={"outline"} size={"sm"}>
-            <CalendarIcon/>
-            Calendar
-          </Button>
+          <Can permission="rides:active">
+            <Button variant={"outline"} size={"sm"} asChild>
+              <Link to={"/calendar"}>
+                <CalendarIcon />
+                Calendar
+              </Link>
+            </Button>
+          </Can>
           <Can permission="rides:active">
             <Button size={"sm"} asChild>
               <Link to={"/live-map"}>

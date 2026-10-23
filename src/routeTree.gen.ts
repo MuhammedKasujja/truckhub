@@ -30,6 +30,7 @@ import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/in
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
+import { Route as AdminCalendarIndexRouteImport } from './app/_admin/calendar/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
@@ -199,6 +200,11 @@ const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
 const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
   id: '/clients/',
   path: '/clients/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCalendarIndexRoute = AdminCalendarIndexRouteImport.update({
+  id: '/calendar/',
+  path: '/calendar/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
@@ -601,6 +607,7 @@ export interface FileRoutesByFullPath {
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings/': typeof AdminBookingsIndexRoute
+  '/calendar/': typeof AdminCalendarIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
   '/drivers/': typeof AdminDriversIndexRoute
@@ -689,6 +696,7 @@ export interface FileRoutesByTo {
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
   '/bookings': typeof AdminBookingsIndexRoute
+  '/calendar': typeof AdminCalendarIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
   '/drivers': typeof AdminDriversIndexRoute
@@ -779,6 +787,7 @@ export interface FileRoutesById {
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
+  '/_admin/calendar/': typeof AdminCalendarIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
   '/_admin/drivers/': typeof AdminDriversIndexRoute
@@ -869,6 +878,7 @@ export interface FileRouteTypes {
     | '/rides/live'
     | '/rides/new'
     | '/bookings/'
+    | '/calendar/'
     | '/clients/'
     | '/dashboard/'
     | '/drivers/'
@@ -957,6 +967,7 @@ export interface FileRouteTypes {
     | '/rides/live'
     | '/rides/new'
     | '/bookings'
+    | '/calendar'
     | '/clients'
     | '/dashboard'
     | '/drivers'
@@ -1046,6 +1057,7 @@ export interface FileRouteTypes {
     | '/_admin/rides/live'
     | '/_admin/rides/new'
     | '/_admin/bookings/'
+    | '/_admin/calendar/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
     | '/_admin/drivers/'
@@ -1273,6 +1285,13 @@ declare module '@tanstack/react-router' {
       path: '/clients'
       fullPath: '/clients/'
       preLoaderRoute: typeof AdminClientsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/calendar/': {
+      id: '/_admin/calendar/'
+      path: '/calendar'
+      fullPath: '/calendar/'
+      preLoaderRoute: typeof AdminCalendarIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/bookings/': {
@@ -1900,6 +1919,7 @@ interface AdminRouteRouteChildren {
   AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
+  AdminCalendarIndexRoute: typeof AdminCalendarIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminDriversIndexRoute: typeof AdminDriversIndexRoute
@@ -1950,6 +1970,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
+  AdminCalendarIndexRoute: AdminCalendarIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminDriversIndexRoute: AdminDriversIndexRoute,
