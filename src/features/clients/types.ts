@@ -36,7 +36,7 @@ export type Client = {
 
 export type Customer = Client
 
-export interface ClientsDataTableRowAction extends DataTableRowAction<
+export interface ClientsTableRowAction extends DataTableRowAction<
   Client,
   "update" | "delete" | "view"
 > {}

@@ -10,13 +10,11 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { clientsQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { useTranslation } from "@/i18n"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { ClientsTableRowAction } from "../types"
+import { Can } from "@/components/has-permission"
+import { ConfirmDialog } from "@/components/confirm-dialog"
+import { deleteClientFn } from "../services"
+import { toast } from "sonner"
 
 export function CustomerTable() {
   // const [{ data, error, pagination }] = React.use(props.promises);
@@ -27,7 +25,12 @@ export function CustomerTable() {
     clientsQueryOptions(search)
   )
   const tr = useTranslation()
-  const columns = useMemo(() => getClientsTableColumns(tr), [tr])
+  const [rowAction, setRowAction] = useState<ClientsTableRowAction | null>(null)
+
+  const columns = useMemo(
+    () => getClientsTableColumns({ tr, setRowAction }),
+    [tr, setRowAction]
+  )
   const { data, pagination } = response
 
   useFetchEror(error)
@@ -69,6 +72,25 @@ export function CustomerTable() {
           <DataTableSortList table={table} align="end" />
         </DataTableToolbar>
       </DataTable>
+      <Can permission="clients:delete">
+        <ConfirmDialog
+          key={rowAction?.row.original.id}
+          open={rowAction?.variant === "delete"}
+          onOpenChange={() => setRowAction(null)}
+          // isLoading={deleteItem.isPending}
+          onConfirm={async () => {
+            const { isSuccess, error, message } = await deleteClientFn({
+              data: { id: rowAction!.row.original.id },
+            })
+            if (isSuccess) {
+              toast.success(message)
+              return { error: false }
+            } else {
+              return { error: true, message: error?.message }
+            }
+          }}
+        />
+      </Can>
     </>
   )
 }

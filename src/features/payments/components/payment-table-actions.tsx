@@ -3,6 +3,7 @@ import { Can } from "@/components/has-permission"
 import { PaymentViewModal } from "./payment-view-modal"
 import { ReversePaymentModal } from "./reverse-payment-modal"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { isNotInEnum } from "@/common/enums"
 
 interface TableActionsProps {
   rowAction: PaymentTableRowAction | null
@@ -29,14 +30,16 @@ export function PaymentTableActions({
         open={rowAction?.variant === "view"}
         onOpenChange={handleClose}
       />
-      <Can permission="payments:reverse">
-        <ReversePaymentModal
-          key={rowAction?.row.original.id}
-          payment={rowAction?.row.original}
-          open={rowAction?.variant === "reverse"}
-          onOpenChange={handleClose}
-        />
-      </Can>
+      {isNotInEnum(payment.status, ["reversed"]) && (
+        <Can permission="payments:reverse">
+          <ReversePaymentModal
+            key={rowAction?.row.original.id}
+            payment={rowAction?.row.original}
+            open={rowAction?.variant === "reverse"}
+            onOpenChange={handleClose}
+          />
+        </Can>
+      )}
       <Can permission="payments:delete">
         <ConfirmDialog
           open={rowAction?.variant === "delete"}

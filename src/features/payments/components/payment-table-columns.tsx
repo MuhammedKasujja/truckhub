@@ -18,6 +18,7 @@ import {
 import { MoreVertical } from "lucide-react"
 import { ActionIcon } from "@/components/icons"
 import { Can } from "@/components/has-permission"
+import { isNotInEnum } from "@/common/enums"
 
 type Props = {
   tr: TFunction
@@ -49,17 +50,19 @@ export function getPaymentTableColumns({
                   <ActionIcon action="view" />
                   View
                 </DropdownMenuItem>
-                <Can permission="payments:reverse">
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() =>
-                      setRowAction({ row: row, variant: "reverse" })
-                    }
-                  >
-                    <ActionIcon action="reverse" />
-                    Reverse
-                  </DropdownMenuItem>
-                </Can>
+                {isNotInEnum(row.original.status, ["reversed"]) && (
+                  <Can permission="payments:reverse">
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setRowAction({ row: row, variant: "reverse" })
+                      }
+                    >
+                      <ActionIcon action="reverse" />
+                      Reverse
+                    </DropdownMenuItem>
+                  </Can>
+                )}
                 <Can permission="payments:delete">
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

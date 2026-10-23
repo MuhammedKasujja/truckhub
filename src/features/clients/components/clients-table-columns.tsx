@@ -1,27 +1,26 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
-import { deleteClientFn } from "@/features/clients/services"
-import { Client } from "@/features/clients/types"
+import { Client, ClientsTableRowAction } from "@/features/clients/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner"
-import { Can } from "@/components/has-permission"
 import { ClientTableActions } from "./client-table-actions"
 import { TFunction } from "@/i18n"
-import { ActionIcon } from "@/components/icons"
 
-export function getClientsTableColumns(tr: TFunction): ColumnDef<Client>[] {
+type Props = {
+  tr: TFunction
+  setRowAction: React.Dispatch<
+    React.SetStateAction<ClientsTableRowAction | null>
+  >
+}
+
+export function getClientsTableColumns({
+  tr,
+  setRowAction,
+}: Props): ColumnDef<Client>[] {
   return [
     {
-      id: "left-actions",
-      size: 20,
-      maxSize: 16,
-      cell: ({ row }) => <ClientTableActions client={row.original} />,
-    },
-    {
       accessorKey: "name",
-      header: tr("common.form.name"),
+      header: tr("common.client"),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -57,33 +56,12 @@ export function getClientsTableColumns(tr: TFunction): ColumnDef<Client>[] {
       },
     },
     {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Can permission={"clients:delete"}>
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  const { isSuccess, error, message } = await deleteClientFn({
-                    data: { id: row.original.id },
-                  })
-                  if (isSuccess) {
-                    toast.success(message)
-                    return { error: false }
-                  } else {
-                    return { error: true, message: error?.message }
-                  }
-                }}
-              >
-                <ActionIcon action="delete" />
-              </ActionButton>
-            </Can>
-          </div>
-        )
-      },
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => (
+        <ClientTableActions row={{ row }} setRowAction={setRowAction} />
+      ),
     },
   ]
 }
