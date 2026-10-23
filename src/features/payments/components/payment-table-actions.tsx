@@ -1,9 +1,8 @@
 import { PaymentTableRowAction } from "../types"
-import { ActionIcon } from "@/components/icons"
 import { Can } from "@/components/has-permission"
 import { PaymentViewModal } from "./payment-view-modal"
-import { ActionButton } from "@/components/ui/action-button"
 import { ReversePaymentModal } from "./reverse-payment-modal"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 interface TableActionsProps {
   rowAction: PaymentTableRowAction | null
@@ -39,16 +38,18 @@ export function PaymentTableActions({
         />
       </Can>
       <Can permission="payments:delete">
-        <ActionButton
-          variant={"destructive"}
-          size={"icon"}
-          requireAreYouSure={rowAction?.variant === "delete"}
-          action={async () => {
-            return { error: true, message: "Not implemented yet...." }
-          }}
-        >
-          <ActionIcon action="delete" />
-        </ActionButton>
+        <ConfirmDialog
+          open={rowAction?.variant === "delete"}
+          onOpenChange={handleClose}
+          // isLoading={deleteItem.isPending}
+          onConfirm={
+            () => {}
+            // deleteItem.mutate(id, {
+            //   onSuccess: () => setConfirmOpen(false),
+            //   onError: (e) => toast.error(e.message),
+            // })
+          }
+        />
       </Can>
     </div>
   )
