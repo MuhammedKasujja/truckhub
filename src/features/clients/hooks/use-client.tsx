@@ -1,4 +1,4 @@
-import { changeClientTypeFn, createClientFn, updateClientFn } from "../services"
+import { changeClientTypeFn, createClientFn, deleteClientFn, updateClientFn } from "../services"
 import { EntityId } from "@/schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import { ClientCreateInput, ClientUpdateInput } from "../schemas"
@@ -122,4 +122,22 @@ export function useClientProfileSuspenseQuery(clientId: EntityId) {
 
 export function useClientPricingDates(clientId: EntityId) {
   return useQuery(clientPricingDatesQueryOptions(clientId))
+}
+
+const useDeleteClientBase = createEntityActionHook(
+  deleteClientFn,
+  (invalidator, input) => {
+    invalidator.clients.list.invalidate()
+    invalidator.clients.profile(input.data.id).invalidate()
+  }
+)
+
+
+export function useDeleteClient() {
+  const { isPending, execute, isSuccess, error } = useDeleteClientBase()
+
+  function deleteClient(clientId: EntityId) {
+    return execute({ data: { id: clientId } })
+  }
+  return { isPending, deleteClient, isSuccess, error }
 }

@@ -13,8 +13,7 @@ import { useTranslation } from "@/i18n"
 import { ClientsTableRowAction } from "../types"
 import { Can } from "@/components/has-permission"
 import { ConfirmDialog } from "@/components/confirm-dialog"
-import { deleteClientFn } from "../services"
-import { toast } from "sonner"
+import { useDeleteClient } from "../hooks/use-client"
 
 export function CustomerTable() {
   // const [{ data, error, pagination }] = React.use(props.promises);
@@ -34,6 +33,8 @@ export function CustomerTable() {
   const { data, pagination } = response
 
   useFetchEror(error)
+
+  const { deleteClient, isPending } = useDeleteClient()
 
   const { table } = useDataTable({
     data,
@@ -77,18 +78,8 @@ export function CustomerTable() {
           key={rowAction?.row.original.id}
           open={rowAction?.variant === "delete"}
           onOpenChange={() => setRowAction(null)}
-          // isLoading={deleteItem.isPending}
-          onConfirm={async () => {
-            const { isSuccess, error, message } = await deleteClientFn({
-              data: { id: rowAction!.row.original.id },
-            })
-            if (isSuccess) {
-              toast.success(message)
-              return { error: false }
-            } else {
-              return { error: true, message: error?.message }
-            }
-          }}
+          isLoading={isPending}
+          onConfirm={() => deleteClient(rowAction!.row.original.id)}
         />
       </Can>
     </>
