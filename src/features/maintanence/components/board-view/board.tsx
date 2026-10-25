@@ -53,27 +53,32 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
     if (meta.kind === "item") {
       const item = meta.previousValue[meta.activeContainer].at(meta.overIndex)
       if (item) {
-        board.mutate({
-          data: {
-            maintanenceId: item.id,
-            newStatus: meta.overContainer as MaintenanceStatus,
+        board.mutate(
+          {
+            data: {
+              maintanenceId: item.id,
+              newStatus: meta.overContainer as MaintenanceStatus,
+            },
           },
-        })
+          {
+            onError: () => {
+              // Roll back to the pre-drag arrangement.
+              //  TODO: prefer a refetch here so a newer drag is not clobbered by this snapshot.
+              setColumns(previous)
+            },
+          }
+        )
       }
-      //   toast.error(`${content.length}  total`)
     }
     const label =
       meta.kind === "column"
         ? `Reordered "${COLUMN_TITLES[meta.activeContainer].title ?? meta.activeContainer}"`
         : `Moved to "${COLUMN_TITLES[meta.overContainer].title ?? meta.overContainer}"`
 
-    // toast.success(label)
     // toast.promise(persistBoard(), {
     //   loading: "Saving board...",
     //   success: () => label,
     //   error: () => {
-    //     // Roll back to the pre-drag arrangement. In production prefer a
-    //     // refetch here so a newer drag is not clobbered by this snapshot.
     //     setColumns(previous)
     //     return "Could not save. Board restored."
     //   },
@@ -86,6 +91,7 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
       onValueChange={setColumns}
       getItemValue={(item) => item.id}
       onValueCommit={handleValueCommit}
+      draggable={false}
     >
       <KanbanBoard className="grid grid-cols-4 sm:grid-cols-4">
         {Object.entries(columns).map(([colId, features]) => {
