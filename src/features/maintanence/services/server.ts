@@ -25,14 +25,14 @@ export async function createMaintenanceRecord(data: MaintenanceCreateInput) {
 export async function updateMaintenanceRecord(data: MaintenanceUpdateInput) {
   const { maintanence_id, ...rest } = data
   return await apiClient.patchFn<MaintenanceRecord>(
-    `/${endpoint}/${maintanence_id}`,
+    `${endpoint}/${maintanence_id}`,
     rest
   )
 }
 
 export async function recordBreakdownMaintenance(data: RecordBreakdownInput) {
   return await apiClient.postFn<MaintenanceRecord>(
-    `/${endpoint}/breakdown`,
+    `${endpoint}/breakdown`,
     data
   )
 }
@@ -40,25 +40,25 @@ export async function recordBreakdownMaintenance(data: RecordBreakdownInput) {
 export async function changeMaintenanceStatus(data: MoveRecordInput) {
   const { maintanenceId, newStatus } = data
   return await apiClient.postFn<MaintenanceRecord>(
-    `/${endpoint}/${maintanenceId}/move`,
+    `${endpoint}/${maintanenceId}/move`,
     { to_status: newStatus }
   )
 }
 export async function cancleMaintenance(maintanenceId: EntityId) {
   return await apiClient.postFn<MaintenanceRecord>(
-    `/${endpoint}/${maintanenceId}/cancel`,
+    `${endpoint}/${maintanenceId}/cancel`,
     {}
   )
 }
 export async function startMaintenance(maintanenceId: EntityId) {
   return await apiClient.postFn<MaintenanceRecord>(
-    `/${endpoint}/${maintanenceId}/start`,
+    `${endpoint}/${maintanenceId}/start`,
     {}
   )
 }
 export async function finishMaintenanceRecord(maintanenceId: EntityId) {
   return await apiClient.postFn<MaintenanceRecord>(
-    `/${endpoint}/${maintanenceId}/complete`,
+    `${endpoint}/${maintanenceId}/complete`,
     {}
   )
 }

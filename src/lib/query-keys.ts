@@ -13,6 +13,7 @@ import { shipmentsQueryKeys } from "@/features/shipments/query-options"
 import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { quotationQueryKeys } from "@/features/quotations/query-options"
+import { maintenanceQueryKeys } from "@/features/maintanence/query-options"
 import { pricingQueryKeys } from "@/features/settings/pricing/query-options"
 import { islandsQueryKeys } from "@/features/settings/islands/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
@@ -41,6 +42,7 @@ export const queryKeys = {
   services: serviceQueryKeys,
   numberPatterns: entityNumberPattensQueryKeys,
   islands: islandsQueryKeys,
+  maintenance: maintenanceQueryKeys,
 
   settings: {
     app: () => settingsQueryKeys.all(),

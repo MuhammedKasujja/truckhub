@@ -97,6 +97,12 @@ export class QueryInvalidator {
         queryKey: queryKeys.invoices.detail(id),
       }),
   }
+  maintenanceBoard = {
+    refresh: () =>
+      this.queryClient.invalidateQueries({
+        queryKey: queryKeys.maintenance.board(),
+      }),
+  }
 
   services = {
     list: {

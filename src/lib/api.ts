@@ -66,9 +66,8 @@ api.interceptors.response.use(
     // Log the error in development
     if (process.env.NODE_ENV === "development") {
       logger.info(
-        `Endpoint  ${error.config?.url} [ ${error.request.method} ] ${error.code} --> ${error.status}\n`
+        `Endpoint  ${error.config?.url} [ ${error.request?.method} ] ${error.code} --> ${error.status}\n`
       )
-      // logger.error(error)
       logger.error(
         jsonFormatter({
           ErrorCode: error.code,
@@ -124,7 +123,7 @@ api.interceptors.response.use(
       if (error.status === 404 && !(error.response?.data as any).error) {
         if (process.env.NODE_ENV === "development") {
           logger.error(
-            `${error.request.method} ${error.request.path} 404 - NOT FOUND`
+            `${error.request?.method} ${error.request.path} 404 - NOT FOUND`
           )
         }
         return Promise.reject({

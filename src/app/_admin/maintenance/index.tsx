@@ -13,5 +13,9 @@ export const Route = createFileRoute("/_admin/maintenance/")({
 function RouteComponent() {
   const { data } = useQuery(maintenanceBoardQueryOptions())
 
-  return <BoardViewMaintenanceRecord records={data ?? {}} />
+  return (
+    <>
+      <BoardViewMaintenanceRecord records={data ?? {}} />
+    </>
+  )
 }
