@@ -35,6 +35,7 @@ type Module =
   | "Vehicles"
   | "Users"
   | "Bookings"
+  | "Maintenance"
   | "Rides"
   | "Services"
   | "Payments"
@@ -76,6 +77,7 @@ export function getModuleIcon(module: Module): IconComponent {
     Settings: SettingsIcon,
     Quotations: ListCheckIcon,
     Invoices: FileTextIcon,
+    Maintenance: CalendarCheck,
   }
   return moduleIcons[module]
 }

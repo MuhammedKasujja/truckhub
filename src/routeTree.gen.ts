@@ -25,6 +25,7 @@ import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/inde
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
+import { Route as AdminMaintenanceIndexRouteImport } from './app/_admin/maintenance/index'
 import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
 import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/index'
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
@@ -175,6 +176,11 @@ const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
 const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   id: '/payments/',
   path: '/payments/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMaintenanceIndexRoute = AdminMaintenanceIndexRouteImport.update({
+  id: '/maintenance/',
+  path: '/maintenance/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminLiveMapIndexRoute = AdminLiveMapIndexRouteImport.update({
@@ -613,6 +619,7 @@ export interface FileRoutesByFullPath {
   '/drivers/': typeof AdminDriversIndexRoute
   '/invoices/': typeof AdminInvoicesIndexRoute
   '/live-map/': typeof AdminLiveMapIndexRoute
+  '/maintenance/': typeof AdminMaintenanceIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
@@ -702,6 +709,7 @@ export interface FileRoutesByTo {
   '/drivers': typeof AdminDriversIndexRoute
   '/invoices': typeof AdminInvoicesIndexRoute
   '/live-map': typeof AdminLiveMapIndexRoute
+  '/maintenance': typeof AdminMaintenanceIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
@@ -793,6 +801,7 @@ export interface FileRoutesById {
   '/_admin/drivers/': typeof AdminDriversIndexRoute
   '/_admin/invoices/': typeof AdminInvoicesIndexRoute
   '/_admin/live-map/': typeof AdminLiveMapIndexRoute
+  '/_admin/maintenance/': typeof AdminMaintenanceIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
@@ -884,6 +893,7 @@ export interface FileRouteTypes {
     | '/drivers/'
     | '/invoices/'
     | '/live-map/'
+    | '/maintenance/'
     | '/payments/'
     | '/quotations/'
     | '/reports/'
@@ -973,6 +983,7 @@ export interface FileRouteTypes {
     | '/drivers'
     | '/invoices'
     | '/live-map'
+    | '/maintenance'
     | '/payments'
     | '/quotations'
     | '/reports'
@@ -1063,6 +1074,7 @@ export interface FileRouteTypes {
     | '/_admin/drivers/'
     | '/_admin/invoices/'
     | '/_admin/live-map/'
+    | '/_admin/maintenance/'
     | '/_admin/payments/'
     | '/_admin/quotations/'
     | '/_admin/reports/'
@@ -1250,6 +1262,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments/'
       preLoaderRoute: typeof AdminPaymentsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/maintenance/': {
+      id: '/_admin/maintenance/'
+      path: '/maintenance'
+      fullPath: '/maintenance/'
+      preLoaderRoute: typeof AdminMaintenanceIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/live-map/': {
@@ -1925,6 +1944,7 @@ interface AdminRouteRouteChildren {
   AdminDriversIndexRoute: typeof AdminDriversIndexRoute
   AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
   AdminLiveMapIndexRoute: typeof AdminLiveMapIndexRoute
+  AdminMaintenanceIndexRoute: typeof AdminMaintenanceIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -1976,6 +1996,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminDriversIndexRoute: AdminDriversIndexRoute,
   AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
   AdminLiveMapIndexRoute: AdminLiveMapIndexRoute,
+  AdminMaintenanceIndexRoute: AdminMaintenanceIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
