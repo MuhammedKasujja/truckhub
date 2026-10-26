@@ -13,6 +13,7 @@ import { updateServiceFn } from "@/features/services/services"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
 
@@ -26,7 +27,8 @@ export const Route = createFileRoute("/_admin/services/$serviceId/edit")({
 })
 
 function RouteComponent() {
-  const { data } = Route.useLoaderData()
+  const { serviceId } = Route.useParams()
+  const { data } = useSuspenseQuery(serviceDetailsQueryOptions(serviceId))
   const queryInvalidator = useQueryInvalidator()
   const tr = useTranslation()
 
@@ -53,8 +55,8 @@ function RouteComponent() {
           <ServiceForm
             mode="edit"
             defaultValues={{
-              ...data,
-              car_brand_id: data?.car_model?.car_brand.id,
+              ...data.data,
+              car_brand_id: data.data?.car_model?.car_brand.id,
             }}
             onSubmit={onSubmit}
           />

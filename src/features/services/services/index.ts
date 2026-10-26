@@ -28,7 +28,7 @@ export const getServicesByQueryFn = createServerFn()
 export const getServiceByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getServiceById(data.id)
+    return apiResponseTransform(getServiceById(data.id))
   })
 
 export const deleteServiceFn = createServerFn()

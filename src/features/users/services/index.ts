@@ -44,7 +44,7 @@ export const getUserDetailsFn = createServerFn()
   })
 
 export const getUserProfileDetailsFn = createServerFn().handler(async () => {
-  return getUserProfileById()
+  return apiResponseTransform(getUserProfileById())
 })
 
 export const deleteUserFn = createServerFn()
