@@ -5,6 +5,7 @@ import {
   maintenanceMoveSchema,
   maintenanceCreateSchema,
   maintenanceUpdateSchema,
+  maintenanceSearchParams,
 } from "../schemas"
 import {
   startMaintenance,
@@ -17,19 +18,21 @@ import {
 } from "./server"
 import { EntityIdSchema } from "@/schemas"
 
-export const getMaintenanceBoardViewFn = createServerFn().handler(async () => {
-  const response = await getMaintenanceBoardView()
-  if (response.error) {
-    const { message, statusCode } = response.error
-    throw new ApiError(message, statusCode)
-  }
-  const items = response.data?.columns ?? []
+export const getMaintenanceBoardViewFn = createServerFn()
+  .inputValidator(maintenanceSearchParams)
+  .handler(async ({data}) => {
+    const response = await getMaintenanceBoardView(data)
+    if (response.error) {
+      const { message, statusCode } = response.error
+      throw new ApiError(message, statusCode)
+    }
+    const items = response.data?.columns ?? []
 
-  const result = Object.fromEntries(
-    items.map((item) => [item.status, item.cards])
-  )
-  return result
-})
+    const result = Object.fromEntries(
+      items.map((item) => [item.status, item.cards])
+    )
+    return result
+  })
 
 export const createMaintenanceRecordFn = createServerFn()
   .inputValidator(maintenanceCreateSchema)

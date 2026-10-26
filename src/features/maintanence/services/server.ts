@@ -5,8 +5,10 @@ import {
   RecordBreakdownInput,
   MaintenanceCreateInput,
   MaintenanceUpdateInput,
+  MaintenanceSearchParamsInput,
 } from "../schemas"
 import { EntityId } from "@/schemas"
+import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/maintenance"
 
@@ -14,8 +16,11 @@ export async function getMaintenanceRecords() {
   return await apiClient.getFn<MaintenanceRecord>(endpoint)
 }
 
-export async function getMaintenanceBoardView() {
-  return await apiClient.getFn<BoardResponse>(`${endpoint}/board?include_cancelled=true`)
+export async function getMaintenanceBoardView(
+  data: MaintenanceSearchParamsInput
+) {
+  const params = generateApiSearchParams(data)
+  return await apiClient.getFn<BoardResponse>(`${endpoint}/board?${params}`)
 }
 
 export async function createMaintenanceRecord(data: MaintenanceCreateInput) {

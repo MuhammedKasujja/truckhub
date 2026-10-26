@@ -29,6 +29,17 @@ export const maintenanceMoveSchema = z.object({
   newStatus: z.enum(maintanenceStatuses),
 })
 
+export const maintenanceSearchParams = z.object({
+  per_column: z.number().max(100).optional().default(50),
+  include_cancelled: z.boolean().default(false),
+  vehicle_id: IDSchema.nullable().optional(),
+  type: z.enum(maintanenceTypes).nullable().optional(),
+})
+
+export type MaintenanceSearchParamsInput = z.infer<
+  typeof maintenanceSearchParams
+>
+
 export type MaintenanceCreateInput = z.infer<typeof maintenanceCreateSchema>
 
 export type MaintenanceUpdateInput = z.infer<typeof maintenanceUpdateSchema>

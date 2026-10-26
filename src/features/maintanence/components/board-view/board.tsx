@@ -28,6 +28,7 @@ import { ActionIcon } from "@/components/icons"
 import { MaintenanceTaskTypeIndicator } from "../maintenance-task-type-indicator"
 import { IconCalendarTime, IconCar } from "@tabler/icons-react"
 import { toast } from "sonner"
+import { useSearch } from "@tanstack/react-router"
 
 const COLUMN_TITLES: Record<string, { title: string; color: string }> = {
   scheduled: { title: "Scheduled", color: "bg-gray-500" },
@@ -46,6 +47,8 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
   const board = useMoveMaintenanceRecord()
   const [columns, setColumns] = useState<RecordColumn>({})
   const [recordToEdit, setRecordToEdit] = useState<MaintenanceRecord>()
+
+  const search = useSearch({ from: "/_admin/maintenance/" })
 
   useEffect(() => {
     setColumns(records)
@@ -76,19 +79,6 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
         )
       }
     }
-    const label =
-      meta.kind === "column"
-        ? `Reordered "${COLUMN_TITLES[meta.activeContainer].title ?? meta.activeContainer}"`
-        : `Moved to "${COLUMN_TITLES[meta.overContainer].title ?? meta.overContainer}"`
-
-    // toast.promise(persistBoard(), {
-    //   loading: "Saving board...",
-    //   success: () => label,
-    //   error: () => {
-    //     setColumns(previous)
-    //     return "Could not save. Board restored."
-    //   },
-    // })
   }
 
   return (
@@ -99,7 +89,12 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
       onValueCommit={handleValueCommit}
       draggable={false}
     >
-      <KanbanBoard className="grid grid-cols-4 sm:grid-cols-4">
+      <KanbanBoard
+        className={cn(
+          "grid grid-cols-3 sm:grid-cols-3",
+          search.include_cancelled && "grid-cols-4 sm:grid-cols-4"
+        )}
+      >
         {Object.entries(columns).map(([colId, tasks]) => {
           const col = COLUMN_TITLES[colId]
           return (

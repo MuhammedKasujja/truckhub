@@ -14,16 +14,20 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { ActionIcon } from "@/components/icons"
+import { maintenanceSearchParams } from "@/features/maintanence/schemas"
 
 export const Route = createFileRoute("/_admin/maintenance/")({
+  validateSearch: maintenanceSearchParams,
+  loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
-  loader: ({ context }) => {
-    context.queryClient.prefetchQuery(maintenanceBoardQueryOptions())
+  loader: ({ context, deps: { search } }) => {
+    context.queryClient.prefetchQuery(maintenanceBoardQueryOptions(search))
   },
 })
 
 function RouteComponent() {
-  const { data } = useQuery(maintenanceBoardQueryOptions())
+  const search = Route.useSearch()
+  const { data } = useQuery(maintenanceBoardQueryOptions(search))
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   return (
