@@ -36,7 +36,8 @@ export const getShipmentsFn = createServerFn()
 export const getShipmentByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return await apiResponseTransform(getShipmentById(data.id))
+    const result = await apiResponseTransform(getShipmentById(data.id))
+    return result.data!
   })
 
 export const endShipmentFn = createServerFn()
@@ -47,19 +48,19 @@ export const endShipmentFn = createServerFn()
 
 export const dispatchShipmentFn = createServerFn()
   .inputValidator(dispatchShipmentSchema)
-  .handler(async ({ data }) => {
-    return await apiResponseTransform(dispatchShipment(data))
+  .handler(({ data }) => {
+    return apiResponseTransform(dispatchShipment(data))
   })
 
 export const recordShipmentDetailsFn = createServerFn()
   .inputValidator(recordShipmentDetailsSchema)
-  .handler(async ({ data }) => {
-    return await apiResponseTransform(recordShipmentDetails(data))
+  .handler(({ data }) => {
+    return apiResponseTransform(recordShipmentDetails(data))
   })
 
 export const shipmentAssignVehicleFn = createServerFn()
   .inputValidator(assignShipmentVehicleSchema)
-  .handler(async ({ data }) => {
+  .handler(({ data }) => {
     return apiResponseTransform(shipmentAssignVehicle(data))
   })
 
