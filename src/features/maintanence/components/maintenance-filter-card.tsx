@@ -113,7 +113,7 @@ export function MaintenanceFilterCard({
             }}
           />
           <Label htmlFor="maintenance-include-cancelled">
-            Include cancelled
+            Show cancelled
           </Label>
         </div>
       </CardContent>

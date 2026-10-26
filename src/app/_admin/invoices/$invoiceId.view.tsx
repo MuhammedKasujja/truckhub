@@ -8,6 +8,7 @@ import { EnterPaymentModal } from "@/features/payments/components"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
 import { formatDate, formatMoney } from "@/lib/format"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import Decimal from "decimal.js"
 import { useState } from "react"
@@ -22,7 +23,10 @@ export const Route = createFileRoute("/_admin/invoices/$invoiceId/view")({
 })
 
 function RouteComponent() {
-  const { data: invoice } = Route.useLoaderData()
+  const { invoiceId } = Route.useParams()
+  const { data } = useSuspenseQuery(invoiceDetailsQueryOptions(invoiceId))
+  const invoice = data.data
+
   const { sendInvoiceEmail } = useSendInvoiceEmail()
   const [openModal, setOpenModal] = useState(false)
 
@@ -221,7 +225,19 @@ function RouteComponent() {
   )
 }
 
-function SummaryRow({ label, value, bold = false, muted = false }) {
+type SummaryProps = {
+  label: string
+  value: string
+  bold?: boolean
+  muted?: boolean
+}
+
+function SummaryRow({
+  label,
+  value,
+  bold = false,
+  muted = false,
+}: SummaryProps) {
   return (
     <div className="flex items-center justify-between py-1.5">
       <span

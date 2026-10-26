@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { maintenanceBoardQueryOptions } from "@/features/maintanence/query-options"
 import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   BoardViewMaintenanceRecord,
   MaintenanceFilterCard,
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_admin/maintenance/")({
 
 function RouteComponent() {
   const search = Route.useSearch()
-  const navigate = useNavigate({ from: Route.fullPath })
+  const navigate = Route.useNavigate()
   const { data } = useQuery(maintenanceBoardQueryOptions(search))
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
@@ -64,9 +64,11 @@ function RouteComponent() {
       </PageHeader>
       {showFilters && (
         <div className="mb-5">
-          <MaintenanceFilterCard search={search} onSearchChange={updateSearch} />
+          <MaintenanceFilterCard
+            search={search}
+            onSearchChange={updateSearch}
+          />
         </div>
-        
       )}
       <BoardViewMaintenanceRecord records={data ?? {}} />
       <MaintenanceTaskDialog
