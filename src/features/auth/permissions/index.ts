@@ -13,6 +13,7 @@ import { ServiceModulePermissions } from "./services_permissions";
 import { ShipmentModulePermissions } from "./shipment_permissions";
 import { QuotationModulePermissions } from "./quotation_permissions";
 import { DashboardModulePermissions } from "./dashboard_permissions";
+import { MaintenanceModulePermissions } from "./maintenance_permissions";
 
 /**
  * Derived system permissions based on the `StoreDatabasePermissions`
@@ -32,7 +33,8 @@ export const KeyNamedPermissions = {
   ...DriverModulePermissions,
   ...VehicleModulePermissions,
   ...ConfigModulePermissions,
-  ...ReportsModulePermissions
+  ...ReportsModulePermissions,
+  ...MaintenanceModulePermissions
 } as const;
 
 export type UserPermission = keyof typeof KeyNamedPermissions;
@@ -50,6 +52,7 @@ export const SystemPermissions = {
   customers: ClientModulePermissions,
   drivers: DriverModulePermissions,
   vehicles: VehicleModulePermissions,
+  maintenance: MaintenanceModulePermissions,
   users: UserModulePermissions,
   config: ConfigModulePermissions,
   reports: ReportsModulePermissions,

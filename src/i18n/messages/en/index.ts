@@ -211,6 +211,19 @@ const en = {
       over_due: "Over due",
     },
   },
+  maintenance: {
+    types: {
+      routine: "Routine",
+      repair: "Repair",
+      inspection: "Inspection",
+    },
+    statuses: {
+      scheduled: "Scheduled",
+      in_progress: "In Progress",
+      completed: "Completed",
+      cancelled: "Cancelled",
+    },
+  },
 } as const
 
 export default en

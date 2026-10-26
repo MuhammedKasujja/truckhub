@@ -1,6 +1,7 @@
 import { Settings, ToolCase } from "lucide-react"
 import { MaintenanceType } from "../enums"
 import { IconCircleDotted } from "@tabler/icons-react"
+import { useTranslation } from "@/i18n"
 
 type Props = {
   type: MaintenanceType
@@ -16,10 +17,11 @@ function Indicator({ type }: Props) {
 }
 
 export function MaintenanceTaskTypeIndicator({ type }: Props) {
+  const tr = useTranslation()
   return (
     <span className="flex items-center gap-1 text-sm font-normal">
       <Indicator type={type} />
-      {type}
+      {tr(`maintenance.types.${type}`)}
     </span>
   )
 }

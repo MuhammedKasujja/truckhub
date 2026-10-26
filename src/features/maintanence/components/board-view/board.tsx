@@ -100,7 +100,7 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
       draggable={false}
     >
       <KanbanBoard className="grid grid-cols-4 sm:grid-cols-4">
-        {Object.entries(columns).map(([colId, features]) => {
+        {Object.entries(columns).map(([colId, tasks]) => {
           const col = COLUMN_TITLES[colId]
           return (
             <KanbanColumn key={colId} value={colId}>
@@ -111,19 +111,19 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
                     {col.title}
                   </FrameTitle>
                   <Badge variant="outline" size="sm" className="ml-auto">
-                    {features.length}
+                    {tasks.length}
                   </Badge>
                 </FrameHeader>
                 <KanbanColumnContent
                   value={colId}
                   className="flex flex-col gap-2 p-0.5"
                 >
-                  {features.map((feature) => (
+                  {tasks.map((record) => (
                     <MaintenanceCard
-                      key={feature.id}
-                      record={feature}
+                      key={record.id}
+                      record={record}
                       asHandle
-                      onEdit={() => setRecordToEdit(feature)}
+                      onEdit={() => setRecordToEdit(record)}
                     />
                   ))}
                 </KanbanColumnContent>
@@ -177,6 +177,7 @@ function MaintenanceCard({
               </Button>
             )}
           </div>
+          <span className="text-xs text-muted-foreground">{record.reason}</span>
           <p className="line-clamp-2 flex items-center gap-1 text-xs text-muted-foreground">
             <IconCar className="size-3.5" />
             {record.vehicle.plate_number}
