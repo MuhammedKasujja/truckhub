@@ -2,6 +2,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -14,6 +15,7 @@ import {
   useUpdateMaintenanceRecord,
 } from "../hooks/use-maintenance"
 import { MaintenanceRecord } from "../types"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 type MaintenanceTaskDialogProps = {
   open: boolean
@@ -55,17 +57,25 @@ export function MaintenanceTaskDialog({
           </DialogDescription>
         </DialogHeader>
         {record ? (
-          <MaintenanceTaskEditForm
-            key={record.id}
-            defaultValues={{
-              maintanence_id: record.id,
-              type: record.type,
-              reason: record.reason,
-              expected_end: record.expected_end,
-            }}
-            isPending={updateMutation.isPending}
-            onSubmit={handleUpdate}
-          />
+          <>
+            <MaintenanceTaskEditForm
+              key={record.id}
+              defaultValues={{
+                maintanence_id: record.id,
+                type: record.type,
+                reason: record.reason,
+                expected_end: record.expected_end,
+              }}
+              onSubmit={handleUpdate}
+            />
+            <DialogFooter>
+              <SubmitButton
+                form="task-update"
+                text="Save changes"
+                isSubmitting={updateMutation.isPending}
+              />
+            </DialogFooter>
+          </>
         ) : (
           <MaintenanceTaskForm
             isPending={createMutation.isPending}

@@ -63,7 +63,10 @@ export function ServiceList({
 
             <CardContent className="space-y-2 text-sm">
               <div className="h-40 rounded-sm border bg-accent">
-                <img src={service.image_url} />
+                <img
+                  src={service.image_url}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div className="space-y-1">
                 <div className="flex w-full justify-between">

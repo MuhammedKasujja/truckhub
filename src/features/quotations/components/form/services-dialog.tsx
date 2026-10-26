@@ -125,7 +125,7 @@ export function ServicesDialog({
       return
     }
 
-     form.handleSubmit(
+    form.handleSubmit(
       (data) => {
         const title = `${selectedService?.display_name}`
         onLineItemAdded({ ...data, display_name: title })
@@ -379,7 +379,10 @@ function ServiceList({
 
               <CardContent className="space-y-2 text-sm">
                 <div className="h-40 rounded-sm bg-accent">
-                  <img src={service.image_url} />
+                  <img
+                    src={service.image_url}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
 
                 <div className="space-y-1">

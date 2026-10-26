@@ -19,10 +19,12 @@ import {
   MaintenanceSearchParamsInput,
   maintenanceSearchParams,
 } from "@/features/maintanence/schemas"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/maintenance/")({
   validateSearch: maintenanceSearchParams,
   loaderDeps: ({ search }) => ({ search }),
+  beforeLoad: () => requirePermission("maintenance:module"),
   component: RouteComponent,
   loader: ({ context, deps: { search } }) => {
     context.queryClient.prefetchQuery(maintenanceBoardQueryOptions(search))

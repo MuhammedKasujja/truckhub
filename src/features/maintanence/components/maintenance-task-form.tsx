@@ -115,7 +115,6 @@ export function MaintenanceTaskForm({
 
 type MaintenanceTaskEditFormProps = {
   defaultValues: z.infer<typeof maintenanceUpdateSchema>
-  isPending?: boolean
   onSubmit: (
     values: z.infer<typeof maintenanceUpdateSchema>
   ) => void | Promise<void>
@@ -123,7 +122,6 @@ type MaintenanceTaskEditFormProps = {
 
 export function MaintenanceTaskEditForm({
   defaultValues,
-  isPending = false,
   onSubmit,
 }: MaintenanceTaskEditFormProps) {
   type Values = z.infer<typeof maintenanceUpdateSchema>
@@ -138,7 +136,7 @@ export function MaintenanceTaskEditForm({
   }
 
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)}>
+    <form onSubmit={form.handleSubmit(handleSubmit)} id="task-update">
       <FieldGroup>
         <HiddenField control={form.control} name="maintanence_id" />
         <SelectField
@@ -162,12 +160,6 @@ export function MaintenanceTaskEditForm({
           selected={form.watch("expected_end") ?? undefined}
         />
       </FieldGroup>
-      <CardFooter className="px-0 pb-0">
-        <SubmitButton
-          text="Save changes"
-          isSubmitting={form.formState.isSubmitting || isPending}
-        />
-      </CardFooter>
     </form>
   )
 }
