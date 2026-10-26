@@ -1,8 +1,8 @@
 import z from "zod"
 import { Shipment } from "./types"
-import { shipmentStatuses } from "./enums"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { type EntityId, IDSchema, MoneySchema } from "@/schemas"
+import { reassignmentReasonsList, shipmentStatuses } from "./enums"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ShipmentSearchParams = z.object({
@@ -19,13 +19,20 @@ const consumedFuelRateSchema = z.object({
 
 export const dispatchShipmentSchema = z.object({
   unitId: IDSchema,
-  startMileage: z.number('Required').positive(),
+  startMileage: z.number("Required").positive(),
   contactName: z.string("Required").min(3, "Required"),
 })
 
 export const assignShipmentVehicleSchema = z.object({
   unitId: IDSchema,
   vehicleId: IDSchema,
+})
+
+export const changeShipmentVehicleSchema = z.object({
+  unitId: IDSchema,
+  newVehicleId: IDSchema,
+  note: z.string().trim().nullable().optional(),
+  reason: z.enum(reassignmentReasonsList, "Required"),
 })
 
 export const assignShipmentDriverSchema = z.object({
@@ -62,6 +69,10 @@ export type DispatchShipmentInput = z.infer<typeof dispatchShipmentSchema>
 
 export type AssignShipmentVehicleInput = z.infer<
   typeof assignShipmentVehicleSchema
+>
+
+export type ChangeShipmentVehicleInput = z.infer<
+  typeof changeShipmentVehicleSchema
 >
 
 export type AssignShipmentDriverInput = z.infer<

@@ -9,6 +9,7 @@ import {
   AssignShipmentDriverInput,
   RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
+  ChangeShipmentVehicleInput,
 } from "../schemas"
 
 const endpoint = "/v1/trips"
@@ -64,6 +65,14 @@ export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
   return await apiClient.postFn<Shipment>(
     `${endpoint}/${data.unitId}/vehicle/assign`,
     { vehicle_id: data.vehicleId }
+  )
+}
+
+export async function changeShipmentVehicle(data: ChangeShipmentVehicleInput) {
+  const { unitId, reason, newVehicleId, note } = data
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${unitId}/vehicle/reassign`,
+    { new_vehicle_id: newVehicleId, reason, note }
   )
 }
 

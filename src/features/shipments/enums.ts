@@ -13,3 +13,13 @@ export const shipmentStatuses = [
 ] as const
 
 export type ShipmentStatus = (typeof shipmentStatuses)[number]
+
+export const reassignmentReasonsList = [
+  "breakdown",
+  "maintenance",
+  "customer_request",
+  "upgrade",
+  "other",
+] as const
+
+export type ReassignmentReason = (typeof reassignmentReasonsList)[number]

@@ -5,6 +5,7 @@ import {
   AssignShipmentDriverInput,
   RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
+  ChangeShipmentVehicleInput,
 } from "../schemas"
 import {
   endShipmentFn,
@@ -12,6 +13,7 @@ import {
   shipmentAssignDriverFn,
   recordShipmentDetailsFn,
   shipmentAssignVehicleFn,
+  changeShipmentVehicleFn,
 } from "../services"
 import { Shipment } from "../types"
 import { EntityId } from "@/schemas"
@@ -148,6 +150,34 @@ export function useAssignShipmentVehicle() {
     )
   }
   return { isPending, assignShipmentVehicle }
+}
+
+const useChangeShipmentVehicleBase = createEntityActionHook(
+  changeShipmentVehicleFn,
+  (invalidator, input) => {
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId)
+    invalidator.vehicles.list.invalidate()
+    invalidator.vehicles.details(input.data.newVehicleId)
+  }
+)
+
+export function useChangeShipmentVehicle() {
+  const queryClient = useQueryClient()
+
+  const { isPending, execute, ...reset } = useChangeShipmentVehicleBase()
+
+  function changeShipmentVehicle(data: ChangeShipmentVehicleInput) {
+    return execute(
+      { data },
+      {
+        onSuccess: ({ data: shipment }) => {
+          refreshShipmentDetails(queryClient, data.unitId, shipment)
+        },
+      }
+    )
+  }
+  return { isPending, changeShipmentVehicle, ...reset }
 }
 
 function refreshShipmentDetails(

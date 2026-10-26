@@ -7,6 +7,7 @@ import {
   assignShipmentDriverSchema,
   recordShipmentDetailsSchema,
   assignShipmentVehicleSchema,
+  changeShipmentVehicleSchema,
 } from "../schemas"
 import {
   endShipment,
@@ -16,8 +17,10 @@ import {
   shipmentAssignDriver,
   recordShipmentDetails,
   shipmentAssignVehicle,
+  changeShipmentVehicle,
 } from "./server"
 import { ApiError } from "@/types"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getShipmentsFn = createServerFn()
   .inputValidator(ShipmentSearchParams)
@@ -33,59 +36,41 @@ export const getShipmentsFn = createServerFn()
 export const getShipmentByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await getShipmentById(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return result.data!
+    return await apiResponseTransform(getShipmentById(data.id))
   })
 
 export const endShipmentFn = createServerFn()
   .inputValidator(endShipmentSchema)
   .handler(async ({ data }) => {
-    const result = await endShipment(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return await apiResponseTransform(endShipment(data))
   })
 
 export const dispatchShipmentFn = createServerFn()
   .inputValidator(dispatchShipmentSchema)
   .handler(async ({ data }) => {
-    const result = await dispatchShipment(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return await apiResponseTransform(dispatchShipment(data))
   })
 
 export const recordShipmentDetailsFn = createServerFn()
   .inputValidator(recordShipmentDetailsSchema)
   .handler(async ({ data }) => {
-    const result = await recordShipmentDetails(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return await apiResponseTransform(recordShipmentDetails(data))
   })
 
 export const shipmentAssignVehicleFn = createServerFn()
   .inputValidator(assignShipmentVehicleSchema)
   .handler(async ({ data }) => {
-    const result = await shipmentAssignVehicle(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return apiResponseTransform(shipmentAssignVehicle(data))
   })
 
 export const shipmentAssignDriverFn = createServerFn()
   .inputValidator(assignShipmentDriverSchema)
-  .handler(async ({ data }) => {
-    const result = await shipmentAssignDriver(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+  .handler(({ data }) => {
+    return apiResponseTransform(shipmentAssignDriver(data))
+  })
+
+export const changeShipmentVehicleFn = createServerFn()
+  .inputValidator(changeShipmentVehicleSchema)
+  .handler(({ data }) => {
+    return apiResponseTransform(changeShipmentVehicle(data))
   })
