@@ -1,4 +1,9 @@
-import { IconAccessPoint, IconAssembly, IconFileTypePdf, IconReportMoney } from "@tabler/icons-react"
+import {
+  IconAccessPoint,
+  IconAssembly,
+  IconFilter,
+  IconReportMoney,
+} from "@tabler/icons-react"
 import { cn } from "cn"
 import {
   DatabaseSearch,
@@ -21,6 +26,7 @@ import {
   MailIcon,
   EyeIcon,
   MapIcon,
+  FileTerminalIcon,
 } from "lucide-react"
 import { ComponentType, SVGProps } from "react"
 
@@ -58,6 +64,7 @@ type Actions =
   | "view-pdf"
   | "accept"
   | "reverse"
+  | "filter"
 
 export function getModuleIcon(module: Module): IconComponent {
   const moduleIcons: Record<Module, IconComponent> = {
@@ -92,10 +99,11 @@ export function getActionIcon(action: Actions): IconComponent {
     pay: CreditCard,
     email: MailIcon,
     cancel: PanelTopCloseIcon,
-    "download-pdf": IconFileTypePdf,
+    "download-pdf": FileTerminalIcon,
     "view-pdf": FileTextIcon,
-    "accept": IconAccessPoint,
-    "reverse": IconAccessPoint,
+    accept: IconAccessPoint,
+    reverse: IconAccessPoint,
+    filter: IconFilter,
   }
   return actionIcons[action]
 }

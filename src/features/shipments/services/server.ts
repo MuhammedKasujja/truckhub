@@ -62,7 +62,7 @@ export async function recordShipmentDetails(data: RecordShipmentDetailsInput) {
 
 export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
   return await apiClient.postFn<Shipment>(
-    `${endpoint}/${data.unitId}/vehicle`,
+    `${endpoint}/${data.unitId}/vehicle/assign`,
     { vehicle_id: data.vehicleId }
   )
 }

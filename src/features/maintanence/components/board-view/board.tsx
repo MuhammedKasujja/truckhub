@@ -18,15 +18,18 @@ import {
 } from "@/components/reui/kanban"
 
 import { cn } from "cn"
-import { MaintenanceRecord } from "../../types"
+import { MaintenanceRecord } from "@/features/maintanence/types"
 import { formatDate } from "@/lib/format"
-import { toast } from "sonner"
-import { useMoveMaintenanceRecord } from "../../hooks/use-maintenance"
-import { MaintenanceStatus } from "../../enums"
+import { useMoveMaintenanceRecord } from "@/features/maintanence/hooks/use-maintenance"
+import { MaintenanceStatus } from "@/features/maintanence/enums"
+import { Button } from "@/components/ui/button"
+import { Pencil } from "lucide-react"
+import { MaintenanceTaskDialog } from "../maintenance-task-dialog"
+import { ActionIcon } from "@/components/icons"
 
 const COLUMN_TITLES: Record<string, { title: string; color: string }> = {
-  scheduled: { title: "Scheduled", color: "bg-blue-500" },
-  in_progress: { title: "In Progress", color: "bg-yellow-500" },
+  scheduled: { title: "Scheduled", color: "bg-gray-500" },
+  in_progress: { title: "In Progress", color: "bg-blue-500" },
   completed: { title: "Completed", color: "bg-green-500" },
   cancelled: { title: "Cancelled", color: "bg-red-500" },
 }
@@ -40,6 +43,7 @@ type Props = {
 export function BoardViewMaintenanceRecord({ records }: Props) {
   const board = useMoveMaintenanceRecord()
   const [columns, setColumns] = useState<RecordColumn>({})
+  const [recordToEdit, setRecordToEdit] = useState<MaintenanceRecord>()
 
   useEffect(() => {
     setColumns(records)
@@ -101,7 +105,9 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
               <Frame spacing="sm" className="h-full">
                 <FrameHeader className="flex flex-row items-center gap-2">
                   <div className={cn("size-2 rounded-full", col.color)} />
-                  <FrameTitle className="capitalize">{col.title}</FrameTitle>
+                  <FrameTitle className="font-normal capitalize">
+                    {col.title}
+                  </FrameTitle>
                   <Badge variant="outline" size="sm" className="ml-auto">
                     {features.length}
                   </Badge>
@@ -115,6 +121,7 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
                       key={feature.id}
                       record={feature}
                       asHandle
+                      onEdit={() => setRecordToEdit(feature)}
                     />
                   ))}
                 </KanbanColumnContent>
@@ -124,6 +131,13 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
         })}
       </KanbanBoard>
       <KanbanOverlay className="rounded-md border-2 border-dashed bg-muted/10" />
+      <MaintenanceTaskDialog
+        open={recordToEdit !== undefined}
+        onOpenChange={(open) => {
+          if (!open) setRecordToEdit(undefined)
+        }}
+        record={recordToEdit}
+      />
     </Kanban>
   )
 }
@@ -131,18 +145,36 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
 function MaintenanceCard({
   record,
   asHandle,
+  onEdit,
   ...props
-}: { record: MaintenanceRecord; asHandle?: boolean } & Omit<
+}: { record: MaintenanceRecord; asHandle?: boolean; onEdit: () => void } & Omit<
   ComponentProps<typeof KanbanItem>,
-  "value" | "children"
+  "value" | "children" | "onEdit"
 >) {
   const content = (
     <Frame variant="ghost" spacing="sm" className="p-0">
       <FramePanel className="p-3">
         <div className="flex flex-col gap-2.5">
-          <span className="text-sm font-medium">{record.type}</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-normal">{record.type}</span>
+            {/* {record.status === "scheduled" && ( */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-xs"
+              aria-label="Edit maintenance task"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit()
+              }}
+            >
+              <ActionIcon action="edit" />
+            </Button>
+            {/* )} */}
+          </div>
           <p className="line-clamp-2 text-xs text-muted-foreground">
-            {record.vehicle.number}
+            {record.vehicle.plate_number}
           </p>
           <div className="flex items-end justify-between">
             <div className="flex items-center gap-1">

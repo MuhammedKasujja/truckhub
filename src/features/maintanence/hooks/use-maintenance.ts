@@ -1,5 +1,9 @@
 import { MoveRecordInput } from "../schemas"
-import { changeMaintenanceStatusFn } from "../services"
+import {
+  changeMaintenanceStatusFn,
+  createMaintenanceRecordFn,
+  updateMaintenanceRecordFn,
+} from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useMoveMaintenanceRecordBase = createEntityActionHook(
@@ -9,8 +13,26 @@ const useMoveMaintenanceRecordBase = createEntityActionHook(
   }
 )
 
+const useCreateMaintenanceRecordBase = createEntityActionHook(
+  createMaintenanceRecordFn,
+  (invalidator) => {
+    invalidator.maintenanceBoard.refresh()
+  }
+)
+
+const useUpdateMaintenanceRecordBase = createEntityActionHook(
+  updateMaintenanceRecordFn,
+  (invalidator) => {
+    invalidator.maintenanceBoard.refresh()
+  }
+)
+
+export const useCreateMaintenanceRecord = () => useCreateMaintenanceRecordBase()
+
+export const useUpdateMaintenanceRecord = () => useUpdateMaintenanceRecordBase()
+
 export const useMoveMaintenanceRecord = () => {
-  const { isPending, execute, ...rest} = useMoveMaintenanceRecordBase()
+  const { isPending, execute, ...rest } = useMoveMaintenanceRecordBase()
 
   function moveCard(data: MoveRecordInput) {
     return execute({ data })
