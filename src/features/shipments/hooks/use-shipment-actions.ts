@@ -168,11 +168,20 @@ export function useChangeShipmentVehicle() {
   const { isPending, execute, ...reset } = useChangeShipmentVehicleBase()
 
   function changeShipmentVehicle(data: ChangeShipmentVehicleInput) {
+    const previousVehicleId = queryClient.getQueryData<Shipment>(
+      queryKeys.shipments.detail(data.unitId)
+    )?.vehicle?.id
+
     return execute(
       { data },
       {
         onSuccess: ({ data: shipment }) => {
           refreshShipmentDetails(queryClient, data.unitId, shipment)
+          if (previousVehicleId && previousVehicleId !== data.newVehicleId) {
+            queryClient.invalidateQueries({
+              queryKey: queryKeys.vehicles.detail(previousVehicleId),
+            })
+          }
         },
       }
     )

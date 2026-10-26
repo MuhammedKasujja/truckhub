@@ -30,6 +30,7 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
+import { ChangeShipmentVehicleDialog } from "./change-shipment-vehicle-dialog"
 import {
   formatDate,
   formatDateTime,
@@ -57,7 +58,12 @@ export function ShipmentDetailsDialog({
   ...rest
 }: ShipmentDialogProps) {
   const [openModal, setOpenModal] = useState<
-    "dispatch" | "record" | "assign-vehicle" | "asign-driver" | "end-shipment"
+    | "dispatch"
+    | "record"
+    | "assign-vehicle"
+    | "change-vehicle"
+    | "asign-driver"
+    | "end-shipment"
   >()
   const { shipment } = useShipmentDetails(rest.shipment)
   const tr = useTranslation()
@@ -137,6 +143,14 @@ export function ShipmentDetailsDialog({
                         label="Model Year"
                         value={shipment.vehicle.vehicle_year}
                       />
+                      <Button
+                        className="mt-3"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setOpenModal("change-vehicle")}
+                      >
+                        Change vehicle
+                      </Button>
                     </div>
                   ) : (
                     <Empty className="border border-dashed">
@@ -206,6 +220,11 @@ export function ShipmentDetailsDialog({
       <ShipmentAssignVehicleDialog
         shipment={shipment}
         open={openModal === "assign-vehicle"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
+      <ChangeShipmentVehicleDialog
+        shipment={shipment}
+        open={openModal === "change-vehicle"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <ShipmentAssignDriverDialog
