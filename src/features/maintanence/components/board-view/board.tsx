@@ -23,9 +23,11 @@ import { formatDate } from "@/lib/format"
 import { useMoveMaintenanceRecord } from "@/features/maintanence/hooks/use-maintenance"
 import { MaintenanceStatus } from "@/features/maintanence/enums"
 import { Button } from "@/components/ui/button"
-import { Pencil } from "lucide-react"
 import { MaintenanceTaskDialog } from "../maintenance-task-dialog"
 import { ActionIcon } from "@/components/icons"
+import { MaintenanceTaskTypeIndicator } from "../maintenance-task-type-indicator"
+import { IconCalendarTime, IconCar } from "@tabler/icons-react"
+import { toast } from "sonner"
 
 const COLUMN_TITLES: Record<string, { title: string; color: string }> = {
   scheduled: { title: "Scheduled", color: "bg-gray-500" },
@@ -56,7 +58,7 @@ export function BoardViewMaintenanceRecord({ records }: Props) {
     const previous = meta.previousValue
     if (meta.kind === "item") {
       const item = meta.previousValue[meta.activeContainer].at(meta.overIndex)
-      if (item) {
+      if (item && meta.activeContainer != meta.overContainer) {
         board.mutate(
           {
             data: {
@@ -153,32 +155,36 @@ function MaintenanceCard({
 >) {
   const content = (
     <Frame variant="ghost" spacing="sm" className="p-0">
-      <FramePanel className="p-3">
+      <FramePanel className="group/maintenance-card p-3">
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-normal">{record.type}</span>
-            {/* {record.status === "scheduled" && ( */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-xs"
-              aria-label="Edit maintenance task"
-              onPointerDown={(event) => event.stopPropagation()}
-              onClick={(event) => {
-                event.stopPropagation()
-                onEdit()
-              }}
-            >
-              <ActionIcon action="edit" />
-            </Button>
-            {/* )} */}
+            <MaintenanceTaskTypeIndicator type={record.type} />
+            {(record.status === "scheduled" ||
+              record.status === "in_progress") && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                className="opacity-0 transition-opacity group-focus-within/maintenance-card:opacity-100 group-hover/maintenance-card:opacity-100"
+                aria-label="Edit maintenance task"
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit()
+                }}
+              >
+                <ActionIcon action="edit" />
+              </Button>
+            )}
           </div>
-          <p className="line-clamp-2 text-xs text-muted-foreground">
+          <p className="line-clamp-2 flex items-center gap-1 text-xs text-muted-foreground">
+            <IconCar className="size-3.5" />
             {record.vehicle.plate_number}
           </p>
           <div className="flex items-end justify-between">
             <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground tabular-nums">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
+                <IconCalendarTime className="size-3" />{" "}
                 {formatDate(record.scheduled_start)}
               </span>
             </div>
