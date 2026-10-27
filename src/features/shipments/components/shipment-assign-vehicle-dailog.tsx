@@ -17,17 +17,15 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { VehiclePickerField } from "@/features/vehicles/components"
-import { CarBrandPicker } from "@/features/settings/vehicle-config/car-brand/components"
-import { CarModelPicker } from "@/features/settings/vehicle-config/car-model/components"
-import { Label } from "@/components/ui/label"
 import {
   Item,
   ItemContent,
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item"
-import { VehicleCategoryPicker } from "@/features/settings/vehicle-config/vehicle-categories/components"
 import { useState } from "react"
+import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
+import { cn } from "cn"
 
 type Props = {
   shipment?: Shipment
@@ -41,6 +39,7 @@ export function ShipmentAssignVehicleDialog({
   open,
 }: Props) {
   const { assignShipmentVehicle, isPending } = useAssignShipmentVehicle()
+  const { data: config } = useVehicleConfigurations()
 
   const form = useForm<AssignShipmentVehicleInput>({
     resolver: zodResolver(assignShipmentVehicleSchema),
@@ -60,7 +59,7 @@ export function ShipmentAssignVehicleDialog({
           className="flex flex-col gap-4"
         >
           <DialogHeader>
-            <DialogTitle>Shipment Assign Vehicle</DialogTitle>
+            <DialogTitle>Assign Vehicle</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             {shipment?.item.item_type === "small" && (
@@ -73,51 +72,98 @@ export function ShipmentAssignVehicleDialog({
                     </ItemContent>
                   </Item>
                 )}
-                {shipment?.item.car_brand_id && (
-                  <div className="space-y-2">
-                    <Label htmlFor="car_make" className="text-muted-foreground">
-                      Make
-                    </Label>
-                    <CarBrandPicker
-                      id="car_make"
-                      value={shipment?.item.car_brand_id}
-                    />
-                  </div>
-                )}
-                {shipment?.item.car_model_id && (
-                  <div className="space-y-2">
-                    <Label htmlFor="model" className="text-muted-foreground">
-                      Model
-                    </Label>
-                    <CarModelPicker
-                      id="model"
-                      value={shipment?.item.car_model_id}
-                    />
-                  </div>
-                )}
-                {shipment?.item.vehicle_category_id && (
-                  <div className="space-y-2">
-                    <Label htmlFor="category" className="text-muted-foreground">
-                      Category
-                    </Label>
-                    <VehicleCategoryPicker
-                      id="category"
-                      value={shipment?.item.vehicle_category_id}
-                    />
-                  </div>
-                )}
               </div>
             )}
-            {shipment?.item.item_type === "truck" && (
-              <Item variant={"outline"}>
+            {shipment?.item.vehicle_category_id && (
+              <Item
+                variant={filters.category_id ? "muted" : "outline"}
+                className={cn(filters.category_id && "border-primary")}
+                onClick={() =>
+                  setFilters((pre) => ({
+                    ...pre,
+                    category_id: pre.category_id
+                      ? undefined
+                      : shipment?.item.vehicle_category_id,
+                  }))
+                }
+              >
                 <ItemContent>
-                  <ItemDescription>Tonnage Capacity</ItemDescription>
-                  <ItemTitle>{shipment.item.tonnage} Tons</ItemTitle>
+                  <ItemDescription>Category</ItemDescription>
+                  <ItemTitle>
+                    {
+                      config?.vehicle_types.find(
+                        (e) => e.id === shipment?.item?.vehicle_category_id
+                      )?.name
+                    }
+                  </ItemTitle>
                 </ItemContent>
               </Item>
             )}
+            <div className="grid grid-cols-2 gap-4">
+              {shipment?.item?.car_brand_id && (
+                <Item
+                  variant={filters.brand_id ? "muted" : "outline"}
+                  className={cn(filters.brand_id && "border-primary")}
+                  onClick={() =>
+                    setFilters((pre) => ({
+                      ...pre,
+                      category_id: pre.brand_id
+                        ? undefined
+                        : shipment?.item.car_brand_id,
+                    }))
+                  }
+                >
+                  <ItemContent>
+                    <ItemDescription>Make</ItemDescription>
+                    <ItemTitle>
+                      {
+                        config?.car_brands.find(
+                          (e) => e.id === shipment?.item?.car_brand_id
+                        )?.name
+                      }
+                    </ItemTitle>
+                  </ItemContent>
+                </Item>
+              )}
+              {shipment?.item?.car_model_id && (
+                <Item
+                  variant={filters.model_id ? "muted" : "outline"}
+                  className={cn(filters.model_id && "border-primary")}
+                  onClick={() =>
+                    setFilters((pre) => ({
+                      ...pre,
+                      category_id: pre.model_id
+                        ? undefined
+                        : shipment?.item.car_model_id,
+                    }))
+                  }
+                >
+                  <ItemContent>
+                    <ItemDescription>Model</ItemDescription>
+                    <ItemTitle>
+                      {
+                        config?.car_models.find(
+                          (e) => e.id === shipment?.item?.car_model_id
+                        )?.name
+                      }
+                    </ItemTitle>
+                  </ItemContent>
+                </Item>
+              )}
+            </div>
             {shipment?.item.estimated_fuel_rate_km && (
-              <Item variant={"outline"}>
+              <Item
+                variant={filters.consumption_rate ? "muted" : "outline"}
+                className={cn(filters.consumption_rate && "border-primary")}
+                onClick={() =>
+                  setFilters((pre) => ({
+                    ...pre,
+                    category_id: pre.consumption_rate
+                      ? undefined
+                      : shipment?.item.estimated_consumption_rate_km?.toString(),
+                  }))
+                }
+              >
                 <ItemContent>
                   <ItemDescription>Consumption Rate</ItemDescription>
                   <ItemTitle>
@@ -126,7 +172,25 @@ export function ShipmentAssignVehicleDialog({
                 </ItemContent>
               </Item>
             )}
-
+            {shipment?.item.tonnage && (
+              <Item
+                variant={filters.tonnage ? "muted" : "outline"}
+                className={cn(filters.tonnage && "border-primary")}
+                onClick={() =>
+                  setFilters((pre) => ({
+                    ...pre,
+                    category_id: pre.tonnage
+                      ? undefined
+                      : shipment?.item.tonnage,
+                  }))
+                }
+              >
+                <ItemContent>
+                  <ItemDescription>Tonnage</ItemDescription>
+                  <ItemTitle>{shipment.item.tonnage} Tons</ItemTitle>
+                </ItemContent>
+              </Item>
+            )}
             <VehiclePickerField
               label="Vehicle"
               name="vehicleId"

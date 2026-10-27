@@ -8,7 +8,7 @@ export type ShipmentLineItem = LineItemResponse & {
   scheduled_start: string
   scheduled_end: string
   car_brand_id: EntityId
-  tonnage: number | null
+  tonnage: string | null
   car_brand: { id: EntityId; name: string } | null
   car_model: { id: EntityId; name: string } | null
   vehicle_category: { id: EntityId; name: string; is_truck: boolean } | null

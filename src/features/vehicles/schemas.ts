@@ -3,7 +3,11 @@ import { IDSchema } from "@/schemas"
 import { vehicleStatuses } from "./enums"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { DefaultSearchParamsSchema, plateNumberSchema } from "@/common/schemas"
-import { EngineTypes, vehicleTransmissionList, Vehicle } from "@/features/vehicles/types"
+import {
+  Vehicle,
+  EngineTypes,
+  vehicleTransmissionList,
+} from "@/features/vehicles/types"
 
 export const VehicleCreateSchema = z.object({
   plate_number: plateNumberSchema,
@@ -38,18 +42,18 @@ export type VehicleCreateSchemaType = z.infer<typeof VehicleCreateSchema>
 export type VehicleUpdateSchemaType = z.infer<typeof VehicleUpdateSchema>
 
 export const VehicleSearchParamsCache = z.object({
-  sort: getSortingStateSchema<Vehicle>().default([
-    { id: "created_at", desc: true },
-  ]).optional(),
+  sort: getSortingStateSchema<Vehicle>()
+    .default([{ id: "created_at", desc: true }])
+    .optional(),
   status: z.enum(vehicleStatuses).optional(),
-  brand_id: IDSchema.optional(),
-  model_id: IDSchema.optional(),
-  category_id: IDSchema.optional(),
-  tonnage: z.string().optional(),
-  engine_type: z.enum(EngineTypes).optional(),
-  gearbox: z.enum(vehicleTransmissionList).optional(),
-  consumption_rate: z.string().optional(),
-  filters: getFiltersStateSchema().optional(),
+  brand_id: IDSchema.nullable().optional(),
+  model_id: IDSchema.nullable().optional(),
+  category_id: IDSchema.nullable().optional(),
+  tonnage: z.string().nullable().optional(),
+  engine_type: z.enum(EngineTypes).nullable().optional(),
+  gearbox: z.enum(vehicleTransmissionList).nullable().optional(),
+  consumption_rate: z.string().nullable().optional(),
+  filters: getFiltersStateSchema().nullable().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

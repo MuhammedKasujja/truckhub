@@ -89,7 +89,7 @@ export type QuotationShipmentSearchParams = ShipmentSearchParamsInput & {
 const vehicleFilterSchema = z.object({
   brand_id: IDSchema.optional(),
   model_id: IDSchema.optional(),
-  category_id: IDSchema.optional(),
+  category_id: IDSchema.nullable().optional(),
   tonnage: z.string().optional(),
   engine_type: z.enum(EngineTypes).optional(),
   gearbox: z.enum(vehicleTransmissionList).optional(),

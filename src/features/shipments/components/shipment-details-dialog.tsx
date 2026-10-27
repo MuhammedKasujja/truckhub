@@ -267,8 +267,8 @@ function ShipmentOverviewDetails({ shipment }: Props) {
 
   return (
     <div className="space-y-5">
-      <div className="grid gap-5 md:grid-cols-2">
-        <Card className="bg-background/30">
+      <div className="grid gap-5 md:grid-cols-3">
+        <Card className="bg-background/30 col-span-2">
           <CardContent className="space-y-1.5">
             {shipment.item.display_name ?? "Service"}
             <div className="mt-4 flex flex-wrap gap-2">
@@ -461,48 +461,6 @@ function StatBox({
       </p>
       <p className="font-mono text-base">{value}</p>
       {note && <p className="mt-1 text-[10px] text-muted-foreground">{note}</p>}
-    </div>
-  )
-}
-
-function RouteRow({
-  origin,
-  destination,
-}: {
-  origin: string
-  destination: string
-}) {
-  return (
-    <div className="flex items-center gap-4 border-t py-3">
-      <div
-        className="w-24 flex-shrink-0 text-sm font-bold tracking-wide"
-        // style={{ color: TEXT }}
-      >
-        {origin.toUpperCase()}
-      </div>
-      <div
-        className="relative h-px flex-1"
-        style={{
-          backgroundImage: `repeating-linear-gradient(90deg, 0 8px, transparent 8px 16px)`,
-        }}
-      >
-        <div
-          className="absolute rounded-full"
-          style={{
-            width: 7,
-            height: 7,
-            top: "50%",
-            left: "94%",
-            transform: "translate(-50%,-50%)",
-            // background: AMBER,
-            // boxShadow: `0 0 0 3px ${AMBER}2e`,
-          }}
-        />
-      </div>
-      <ArrowRight className="h-3.5 w-3.5 flex-shrink-0" />
-      <div className="text-sm font-bold tracking-wide text-primary">
-        {destination.toUpperCase()}
-      </div>
     </div>
   )
 }
