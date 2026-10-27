@@ -1,15 +1,12 @@
 import { Service, ServiceGroup } from "@/features/services/types"
-import { Grid3X3Icon, ListIcon, SearchIcon } from "lucide-react"
+import { SearchIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ServiceTable } from "./service-table"
 import { ServiceList } from "./service-list"
-import React, { Activity, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Can } from "@/components/has-permission"
 import { Link } from "@tanstack/react-router"
 import { PageTitle, PageHeader, PageAction } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
-import { ButtonGroup } from "@/components/ui/button-group"
-import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import {
   InputGroup,
@@ -24,7 +21,6 @@ type ServiceListWrapperProps = {
 }
 
 export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
-  const [view, setView] = React.useState<"card" | "list">("card")
   const [search, setSearch] = useState("")
   const [vehicleType, setVehicleType] = useState<VehicleType>()
 
@@ -68,34 +64,6 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
       <PageHeader className="pb-0">
         <PageTitle>Services</PageTitle>
         <PageAction className="flex gap-2">
-          <ButtonGroup>
-            <Button
-              variant={"secondary"}
-              type="button"
-              className={cn(
-                view == "card"
-                  ? "border-primary text-primary"
-                  : "text-muted-foreground"
-              )}
-              onClick={() => setView("card")}
-            >
-              <Grid3X3Icon />
-              Card
-            </Button>
-            <Button
-              variant={"secondary"}
-              type="button"
-              className={cn(
-                view == "list"
-                  ? "border-primary text-primary"
-                  : "text-muted-foreground"
-              )}
-              onClick={() => setView("list")}
-            >
-              <ListIcon />
-              List
-            </Button>
-          </ButtonGroup>
           <Can permission={"services:create"}>
             <Button asChild>
               <Link to={"/services/new"}>
@@ -135,12 +103,7 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
         </div>
         <Separator />
       </div>
-      <Activity mode={view === "list" ? "visible" : "hidden"}>
-        <ServiceTable services={groupedServices} />
-      </Activity>
-      <Activity mode={view === "card" ? "visible" : "hidden"}>
-        <ServiceList services={filteredServices} />
-      </Activity>
+      <ServiceList services={filteredServices} />
     </div>
   )
 }

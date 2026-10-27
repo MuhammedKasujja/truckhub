@@ -18,6 +18,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
+import { VehicleCardList } from "@/features/vehicles/components/vehicle-card-list"
+import React, { Activity } from "react"
+import { ButtonGroup } from "@/components/ui/button-group"
+import { cn } from "cn"
+import { Grid3X3Icon, ListIcon } from "lucide-react"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
@@ -32,6 +37,7 @@ export const Route = createFileRoute("/_admin/vehicles/")({
 })
 
 function RouteComponent() {
+  const [view, setView] = React.useState<"card" | "list">("card")
   return (
     <div className="space-y-6">
       <PageHeader className="pb-0">
@@ -47,15 +53,50 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
-      <VehicleStatisticsRow />
-      <div className="grid grid-cols-8 gap-5">
-        <div className="col-span-2">
-          <VehicleFilterCard />
-        </div>
-        <div className="col-span-6">
-          <VehicleTable />
-        </div>
+      <div className="flex justify-between gap-5">
+        <VehicleStatisticsRow />
+        <ButtonGroup>
+          <Button
+            variant={"secondary"}
+            type="button"
+            className={cn(
+              view == "card"
+                ? "border-primary text-primary"
+                : "text-muted-foreground"
+            )}
+            onClick={() => setView("card")}
+          >
+            <Grid3X3Icon />
+            Card
+          </Button>
+          <Button
+            variant={"secondary"}
+            type="button"
+            className={cn(
+              view == "list"
+                ? "border-primary text-primary"
+                : "text-muted-foreground"
+            )}
+            onClick={() => setView("list")}
+          >
+            <ListIcon />
+            List
+          </Button>
+        </ButtonGroup>
       </div>
+      <Activity mode={view === "list" ? "visible" : "hidden"}>
+        <div className="grid grid-cols-8 gap-5">
+          <div className="col-span-2">
+            <VehicleFilterCard />
+          </div>
+          <div className="col-span-6">
+            <VehicleTable />
+          </div>
+        </div>
+      </Activity>
+      <Activity mode={view === "card" ? "visible" : "hidden"}>
+        <VehicleCardList />
+      </Activity>
     </div>
   )
 }

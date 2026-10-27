@@ -2,7 +2,7 @@ export const vehicleStatuses = [
   "available",
   "reserved",
   "rented",
-  "maintenance",
+  "in_maintenance",
   "on_trip",
 ] as const
 

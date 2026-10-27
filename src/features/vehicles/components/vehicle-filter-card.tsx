@@ -95,7 +95,7 @@ export function VehicleFilterCard() {
             />
           </div>
           <div className="w-full space-y-3">
-            <Label htmlFor="consumption-rate">Consumption Rate</Label>
+            <Label htmlFor="consumption-rate">Consumption</Label>
             <Input
               id="consumption-rate"
               value={search.consumption_rate}
