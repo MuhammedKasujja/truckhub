@@ -1,3 +1,4 @@
+import { PageHeader, PageTitle } from "@/components/page-header"
 import { CalendarSchedule } from "@/features/shipments/components/calendar/schedule-calendar"
 import { shipmentsCalendarQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
@@ -17,11 +18,11 @@ function RouteComponent() {
   const { data } = useQuery(shipmentsCalendarQueryOptions(search))
 
   return (
-    <div className="grid gap-4">
-      {/* <div className="col-span-2"></div>
-      <div className="col-span-5"> */}
+    <>
+      <PageHeader>
+        <PageTitle>Calendar</PageTitle>
+      </PageHeader>
       <CalendarSchedule shipments={data?.data ?? []} />
-      {/* </div> */}
-    </div>
+    </>
   )
 }

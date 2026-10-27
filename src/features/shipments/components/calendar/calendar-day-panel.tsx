@@ -9,11 +9,11 @@ const longDate = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'lon
 /** The whole detail surface of the free block: the selected day, listed. No sheet, no actions. */
 export function CalendarDayPanel({ date, events }: { date: Date; events: Shipment[] }) {
   return (
-    <section aria-label={`Events on ${longDate.format(date)}`} className="flex flex-col gap-2">
+    <section aria-label={`Events on ${longDate.format(date)}`} className="flex flex-col gap-2.5">
       <h3 className="flex items-baseline gap-2 text-sm font-semibold">
         {longDate.format(date)}
         <span className="text-muted-foreground ml-auto text-xs font-normal tabular-nums">
-          {events.length === 0 ? 'Clear' : `${events.length} event${events.length === 1 ? '' : 's'}`}
+          {events.length === 0 ? '' : `${events.length} event${events.length === 1 ? '' : 's'}`}
         </span>
       </h3>
 
@@ -26,7 +26,7 @@ export function CalendarDayPanel({ date, events }: { date: Date; events: Shipmen
         </Empty>
       ) : (
         events.map(event => (
-          <Item key={event.id} variant="outline" size="sm">
+          <Item key={event.id} variant={"muted"} size="sm" className='border-border'>
             {/*
               `ItemMedia` self-starts and nudges down half a step once a description is present —
               tuned for a 40px avatar, which left this 8px dot pinned to the top of the row. A box
