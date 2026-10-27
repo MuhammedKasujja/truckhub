@@ -107,7 +107,7 @@ export function ShipmentAssignVehicleDialog({
                   onClick={() =>
                     setFilters((pre) => ({
                       ...pre,
-                      category_id: pre.brand_id
+                      brand_id: pre.brand_id
                         ? undefined
                         : shipment?.item.car_brand_id,
                     }))
@@ -132,7 +132,7 @@ export function ShipmentAssignVehicleDialog({
                   onClick={() =>
                     setFilters((pre) => ({
                       ...pre,
-                      category_id: pre.model_id
+                      model_id: pre.model_id
                         ? undefined
                         : shipment?.item.car_model_id,
                     }))
@@ -158,7 +158,7 @@ export function ShipmentAssignVehicleDialog({
                 onClick={() =>
                   setFilters((pre) => ({
                     ...pre,
-                    category_id: pre.consumption_rate
+                    consumption_rate: pre.consumption_rate
                       ? undefined
                       : shipment?.item.estimated_consumption_rate_km?.toString(),
                   }))
@@ -179,9 +179,7 @@ export function ShipmentAssignVehicleDialog({
                 onClick={() =>
                   setFilters((pre) => ({
                     ...pre,
-                    category_id: pre.tonnage
-                      ? undefined
-                      : shipment?.item.tonnage,
+                    tonnage: pre.tonnage ? undefined : shipment?.item.tonnage,
                   }))
                 }
               >

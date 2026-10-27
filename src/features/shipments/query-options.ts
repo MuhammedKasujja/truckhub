@@ -9,6 +9,11 @@ import {
 export const shipmentsQueryKeys = {
   all: () => ["shipments"],
   list: () => [...shipmentsQueryKeys.all(), "list"],
+  calendar: (search: ShipmentSearchParamsInput) => [
+    ...shipmentsQueryKeys.list(),
+    "calendar",
+    search,
+  ],
   active: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "active", search],
   confirmed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "confirmed", search],
   requested: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "requested", search],
@@ -27,6 +32,17 @@ export const shipmentsQueryOptions = (search: ShipmentSearchParamsInput) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.list(),
     queryFn: () => getShipmentsFn({ data: search }),
+  })
+
+export const shipmentsCalendarQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: shipmentsQueryKeys.calendar(search),
+    queryFn: () =>
+      getShipmentsFn({
+        data: { ...search, page: 1, perPage: 100 },
+      }),
   })
 
 export const shipmentsConfirmedQueryOptions = (

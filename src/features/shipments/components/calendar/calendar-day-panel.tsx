@@ -1,12 +1,13 @@
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@/components/ui/empty'
 import { Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item'
 
-import { formatRange, type SimpleEvent } from './sample-data'
+import { formatRange } from './sample-data'
+import { type Shipment } from "@/features/shipments/types"
 
 const longDate = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
 /** The whole detail surface of the free block: the selected day, listed. No sheet, no actions. */
-export function CalendarDayPanel({ date, events }: { date: Date; events: SimpleEvent[] }) {
+export function CalendarDayPanel({ date, events }: { date: Date; events: Shipment[] }) {
   return (
     <section aria-label={`Events on ${longDate.format(date)}`} className="flex flex-col gap-2">
       <h3 className="flex items-baseline gap-2 text-sm font-semibold">
@@ -35,7 +36,9 @@ export function CalendarDayPanel({ date, events }: { date: Date; events: SimpleE
               <span aria-hidden="true" className="bg-foreground size-2 rounded-full" />
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>{event.title}</ItemTitle>
+              <ItemTitle>
+                {event.number ?? event.item.display_name}
+              </ItemTitle>
               <ItemDescription className="tabular-nums">{formatRange(event)}</ItemDescription>
             </ItemContent>
           </Item>

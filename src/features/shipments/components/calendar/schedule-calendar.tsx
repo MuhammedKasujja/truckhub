@@ -1,13 +1,13 @@
-import { simpleEvents, toDateString, type SimpleEvent } from "./sample-data"
-
 import { useMemo, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { type Shipment } from "@/features/shipments/types"
 
 import { CalendarDayPanel } from "./calendar-day-panel"
+import { compactTime, toDateString } from "./sample-data"
 
 const monthFormat = new Intl.DateTimeFormat("en-US", {
   month: "long",
@@ -52,7 +52,7 @@ function monthGrid(anchor: Date) {
  * no attendees, no create dialog — those are what the paid calendar blocks are for. This one is the
  * piece you drop into a page that just needs to show a month.
  */
-export function CalendarSchedule({ compactTime }: { compactTime: unknown[] }) {
+export function CalendarSchedule({ shipments }: { shipments: Shipment[] }) {
   const today = useMemo(() => startOfDay(new Date()), [])
   const [anchor, setAnchor] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
@@ -60,21 +60,37 @@ export function CalendarSchedule({ compactTime }: { compactTime: unknown[] }) {
   const [selected, setSelected] = useState(today)
 
   const events = useMemo(() => {
-    const map = new Map<string, SimpleEvent[]>()
+    const map = new Map<string, Shipment[]>()
 
-    for (const event of simpleEvents) {
-      const date = toDateString(addDays(today, event.dayOffset))
-      const list = map.get(date) ?? []
-      list.push(event)
-      map.set(date, list)
+    for (const shipment of shipments) {
+      const start = new Date(shipment.item.scheduled_start)
+      const scheduledEnd = new Date(shipment.item.scheduled_end)
+      if (Number.isNaN(start.getTime())) continue
+
+      const startDay = startOfDay(start)
+      const endDay =
+        Number.isNaN(scheduledEnd.getTime()) || scheduledEnd < startDay
+          ? startDay
+          : startOfDay(scheduledEnd)
+
+      for (let day = startDay; day <= endDay; day = addDays(day, 1)) {
+        const key = toDateString(day)
+        const list = map.get(key) ?? []
+        list.push(shipment)
+        map.set(key, list)
+      }
     }
 
     for (const list of map.values()) {
-      list.sort((left, right) => left.start - right.start)
+      list.sort(
+        (left, right) =>
+          new Date(left.item.scheduled_start).getTime() -
+          new Date(right.item.scheduled_start).getTime()
+      )
     }
 
     return map
-  }, [today])
+  }, [shipments])
 
   const days = useMemo(() => monthGrid(anchor), [anchor])
   const todayStr = toDateString(today)
@@ -193,13 +209,17 @@ export function CalendarSchedule({ compactTime }: { compactTime: unknown[] }) {
                               inMonth ? undefined : "opacity-60"
                             )}
                           >
-                            {event.allDay ? null : (
+                            {/* {toDateString(
+                              new Date(event.item.scheduled_start)
+                            ) === dateStr ? (
                               <span className="shrink-0 text-[0.6875rem] tabular-nums opacity-70">
-                                {compactTime(event.start)}
+                                {compactTime(
+                                  new Date(event.item.scheduled_start)
+                                )}
                               </span>
-                            )}
+                            ) : null} */}
                             <span className="min-w-0 flex-1 truncate font-medium">
-                              {event.title}
+                              {event.number ?? event.item.display_name}
                             </span>
                           </span>
                         ))}
