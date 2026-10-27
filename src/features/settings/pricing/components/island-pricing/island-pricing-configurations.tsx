@@ -12,7 +12,7 @@ import {
 import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
 import { createCompanyIslandPricingQueryOptions } from "../../query-options"
 import { useQuery } from "@tanstack/react-query"
-import { Activity, useState } from "react"
+import { Activity, useEffect, useState } from "react"
 import {
   Select,
   SelectContent,
@@ -34,13 +34,21 @@ export function CompanyIslandsPricingConfigurationDialog() {
   const { activateIslandPricing, isPending } = useActivateIslandPricing()
   const { createIslandPricing } = useCreateIslandPricing()
 
-  const [search, setSearch] = useState<PricingSearchParams>()
+  const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
   const { data: companyPricings } = useQuery(
     createCompanyIslandPricingQueryOptions(search)
   )
-  const referenceDate = companyPricings?.validFromDate
+
+  useEffect(() => {
+    if (companyPricings) {
+      setSearch((pre) => ({
+        ...pre,
+        referenceDate: companyPricings.validFromDate,
+      }))
+    }
+  }, [companyPricings])
 
   async function handleSubmit(data: IslandsListPricingRequest) {
     createIslandPricing(data)
@@ -67,12 +75,12 @@ export function CompanyIslandsPricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.island.active_date === referenceDate && (
+                      {data?.island.active_date === search.referenceDate && (
                         <Badge>Current</Badge>
                       )}
                     </FieldLabel>
                     <Select
-                      value={referenceDate}
+                      value={search.referenceDate}
                       onValueChange={(date) => {
                         setSearch({ ...search, referenceDate: date })
                       }}
@@ -90,20 +98,21 @@ export function CompanyIslandsPricingConfigurationDialog() {
                     </Select>
                   </div>
                   <Can permission="config:pricing:activate">
-                    {data?.island.active_date !== referenceDate && (
-                      <Button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => {
-                          if (search?.referenceDate)
-                            activateIslandPricing({
-                              effectiveDate: search?.referenceDate,
-                            })
-                        }}
-                      >
-                        Set Active
-                      </Button>
-                    )}
+                    {search.referenceDate &&
+                      data?.island.active_date !== search.referenceDate && (
+                        <Button
+                          type="button"
+                          disabled={isPending}
+                          onClick={() => {
+                            if (search?.referenceDate)
+                              activateIslandPricing({
+                                effectiveDate: search?.referenceDate,
+                              })
+                          }}
+                        >
+                          Set Active
+                        </Button>
+                      )}
                   </Can>
                 </div>
                 <Button

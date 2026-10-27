@@ -139,8 +139,13 @@ function RouteComponent() {
       </div>
       <Card>
         <CardContent className="grid gap-5 md:grid-cols-5">
-          <div className="text-lg font-semibold">
-            {selectedShipment?.number}
+          <div>
+            <div className="text-lg font-semibold">
+              {selectedShipment?.number}
+            </div>
+            <div className="text-sm">
+              {selectedShipment?.vehicle?.plate_number}
+            </div>
           </div>
           <div className="flex items-center gap-1.5">
             <UserIcon className="size-4 text-muted-foreground" />

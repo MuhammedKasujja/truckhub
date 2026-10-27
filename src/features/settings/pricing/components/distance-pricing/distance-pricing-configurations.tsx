@@ -1,6 +1,4 @@
-import { toast } from "sonner"
-import { BatchPricingPayload, PricingSearchParams } from "../../schemas"
-import { createBatchRoutePricingFn } from "../../services"
+import { PricingSearchParams } from "../../schemas"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
 import {
@@ -36,27 +34,14 @@ export function CompanyDistancePricingConfigurationDialog() {
   const { activateDistancePricing, isPending } = useActivateDistancePricing()
   const { createDistanceTonnage } = useCreateDistanceTonnage()
 
-  const [search, setSearch] = useState<PricingSearchParams>()
+  const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
   const { data: companyPricings } = useQuery(
     distancePricingQueryOptions(search)
   )
-  const referenceDate = companyPricings?.effective_date
 
-  async function handleSubmit(data: BatchPricingPayload) {
-    const { message, error, isSuccess } = await createBatchRoutePricingFn({
-      data,
-    })
-
-    if (error) {
-      toast.error(error.message)
-    }
-
-    if (isSuccess) {
-      toast.success(message)
-    }
-  }
+  const referenceDate = search?.referenceDate ?? companyPricings?.effective_date
 
   return (
     <Sheet>
@@ -105,20 +90,21 @@ export function CompanyDistancePricingConfigurationDialog() {
                     </Select>
                   </div>
                   <Can permission="config:pricing:activate">
-                    {data?.distance_tonnage.active_date !== referenceDate && (
-                      <Button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => {
-                          if (search?.referenceDate)
-                            activateDistancePricing({
-                              effectiveDate: search?.referenceDate,
-                            })
-                        }}
-                      >
-                        Set Active
-                      </Button>
-                    )}
+                    {referenceDate &&
+                      data?.distance_tonnage.active_date !== referenceDate && (
+                        <Button
+                          type="button"
+                          disabled={isPending}
+                          onClick={() => {
+                            if (search?.referenceDate)
+                              activateDistancePricing({
+                                effectiveDate: search?.referenceDate,
+                              })
+                          }}
+                        >
+                          Set Active
+                        </Button>
+                      )}
                   </Can>
                 </div>
                 <Button
@@ -131,6 +117,7 @@ export function CompanyDistancePricingConfigurationDialog() {
                 </Button>
               </div>
               <DistancePricingScheduleGrid
+                key={companyPricings?.effective_date}
                 pricings={companyPricings?.pricings ?? []}
                 initialDate={
                   companyPricings?.effective_date ?? new Date().toDateString()

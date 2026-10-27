@@ -102,20 +102,21 @@ export function CompanyRoutePricingConfigurationDialog() {
                     </Select>
                   </div>
                   <Can permission="config:pricing:activate">
-                    {data?.route_tonnage.active_date !== referenceDate && (
-                      <Button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => {
-                          if (search?.referenceDate)
-                            activateRoutePricing({
-                              effectiveDate: search?.referenceDate,
-                            })
-                        }}
-                      >
-                        Set Active
-                      </Button>
-                    )}
+                    {referenceDate &&
+                      data?.route_tonnage.active_date !== referenceDate && (
+                        <Button
+                          type="button"
+                          disabled={isPending}
+                          onClick={() => {
+                            if (search?.referenceDate)
+                              activateRoutePricing({
+                                effectiveDate: search?.referenceDate,
+                              })
+                          }}
+                        >
+                          Set Active
+                        </Button>
+                      )}
                   </Can>
                 </div>
                 <Button
