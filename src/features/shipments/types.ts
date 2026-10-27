@@ -14,6 +14,7 @@ export type ShipmentLineItem = LineItemResponse & {
   vehicle_category: { id: EntityId; name: string; is_truck: boolean } | null
   service_id: EntityId | null
   car_model_id: EntityId | null
+  vehicle_category_id: EntityId | null
   with_loaders: boolean
   with_driver: boolean
   estimated_fuel_rate_km: string | null

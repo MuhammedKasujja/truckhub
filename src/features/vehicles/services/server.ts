@@ -1,5 +1,3 @@
-"use server"
-
 import * as apiClient from "@/lib/api-client"
 import { Vehicle, VehicleStatistics } from "@/features/vehicles/types"
 import {

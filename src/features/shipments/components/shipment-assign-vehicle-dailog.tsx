@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form"
 import {
   AssignShipmentVehicleInput,
   assignShipmentVehicleSchema,
+  ShipmentVehicleFilters,
 } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
@@ -18,8 +19,15 @@ import { SubmitButton } from "@/components/ui/submit-button"
 import { VehiclePickerField } from "@/features/vehicles/components"
 import { CarBrandPicker } from "@/features/settings/vehicle-config/car-brand/components"
 import { CarModelPicker } from "@/features/settings/vehicle-config/car-model/components"
-import { ServicePicker } from "@/features/services/components"
 import { Label } from "@/components/ui/label"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item"
+import { VehicleCategoryPicker } from "@/features/settings/vehicle-config/vehicle-categories/components"
+import { useState } from "react"
 
 type Props = {
   shipment?: Shipment
@@ -40,6 +48,7 @@ export function ShipmentAssignVehicleDialog({
       unitId: shipment?.id,
     },
   })
+  const [filters, setFilters] = useState<ShipmentVehicleFilters>({})
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,17 +66,18 @@ export function ShipmentAssignVehicleDialog({
             {shipment?.item.item_type === "small" && (
               <div className="space-y-4">
                 {shipment?.item.service_id && (
-                  <div className="space-y-2">
-                    <Label htmlFor="service" className="text-muted-foreground">Service</Label>
-                    <ServicePicker
-                      id="service"
-                      value={shipment?.item.service_id}
-                    />
-                  </div>
+                  <Item variant={"outline"}>
+                    <ItemContent>
+                      <ItemDescription>Service</ItemDescription>
+                      <ItemTitle>{shipment.item.display_name}</ItemTitle>
+                    </ItemContent>
+                  </Item>
                 )}
                 {shipment?.item.car_brand_id && (
                   <div className="space-y-2">
-                    <Label htmlFor="car_make" className="text-muted-foreground">Car Make</Label>
+                    <Label htmlFor="car_make" className="text-muted-foreground">
+                      Make
+                    </Label>
                     <CarBrandPicker
                       id="car_make"
                       value={shipment?.item.car_brand_id}
@@ -76,40 +86,56 @@ export function ShipmentAssignVehicleDialog({
                 )}
                 {shipment?.item.car_model_id && (
                   <div className="space-y-2">
-                    <Label htmlFor="model" className="text-muted-foreground">Model</Label>
+                    <Label htmlFor="model" className="text-muted-foreground">
+                      Model
+                    </Label>
                     <CarModelPicker
                       id="model"
                       value={shipment?.item.car_model_id}
                     />
                   </div>
                 )}
+                {shipment?.item.vehicle_category_id && (
+                  <div className="space-y-2">
+                    <Label htmlFor="category" className="text-muted-foreground">
+                      Category
+                    </Label>
+                    <VehicleCategoryPicker
+                      id="category"
+                      value={shipment?.item.vehicle_category_id}
+                    />
+                  </div>
+                )}
               </div>
             )}
             {shipment?.item.item_type === "truck" && (
-              <div>
-                <div className="text-muted-foreground">Tonnage Capacity</div>
-                <div>{shipment.item.tonnage} Tons</div>
-              </div>
+              <Item variant={"outline"}>
+                <ItemContent>
+                  <ItemDescription>Tonnage Capacity</ItemDescription>
+                  <ItemTitle>{shipment.item.tonnage} Tons</ItemTitle>
+                </ItemContent>
+              </Item>
             )}
             {shipment?.item.estimated_fuel_rate_km && (
-              <div>
-                <div className="text-muted-foreground">Consumption Rate</div>
-                <div>{shipment.item.estimated_fuel_rate_km} km / l</div>
-              </div>
+              <Item variant={"outline"}>
+                <ItemContent>
+                  <ItemDescription>Consumption Rate</ItemDescription>
+                  <ItemTitle>
+                    {shipment.item.estimated_fuel_rate_km} km / l
+                  </ItemTitle>
+                </ItemContent>
+              </Item>
             )}
+
             <VehiclePickerField
               label="Vehicle"
               name="vehicleId"
               control={form.control}
-              filters={{ status: "available" }}
+              filters={{ status: "available", ...filters }}
             />
           </div>
           <DialogFooter>
-            <DialogClose>
-              {/* <Button type="button" variant={"ghost"}> */}
-              Cancle
-              {/* </Button> */}
-            </DialogClose>
+            <DialogClose>Cancle</DialogClose>
             <SubmitButton isSubmitting={isPending} />
           </DialogFooter>
         </form>

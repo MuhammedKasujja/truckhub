@@ -3,6 +3,7 @@ import { Shipment } from "./types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { type EntityId, IDSchema, MoneySchema } from "@/schemas"
 import { reassignmentReasonsList, shipmentStatuses } from "./enums"
+import { EngineTypes, vehicleTransmissionList } from "../vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ShipmentSearchParams = z.object({
@@ -84,3 +85,15 @@ export type ShipmentSearchParamsInput = z.infer<typeof ShipmentSearchParams>
 export type QuotationShipmentSearchParams = ShipmentSearchParamsInput & {
   quotation_id: EntityId
 }
+
+const vehicleFilterSchema = z.object({
+  brand_id: IDSchema.optional(),
+  model_id: IDSchema.optional(),
+  category_id: IDSchema.optional(),
+  tonnage: z.string().optional(),
+  engine_type: z.enum(EngineTypes).optional(),
+  gearbox: z.enum(vehicleTransmissionList).optional(),
+  consumption_rate: z.string().optional(),
+})
+
+export type ShipmentVehicleFilters = z.infer<typeof vehicleFilterSchema>
