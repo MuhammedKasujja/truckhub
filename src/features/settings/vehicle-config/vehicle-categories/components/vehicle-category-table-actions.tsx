@@ -17,9 +17,9 @@ export function VehicleCategoryTableActions({ category }: TableActionsProps) {
 
   return (
     <div className="flex gap-2">
-      <Button variant={"outline"} size={"icon"}>
+      {/* <Button variant={"outline"} size={"icon"}>
         <ActionIcon action="view" />
-      </Button>
+      </Button> */}
       <Can permission="config:vehicle_config:edit">
         <VehicleCategoryForm
           key={category.id}

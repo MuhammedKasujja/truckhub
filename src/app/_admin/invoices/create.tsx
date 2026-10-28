@@ -18,7 +18,7 @@ import { QuotationPicker } from "@/features/quotations/components"
 import { useQuotationCompletedShipments } from "@/features/quotations/hooks/use-quotation-shipments"
 import { Quotation } from "@/features/quotations/types"
 import { useClientLoadingFeesWithFallback } from "@/features/settings/pricing/hooks/use-loading-offloading-pricing"
-import { formatDate, formatMoney, formatNumber } from "@/lib/format"
+import { formatDateTime, formatMoney, formatNumber } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { EntityId } from "@/schemas"
 import { createFileRoute } from "@tanstack/react-router"
@@ -86,9 +86,23 @@ function RouteComponent() {
     return subtotal.times(taxRate)
   }, [subtotal])
 
+  const totalLoadingFees = useMemo(() => {
+    return lineItems.reduce((curr, shp) => {
+      const pricing = loadingFees?.pricings.find(
+        (ele) =>
+          Number(ele.tonnage_min) <= Number(shp.item.tonnage) &&
+          Number(ele.tonnage_max) >= Number(shp.item.tonnage)
+      )
+      if (!pricing) return new Decimal(0).plus(curr)
+      return new Decimal(pricing?.loading_fees ?? "0")
+        .plus(new Decimal(pricing?.offloading_fees ?? "0"))
+        .plus(curr)
+    }, new Decimal(0))
+  }, [lineItems])
+
   const grandTotal = useMemo(() => {
-    return subtotal.plus(taxAmount).plus(totalFuelCharge)
-  }, [subtotal, taxAmount, totalFuelCharge])
+    return subtotal.plus(taxAmount).plus(totalFuelCharge).plus(totalLoadingFees)
+  }, [subtotal, taxAmount, totalFuelCharge, totalLoadingFees])
 
   function onItemSelected(itemId: EntityId) {
     setLineItems((prev) => {
@@ -215,14 +229,14 @@ function RouteComponent() {
                         <div className="space-y-2">
                           <div>Started</div>
                           <div className="text-foreground">
-                            {formatDate(trip.actual_start)}
+                            {formatDateTime(trip.actual_start)}
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div>Ended</div>
                           <div className="text-foreground">
                             {trip.actual_end
-                              ? formatDate(trip.actual_end)
+                              ? formatDateTime(trip.actual_end)
                               : "-"}
                           </div>
                         </div>
@@ -230,14 +244,18 @@ function RouteComponent() {
                           <div className="space-y-2">
                             <div>Tonnage</div>
                             <div className="text-foreground">
-                              {formatNumber(trip.item.tonnage)}
+                              {formatNumber(trip.item.tonnage, {
+                                fallback: "-",
+                              })}
                             </div>
                           </div>
                         )}
                         <div className="space-y-2">
                           <div>Distance (km)</div>
                           <div className="text-foreground">
-                            {trip.consumption?.distance_km ?? "-"}
+                            {formatNumber(trip.consumption?.distance_km, {
+                              fallback: "-",
+                            })}
                           </div>
                         </div>
                       </ItemDescription>
@@ -252,19 +270,25 @@ function RouteComponent() {
                         <div className="space-y-2">
                           <div>Start Mileage</div>
                           <div className="text-foreground">
-                            {trip.consumption?.start_mileage ?? "-"}
+                            {formatNumber(trip.consumption?.start_mileage, {
+                              fallback: "-",
+                            })}
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div>End Mileage</div>
                           <div className="text-foreground">
-                            {trip.consumption?.end_mileage ?? "-"}
+                            {formatNumber(trip.consumption?.end_mileage, {
+                              fallback: "-",
+                            })}
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div>Consumption Rate</div>
                           <div className="text-foreground">
-                            {trip.vehicle?.fuel_consumption_rate ?? "-"}
+                            {formatNumber(trip.vehicle?.fuel_consumption_rate, {
+                              fallback: "-",
+                            })}
                           </div>
                         </div>
                       </ItemDescription>
@@ -344,10 +368,22 @@ function RouteComponent() {
                   </div>
                 )}
                 {totalFuelCharge && (
+                  <>
+                    <div className="flex justify-between py-2">
+                      <div className="text-muted-foreground">Fuel Rate</div>
+                      <div className="text-foreground">
+                        {formatMoney(totalFuelCharge.toString())}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {totalLoadingFees.gt(0) && (
                   <div className="flex justify-between py-2">
-                    <div className="text-muted-foreground">Fuel Rate</div>
+                    <div className="text-muted-foreground">
+                      Loading-offloading fees
+                    </div>
                     <div className="text-foreground">
-                      {formatMoney(totalFuelCharge.toString())}
+                      {formatMoney(totalLoadingFees.toString())}
                     </div>
                   </div>
                 )}

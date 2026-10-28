@@ -20,8 +20,11 @@ export function formatMoney(
   return formatter.format(convertedAmount)
 }
 
+type NumberOpts = { fallback: string }
+
 export function formatNumber(
   value: number | string | undefined | null,
+  opts?: NumberOpts
 ) {
   // return Number(value).toLocaleString(undefined, {
   //   minimumFractionDigits: 0,
@@ -30,7 +33,7 @@ export function formatNumber(
   // const formatter = new Intl.NumberFormat(undefined)
   // return formatter.format(Number(value))
 
-  if(!value) return ""
+  if (!value) return opts?.fallback ?? ""
   return Number(value).toString()
 }
 
