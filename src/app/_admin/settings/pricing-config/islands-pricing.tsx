@@ -23,7 +23,7 @@ function RouteComponent() {
       <Can permission={"config:pricing:manage"}>
         <CompanyIslandsPricingConfigurationDialog />
       </Can>
-      <IslandPricingTable pricings={data?.pricings} />
+      <IslandPricingTable key={data?.validFromDate} pricings={data?.pricings} />
     </div>
   )
 }

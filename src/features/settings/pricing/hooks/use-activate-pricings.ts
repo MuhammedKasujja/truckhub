@@ -12,12 +12,12 @@ const useActivateCompanyPricingBase = createEntityActionHook(
 )
 
 function useActivateCompanyPricing() {
-  const { isPending, execute } = useActivateCompanyPricingBase()
+  const { execute, ...rest } = useActivateCompanyPricingBase()
 
   function activateCompanyPricing(data: ActivatePricingInput) {
     return execute({ data })
   }
-  return { isPending, activateCompanyPricing }
+  return { activateCompanyPricing, ...rest }
 }
 
 export function useActivateIslandPricing() {

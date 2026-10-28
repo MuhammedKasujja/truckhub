@@ -26,6 +26,7 @@ function RouteComponent() {
         <CompanyLoadingPricingConfigurationDialog />
       </Can>
       <LoadingOffloadingPricingTable
+        key={data?.data?.effective_date}
         pricings={
           data
             ? {

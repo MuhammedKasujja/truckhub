@@ -10,9 +10,11 @@ import {
 import { GlobalSearchDialog } from "@/components/global-search-dialog"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 
 export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
   beforeLoad: async ({ location }) => {
     const user = await getCurrentUser()
     if (!user) {
