@@ -6,6 +6,7 @@ export type VehicleCategory = {
   name: string;
   is_truck: boolean;
   image_url: string | null
+  type: ''
 };
 
 
