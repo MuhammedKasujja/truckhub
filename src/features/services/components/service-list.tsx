@@ -65,7 +65,7 @@ export function ServiceList({
               <div className="h-40 rounded-sm border bg-accent">
                 <img
                   src={service.image_url}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               </div>
               <div className="space-y-1">

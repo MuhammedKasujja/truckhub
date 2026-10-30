@@ -381,7 +381,7 @@ function ServiceList({
                 <div className="h-40 rounded-sm bg-accent">
                   <img
                     src={service.image_url}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-contain"
                   />
                 </div>
 

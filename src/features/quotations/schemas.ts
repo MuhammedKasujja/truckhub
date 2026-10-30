@@ -39,7 +39,7 @@ const createVehicleAddonSchema = z.object({
 const createRouteSchema = z.object({
   route_id: IDSchema,
   origin: z.string(),
-  destination: z.string().optional(),
+  destination: z.string().optional().nullable(),
 })
 
 const lineItemBase = z.object({
@@ -64,7 +64,7 @@ export const createServiceQuotationLineItemSchema = z.object({
   service_id: IDSchema,
   vehicle_category_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
-  estimated_consumption_rate_km: z.number().optional(),
+  estimated_consumption_rate_km: z.number().optional().nullable(),
   ...lineItemBase.shape,
 })
 
@@ -107,7 +107,7 @@ export const createQuotationSchema = z.object({
   purpose: z.string().optional(),
   discount: z.string().optional().nullable(),
   partial: MoneySchema.optional().nullable(),
-  number: z.string().optional(),
+  number: z.string().nullable().optional(),
   tax_rates: z.array(createTaxRateSchema),
   line_items: z.array(createLineItemSchema).min(1),
 })
@@ -118,7 +118,7 @@ export const tonnagePricingRangeSchema = z
     min_tons: z.union([z.string(), z.number()]),
     max_tons: z.union([z.string(), z.number()]),
     tons: z.string().min(1, "Required"),
-    price: MoneySchema.optional(),
+    price: MoneySchema.nullable().optional(),
     default_price: z.union([z.string(), z.number()]),
   })
   .superRefine(({ tons, min_tons, max_tons }, ctx) => {
