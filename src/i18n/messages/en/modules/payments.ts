@@ -1,6 +1,6 @@
 export const en = {
   module: "Payments",
-  customer: "Customer",
+  client: "Client",
   number: "Number",
   revenue: "Revenue",
   booking: "Booking",
@@ -20,6 +20,7 @@ export const en = {
     edit: "Edit",
     delete: "Delete",
     close: "Close",
+    enterPayment: "Enter Payment",
   },
   status: "Status",
   amount: "Amount",
@@ -30,12 +31,14 @@ export const en = {
   statuses: {
     pending: "Pending",
     cancelled: "Cancelled",
-    refunded: "Refunded",
+    reversed: "Reversed",
     failed: "Failed",
     completed: "Completed",
     partially_refunded: "Partially Refunded",
   },
   method: "Method",
+  paid_at: "Paid at",
+  paidDate: "Paid Date",
   methods: {
     cash: "Cash",
     mobile_money: "Mobile Money",

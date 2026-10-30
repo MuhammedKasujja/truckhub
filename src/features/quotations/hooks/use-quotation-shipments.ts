@@ -1,0 +1,32 @@
+import { EntityId } from "@/schemas"
+import { useQuery } from "@tanstack/react-query"
+import { ShipmentStatus } from "@/features/shipments/enums"
+import { quotationShipmentsQueryOptions } from "../query-options"
+
+export function useQuotationShipments(
+  quotationId: EntityId | undefined,
+  status?: { status: ShipmentStatus }
+) {
+  const { isLoading, data, error } = useQuery({
+    ...quotationShipmentsQueryOptions({
+      search: '',
+      page: 1,
+      perPage: 20,
+      sort: [],
+      quotation_id: quotationId!,
+      status: status?.status ? [status?.status] : undefined,
+    }),
+    enabled: !!quotationId,
+  })
+
+  return { isLoading, data, error }
+}
+
+export function useQuotationCompletedShipments(
+  quotationId: EntityId | undefined
+) {
+  const { isLoading, data, error } = useQuotationShipments(quotationId, {
+    status: "captured_details",
+  })
+  return { isLoading, error, data: data?.data }
+}

@@ -5,9 +5,11 @@ import { Client } from "@/features/clients/types"
 import { Booking } from "@/features/bookings/types"
 import { RideRequest } from "@/features/ride-requests/types"
 import {
+  ClientUpdateInput,
+  ClientCreateInput,
   ClientListSearchParams,
-  CustomerCreateSchemaType,
-  CustomerUpdateSchemaType,
+  ClientServiceCreateInput,
+  ClientPricingSearchParam,
 } from "@/features/clients/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Payment } from "@/features/payments/types"
@@ -17,10 +19,15 @@ import {
   BatchPayload,
   BatchPricingPayload,
   DistancePricingRequest,
-  LoadingOffloadingPricing,
   LoadingOffloadingPricingRequest,
 } from "@/features/settings/pricing/schemas"
-import { RoutePricingResponse } from "@/features/settings/pricing/types"
+import { Invoice } from "@/features/invoices/types"
+import { Quotation } from "@/features/quotations/types"
+import { Service, toServicePricingApiPayload } from "@/features/services/types"
+import {
+  RoutePricingResponse,
+  LoadingOffloadingPricingResponse,
+} from "@/features/settings/pricing/types"
 
 const endpoint = "/v1/clients"
 
@@ -38,15 +45,16 @@ export async function getCustomers(input: ClientListSearchParams) {
   return { error: response.error }
 }
 
-export async function getCustomersByQuery({ search }: SearchQuery) {
+export async function getCustomersByQuery({
+  page,
+  search,
+  perPage,
+}: SearchQuery) {
   return getCustomers({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
+    page: page ?? 1,
+    perPage: perPage ?? DEFAULT_FITER_QUERY_PER_PAGE,
     sort: [],
     search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
   })
 }
 
@@ -62,12 +70,12 @@ export async function deleteCustomerById(clientId: EntityId) {
   return await apiClient.deleteFn(`${endpoint}/${clientId}`)
 }
 
-export async function updateClient(data: CustomerUpdateSchemaType) {
+export async function updateClient(data: ClientUpdateInput) {
   const { id: clientId, ...rest } = data
   return await apiClient.putFn<Client>(`${endpoint}/${clientId}`, rest)
 }
 
-export async function createClient(data: CustomerCreateSchemaType) {
+export async function createClient(data: ClientCreateInput) {
   return await apiClient.postFn<Client>(endpoint, data)
 }
 
@@ -82,6 +90,14 @@ export async function getClientBookings(clientId: EntityId) {
 export async function getClientRides(clientId: EntityId) {
   return await apiClient.getFn<RideRequest[]>(`${endpoint}/${clientId}/rides`)
 }
+export async function getClientInvoices(clientId: EntityId) {
+  return await apiClient.getFn<Invoice[]>(`${endpoint}/${clientId}/invoices`)
+}
+export async function getClientQuotations(clientId: EntityId) {
+  return await apiClient.getFn<Quotation[]>(
+    `${endpoint}/${clientId}/quotations`
+  )
+}
 
 export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
   const { client_id, ...rest } = data
@@ -91,28 +107,56 @@ export async function createClientBatchRoutePricing(data: BatchPricingPayload) {
   )
 }
 
-export async function getClientRoutePricing(clientId: EntityId) {
-  // `${endpoint}/${clientId}/routes/pricing?date=2026-05-26`
-  const url = `${endpoint}/${clientId}/routes/pricing`
-  return await apiClient.getFn<RoutePricingResponse>(url)
+export async function getClientRoutePricing(search: ClientPricingSearchParam) {
+  return await apiClient.getFn<RoutePricingResponse>(
+    `/v1/pricing/routes/client/${search.clientId}?reference_date=${search.referenceDate}`
+  )
 }
 
-export async function getClientLoadingOffloadingFrees(clientId: EntityId) {
-  return await apiClient.getFn<LoadingOffloadingPricing[]>(
-    `${endpoint}/${clientId}/loading-offloading/pricing`
+export async function getClientActiveRoutePricing(clientId: EntityId) {
+  return await apiClient.getFn<RoutePricingResponse>(`/v1/pricing/routes/client/${clientId}/active`)
+}
+
+export async function getClientLoadingOffloadingFrees(
+  search: ClientPricingSearchParam
+) {
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(
+    `/v1/pricing/loading-offloading/client/${search.clientId}?reference_date=${search.referenceDate}`
+  )
+}
+
+export async function getClientActiveLoadingOffloadingFrees(
+  clientId: EntityId
+) {
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(
+    `/v1/pricing/loading-offloading/client/${clientId}/active`
   )
 }
 
 export async function createClientLoadingOffloadingPricing(
   data: LoadingOffloadingPricingRequest
 ) {
+  const { pricings, effective_date: valid_from, client_id } = data
   return await apiClient.postFn<DistancePricingRequest[]>(
-    `${endpoint}/${data.client_id}/loading-offloading/pricing`,
-    data.pricings
+    `${endpoint}/${client_id}/loading-offloading/pricing`,
+    { valid_from, pricings }
   )
 }
 
 export async function changeClientType(clientId: EntityId) {
   const url = `${endpoint}/${clientId}/change-type`
   return await apiClient.patchFn<Client>(url)
+}
+
+export async function createClientService(data: ClientServiceCreateInput) {
+  const { clientId, ...rest } = data
+  const payload = toServicePricingApiPayload(rest)
+  return await apiClient.postFn<Service>(
+    `${endpoint}/${clientId}/services`,
+    payload
+  )
+}
+
+export async function getClientServices(clientId: EntityId) {
+  return await apiClient.getFn<Service[]>(`${endpoint}/${clientId}/services`)
 }

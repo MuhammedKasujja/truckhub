@@ -20,14 +20,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { Button } from "@/components/ui/button"
 import { Payment } from "@/features/payments/types"
 import { Link } from "@tanstack/react-router"
-import { ArrowUpRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { useTranslation } from "@/i18n"
 import { Can } from "@/components/has-permission"
+import { PaymentStatusIndicator } from "@/features/payments/components"
 
 type PaymentTableprops = {
   payments: Payment[]
@@ -41,10 +40,9 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
         <CardTitle>Recent Payments</CardTitle>
         <CardAction>
           <Can permission="payments:view">
-            <Button type="button" variant={"secondary"} asChild>
+            <Button type="button" variant={"link"} asChild>
               <Link to={"/payments"}>
-                View
-                <ArrowUpRight />
+                View All
               </Link>
             </Button>
           </Can>
@@ -53,7 +51,7 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
       <CardContent>
         <div className="overflow-hidden rounded-lg border bg-background">
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader className="bg-muted">
               <TableRow>
                 <TableHead className="w-25">Number</TableHead>
                 <TableHead>Client</TableHead>
@@ -73,14 +71,12 @@ export function RecentPaymentsTable({ payments }: PaymentTableprops) {
                     <TableCell>{payment.client.fullname}</TableCell>
                     <TableCell>{formatMoney(payment.amount)}</TableCell>
                     <TableCell>
-                      <Badge variant={"outline"}>
-                        {tr(`payments.statuses.${payment.status}`)}
-                      </Badge>
+                      <PaymentStatusIndicator status={payment.status}/>
                     </TableCell>
                     <TableCell>
-                      {tr(`payments.methods.${payment.payment_mode}`)}
+                      {tr(`payments.methods.${payment.method}`)}
                     </TableCell>
-                    <TableCell>{formatDate(payment.date)}</TableCell>
+                    <TableCell>{formatDateTime(payment.paid_at)}</TableCell>
                   </TableRow>
                 ))
               ) : (

@@ -1,0 +1,34 @@
+"use server"
+
+import * as apiClient from "@/lib/api-client"
+import { DriveTrain } from "@/features/settings/vehicle-config/drive-trains/types"
+import {
+  DriveTrainCreateSchemaType,
+  DriveTrainUpdateSchemaType,
+} from "@/features/settings/vehicle-config/drive-trains/schemas"
+
+export async function getDriveTrains() {
+  const { data, isSuccess, error } =
+    await apiClient.getFn<DriveTrain[]>("/v1/drive-trains")
+  return { data: isSuccess ? data! : [], error }
+}
+
+export async function getDriveTrainById(driveTrainId: number | string) {
+  return await apiClient.getFn<DriveTrain>(`/v1/drive-trains/${driveTrainId}`)
+}
+
+export async function deleteDriveTrainById(driveTrainId: number | string) {
+  return await apiClient.deleteFn(`/v1/drive-trains/${driveTrainId}`)
+}
+
+export async function updateDriveTrain(data: DriveTrainUpdateSchemaType) {
+  const { id: driveTrainId, ...rest } = data
+  return await apiClient.putFn<DriveTrain>(
+    `/v1/drive-trains/${driveTrainId}`,
+    rest
+  )
+}
+
+export async function createDriveTrain(data: DriveTrainCreateSchemaType) {
+  return await apiClient.postFn<DriveTrain>("/v1/drive-trains", data)
+}

@@ -4,20 +4,21 @@ import {
   VehicleSearchParamsCache,
   AssignDriverVehicleSchema,
 } from "@/features/vehicles/schemas"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { SearchQuerySchema, EntityIdSchema } from "@/schemas"
 import {
   getVehicles,
   createVehicle,
   updateVehicle,
   getVehicleById,
   deleteVehicleById,
-  getVehiclesByQuery,
   vehicleAssignDriver,
+  getVehicleStatistics,
   getVehicleDetailsById,
   vehicleUnAssignDriver,
 } from "./server"
 import { ApiError } from "@/types"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getVehiclesFn = createServerFn()
   .inputValidator(VehicleSearchParamsCache)
@@ -31,9 +32,9 @@ export const getVehiclesFn = createServerFn()
   })
 
 export const getVehiclesByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .inputValidator(VehicleSearchParamsCache)
   .handler(async ({ data }) => {
-    const response = await getVehiclesByQuery(data)
+    const response = await getVehicles(data)
     if (response.error) {
       const { message, erroCode, statusCode } = response.error
       throw new ApiError(message, statusCode, erroCode)
@@ -50,7 +51,10 @@ export const getVehicleByIdFn = createServerFn()
 export const getVehicleDetailsByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getVehicleDetailsById(data.id)
+    const { data: vehicle, message } = await apiResponseTransform(
+      getVehicleDetailsById(data.id)
+    )
+    return { data: vehicle!, message: message }
   })
 
 export const deleteVehicleFn = createServerFn()
@@ -82,3 +86,12 @@ export const vehicleUnAssignDriverFn = createServerFn()
   .handler(async ({ data }) => {
     return vehicleUnAssignDriver(data.id)
   })
+
+export const getVehicleStatisticsFn = createServerFn().handler(async () => {
+  const result = await getVehicleStatistics()
+
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+  return { data: result.data! }
+})

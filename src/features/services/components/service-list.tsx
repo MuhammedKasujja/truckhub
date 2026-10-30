@@ -8,104 +8,112 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ServiceGroup } from "@/features/services/types"
+import { Service } from "@/features/services/types"
 import { useTranslation } from "@/i18n"
 import { formatMoney } from "@/lib/format"
+import { cn } from "@/lib/utils"
 import { Link } from "@tanstack/react-router"
-import React from "react"
+import { useState } from "react"
 
 type ServiceListProps = {
-  services: ServiceGroup[]
+  services: Service[]
+  selectable?: boolean
+  onSelected?: (services: Service[]) => void
 }
 
-export function ServiceList({ services }: ServiceListProps) {
+export function ServiceList({
+  services,
+  selectable = false,
+}: ServiceListProps) {
   const tr = useTranslation()
-  const serviceList = React.useMemo(() => {
-    return services.flatMap((ele) => ele.services)
-  }, [services])
+  const [selectedItems, setSelected] = useState<Service[]>([])
+
+  function handleSelected(service: Service) {
+    setSelected((prev) => {
+      const find = prev.find((s) => s.id === service.id)
+      if (find) {
+        return prev.filter((s) => s.id !== service.id)
+      }
+      return [...prev, service]
+    })
+  }
 
   return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-      {serviceList.map((service) => (
-        <Card
-          key={service.id}
-          className="rounded-2xl shadow-sm transition hover:shadow-md"
-        >
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{service.name}</CardTitle>
-              <Badge variant="default">{service.category}</Badge>
-            </div>
-            <CardDescription>{service.description}</CardDescription>
-          </CardHeader>
-
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span>{tr("services.price")}</span>
-              <span className="font-semibold">
-                {formatMoney(service.base_fare)}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>{tr("services.last_price")}</span>
-              <span className="font-semibold">
-                {formatMoney(service.min_fare)}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <p>
-                Time price{" "}
-                <span className="text-muted-foreground">(minutes)</span>
-              </p>
-              <span className="font-semibold">
-                {formatMoney(service.price_per_min)}
-              </span>
-            </div>
-
-            <div className="flex justify-between">
-              <p>
-                Distance price{" "}
-                <span className="text-muted-foreground">(km/l)</span>
-              </p>
-              <span className="font-semibold">
-                {formatMoney(service.price_per_unit_distance)}
-              </span>
-            </div>
-            {!service.is_truck && (
-              <div className="flex justify-between">
-                <span>{tr("services.seating_capacity")}</span>
-                <span className="font-semibold">{service.seats}</span>
-              </div>
+    <div className="@container">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        {services.map((service) => (
+          <Card
+            key={service.id}
+            className={cn(
+              "rounded-2xl shadow-sm transition hover:shadow-md",
+              selectedItems.find((s) => s.id === service.id) &&
+                "ring-2 ring-primary"
             )}
+            onClick={selectable ? () => handleSelected(service) : undefined}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">
+                  {service.display_name}
+                </CardTitle>
+                <Badge variant="default">{service.source}</Badge>
+              </div>
+              <CardDescription>{service.description}</CardDescription>
+            </CardHeader>
 
-            {/* <div className="flex justify-between">
-              <span>Booking Fee</span>
-              <span>{formatMoney(service.booking_fee)}</span>
-            </div> */}
-
-            {/* <div className="flex justify-between">
-              <span>Tax</span>
-              <span>{formatMoney(service.tax_fee)}</span>
-            </div> */}
-
-            <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
-              <span>{service.is_truck ? "Truck" : "Car"}</span>
-              <Can permission={"services:edit"}>
-                <Button size="sm" variant="outline" asChild>
-                  <Link
-                    to={`/services/$serviceId/edit`}
-                    params={{ serviceId: service.id }}
-                  >
-                    Edit
-                  </Link>
-                </Button>
-              </Can>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            <CardContent className="space-y-2 text-sm">
+              <div className="h-40 rounded-sm border bg-accent">
+                <img
+                  src={service.image_url}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="space-y-1">
+                <div className="flex w-full justify-between">
+                  <div className="text-muted-foreground">
+                    {tr("services.price")}
+                  </div>
+                  <div className="text-end font-semibold">
+                    {formatMoney(service.base_fare)}
+                  </div>
+                </div>
+                <div className="flex w-full justify-between py-0">
+                  <div className="text-muted-foreground">
+                    {tr("services.last_price")}
+                  </div>
+                  <div className="text-end font-semibold">
+                    {formatMoney(service.min_fare)}
+                  </div>
+                </div>
+                {!service.is_truck && (
+                  <div className="flex w-full justify-between">
+                    <div className="text-muted-foreground">
+                      {tr("services.seating_capacity")}
+                    </div>
+                    <div className="text-end font-semibold">
+                      {service.seats}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-between border-t pt-2 text-xs text-muted-foreground">
+                {!selectable && (
+                  <Can permission={"services:edit"}>
+                    <Button size="sm" variant="outline" asChild>
+                      <Link
+                        to={`/services/$serviceId/edit`}
+                        params={{ serviceId: service.id }}
+                      >
+                        Edit
+                      </Link>
+                    </Button>
+                  </Can>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }

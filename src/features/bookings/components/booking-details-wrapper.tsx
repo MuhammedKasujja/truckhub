@@ -10,8 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { CreditCard, Edit2Icon } from "lucide-react"
-import { Link } from "@tanstack/react-router"
+import { CreditCard } from "lucide-react"
 import { formatDate, formatMoney } from "@/lib/format"
 import { Status } from "@/components/ui/status"
 import {
@@ -22,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Can } from "@/components/has-permission"
 import {
   Empty,
   EmptyHeader,
@@ -46,16 +44,6 @@ export function BookingDetailsWrapper({ booking }: BookingDetailsWrapperProps) {
             <CardTitle>{booking.number}</CardTitle>
             <CardAction className="flex gap-4">
               <Status>{booking.status}</Status>
-              <Can permission={"bookings:edit"}>
-                <Button asChild>
-                  <Link
-                    to={`/bookings/$bookingId/edit`}
-                    params={{ bookingId: booking.id }}
-                  >
-                    <Edit2Icon />
-                  </Link>
-                </Button>
-              </Can>
             </CardAction>
             <CardDescription></CardDescription>
           </CardHeader>

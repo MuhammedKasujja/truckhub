@@ -1,5 +1,5 @@
-import { TonnageTable } from "@/features/settings/tonnage/components/tonnage-table"
-import { createTonnagesQueryOptions } from "@/features/settings/tonnage/query-options"
+import { TonnageTable } from "@/features/settings/vehicle-config/tonnage/components/tonnage-table"
+import { createTonnagesQueryOptions } from "@/features/settings/vehicle-config/tonnage/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute(

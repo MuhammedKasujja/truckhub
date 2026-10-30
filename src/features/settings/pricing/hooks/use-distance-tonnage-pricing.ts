@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query"
-import { DistancePricingRequest } from "../schemas"
+import { ListDistancePricingRequest } from "../schemas"
 import { createBatchDistancePricingFn } from "../services"
-import { distancePricingQueryOptions } from "../query-options"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
+import { companyActiveDistancePricingQueryOptions } from "../query-options"
 
 export function useDistanceTonnagePricing() {
-  const { data, isLoading, error } = useQuery(distancePricingQueryOptions())
+  const { data, isLoading, error } = useQuery(
+    companyActiveDistancePricingQueryOptions()
+  )
 
   return { isLoading, data: data?.data, error }
 }
@@ -20,8 +22,8 @@ const useCreateDistanceTonnageBase = createEntityActionHook(
 export function useCreateDistanceTonnage() {
   const { isPending, execute } = useCreateDistanceTonnageBase()
 
-  function createDistanceTonnage(pricings: DistancePricingRequest[]) {
-    return execute({ data: { pricings } })
+  function createDistanceTonnage(data: ListDistancePricingRequest) {
+    return execute({ data })
   }
   return { isPending, createDistanceTonnage }
 }

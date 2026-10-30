@@ -1,4 +1,3 @@
-import { ServiceListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import {
   getServicesFn,
@@ -11,14 +10,15 @@ export const serviceQueryKeys = {
   all: () => ["services"],
   list: () => [...serviceQueryKeys.all(), "list"],
   details: () => [...serviceQueryKeys.all(), "detail"],
-  search: () => [...serviceQueryKeys.all(), "search"],
+  search: () => [...serviceQueryKeys.list(), "search"],
   detail: (id: EntityId) => [...serviceQueryKeys.details(), id],
 } as const
 
-export const serviceQueryOptions = (search: ServiceListSearchParams) =>
+export const serviceQueryOptions = () =>
   queryOptions({
     queryKey: [...serviceQueryKeys.list()],
-    queryFn: () => getServicesFn({ data: search }),
+    queryFn: () => getServicesFn(),
+    staleTime: 60 * 60 * 1000, // state for 1 hour
   })
 
 export const servicesSearchQueryOptions = () =>

@@ -1,8 +1,9 @@
-import { EditIslandsPricing } from "@/features/settings/pricing/components"
-import { createCompanyIslandPricingQueryOptions } from "@/features/settings/pricing/query-options"
-import { createBatchIslandPricingsFn } from "@/features/settings/pricing/services"
+import { Can } from "@/components/has-permission"
+import { CompanyIslandsPricingConfigurationDialog } from "@/features/settings/pricing/components/island-pricing/island-pricing-configurations"
+import { IslandPricingTable } from "@/features/settings/pricing/components/island-pricing/island-pricing-table"
+import { useCompanyActiveIslandsPricing } from "@/features/settings/pricing/hooks/use-island-pricing"
+import { companyActiveRoutePricingQueryOptions } from "@/features/settings/pricing/query-options"
 import { createFileRoute } from "@tanstack/react-router"
-import { toast } from "sonner"
 
 export const Route = createFileRoute(
   "/_admin/settings/pricing-config/islands-pricing"
@@ -10,23 +11,19 @@ export const Route = createFileRoute(
   component: RouteComponent,
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(
-      createCompanyIslandPricingQueryOptions()
+      companyActiveRoutePricingQueryOptions()
     ),
 })
 
 function RouteComponent() {
-  const pricings = Route.useLoaderData()
+  const { data } = useCompanyActiveIslandsPricing()
+
   return (
-    <EditIslandsPricing
-      initialData={{ pricings: pricings ?? [], validFromDate: new Date() }}
-      onSubmit={async (data) => {
-        const { message, error } = await createBatchIslandPricingsFn({ data })
-        if (error) {
-          toast.error(error.message)
-        } else {
-          toast.success(message)
-        }
-      }}
-    />
+    <div className="space-y-5">
+      <Can permission={"config:pricing:manage"}>
+        <CompanyIslandsPricingConfigurationDialog />
+      </Can>
+      <IslandPricingTable key={data?.validFromDate} pricings={data?.pricings} />
+    </div>
   )
 }

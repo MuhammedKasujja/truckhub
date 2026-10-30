@@ -62,7 +62,7 @@ function PageAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="page-action"
       className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end flex flex-row gap-2",
         "mt-0.5", // fine-tune vertical alignment with title
         className,
       )}

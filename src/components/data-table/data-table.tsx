@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { getColumnPinningStyle } from "@/lib/data-table";
 import { cn } from "@/lib/utils";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { InfoIcon } from "lucide-react";
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>;
@@ -84,9 +86,16 @@ export function DataTable<TData>({
               <TableRow>
                 <TableCell
                   colSpan={table.getAllColumns().length}
-                  className="h-24 text-center"
+                  className="text-center"
                 >
-                  No results.
+                  <Empty className="border border-dashed h-40">
+                    <EmptyHeader>
+                      <EmptyMedia variant={'icon'}>
+                        <InfoIcon/>
+                      </EmptyMedia>
+                      <EmptyTitle>No results found</EmptyTitle>
+                    </EmptyHeader>
+                  </Empty>
                 </TableCell>
               </TableRow>
             )}

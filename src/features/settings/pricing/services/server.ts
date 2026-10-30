@@ -2,14 +2,27 @@ import * as apiClient from "@/lib/api-client"
 import {
   BatchPayload,
   BatchPricingPayload,
+  PricingSearchParams,
+  ActivatePricingInput,
   DistancePricingRequest,
-  LoadingOffloadingPricing,
+  ActivePricingSearchParams,
   ListDistancePricingRequest,
   LoadingOffloadingPricingRequest,
 } from "../schemas"
-import { DistanceTonnagePricingResponse, IslandPricingCreateDto, IslandPricingResponse } from "../types"
+import {
+  ClientPricingDates,
+  CompanyPricingDates,
+  RoutePricingResponse,
+  IslandPricingResponse,
+  IslandPricingCreateDto,
+  DistanceTonnagePricingResponse,
+  LoadingOffloadingPricingResponse,
+} from "../types"
+import { ApiError } from "@/types"
+import { EntityId } from "@/schemas"
+import { generateApiSearchParams } from "@/lib/search-params"
 
-const endpoint = "/v1/routes/pricing"
+const endpoint = "/v1/pricing/routes"
 
 export async function updateBatchRouteTonnagePricing(
   data: BatchPricingPayload
@@ -27,34 +40,69 @@ export async function createBatchRouteTonnagePricing(
 export async function createBatchDistancePricing(
   data: ListDistancePricingRequest
 ) {
-  return await apiClient.postFn<BatchPayload>(
-    "/v1/pricing/distance-tonnage",
-    data.pricings
-  )
+  const { pricings, effectiveDate: valid_from } = data
+  return await apiClient.postFn<BatchPayload>("/v1/pricing/distance-tonnage", {
+    valid_from: valid_from.toLocaleDateString("en-CA"),
+    pricings,
+  })
 }
-export async function getDistanceTonnagePricing() {
-  return await apiClient.getFn<DistanceTonnagePricingResponse[]>(
-    "/v1/pricing/distance-tonnage"
+
+export async function getDistanceTonnagePricing(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/distance-tonnage"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<DistanceTonnagePricingResponse>(modified)
+}
+
+export async function getCompanyActiveDistancePricing() {
+  return await apiClient.getFn<DistanceTonnagePricingResponse>(
+    "/v1/pricing/distance-tonnage/active"
   )
 }
 
 export async function createBatchLoadingPricing(
   data: LoadingOffloadingPricingRequest
 ) {
+  const { pricings, effective_date } = data
   return await apiClient.postFn<DistancePricingRequest[]>(
     "/v1/pricing/loading-offloading",
-    data.pricings
+    { pricings, valid_from: effective_date }
   )
 }
 
-export async function getLoadingOffloadingFrees() {
-  return await apiClient.getFn<LoadingOffloadingPricing[]>(
-    "/v1/pricing/loading-offloading"
-  )
+export async function getLoadingOffloadingFrees(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/loading-offloading"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
 }
 
-export async function getIslandsPricings() {
-  return await apiClient.getFn<IslandPricingResponse[]>("/v1/pricing/islands")
+export async function getActiveLoadingOffloadingFrees(
+  search: ActivePricingSearchParams
+) {
+  const params = generateApiSearchParams({
+    client_id: search.clientId,
+  })
+  const url = "/v1/pricing/loading-offloading/active"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<LoadingOffloadingPricingResponse>(modified)
+}
+
+export async function getIslandsPricings(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = "/v1/pricing/islands"
+  const modified = params ? `${url}?${params}` : url
+  return await apiClient.getFn<IslandPricingResponse>(modified)
+}
+
+export async function getActiveIslandsPricings() {
+  return await apiClient.getFn<IslandPricingResponse>("/v1/pricing/islands/active")
 }
 
 export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
@@ -62,4 +110,42 @@ export async function createBatchIslandPricing(data: IslandPricingCreateDto) {
     "/v1/pricing/islands",
     data
   )
+}
+
+export async function getRouteTonnagePricing(search: PricingSearchParams) {
+  const params = generateApiSearchParams({
+    reference_date: search.referenceDate,
+  })
+  const url = params ? `${endpoint}?${params}` : endpoint
+  return await apiClient.getFn<RoutePricingResponse>(url)
+}
+
+export async function getActiveRouteTonnagePricing() {
+  return await apiClient.getFn<RoutePricingResponse>("/v1/pricing/routes/active")
+}
+
+export async function getCompanyPricingDates() {
+  return await apiClient.getFn<CompanyPricingDates>("/v1/pricing/dates")
+}
+
+export async function getClientPricingDates(clientId: EntityId) {
+  return await apiClient.getFn<ClientPricingDates>(`/v1/pricing/dates/client/${clientId}`)
+}
+
+export async function activateCompanyPricing(input: ActivatePricingInput) {
+  const activateEndpoint = deriveActivatePricingRoute(input)
+  return await apiClient.postFn<RoutePricingResponse>(activateEndpoint, {})
+}
+
+function deriveActivatePricingRoute(input: ActivatePricingInput) {
+  if (input.source == "route") {
+    return `/v1/pricing/routes/${input.effectiveDate}/activate`
+  } else if (input.source == "distance") {
+    return `/v1/pricing/distance-tonnage/${input.effectiveDate}/activate`
+  } else if (input.source == "island") {
+    return `/v1/pricing/islands/${input.effectiveDate}/activate`
+  } else if (input.source == "loading") {
+    return `/v1/pricing/loading-offloading/${input.effectiveDate}/activate`
+  }
+  throw new ApiError(`Pricing source: ${input.source} not allowed`, 400)
 }

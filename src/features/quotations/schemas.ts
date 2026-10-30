@@ -2,6 +2,7 @@ import z from "zod"
 import { Quotation } from "./types"
 import { ENGINE_MODES } from "@/common/config"
 import { IDSchema, MoneySchema } from "@/schemas"
+import { ShipmentSearchParams } from "../shipments/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -9,9 +10,18 @@ export const QuotationSearchParams = z.object({
   sort: getSortingStateSchema<Quotation>().default([
     { id: "created_at", desc: true },
   ]),
+  clientId: IDSchema.optional(),
   filters: getFiltersStateSchema<Quotation>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
+
+export const routeSchema = z.object({
+  origin: z.string().min(1),
+  checkpoints: z.array(z.string().min(1)),
+  destination: z.string().min(1),
+})
+
+export type Route = z.infer<typeof routeSchema>
 
 export type QuotationListSearchParams = z.infer<typeof QuotationSearchParams>
 
@@ -26,16 +36,6 @@ const createVehicleAddonSchema = z.object({
   name: z.string(),
 })
 
-const createDistancePricingSchema = z.object({
-  route_id: IDSchema,
-  pricing_id: IDSchema,
-  origin: z.string(),
-  destination: z.string().optional(),
-  price: z.number().positive(),
-  min_tons: z.number().positive(),
-  max_tons: z.number().positive(),
-})
-
 const createRouteSchema = z.object({
   route_id: IDSchema,
   origin: z.string(),
@@ -45,43 +45,47 @@ const createRouteSchema = z.object({
 const lineItemBase = z.object({
   tempId: z.string(),
   is_round_trip: z.boolean().nullable(),
-  quantity: z.int().positive(),
+  quantity: z.int("Required").min(1, "Minimum value is 1"),
   unit_price: MoneySchema.nullable(),
   subtotal: MoneySchema.nullable(),
   line_total: MoneySchema.nullable(),
   discount: z.string().optional().nullable(),
   engine_mode: z.enum(ENGINE_MODES),
   with_driver: z.boolean(),
+  display_name: z.string().optional().nullable(),
 })
 
-export const createCarQuotationLineItemSchema = z.object({
+export const createServiceQuotationLineItemSchema = z.object({
   source: z.literal("service"),
-  locations: z.array(createRouteSchema).min(1),
+  route: routeSchema,
   vehicle_addons: z.array(createVehicleAddonSchema),
   item_type: z.literal("small"),
   vehicle_year: z.string().optional().nullable(),
-  service_id: IDSchema.optional().nullable(),
-  car_brand_id: IDSchema.optional().nullable(),
+  service_id: IDSchema,
+  vehicle_category_id: IDSchema.optional().nullable(),
   car_model_id: IDSchema.optional().nullable(),
   estimated_consumption_rate_km: z.number().optional(),
   ...lineItemBase.shape,
 })
 
-export const createTruckQuotationLineItemSchema = z.object({
+export const createRouteQuotationLineItemSchema = z.object({
   source: z.literal("route"),
-  locations: z.array(createDistancePricingSchema).min(1),
+  route: routeSchema,
   item_type: z.literal("truck"),
   with_loaders: z.boolean(),
-  estimated_consumption_rate_km: z.number().min(1, "Required"),
+  route_id: IDSchema,
+  estimated_consumption_rate_km: z
+    .number("Required")
+    .min(0.5, "Minimum tonnage is 0.5"),
   tonnage: z.number("Required").min(0.1, "Required"),
   ...lineItemBase.shape,
 })
 
 export const createDistanceTonnageLineItemSchema = z.object({
   source: z.literal("distance"),
-  locations: z.array(createDistancePricingSchema),
+  route: routeSchema,
   item_type: z.literal("truck"),
-  distance_km: z.number(),
+  distance_km: z.number("Required").positive("Required").min(0.1),
   with_loaders: z.boolean(),
   estimated_consumption_rate_km: z.number().min(1, "Required"),
   tonnage: z.number("Required").min(0.1, "Required"),
@@ -89,8 +93,8 @@ export const createDistanceTonnageLineItemSchema = z.object({
 })
 
 const createLineItemSchema = z.discriminatedUnion("source", [
-  createCarQuotationLineItemSchema,
-  createTruckQuotationLineItemSchema,
+  createServiceQuotationLineItemSchema,
+  createRouteQuotationLineItemSchema,
   createDistanceTonnageLineItemSchema,
 ])
 
@@ -128,21 +132,18 @@ export const tonnagePricingRangeSchema = z
   })
 
 export const tonnagePricingSchema = z.object({
-  id: IDSchema,
-  min_tons: z.union([z.string(), z.number()]),
-  max_tons: z.union([z.string(), z.number()]),
+  minTons: z.union([z.string(), z.number()]),
+  maxTons: z.union([z.string(), z.number()]),
   price: MoneySchema.optional(),
 })
 
 export const routePricingsSchema = z.object({
   tempId: IDSchema,
-  route_id: IDSchema,
+  routeId: IDSchema,
   origin: z.string(),
   destination: z.string(),
-  distance_km: z.union([z.string(), z.number()]),
-  min_hrs: z.union([z.string(), z.number()]),
-  max_hrs: z.union([z.string(), z.number()]),
-  pricing: tonnagePricingSchema,
+  distanceKm: z.union([z.string(), z.number()]),
+  pricings: z.array(tonnagePricingSchema),
 })
 
 export const updateQuotationSchema = z.object({
@@ -161,49 +162,20 @@ export type RouteServiceInput = z.infer<typeof createRouteSchema>
 export type LineItemRequest = z.infer<typeof createLineItemSchema>
 export type LineItemResponse = LineItemRequest
 
-export type SmallLineItemRequest = z.infer<
-  typeof createCarQuotationLineItemSchema
+export type ServiceLineItemRequest = z.infer<
+  typeof createServiceQuotationLineItemSchema
 >
-export type TruckLineItemRequest = z.infer<
-  typeof createTruckQuotationLineItemSchema
+export type RouteLineItemRequest = z.infer<
+  typeof createRouteQuotationLineItemSchema
 >
 
 export type DistanceLineItemRequest = z.infer<
   typeof createDistanceTonnageLineItemSchema
 >
 
-const loactionBasedSchema = z.object({
-  // source: z.literal("location"),
-  source: z.literal("small"),
-  ...createRouteSchema.shape,
+export const quotationShipmentParams = z.object({
+  quotation_id: IDSchema,
+  ...ShipmentSearchParams.shape,
 })
 
-const routePricingBasedSchema = z.object({
-  source: z.literal("route"),
-  ...createRouteSchema.shape,
-})
-
-const distancePricingBasedSchema = z.object({
-  source: z.literal("distance"),
-  ...createRouteSchema.shape,
-})
-
-export type LocationServiceResponse = z.infer<typeof loactionBasedSchema>
-
-export type PricingRouteServiceResponse = z.infer<
-  typeof routePricingBasedSchema
->
-
-export type DistanceRouteServiceResponse = z.infer<
-  typeof distancePricingBasedSchema
->
-
-const locationServiceSchema = z.discriminatedUnion("source", [
-  loactionBasedSchema,
-  routePricingBasedSchema,
-  distancePricingBasedSchema,
-])
-
-const locationSourceSchema = z.array(locationServiceSchema)
-
-export type LocationSourceResponse = z.infer<typeof locationSourceSchema>
+export type QuotationShipmentInput = z.infer<typeof quotationShipmentParams>

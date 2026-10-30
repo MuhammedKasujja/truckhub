@@ -1,32 +1,41 @@
-import { LoadingOffloadingPricingForm } from "@/features/settings/pricing/components"
-import { createCompanyLoadingFreesQueryOptions } from "@/features/settings/pricing/query-options"
-import { createBatchLoadingPricingFn } from "@/features/settings/pricing/services"
+import { Can } from "@/components/has-permission"
+import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-offloading-pricing-table"
+import { CompanyLoadingPricingConfigurationDialog } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-pricing-configurations"
+import { activeLoadingFreesQueryOptions } from "@/features/settings/pricing/query-options"
+import { PricingSearchParamsCache } from "@/features/settings/pricing/schemas"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
-import { toast } from "sonner"
 
 export const Route = createFileRoute(
   "/_admin/settings/pricing-config/loading-offloading-pricing"
 )({
   component: RouteComponent,
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(
-      createCompanyLoadingFreesQueryOptions()
-    ),
+  validateSearch: PricingSearchParamsCache,
+  loaderDeps: ({ search }) => ({ search }),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(activeLoadingFreesQueryOptions())
+  },
 })
 
 function RouteComponent() {
-  const { data } = Route.useLoaderData()
+  const { data } = useQuery(activeLoadingFreesQueryOptions())
+
   return (
-    <LoadingOffloadingPricingForm
-      initialData={data ? { pricings: data } : undefined}
-      onSubmit={async (data) => {
-        const { message, error } = await createBatchLoadingPricingFn({ data })
-        if (error) {
-          toast.error(error.message)
-        } else {
-          toast.success(message)
+    <div className="space-y-5">
+      <Can permission={"config:pricing:manage"}>
+        <CompanyLoadingPricingConfigurationDialog />
+      </Can>
+      <LoadingOffloadingPricingTable
+        key={data?.data?.effective_date}
+        pricings={
+          data
+            ? {
+                pricings: data.data?.pricings ?? [],
+                effective_date: data?.data?.effective_date,
+              }
+            : undefined
         }
-      }}
-    />
+      />
+    </div>
   )
 }

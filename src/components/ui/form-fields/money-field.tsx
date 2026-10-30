@@ -14,6 +14,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { useSettings } from "@/features/settings/hooks/use-settings";
+import { MaskInput } from "../mask-input";
 
 type MoneyFieldProps<F extends FieldValues> = Omit<TextFieldProps<F>, "type">;
 
@@ -24,6 +25,7 @@ export function MoneyField<T extends FieldValues>({
   placeholder,
   required = true,
   description,
+  ...rest
 }: Readonly<MoneyFieldProps<T>>) {
   const { settings } = useSettings()
   return (
@@ -32,11 +34,25 @@ export function MoneyField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
+          {label &&
           <FieldLabel htmlFor={field.name}>
             {label}
             {required && <RequiredLabelIcon />}
-          </FieldLabel>
-          <InputGroup>
+          </FieldLabel>}
+          <MaskInput
+            id={field.name}
+            mask="currency"
+            inputMode="decimal"
+            currency="UGX"
+            locale="en-UG"
+            placeholder="USh"
+            value={field.value}
+            onValueChange={(_masked, unmasked) => field.onChange(unmasked)}
+            onBlur={field.onBlur}
+            invalid={!!fieldState.error}
+            readOnly={rest.readOnly}
+          />
+          {/* <InputGroup>
             <InputGroupInput
               {...field}
               type={"text"}
@@ -53,7 +69,7 @@ export function MoneyField<T extends FieldValues>({
             <InputGroupAddon align="inline-start">
               <InputGroupButton variant="secondary">{settings?.currency_code}</InputGroupButton>
             </InputGroupAddon>
-          </InputGroup>
+          </InputGroup> */}
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

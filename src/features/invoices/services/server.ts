@@ -1,6 +1,7 @@
-import { Invoice } from "../types"
+import { api } from "@/lib/api"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
+import { Invoice, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 import { InvoiceCreateInput, InvoiceListSearchParams } from "../schemas"
@@ -20,22 +21,29 @@ export async function getInvoices(input: InvoiceListSearchParams) {
   return { error: response.error }
 }
 
-export async function getInvoicesByQuery({ search }: SearchQuery) {
-  return getInvoices({
-    page: 1,
-    perPage: DEFAULT_FITER_QUERY_PER_PAGE,
-    sort: [],
-    search: search ?? "",
-    created_at: [],
-    filters: [],
-    joinOperator: "and",
-  })
-}
-
 export async function getInvoiceDetails(invoiceId: EntityId) {
   return await apiClient.getFn<Invoice>(`${endpoint}/${invoiceId}`)
 }
 
 export async function createInvoice(data: InvoiceCreateInput) {
-  return await apiClient.postFn<Invoice>(endpoint, data)
+  return await apiClient.postFn<Invoice>(endpoint, {
+    quotation_id: data.quotationId,
+    unit_ids: data.unitIds,
+    due_date: data.dueDate,
+  })
+}
+
+export async function getInvoicePdf(invoiceId: EntityId) {
+  return await api.get(`${endpoint}/${invoiceId}/pdf`, {
+    responseType: "arraybuffer",
+    timeout: 30000,
+  })
+}
+
+export async function getInvoiceStatistics() {
+  return await apiClient.getFn<InvoiceStatistics>(`${endpoint}/statistics`)
+}
+
+export async function sendInvoiceEmail(invoiceId: EntityId) {
+  return await apiClient.postFn<Invoice>(`${endpoint}/${invoiceId}/email`, {})
 }

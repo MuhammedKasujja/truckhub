@@ -1,4 +1,3 @@
-"use client"
 import {
   Card,
   CardContent,
@@ -18,15 +17,13 @@ import {
   EditSettingsSchema,
   EditSettingsSchemaType,
 } from "@/features/settings/schemas"
-import { updateSettingsFn } from "@/features/settings/service"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { DATE_FORMATS } from "@/common/constants"
+import { DATE_FORMATS_OPTIONS, MONTH_OPTIONS } from "@/common/constants"
 import { Can } from "@/components/has-permission"
+import { useEditSettings } from "../hooks/use-settings"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -34,7 +31,7 @@ type EditSettingsFormProps = {
 
 export function EditSettingsForm({ settings }: EditSettingsFormProps) {
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
+  const { mutate: updateSettings } = useEditSettings()
 
   const formSchema = EditSettingsSchema
 
@@ -44,15 +41,7 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { isSuccess, error, message } = await updateSettingsFn({
-      data: values,
-    })
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.settings.refresh()
-    } else {
-      toast.error(error?.message)
-    }
+    updateSettings(values)
   }
 
   return (
@@ -82,7 +71,13 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
               label={"Date Format"}
               name={"date_format"}
               control={form.control}
-              options={DATE_FORMATS.map((f) => ({ label: f, value: f }))}
+              options={DATE_FORMATS_OPTIONS}
+            />
+            <SelectField
+              label={"Company Start Month"}
+              name={"fiscal_year_start_month"}
+              control={form.control}
+              options={MONTH_OPTIONS}
             />
             <TextField
               label={"Currency Code"}

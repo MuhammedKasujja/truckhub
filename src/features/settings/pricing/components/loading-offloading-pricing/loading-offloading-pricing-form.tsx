@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { Plus } from "lucide-react"
+import { Plus, XIcon } from "lucide-react"
 import { useFieldArray, useForm } from "react-hook-form"
 import z from "zod"
 import {
@@ -9,10 +9,13 @@ import {
   LoadingOffloadingPricingSchema,
 } from "../../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TextField } from "@/components/ui/form-fields"
+import {
+  DatePickerField,
+  MoneyField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { Separator } from "@/components/ui/separator"
-import { useAuth } from "@/components/providers/auth-context"
 
 const emptyPricingList = [
   {
@@ -83,25 +86,23 @@ const emptyPricing = {
 }
 
 interface LoadingOffloadingPricingSchemaProp {
-  initialData?: LoadingOffloadingPricingRequest,
-  isSubmitting?: boolean,
+  initialData?: LoadingOffloadingPricingRequest
+  isSubmitting?: boolean
   onSubmit: (data: LoadingOffloadingPricingRequest) => Promise<void>
+  onCancel?: () => void
 }
 
 export function LoadingOffloadingPricingForm({
   initialData,
   isSubmitting = false,
   onSubmit,
+  onCancel,
 }: LoadingOffloadingPricingSchemaProp) {
-  const { hasPermission } = useAuth()
-  const canCreateOrEdit =
-    hasPermission("config:loading_fees:create") ||
-    hasPermission("config:loading_fees:edit")
-
   const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
     resolver: zodResolver(LoadingOffloadingPricingSchema),
     defaultValues: {
       client_id: initialData?.client_id,
+      effective_date: initialData?.effective_date,
       pricings:
         initialData?.pricings && initialData?.pricings.length > 0
           ? initialData?.pricings
@@ -109,7 +110,7 @@ export function LoadingOffloadingPricingForm({
     },
   })
 
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "pricings",
   })
@@ -120,9 +121,29 @@ export function LoadingOffloadingPricingForm({
 
   // Tonnage  Ranges should not overlap
   return (
-    <Card>
-      <CardContent>
-        <form onSubmit={form.handleSubmit(onSubmitData)}>
+    <form
+      onSubmit={form.handleSubmit(onSubmitData, (errors) => {
+        console.log("Errors Data", errors)
+      })}
+      className="space-y-4"
+    >
+      <div className="flex items-baseline-last justify-between">
+        <div className="w-full space-y-2.5 md:w-80">
+          <DatePickerField
+            label="Effective Date"
+            name={"effective_date"}
+            control={form.control}
+          />
+        </div>
+        {onCancel && (
+          <Button type="button" variant={"outline"} onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
+      </div>
+
+      <Card>
+        <CardContent>
           <FieldGroup className="space-y-1">
             <Field orientation={"horizontal"} className="grid grid-cols-6">
               <div>TONS Min</div>
@@ -131,6 +152,7 @@ export function LoadingOffloadingPricingForm({
               <div>CBM Max</div>
               <div>Loading fees</div>
               <div>Offloading fees</div>
+              <div></div>
             </Field>
             {fields.map((ele, index) => (
               <Field key={ele.id} orientation={"horizontal"}>
@@ -150,35 +172,39 @@ export function LoadingOffloadingPricingForm({
                   control={form.control}
                   name={`pricings.${index}.cbm_max`}
                 />
-                <TextField
+                <MoneyField
                   control={form.control}
                   name={`pricings.${index}.loading_fees`}
                 />
-                <TextField
+                <MoneyField
                   control={form.control}
                   name={`pricings.${index}.offloading_fees`}
                 />
+                <Button
+                  size={"icon-xs"}
+                  type="button"
+                  variant={"destructive"}
+                  onClick={() => remove(index)}
+                >
+                  <XIcon className="size-3" />
+                </Button>
               </Field>
             ))}
             <Separator />
-            {canCreateOrEdit && (
-              <Button
-                type="button"
-                variant={"outline"}
-                className="mb-5"
-                onClick={() => append(emptyPricing)}
-              >
-                <Plus /> Add
-              </Button>
-            )}
+            <Button
+              type="button"
+              variant={"outline"}
+              className="mb-5"
+              onClick={() => append(emptyPricing)}
+            >
+              <Plus /> Add
+            </Button>
           </FieldGroup>
-          {canCreateOrEdit && (
-            <Field className="">
-              <SubmitButton isSubmitting={isSubmitting} />
-            </Field>
-          )}
-        </form>
-      </CardContent>
-    </Card>
+          <Field className="">
+            <SubmitButton isSubmitting={isSubmitting} />
+          </Field>
+        </CardContent>
+      </Card>
+    </form>
   )
 }

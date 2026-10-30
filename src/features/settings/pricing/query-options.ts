@@ -1,54 +1,112 @@
 import { queryOptions } from "@tanstack/react-query"
 import {
   getIslandPricingsFn,
+  getRouteTonnagePricingFn,
+  getCompanyPricingDatesFn,
+  getActiveIslandPricingsFn,
   getDistanceTonnagePricingFn,
   getLoadingOffloadingFreesFn,
+  getActiveRouteTonnagePricingFn,
+  getActiveLoadingOffloadingFreesFn,
+  getCompanyActiveDistancePricingFn,
 } from "./services"
+import { ActivePricingSearchParams, PricingSearchParams } from "./schemas"
 
-export const distancePricingQueryKeys = {
-  all: () => ["distance-pricing"] as const,
-  list: () => [...distancePricingQueryKeys.all(), "list"] as const,
+export const pricingQueryKeys = {
+  all: () => ["pricings"] as const,
+  list: () => [...pricingQueryKeys.all(), "list"] as const,
+  distances: (filter?: PricingSearchParams | undefined) =>
+    [...pricingQueryKeys.list(), "distances", filter] as const,
+  distanceActive: () =>
+    [...pricingQueryKeys.list(), "distances", "active"] as const,
+  routes: (filter?: PricingSearchParams | undefined) =>
+    [...pricingQueryKeys.list(), "routes", filter] as const,
+  routesActivePricing: () =>
+    [...pricingQueryKeys.list(), "routes", "active"] as const,
+  loadingOffloading: (filter?: PricingSearchParams | undefined) =>
+    [...pricingQueryKeys.list(), "loading-offloading", filter] as const,
+  activeLoadingOffloading: (filter?: ActivePricingSearchParams | undefined) =>
+    [
+      ...pricingQueryKeys.list(),
+      "loading-offloading",
+      "active",
+      filter,
+    ] as const,
+  islands: (filter?: PricingSearchParams | undefined) =>
+    [...pricingQueryKeys.list(), "islands-fees", filter] as const,
+  islandsActive: () =>
+    [...pricingQueryKeys.list(), "islands-fees", "active"] as const,
+  companyDates: () => [...pricingQueryKeys.list(), "company-dates"] as const,
 } as const
 
-export const routePricingQueryKeys = {
-  all: () => ["routes-pricings"] as const,
-  list: () => [...routePricingQueryKeys.all(), "list"] as const,
-} as const
-
-export const loadingFeesQueryKeys = {
-  all: () => ["loading-fees"] as const,
-  list: () => [...loadingFeesQueryKeys.all(), "list"] as const,
-} as const
-
-export const islandPricingQueryKeys = {
-  all: () => ["island-pricing"] as const,
-  list: () => [...islandPricingQueryKeys.all(), "list"] as const,
-} as const
-
-export const distancePricingQueryOptions = () =>
+export const distancePricingQueryOptions = (data?: PricingSearchParams) =>
   queryOptions({
-    queryKey: distancePricingQueryKeys.list(),
-    queryFn: getDistanceTonnagePricingFn,
+    queryKey: pricingQueryKeys.distances(data),
+    queryFn: () => getDistanceTonnagePricingFn({ data: { ...data } }),
+    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: !!data?.referenceDate,
+  })
+
+export const companyActiveDistancePricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.distanceActive(),
+    queryFn: () => getCompanyActiveDistancePricingFn(),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
-export const companyRoutePricingQueryOptions = () =>
+export const companyRoutePricingQueryOptions = (data?: PricingSearchParams) =>
   queryOptions({
-    queryKey: routePricingQueryKeys.list(),
-    queryFn: getDistanceTonnagePricingFn,
+    queryKey: pricingQueryKeys.routes(data),
+    queryFn: () => getRouteTonnagePricingFn({ data: { ...data } }),
+    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: !!data?.referenceDate,
+  })
+
+export const companyActiveRoutePricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.routesActivePricing(),
+    queryFn: () => getActiveRouteTonnagePricingFn(),
+    gcTime: 60 * 60 * 1000, // Cache for 1 hour
+  })
+
+export const createCompanyLoadingFreesQueryOptions = (
+  data?: PricingSearchParams
+) =>
+  queryOptions({
+    queryKey: pricingQueryKeys.loadingOffloading(data),
+    queryFn: () => getLoadingOffloadingFreesFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
-export const createCompanyLoadingFreesQueryOptions = () =>
+export const activeLoadingFreesQueryOptions = (
+  data?: ActivePricingSearchParams
+) =>
   queryOptions({
-    queryKey: loadingFeesQueryKeys.list(),
-    queryFn: getLoadingOffloadingFreesFn,
+    queryKey: pricingQueryKeys.activeLoadingOffloading(data),
+    queryFn: () => getActiveLoadingOffloadingFreesFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
   })
 
-export const createCompanyIslandPricingQueryOptions = () =>
+export const createCompanyIslandPricingQueryOptions = (
+  data?: PricingSearchParams
+) =>
   queryOptions({
-    queryKey: islandPricingQueryKeys.list(),
-    queryFn: getIslandPricingsFn,
+    queryKey: pricingQueryKeys.islands(data),
+    queryFn: () => getIslandPricingsFn({ data: { ...data } }),
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    enabled: Boolean(data?.referenceDate),
+  })
+
+export const companyActiveIslandPricingQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.islandsActive(),
+    queryFn: () => getActiveIslandPricingsFn(),
+    staleTime: 60 * 60 * 1000, // Cache for 30 minutes
+  })
+
+export const companyPricingDatesQueryOptions = () =>
+  queryOptions({
+    queryKey: pricingQueryKeys.companyDates(),
+    queryFn: getCompanyPricingDatesFn,
+    gcTime: 60 * 60 * 1000, // Cache pricing dates for 60 minutes
   })

@@ -1,7 +1,10 @@
 import {
-  CustomerUpdateSchema,
-  CustomerCreateSchema,
+  ClientUpdateSchema,
+  ClientCreateSchema,
   ClientSearchParamsCache,
+  ClientServiceCreateSchema,
+  clientPricingSearchParams,
+  ActivateClientPricingSchema,
 } from "@/features/clients/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -14,20 +17,27 @@ import {
   changeClientType,
   getClientBookings,
   getClientPayments,
+  getClientInvoices,
+  getClientServices,
   deleteCustomerById,
   getCustomersByQuery,
+  getClientQuotations,
+  createClientService,
   getClientRoutePricing,
   getCustomerDetailsById,
+  getClientActiveRoutePricing,
   createClientBatchRoutePricing,
   getClientLoadingOffloadingFrees,
   createClientLoadingOffloadingPricing,
+  getClientActiveLoadingOffloadingFrees,
 } from "./server"
 import { ApiError } from "@/types"
 import {
   LoadingOffloadingPricingSchema,
   BatchPricingPayloadUpdateSchema,
 } from "@/features/settings/pricing/schemas"
-import { apiResponseEntity, apiResponseTransform } from "@/lib/api-response-serializer"
+import { activateClientPricing } from "./pricings"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
   .inputValidator(ClientSearchParamsCache)
@@ -48,7 +58,7 @@ export const getClientsByQueryFn = createServerFn()
       const { message, erroCode, statusCode } = response.error
       throw new ApiError(message, statusCode, erroCode)
     }
-    return response.data
+    return { data: response.data, pagination: response.pagination }
   })
 
 export const getClientByIdFn = createServerFn()
@@ -60,7 +70,7 @@ export const getClientByIdFn = createServerFn()
 export const getClientProfileFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return apiResponseEntity(getCustomerDetailsById(data.id))
+    return apiResponseTransform(getCustomerDetailsById(data.id))
   })
 
 export const deleteClientFn = createServerFn({ method: "POST" })
@@ -70,13 +80,13 @@ export const deleteClientFn = createServerFn({ method: "POST" })
   })
 
 export const updateClientFn = createServerFn({ method: "POST" })
-  .inputValidator(CustomerUpdateSchema)
+  .inputValidator(ClientUpdateSchema)
   .handler(async ({ data }) => {
     return updateClient(data)
   })
 
 export const createClientFn = createServerFn({ method: "POST" })
-  .inputValidator(CustomerCreateSchema)
+  .inputValidator(ClientCreateSchema)
   .handler(async ({ data }) => {
     return createClient(data)
   })
@@ -99,6 +109,18 @@ export const getClientRidesFn = createServerFn()
     return getClientRides(data.id)
   })
 
+export const getClientQuotationsFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientQuotations(data.id)
+  })
+
+export const getClientInvoicesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    return getClientInvoices(data.id)
+  })
+
 export const createClientBatchRoutePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
@@ -106,15 +128,31 @@ export const createClientBatchRoutePricingFn = createServerFn()
   })
 
 export const getClientRoutePricingFn = createServerFn()
+  .inputValidator(clientPricingSearchParams)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getClientRoutePricing(data))
+    return result.data!
+  })
+
+export const getClientActiveRoutePricingFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getClientRoutePricing(data.id)
+    const result = await apiResponseTransform(
+      getClientActiveRoutePricing(data.id)
+    )
+    return result.data!
   })
 
 export const getClientLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(clientPricingSearchParams)
+  .handler(async ({ data }) => {
+    return getClientLoadingOffloadingFrees(data)
+  })
+
+export const getClientActiveLoadingOffloadingFreesFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getClientLoadingOffloadingFrees(data.id)
+    return getClientActiveLoadingOffloadingFrees(data.id)
   })
 
 export const createClientLoadingOffloadingPricingFn = createServerFn()
@@ -126,9 +164,22 @@ export const createClientLoadingOffloadingPricingFn = createServerFn()
 export const changeClientTypeFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await changeClientType(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return apiResponseTransform(changeClientType(data.id))
   })
+
+export const getClientServicesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const response = await apiResponseTransform(getClientServices(data.id))
+    return response.data
+  })
+
+export const createClientServiceFn = createServerFn({ method: "POST" })
+  .inputValidator(ClientServiceCreateSchema)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(createClientService(data))
+  })
+
+export const activateClientPricingFn = createServerFn()
+  .inputValidator(ActivateClientPricingSchema)
+  .handler(({ data }) => apiResponseTransform(activateClientPricing(data)))

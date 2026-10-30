@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon } from "lucide-react"
 import { TaxRateForm } from "./tax-rate-form"
 import { TaxRate } from "../types"
 import { formatNumber } from "@/lib/format"
 import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 
 export function getTaxRateColumns(): ColumnDef<TaxRate>[] {
   return [
@@ -36,14 +36,14 @@ export function getTaxRateColumns(): ColumnDef<TaxRate>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <Can permission="config:tax_rates:edit">
               <TaxRateForm
                 initialData={{ ...taxRate }}
                 trigger={
                   <Button variant={"outline"} size={"icon"}>
-                    <EditIcon />
+                    <ActionIcon action="edit" />
                   </Button>
                 }
               />

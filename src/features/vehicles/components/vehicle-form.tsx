@@ -1,17 +1,13 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field"
 import {
   AutoCompleteField,
   ColorPickerField,
   NumberField,
+  PlateNumberField,
   SelectField,
   TextField,
+  YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
@@ -19,9 +15,9 @@ import {
   VehicleUpdateSchema,
 } from "@/features/vehicles/schemas"
 import { createVehicleFn, updateVehicleFn } from "@/features/vehicles/services"
-import { EngineTypes, Gearboxes } from "@/features/vehicles/types"
+import { EngineTypes, vehicleTransmissionList } from "@/features/vehicles/types"
 import { toast } from "sonner"
-import z from "zod"
+import z, { keyof } from "zod"
 import { AxlesList, VehicleCylinderList } from "@/config/constants"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
@@ -32,7 +28,7 @@ import { useVehicleForm } from "../hooks/use-vehicle-form"
 import { useVehicleConfigurationsSuspense } from "@/features/settings/hooks/use-vehicle-configurations"
 import { CAR_COLOR_OPTIONS } from "@/common/config"
 import { VehicleFeature } from "@/types/setting"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Stepper,
   StepperContent,
@@ -57,7 +53,7 @@ type VehicleFormProps = {
 const steps = [
   {
     value: "details",
-    title: "Vehicle Details",
+    title: "Vehicle Info",
     description: "Enter car information",
     fields: Object.keys(VehicleCreateSchema.shape) as Array<
       keyof z.infer<typeof VehicleCreateSchema>
@@ -69,7 +65,9 @@ const steps = [
     description: "Select car added-on features",
     fields: ["features"] as const,
   },
-]
+] as const
+
+type Step = typeof steps
 
 export function VehicleForm({ initialData }: VehicleFormProps) {
   const tr = useTranslation()
@@ -78,14 +76,14 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
   const {
     formSchema,
     form,
-    vehicleType,
+    vehicleCategory,
     toggleFeatures,
     driveTrains,
     selectedFeatures,
     isEdit,
     carModels,
   } = useVehicleForm(vehicleCofig, initialData)
-  const [step, setStep] = useState("details")
+  const [step, setStep] = useState<"details" | "features">("details")
 
   const stepIndex = steps.findIndex((s) => s.value === step)
 
@@ -117,10 +115,18 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.vehicles.list.invalidate()
+      if ("id" in values)
+        queryInvalidator.vehicles.details(values.id).invalidate()
+      setStep("details")
+      form.reset()
     } else {
       toast.error(error?.message)
     }
   }
+
+  useEffect(() => {
+    form.reset(initialData)
+  }, [initialData])
 
   return (
     <form
@@ -128,7 +134,11 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
         console.log(errors)
       })}
     >
-      <Stepper value={step} onValueChange={setStep} onValidate={onValidate}>
+      <Stepper
+        value={step}
+        onValueChange={(val) => setStep(val)}
+        onValidate={onValidate}
+      >
         <StepperList>
           {steps.map((step) => (
             <StepperItem key={step.value} value={step.value}>
@@ -145,17 +155,10 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
         </StepperList>
         <StepperContent value="details">
           <Card>
-            <CardHeader>
-              <CardTitle>
-                {isEdit ? tr("edit_vehicle") : tr("new_vehicle")}
-              </CardTitle>
-              <CardDescription>{tr("create_new_vehicle")}</CardDescription>
-            </CardHeader>
-
             <CardContent className="pb-6">
               <div className="grid grid-cols-1 gap-5 pb-6 md:grid-cols-2">
                 <FieldGroup>
-                  <TextField
+                  <PlateNumberField
                     label={tr("plate_number")}
                     name={"plate_number"}
                     control={form.control}
@@ -180,9 +183,10 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     />
                   </Field>
                   <Field className="" orientation={"horizontal"}>
-                    <TextField
+                    <YearPickerField
                       label={tr("common.year")}
                       name={"year"}
+                      placeholder="Select"
                       control={form.control}
                     />
                     <SelectField
@@ -197,7 +201,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     />
                   </Field>
                   <NumberField
-                    label={tr("tank_capacity")}
+                    label={tr("engineCapacity")}
                     name={"tank_capacity"}
                     control={form.control}
                   />
@@ -226,21 +230,21 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                 </FieldGroup>
                 <FieldGroup>
                   <SelectField
-                    label={tr("fuel_type")}
+                    label={tr("engineType")}
                     control={form.control}
                     name={"engine_type"}
-                    placeholder="Select fuel type"
+                    placeholder="Select engine type"
                     options={EngineTypes.map((opt) => ({
                       label: tr(`common.${opt}`),
                       value: opt,
                     }))}
                   />
                   <SelectField
-                    label={tr("gearbox")}
+                    label={tr("transmission")}
                     control={form.control}
                     name={"gearbox"}
-                    placeholder="Select gearbox"
-                    options={Gearboxes.map((opt) => ({
+                    placeholder="Select transmission"
+                    options={vehicleTransmissionList.map((opt) => ({
                       label: tr(`common.${opt}`),
                       value: opt,
                     }))}
@@ -273,7 +277,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                     }
                   />
                   <AutoCompleteField
-                    disabled={!vehicleType}
+                    // disabled={!vehicleCategory}
                     label={tr("common.drive_train")}
                     control={form.control}
                     name={"drive_train_id"}
@@ -286,7 +290,7 @@ export function VehicleForm({ initialData }: VehicleFormProps) {
                       })) ?? []
                     }
                   />
-                  {vehicleType?.is_truck && (
+                  {vehicleCategory?.is_truck && (
                     <div className="space-y-4">
                       <NumberField
                         label={"Tonnage Capacity"}

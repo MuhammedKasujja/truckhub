@@ -10,30 +10,37 @@ import {
 } from "@/config/constants"
 
 export const EditPaymentBaseSchema = z.object({
-  id: IDSchema.optional().nullable(),
-  entity_id: IDSchema,
-  payment_mode: z.string(),
-  transaction_ref: z.string().optional().nullable(),
+  entityId: IDSchema,
+  paymentMethod: z.enum(PaymentModeList),
+  clientId: IDSchema.optional(),
+  paidAt: z.date().optional().nullable(),
+  transactionRef: z.string().optional().nullable(),
   type: z.enum(PaymentEntityList),
 })
 
-export const EditPaymentSchema = z.object({
+export const paymentInputSchema = z.object({
   amount: MoneySchema,
   ...EditPaymentBaseSchema.shape,
 })
 
-export const createEditPaymentSchema = z.object({
-  amount: MoneySchema,
-  ...EditPaymentBaseSchema.shape,
+export const paymentRequestSchema = z.object({
+  ...paymentInputSchema.shape,
+  idempotencyKey: z.string().trim().min(4),
 })
 
-export type PaymentEditSchemaType = z.infer<typeof createEditPaymentSchema>
+export type PaymentEditSchemaType = z.infer<typeof paymentInputSchema>
+
+export type PaymentRequestInput = z.infer<typeof paymentRequestSchema>
+
+export type PaymentInput = z.infer<typeof paymentInputSchema>
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),
   payment_method: z.array(z.enum(PaymentModeList)).optional(),
   // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
-  sort: getSortingStateSchema<Payment>().optional(),
+  sort: getSortingStateSchema<Payment>().default([
+    { id: "created_at", desc: true },
+  ]),
   date: z.number().optional().nullable(),
   // advanced filter
   filters: getFiltersStateSchema().optional(),
@@ -41,3 +48,10 @@ export const PaymentSearchParamsCache = z.object({
 })
 
 export type PaymentListSearchParams = z.infer<typeof PaymentSearchParamsCache>
+
+export const reversePaymentSchema = z.object({
+  paymentId: IDSchema,
+  reason: z.string("Required").trim().min(3, "Too short"),
+})
+
+export type ReversePaymentInput = z.infer<typeof reversePaymentSchema>

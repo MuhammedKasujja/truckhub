@@ -13,13 +13,17 @@ import { shipmentsQueryKeys } from "@/features/shipments/query-options"
 import { auditLogsQueryKeys } from "@/features/audit_logs/query-options"
 import { rolesQueryKeys } from "@/features/settings/roles/query-options"
 import { quotationQueryKeys } from "@/features/quotations/query-options"
-import { tonnageQueryKeys } from "@/features/settings/tonnage/query-options"
+import { maintenanceQueryKeys } from "@/features/maintanence/query-options"
+import { pricingQueryKeys } from "@/features/settings/pricing/query-options"
+import { islandsQueryKeys } from "@/features/settings/islands/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
-import { carBrandQueryKeys } from "@/features/settings/car-brand/query-options"
-import { carModelsQueryKeys } from "@/features/settings/car-model/query-options"
-import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-types/query-options"
 import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query-options"
+import { tonnageQueryKeys } from "@/features/settings/vehicle-config/tonnage/query-options"
+import { carBrandQueryKeys } from "@/features/settings/vehicle-config/car-brand/query-options"
+import { carModelsQueryKeys } from "@/features/settings/vehicle-config/car-model/query-options"
 import { entityNumberPattensQueryKeys } from "@/features/settings/entity-numbers/query-options"
+import { bankAccountsQueryKeys, banksQueryKeys } from "@/features/settings/bank-accounts/query-options"
+import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-config/vehicle-categories/query-options"
 
 export const queryKeys = {
   dashboard: dashboardQueryKeys,
@@ -37,15 +41,13 @@ export const queryKeys = {
   vehiclesTypes: vehicleTypesQueryKeys,
   services: serviceQueryKeys,
   numberPatterns: entityNumberPattensQueryKeys,
+  islands: islandsQueryKeys,
+  maintenance: maintenanceQueryKeys,
 
   settings: {
-    app: () => settingsQueryKeys.list(),
-    vehicles: () => settingsQueryKeys.vehicles(),
-    pricingPlans: {
-      all: () => ({ queryKey: [""] }),
-      list: () => ({ queryKey: ["", "list"] }),
-      details: (id: string) => ({ queryKey: ["", "detail", id] }),
-    },
+    app: () => settingsQueryKeys.all(),
+    vehiclesConfig: () => settingsQueryKeys.vehiclesConfig(),
+    pricingPlans: pricingQueryKeys,
   },
 
   drivers: driverQueryKeys,
@@ -55,4 +57,6 @@ export const queryKeys = {
   auditLogs: auditLogsQueryKeys,
   quotations: quotationQueryKeys,
   shipments: shipmentsQueryKeys,
+  banks: banksQueryKeys,
+  bankAccounts: bankAccountsQueryKeys,
 }

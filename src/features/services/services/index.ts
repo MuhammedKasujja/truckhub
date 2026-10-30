@@ -1,7 +1,6 @@
 import {
   ServiceUpdateSchema,
   ServiceCreateSchema,
-  ServiceSearchParamsCache,
 } from "@/features/services/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -13,12 +12,12 @@ import {
   deleteServiceById,
   getServicesByQuery,
 } from "./server"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
-export const getServicesFn = createServerFn()
-  .inputValidator(ServiceSearchParamsCache)
-  .handler(async ({ data }) => {
-    return getServices(data)
-  })
+export const getServicesFn = createServerFn().handler(async () => {
+  const { data } = await apiResponseTransform(getServices())
+  return data
+})
 
 export const getServicesByQueryFn = createServerFn()
   .inputValidator(SearchQuerySchema)
@@ -29,7 +28,7 @@ export const getServicesByQueryFn = createServerFn()
 export const getServiceByIdFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getServiceById(data.id)
+    return apiResponseTransform(getServiceById(data.id))
   })
 
 export const deleteServiceFn = createServerFn()

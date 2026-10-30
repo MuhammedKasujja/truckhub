@@ -8,16 +8,25 @@ import {
 } from "@/components/ui/dialog"
 import { Shipment } from "../types"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { FinishShipmentInput, finishShipmentSchema } from "../schemas"
+import {
+  RecordShipmentDetailsInput,
+  recordShipmentDetailsSchema,
+} from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFinishShipment } from "../hooks/use-shipment-actions"
-import { MoneyField, NumberField, TextareaField } from "@/components/ui/form-fields"
+import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
+import {
+  MoneyField,
+  TextareaField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { PlusIcon, XIcon } from "lucide-react"
+import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Decimal from "@/lib/decimal-config"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   shipment?: Shipment
@@ -30,16 +39,25 @@ export function RecordShipmentDetailsDialog({
   onOpenChange,
   open,
 }: Props) {
-  const { finishShipment, isPending } = useFinishShipment()
+  const { saveShipmentDetails, isPending } = useRecordShipmentDetails()
 
-  const form = useForm<FinishShipmentInput>({
-    resolver: zodResolver(finishShipmentSchema),
+  const consumption = shipment?.consumption
+  const consumedFuelRates = consumption?.consumed_fuel_rates ?? []
+
+  const form = useForm<RecordShipmentDetailsInput>({
+    resolver: zodResolver(recordShipmentDetailsSchema),
     defaultValues: {
       unitId: shipment?.id,
-      startMileage: Number(shipment?.consumption?.start_mileage),
-      endMileage: shipment?.consumption?.end_mileage,
-      vehicleConsumptionRate: Number(shipment?.vehicle?.fuel_consumption_rate),
-      consumedFuelRates: [{ value: null }],
+      startMileage: consumption?.start_mileage,
+      endMileage: consumption?.end_mileage,
+      vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
+      consumedFuelRates:
+        consumedFuelRates.length > 0
+          ? consumedFuelRates.map((rate) => ({
+              value: rate,
+            }))
+          : [{ value: "0" }],
+      actualFuelConsumed: "0",
     },
     reValidateMode: "onChange",
   })
@@ -57,22 +75,26 @@ export function RecordShipmentDetailsDialog({
   const fuelConsumptionRates = form.watch("consumedFuelRates")
 
   useEffect(() => {
-    if (startMileage > endMileage) {
+    const newStartMileage = new Decimal(startMileage ?? 0)
+    const newEndMileage = new Decimal(endMileage ?? 0)
+
+    if (newStartMileage.greaterThan(newEndMileage)) {
       form.setError("endMileage", {
         message: "Invalid end mileage",
       })
     } else {
       // form.clearErrors()
-      const distance = Number(endMileage - startMileage)
-      form.setValue("distanceKm", distance)
+      const distance = newEndMileage.minus(newStartMileage)
+      form.setValue("distanceKm", distance.toFixed())
       const consumptionRate = form.getValues("vehicleConsumptionRate")
-      const litresUsed = distance / consumptionRate
-      form.setValue("fuelUsedLitres", litresUsed)
+      const litresUsed = new Decimal(distance).div(consumptionRate)
+      form.setValue("fuelUsedLitres", litresUsed.toFixed(2))
     }
-  }, [startMileage, endMileage])
+  }, [startMileage, endMileage, open])
 
   useEffect(() => {
-    form.setValue("actualFuelConsumed", Number(fuelRate * litresConsumed))
+    const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
+    form.setValue("actualFuelConsumed", consumedFuel.toFixed(2))
   }, [fuelRate, litresConsumed])
 
   useEffect(() => {
@@ -80,146 +102,146 @@ export function RecordShipmentDetailsDialog({
       (rate) => rate.value != null
     )
     const rates = validFuelRates.reduce(
-      (curr, rate) => curr + Number(rate.value),
-      0
+      (curr, rate) => curr.plus(new Decimal(rate.value?.toString() ?? 0)),
+      new Decimal(0)
     )
+    const averageFuelRate = rates.dividedBy(validFuelRates.length)
 
-    form.setValue("fuelRate", Number(rates / validFuelRates.length))
+    form.setValue("fuelRate", averageFuelRate.toString())
   }, [fuelConsumptionRates])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden ring-4 sm:max-w-sm md:min-w-lg">
+        <DialogHeader>
+          <DialogTitle>Record Shipment Details</DialogTitle>
+        </DialogHeader>
         <form
-          onSubmit={form.handleSubmit(finishShipment, (errors) => {
-            console.log(errors)
+          id="shipment-details"
+          onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
+            console.log(errors.consumedFuelRates)
           })}
-          className="flex flex-col gap-4"
+          className="no-scrollbar min-h-full flex-1 space-y-4 overflow-y-auto"
         >
-          <DialogHeader>
-            <DialogTitle>Record Shipment Details</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Field orientation={"horizontal"}>
-              <NumberField
-                readOnly
-                required={false}
-                label="Start Mileage"
-                name="startMileage"
-                control={form.control}
-              />
-              <NumberField
-                required={false}
-                label="End Mileage"
-                name="endMileage"
-                control={form.control}
-              />
-            </Field>
-            <NumberField
+          <Field orientation={"horizontal"}>
+            <TextField
               readOnly
               required={false}
-              label="Distance (km)"
-              name="distanceKm"
+              label="Start Mileage"
+              name="startMileage"
               control={form.control}
             />
+            <TextField
+              required={false}
+              label="End Mileage"
+              name="endMileage"
+              control={form.control}
+            />
+          </Field>
+          <TextField
+            readOnly
+            required={false}
+            label="Distance (km)"
+            name="distanceKm"
+            control={form.control}
+          />
 
-            <Field orientation={"horizontal"}>
-              <MoneyField
-                readOnly
-                required={false}
-                label="Vehicle Consumption Rate (km/l)"
-                name="vehicleConsumptionRate"
-                control={form.control}
-              />
-              <NumberField
-                readOnly
-                required={false}
-                label="Litres consumed"
-                name="fuelUsedLitres"
-                control={form.control}
-              />
-            </Field>
-            <FieldGroup className="rounded-lg border border-dashed p-4">
-              <FieldLabel>
-                Fuel Consumptions{" "}
+          <Field orientation={"horizontal"}>
+            <TextField
+              readOnly
+              required={false}
+              label="Vehicle Consumption Rate (km/l)"
+              name="vehicleConsumptionRate"
+              control={form.control}
+            />
+            <TextField
+              readOnly
+              required={false}
+              label="Litres consumed"
+              name="fuelUsedLitres"
+              control={form.control}
+            />
+          </Field>
+          <FieldGroup className="rounded-lg border border-dashed p-4">
+            <FieldLabel>
+              Fuel Consumptions{" "}
+              <Button
+                type="button"
+                variant={"outline"}
+                size={"icon-sm"}
+                onClick={() => fuelConsumptionRatesFields.append({})}
+              >
+                <ActionIcon action="create" />
+              </Button>
+            </FieldLabel>
+            {fuelConsumptionRatesFields.fields.map((ele, index) => (
+              <Field key={ele.id} orientation={"horizontal"}>
+                <Controller
+                  control={form.control}
+                  name={`consumedFuelRates.${index}.value`}
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      type={"number"}
+                      inputMode="decimal"
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      value={field.value}
+                      autoComplete="off"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault()
+                          fuelConsumptionRatesFields.append({})
+                        }
+                      }}
+                      onChange={(e) => {
+                        field.onChange(e.target.value.replace(/[^0-9]/g, ""))
+                      }}
+                    />
+                  )}
+                />
                 <Button
                   type="button"
-                  variant={"outline"}
+                  variant={"destructive"}
+                  onClick={() => fuelConsumptionRatesFields.remove(index)}
                   size={"icon-sm"}
-                  onClick={() => fuelConsumptionRatesFields.append({})}
                 >
-                  <PlusIcon />
+                  <XIcon />
                 </Button>
-              </FieldLabel>
-              {fuelConsumptionRatesFields.fields.map((ele, index) => (
-                <Field key={ele.id} orientation={"horizontal"}>
-                  <Controller
-                    control={form.control}
-                    name={`consumedFuelRates.${index}.value`}
-                    render={({ field, fieldState }) => (
-                      <Input
-                        {...field}
-                        type={"number"}
-                        inputMode="numeric"
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        autoComplete="off"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault()
-                            fuelConsumptionRatesFields.append({})
-                          }
-                        }}
-                        onChange={(e) => {
-                          const number = e.target.valueAsNumber
-                          field.onChange(isNaN(number) ? null : number)
-                        }}
-                      />
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant={"destructive"}
-                    onClick={() => fuelConsumptionRatesFields.remove(index)}
-                    size={"icon-sm"}
-                  >
-                    <XIcon />
-                  </Button>
-                </Field>
-              ))}
-            </FieldGroup>
-            <MoneyField
-              readOnly
-              required={false}
-              label="Fuel Rate"
-              name="fuelRate"
-              control={form.control}
-            />
-            <MoneyField
-              readOnly
-              required={false}
-              label="Actual Fuel Consumed"
-              name="actualFuelConsumed"
-              control={form.control}
-            />
+              </Field>
+            ))}
+          </FieldGroup>
+          <MoneyField
+            readOnly
+            required={false}
+            label="Fuel Rate"
+            name="fuelRate"
+            control={form.control}
+          />
+          <MoneyField
+            readOnly
+            required={false}
+            label="Actual Fuel Consumed"
+            name="actualFuelConsumed"
+            control={form.control}
+          />
 
-            <TextareaField
-              label="Notes"
-              name="notes"
-              control={form.control}
-              required={false}
-              placeholder="optional"
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose>
-              {/* <Button type="button" variant={"ghost"}> */}
-              Cancle
-              {/* </Button> */}
-            </DialogClose>
-            <SubmitButton isSubmitting={isPending} />
-          </DialogFooter>
+          <TextareaField
+            label="Notes"
+            name="notes"
+            control={form.control}
+            required={false}
+            placeholder="optional"
+          />
         </form>
+        <DialogFooter>
+          <DialogClose>
+            {/* <Button type="button" variant={"ghost"}> */}
+            Cancle
+            {/* </Button> */}
+          </DialogClose>
+          <SubmitButton isSubmitting={isPending} form="shipment-details" />
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

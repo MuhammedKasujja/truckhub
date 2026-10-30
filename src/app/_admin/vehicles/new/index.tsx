@@ -1,3 +1,4 @@
+import { PageHeader, PageTitle } from "@/components/page-header"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 import { VehicleForm } from "@/features/vehicles/components/vehicle-form"
 import { requirePermission } from "@/lib/auth"
@@ -12,5 +13,12 @@ export const Route = createFileRoute("/_admin/vehicles/new/")({
 })
 
 function RouteComponent() {
-  return <VehicleForm />
+  return (
+    <>
+      <PageHeader>
+        <PageTitle>New Vehicle</PageTitle>
+      </PageHeader>
+      <VehicleForm />
+    </>
+  )
 }

@@ -1,6 +1,6 @@
+import { Invoice } from "../invoices/types";
+import { Quotation } from "../quotations/types";
 import { Payment } from "@/features/payments/types";
-import { Booking } from "@/features/bookings/types";
-import { RideRequest } from "@/features/ride-requests/types";
 
 export type DashboardStatistics = {
   statistics: {
@@ -10,10 +10,10 @@ export type DashboardStatistics = {
     drivers: {
       total: number;
     };
-    bookings: {
+    invoices: {
       total: number;
     };
-    rides: {
+    quotations: {
       total: number;
     };
     payments: {
@@ -21,7 +21,7 @@ export type DashboardStatistics = {
       total_amount: number;
     };
   };
-  recent_bookings: Booking[];
-  recent_rides: RideRequest[];
+  recent_quotations: Quotation[];
+  recent_invoices: Invoice[];
   recent_payments: Payment[];
 };

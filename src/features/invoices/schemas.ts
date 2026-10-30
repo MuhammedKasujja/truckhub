@@ -1,6 +1,7 @@
 import z from "zod"
 import { Invoice } from "./types"
 import { IDSchema } from "@/schemas"
+import { invoiceStatuses } from "./enums"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -8,7 +9,8 @@ export const InvoiceSearchParams = z.object({
   sort: getSortingStateSchema<Invoice>().default([
     { id: "created_at", desc: true },
   ]),
-  //  status: z.enum(ClientTypeList).optional(),
+  client_id: IDSchema.optional(),
+   status: z.array(z.enum(invoiceStatuses)).optional(),
   // advanced filter
   filters: getFiltersStateSchema<Invoice>().optional(),
   ...DefaultSearchParamsSchema.shape,
@@ -17,8 +19,9 @@ export const InvoiceSearchParams = z.object({
 export type InvoiceListSearchParams = z.infer<typeof InvoiceSearchParams>
 
 export const createInvoiceSchema = z.object({
-  booking_id: IDSchema,
-  due_date: z.string(),
+  quotationId: IDSchema,
+  unitIds: z.array(IDSchema).min(1),
+  dueDate: z.string(),
 })
 
 export type InvoiceCreateInput = z.infer<typeof createInvoiceSchema>

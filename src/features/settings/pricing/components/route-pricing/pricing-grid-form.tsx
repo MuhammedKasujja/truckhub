@@ -93,10 +93,12 @@ const INITIAL_BANDS: TonnageBand[] = [
 
 interface RoutePricingDataGridPageProps {
   onSubmit?: (payload: BatchPayload) => Promise<void>
+  onCancel?: () => void
 }
 
 export function RoutePricingDataGridForm({
   onSubmit,
+  onCancel,
 }: RoutePricingDataGridPageProps) {
   const { routes } = useBookingRoutes()
   const [isOpen, setOpen] = useState(true)
@@ -154,7 +156,7 @@ export function RoutePricingDataGridForm({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between gap-4 items-baseline-last">
         <div className="w-60 space-y-1.5">
           <Label htmlFor="grid-valid-from" className="text-sm">
             Pricing valid from
@@ -168,23 +170,30 @@ export function RoutePricingDataGridForm({
             }}
           />
         </div>
-        <Button
-          onClick={handleSubmit}
-          disabled={status === "loading"}
-          className="min-w-36"
-        >
-          {status === "loading" ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Submitting…
-            </>
-          ) : (
-            <>
-              <Upload className="mr-2 h-4 w-4" />
-              Submit batch
-            </>
+        <div className="flex justify-end">
+          {onCancel && (
+            <Button type="button" onClick={onCancel} variant={"outline"} className="mr-2">
+              Cancel
+            </Button>
           )}
-        </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={status === "loading"}
+            className="min-w-36"
+          >
+            {status === "loading" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Submitting…
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                Submit batch
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Tonnage band builder */}

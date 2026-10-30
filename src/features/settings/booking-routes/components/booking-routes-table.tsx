@@ -1,5 +1,3 @@
-"use client"
-
 import React, { useState } from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
@@ -64,7 +62,7 @@ export function BookingRoutesTable() {
               onClick={() => setOpen(true)}
             >
               <PlusIcon />
-              Route
+             New Route
             </Button>
           </Can>
           <RouteEditForm

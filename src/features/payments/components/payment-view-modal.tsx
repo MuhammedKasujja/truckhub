@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
+  DataList,
+  DataListItem,
+  DataListItemLabel,
+  DataListItemValue,
+} from "@/components/ui/data-list"
+import {
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -8,46 +14,75 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { Payment } from "@/features/payments/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useTranslation } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
-import { EyeIcon } from "lucide-react"
+import { formatDateTime, formatMoney } from "@/lib/format"
+import { useNavigate } from "@tanstack/react-router"
 
-export function PaymentViewModal({ payment }: { payment: Payment }) {
+type Props = {
+  payment: Payment
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function PaymentViewModal({ payment, open, onOpenChange }: Props) {
   const isMobile = useIsMobile()
   const tr = useTranslation()
+  const navigate = useNavigate()
   return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
-      <DrawerTrigger asChild>
-        <Button variant={"outline"} size={"icon"}>
-          <EyeIcon />
-        </Button>
-      </DrawerTrigger>
+    <Drawer
+      direction={isMobile ? "bottom" : "right"}
+      open={open}
+      onOpenChange={onOpenChange}
+    >
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>
             {tr("payment")} - {payment.number}
           </DrawerTitle>
-          <DrawerDescription>{formatDate(payment.date)}</DrawerDescription>
+          <DrawerDescription>
+            {formatDateTime(payment.paid_at)}
+          </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 overflow-y-auto px-4 py-2 text-sm">
           <Card>
-            <CardHeader>
-              <CardTitle>{tr("payments.customer")}</CardTitle>
-            </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div>{payment.client.fullname}</div>
-              <div>{payment.client.email}</div>
-              <div>{payment.client.phone}</div>
+              <div className="flex flex-col gap-3">
+                <Label htmlFor="header" className="text-muted-foreground">
+                  {tr("payments.amount")}
+                </Label>
+                {formatMoney(payment.amount)}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="type" className="text-muted-foreground">
+                    {tr("payments.applied")}
+                  </Label>
+                  {formatMoney(payment.applied)}
+                </div>
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor="status" className="text-muted-foreground">
+                    {tr("payments.status")}
+                  </Label>
+                  {tr(`payments.statuses.${payment.status}`)}
+                </div>
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>
+              <CardTitle
+                className="cursor-pointer"
+                onClick={() =>
+                  navigate({
+                    from: "/invoices/$invoiceId/view",
+                    params: { invoiceId: payment.entity.id },
+                  })
+                }
+              >
                 {tr(`payments.${payment.entity_type}`)} -{" "}
                 {payment.entity.number}
               </CardTitle>
@@ -57,21 +92,26 @@ export function PaymentViewModal({ payment }: { payment: Payment }) {
             </CardContent>
           </Card>
           <Card>
+            <CardHeader>
+              <CardTitle>{tr("payments.client")}</CardTitle>
+            </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-3">
-                <Label htmlFor="header">{tr("payments.amount")}</Label>
-                {formatMoney(payment.amount)}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="type">{tr("payments.applied")}</Label>
-                  {formatMoney(payment.applied)}
-                </div>
-                <div className="flex flex-col gap-3">
-                  <Label htmlFor="status">{tr("payments.status")}</Label>
-                  {tr(`payments.statuses.${payment.status}`)}
-                </div>
-              </div>
+              <DataList>
+                <DataListItem>
+                  <DataListItemLabel>Name</DataListItemLabel>
+                  <DataListItemValue>
+                    {payment.client.fullname}
+                  </DataListItemValue>
+                </DataListItem>
+                <DataListItem>
+                  <DataListItemLabel>Email</DataListItemLabel>
+                  <DataListItemValue>{payment.client.email}</DataListItemValue>
+                </DataListItem>
+                <DataListItem>
+                  <DataListItemLabel>Phone</DataListItemLabel>
+                  <DataListItemValue>{payment.client.phone}</DataListItemValue>
+                </DataListItem>
+              </DataList>
             </CardContent>
           </Card>
         </div>

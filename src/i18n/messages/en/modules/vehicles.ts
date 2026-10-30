@@ -9,9 +9,16 @@ export const en = {
   interior_color: "Interior color",
   cylinders: "Cylinders",
   tank_capacity: "Tank capacity",
+  engineCapacity: "Engine capacity",
   number_of_axles: "Number of Axles",
-  fuel_type: "Fuel Type",
+  engineType: "Engine Type",
   gearbox: "Gearbox",
+  transmission: "Transmission",
   year_of_manufacture: "Year of Manufacture",
   seating_capacity: "Seating Capacity",
-} as const;
+  vehicleTypes: {
+    car: "Car",
+    truck: "Truck",
+    van: "Van",
+  },
+} as const

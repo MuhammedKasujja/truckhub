@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button"
 import {
   CreditCard,
-  EditIcon,
-  EyeIcon,
   MailIcon,
   MoreVertical,
 } from "lucide-react"
@@ -17,7 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { InvoiceTableRowAction } from "../types"
-import { isNotInEnum } from "@/common/types"
+import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
+import { ActionIcon } from "@/components/icons"
 
 export type SetInvoiceTableAction = React.Dispatch<
   React.SetStateAction<InvoiceTableRowAction | null>
@@ -34,6 +33,7 @@ export function InvoiceTableActions({
   setRowAction,
 }: TableActionsProps) {
   const invoice = invoiceRow.row.original
+  const { sendInvoiceEmail } = useSendInvoiceEmail()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -46,10 +46,10 @@ export function InvoiceTableActions({
           <Can permission={"invoices:edit"}>
             <DropdownMenuItem asChild>
               <Link
-                to={"/billing/invoices/$invoiceId/view"}
+                to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
-                <EditIcon />
+                <ActionIcon action="edit" />
                 Edit
               </Link>
             </DropdownMenuItem>
@@ -57,16 +57,16 @@ export function InvoiceTableActions({
           <Can permission={"invoices:view"}>
             <DropdownMenuItem asChild>
               <Link
-                to={"/billing/invoices/$invoiceId/view"}
+                to={"/invoices/$invoiceId/view"}
                 params={{ invoiceId: invoice.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 View
               </Link>
             </DropdownMenuItem>
           </Can>
           <Can permission={"payments:create"}>
-            {isNotInEnum(invoice.status, ["paid"]) && (
+            {invoice.is_payable && (
               <DropdownMenuItem
                 onClick={() =>
                   setRowAction({ row: invoiceRow.row, variant: "makePayment" })
@@ -78,10 +78,22 @@ export function InvoiceTableActions({
             )}
           </Can>
           <DropdownMenuSeparator />
+          <Can permission={"invoices:pdf"}>
+            <DropdownMenuItem asChild>
+              <Link
+                to={"/invoices/$invoiceId/pdf"}
+                params={{ invoiceId: invoice.id }}
+              >
+                <ActionIcon action='view-pdf'/>
+                View Pdf
+              </Link>
+            </DropdownMenuItem>
+          </Can>
+          <DropdownMenuSeparator />
           <Can permission={"invoices:email"}>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
               <MailIcon />
-              Email
+              Send Email
             </DropdownMenuItem>
           </Can>
         </DropdownMenuGroup>

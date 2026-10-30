@@ -1,22 +1,99 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
-import { Payment } from "@/features/payments/types"
-import { formatDate, formatMoney } from "@/lib/format"
+import { Payment, PaymentTableRowAction } from "@/features/payments/types"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
-import { Trash2Icon } from "lucide-react"
-import { PaymentViewModal } from "./payment-view-modal"
 import { PaymentStatuses, PaymentModeList } from "@/config/constants"
 import { Badge } from "@/components/ui/badge"
 import { TFunction } from "@/i18n"
+import { PaymentStatusIndicator } from "./payment-status-indicator"
+import { Link } from "@tanstack/react-router"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MoreVertical } from "lucide-react"
+import { ActionIcon } from "@/components/icons"
 import { Can } from "@/components/has-permission"
+import { isNotInEnum } from "@/common/enums"
 
-export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
+type Props = {
+  tr: TFunction
+  setRowAction: React.Dispatch<
+    React.SetStateAction<PaymentTableRowAction | null>
+  >
+}
+
+export function getPaymentTableColumns({
+  tr,
+  setRowAction,
+}: Props): ColumnDef<Payment>[] {
   return [
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size={"icon-sm"}>
+                <MoreVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => setRowAction({ row: row, variant: "view" })}
+                >
+                  <ActionIcon action="view" />
+                  View
+                </DropdownMenuItem>
+                {isNotInEnum(row.original.status, ["reversed"]) && (
+                  <Can permission="payments:reverse">
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setRowAction({ row: row, variant: "reverse" })
+                      }
+                    >
+                      <ActionIcon action="reverse" />
+                      Reverse
+                    </DropdownMenuItem>
+                  </Can>
+                )}
+                <Can permission="payments:delete">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() =>
+                      setRowAction({ row: row, variant: "delete" })
+                    }
+                  >
+                    <ActionIcon action="delete" />
+                    Delete
+                  </DropdownMenuItem>
+                </Can>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+      size: 40,
+    },
     {
       accessorKey: "number",
       header: tr("payments.number"),
       cell: ({ row }) => {
-        return <Button variant={"link"}>{row.original.number}</Button>
+        return (
+          <Button
+            variant={"link"}
+            onClick={() => setRowAction({ row: row, variant: "view" })}
+          >
+            {row.original.number}
+          </Button>
+        )
       },
       size: 100,
       meta: {
@@ -28,7 +105,9 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.amount"),
       cell: ({ row }) => {
         return (
-          <div className="flex gap-2 font-semibold">{formatMoney(row.original.amount)}</div>
+          <div className="flex gap-2 font-semibold">
+            {formatMoney(row.original.amount)}
+          </div>
         )
       },
       meta: {
@@ -41,11 +120,7 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       header: tr("payments.status"),
       cell: ({ row }) => {
         const status = row.original.status
-        return (
-          <Badge variant="outline" className="capitalize">
-            {tr(`payments.statuses.${status}`)}
-          </Badge>
-        )
+        return <PaymentStatusIndicator status={status} />
       },
       meta: {
         label: tr("payments.status"),
@@ -58,18 +133,18 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       enableColumnFilter: true,
     },
     {
-      id: "payment_method",
-      accessorKey: "payment_mode",
+      id: "method",
+      accessorKey: "method",
       header: tr("payments.method"),
       cell: ({ row }) => {
-        const method = row.original.payment_mode
+        const method = row.original.method
         return (
           <Badge variant="outline">{tr(`payments.methods.${method}`)}</Badge>
         )
       },
       meta: {
         label: tr("payments.method"),
-        variant:"multiSelect",
+        variant: "multiSelect",
         options: PaymentModeList.map((method) => ({
           label: tr(`payments.methods.${method}`),
           value: `${method}`,
@@ -81,44 +156,28 @@ export function getPaymentTableColumns(tr: TFunction): ColumnDef<Payment>[] {
       id: "customer",
       header: tr("client"),
       cell: ({ row }) => {
-        return <p>{row.original.client.fullname}</p>
+        const client = row.original.client
+        return (
+          <div className="flex flex-col gap-0.5">
+            <Link to="/clients/$clientId/view" params={{ clientId: client.id }}>
+              {client.fullname}
+            </Link>
+          </div>
+        )
       },
     },
     {
       id: "date",
       accessorKey: "date",
-      header: tr("payments.date"),
+      header: tr("payments.paidDate"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.date)}</p>
+        return <p>{formatDateTime(row.original.paid_at)}</p>
       },
       meta: {
-        label: tr("payments.date"),
+        label: tr("payments.paidDate"),
         variant: "dateRange",
       },
       enableColumnFilter: true,
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <PaymentViewModal payment={row.original} />
-            <Can permission="payments:delete">
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  return { error: true, message: "Not implemented yet...." }
-                }}
-              >
-                <Trash2Icon />
-              </ActionButton>
-            </Can>
-          </div>
-        )
-      },
-      size: 100,
     },
   ]
 }

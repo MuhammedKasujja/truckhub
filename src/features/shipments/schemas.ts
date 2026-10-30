@@ -1,25 +1,27 @@
 import z from "zod"
 import { Shipment } from "./types"
-import { IDSchema } from "@/schemas"
-import { shipmentStatuses } from "./enums"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { type EntityId, IDSchema, MoneySchema } from "@/schemas"
+import { reassignmentReasonsList, shipmentStatuses } from "./enums"
+import { EngineTypes, vehicleTransmissionList } from "../vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 export const ShipmentSearchParams = z.object({
   sort: getSortingStateSchema<Shipment>().default([]),
   // advanced filter
-  status: z.enum(shipmentStatuses).optional(),
+  status: z.array(z.enum(shipmentStatuses)).optional(),
   filters: getFiltersStateSchema<Shipment>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 
 const consumedFuelRateSchema = z.object({
-  value: z.number().optional().nullable(),
+  value: MoneySchema.optional().nullable(),
 })
 
 export const dispatchShipmentSchema = z.object({
   unitId: IDSchema,
-  startMileage: z.number(),
+  startMileage: z.number("Required").positive(),
+  contactName: z.string("Required").min(3, "Required"),
 })
 
 export const assignShipmentVehicleSchema = z.object({
@@ -27,20 +29,27 @@ export const assignShipmentVehicleSchema = z.object({
   vehicleId: IDSchema,
 })
 
+export const changeShipmentVehicleSchema = z.object({
+  unitId: IDSchema,
+  newVehicleId: IDSchema,
+  note: z.string().trim().nullable().optional(),
+  reason: z.enum(reassignmentReasonsList, "Required"),
+})
+
 export const assignShipmentDriverSchema = z.object({
   unitId: IDSchema,
   driverId: IDSchema,
 })
 
-export const finishShipmentSchema = z.object({
+export const recordShipmentDetailsSchema = z.object({
   unitId: IDSchema,
-  startMileage: z.number(),
-  endMileage: z.number(),
-  distanceKm: z.number(),
-  vehicleConsumptionRate: z.number(),
-  fuelUsedLitres: z.number(),
-  fuelRate: z.number(),
-  actualFuelConsumed: z.number(),
+  startMileage: z.string(),
+  endMileage: z.string(),
+  distanceKm: z.string(),
+  vehicleConsumptionRate: MoneySchema,
+  fuelUsedLitres: MoneySchema.optional(),
+  fuelRate: MoneySchema.optional(),
+  actualFuelConsumed: MoneySchema,
   notes: z.string().optional().nullable(),
   consumedFuelRates: z.array(consumedFuelRateSchema),
 })
@@ -48,11 +57,14 @@ export const finishShipmentSchema = z.object({
 export const endShipmentSchema = z.object({
   unitId: IDSchema,
   endMileage: z.number(),
+  endedAt: z.date(),
 })
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>
 
-export type FinishShipmentInput = z.infer<typeof finishShipmentSchema>
+export type RecordShipmentDetailsInput = z.infer<
+  typeof recordShipmentDetailsSchema
+>
 
 export type DispatchShipmentInput = z.infer<typeof dispatchShipmentSchema>
 
@@ -60,8 +72,28 @@ export type AssignShipmentVehicleInput = z.infer<
   typeof assignShipmentVehicleSchema
 >
 
+export type ChangeShipmentVehicleInput = z.infer<
+  typeof changeShipmentVehicleSchema
+>
+
 export type AssignShipmentDriverInput = z.infer<
   typeof assignShipmentDriverSchema
 >
 
 export type ShipmentSearchParamsInput = z.infer<typeof ShipmentSearchParams>
+
+export type QuotationShipmentSearchParams = ShipmentSearchParamsInput & {
+  quotation_id: EntityId
+}
+
+const vehicleFilterSchema = z.object({
+  brand_id: IDSchema.nullable().optional(),
+  model_id: IDSchema.nullable().optional(),
+  category_id: IDSchema.nullable().optional(),
+  tonnage: z.string().nullable().optional(),
+  engine_type: z.enum(EngineTypes).nullable().optional(),
+  gearbox: z.enum(vehicleTransmissionList).nullable().optional(),
+  consumption_rate: z.string().nullable().optional(),
+})
+
+export type ShipmentVehicleFilters = z.infer<typeof vehicleFilterSchema>

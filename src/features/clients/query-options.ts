@@ -1,45 +1,73 @@
 import { EntityId } from "@/schemas"
-import { ClientListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
+import { ClientListSearchParams, ClientPricingSearchParam } from "./schemas"
 import {
   getCustomersFn,
   getClientByIdFn,
-  getClientRidesFn,
   getClientProfileFn,
-  getClientBookingsFn,
   getClientPaymentsFn,
   getClientsByQueryFn,
+  getClientInvoicesFn,
+  getClientServicesFn,
+  getClientQuotationsFn,
   getClientRoutePricingFn,
+  getClientActiveRoutePricingFn,
   getClientLoadingOffloadingFreesFn,
+  getClientActiveLoadingOffloadingFreesFn,
 } from "./services"
+import { getClientPricingDatesFn } from "../settings/pricing/services"
+
+export interface ClientSearchParams {
+  search: string
+  perPage: number
+}
 
 export const clientQueryKeys = {
   all: () => ["clients"],
   list: () => [...clientQueryKeys.all(), "list"],
   details: () => [...clientQueryKeys.all(), "detail"],
   detail: (id: EntityId) => [...clientQueryKeys.details(), id],
-  edit: (id: EntityId) => [...clientQueryKeys.details(), "edit", id],
-  profile: (id: EntityId) => [...clientQueryKeys.details(), "profile", id],
-  payments: (id: EntityId) => [...clientQueryKeys.details(), "payments", id],
-  bookings: (id: EntityId) => [...clientQueryKeys.details(), "bookings", id],
-  rides: (id: EntityId) => [...clientQueryKeys.details(), "rides", id],
-  routePricing: (id: EntityId) => [
-    ...clientQueryKeys.details(),
+  edit: (id: EntityId) => [...clientQueryKeys.detail(id), "edit"],
+  profile: (id: EntityId) => [...clientQueryKeys.detail(id), "profile"],
+  payments: (id: EntityId) => [...clientQueryKeys.detail(id), "payments"],
+  invoices: (id: EntityId) => [...clientQueryKeys.detail(id), "invoices"],
+  quotations: (id: EntityId) => [...clientQueryKeys.detail(id), "quotations"],
+  pricingDates: (id: EntityId) => [
+    ...clientQueryKeys.detail(id),
+    "pricing-dates",
+  ],
+  serviceProducts: (id: EntityId) => [
+    ...clientQueryKeys.detail(id),
+    "services-products",
+  ],
+  routePricing: (search: ClientPricingSearchParam) => [
+    ...clientQueryKeys.detail(search.clientId),
     "route_pricing",
-    id,
+    `${search.referenceDate}`,
   ],
-  loadingFees: (id: EntityId) => [
-    ...clientQueryKeys.details(),
+  routeActivePricing: (id: EntityId) => [
+    ...clientQueryKeys.detail(id),
+    "route_pricing",
+    "active",
+  ],
+  loadingFees: (search: ClientPricingSearchParam) => [
+    ...clientQueryKeys.detail(search.clientId),
     "loading_fees",
-    id,
+    search.referenceDate,
   ],
-  search: (query?: string | undefined) => [
+  loadingFeesActive: (id: EntityId) => [
+    ...clientQueryKeys.detail(id),
+    "loading_fees",
+    "active",
+  ],
+  search: (params: ClientSearchParams) => [
     ...clientQueryKeys.list(),
     "search",
-    query,
+    params,
   ],
+  filter: () => [...clientQueryKeys.list(), "filter-list"],
   refreshQueries: () => [...clientQueryKeys.list()],
-  refreshSingle: (id: EntityId) => [...clientQueryKeys.profile(id)],
+  refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
 } as const
 
 export const clientsQueryOptions = (input: ClientListSearchParams) =>
@@ -56,9 +84,18 @@ export const clientProfileQueryOptions = (clientId: EntityId) =>
 
 export const clientsSearchQueryOptions = (query?: string | undefined) =>
   queryOptions({
-    queryKey: clientQueryKeys.search(query),
+    queryKey: clientQueryKeys.search({ search: query ?? "", perPage: 10 }),
     queryFn: () => getClientsByQueryFn({ data: { search: query } }),
   })
+
+export const clientListQueryOptions = (params: ClientSearchParams) => ({
+  queryKey: [...clientQueryKeys.filter(), params.search, params.perPage], // no page here
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getClientsByQueryFn({
+      data: { search: params.search, perPage: params.perPage, page: pageParam },
+    }),
+  initialPageParam: 1,
+})
 
 export const clientEditQueryOptions = (clientId: EntityId) =>
   queryOptions({
@@ -72,27 +109,61 @@ export const clientPaymentsQueryOptions = (clientId: EntityId) =>
     queryFn: () => getClientPaymentsFn({ data: { id: clientId } }),
   })
 
-export const clientBookingsQueryOptions = (clientId: EntityId) =>
+export const clientInvoicesQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.bookings(clientId),
-    queryFn: () => getClientBookingsFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.invoices(clientId),
+    queryFn: () => getClientInvoicesFn({ data: { id: clientId } }),
   })
 
-export const clientRidesQueryOptions = (clientId: EntityId) =>
+export const clientQuotationsQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.rides(clientId),
-    queryFn: () => getClientRidesFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.quotations(clientId),
+    queryFn: () => getClientQuotationsFn({ data: { id: clientId } }),
   })
 
-export const clientRoutePricingQueryOptions = (clientId: EntityId) =>
+export const clientRoutePricingQueryOptions = (
+  search: ClientPricingSearchParam
+) =>
   queryOptions({
-    queryKey: clientQueryKeys.routePricing(clientId),
-    queryFn: () => getClientRoutePricingFn({ data: { id: clientId } }),
+    queryKey: clientQueryKeys.routePricing(search),
+    queryFn: () => getClientRoutePricingFn({ data: { ...search } }),
+    enabled: !!search.referenceDate,
+    staleTime: 60 * 60 * 1000,
   })
 
-export const clientLoadingFeesQueryOptions = (clientId: EntityId) =>
+export const clientActiveRoutePricingQueryOptions = (clientId: EntityId) =>
   queryOptions({
-    queryKey: clientQueryKeys.loadingFees(clientId),
+    queryKey: clientQueryKeys.routeActivePricing(clientId),
+    queryFn: () => getClientActiveRoutePricingFn({ data: { id: clientId } }),
+    staleTime: 60 * 60 * 1000,
+  })
+
+export const clientLoadingFeesQueryOptions = (
+  search: ClientPricingSearchParam
+) =>
+  queryOptions({
+    queryKey: clientQueryKeys.loadingFees(search),
+    queryFn: () => getClientLoadingOffloadingFreesFn({ data: search }),
+  })
+
+export const clientActiveLoadingFeesQueryOptions = (clientId: EntityId) =>
+  queryOptions({
+    queryKey: clientQueryKeys.loadingFeesActive(clientId),
     queryFn: () =>
-      getClientLoadingOffloadingFreesFn({ data: { id: clientId } }),
+      getClientActiveLoadingOffloadingFreesFn({ data: { id: clientId } }),
+  })
+
+export const clientServiceProductsQueryOptions = (clientId: EntityId) =>
+  queryOptions({
+    queryKey: clientQueryKeys.serviceProducts(clientId),
+    enabled: !!clientId,
+    queryFn: () => getClientServicesFn({ data: { id: clientId } }),
+  })
+
+export const clientPricingDatesQueryOptions = (clientId: EntityId) =>
+  queryOptions({
+    queryKey: clientQueryKeys.pricingDates(clientId),
+    enabled: !!clientId,
+    queryFn: () => getClientPricingDatesFn({ data: { id: clientId } }),
+    staleTime: 2 * 60 * 60 * 1000,
   })

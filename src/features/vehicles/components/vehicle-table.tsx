@@ -5,22 +5,25 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import React from "react"
+import React, { useState } from "react"
 import { getVehicleTableColumns } from "./vehicle-table-columns"
-import { Button } from "@/components/ui/button"
-import { Link, useSearch } from "@tanstack/react-router"
-import { PlusIcon } from "lucide-react"
+import { useSearch } from "@tanstack/react-router"
 import { useFetchEror } from "@/hooks/use-fetch-error"
-import { Can } from "@/components/has-permission"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createVehiclesListQueryOptions } from "../query-options"
+import { VehicleTableRowAction } from "../types"
 
 export function VehicleTable() {
   const search = useSearch({ from: "/_admin/vehicles/" })
   const {
-    data: { data, error, pagination },
+    data: { data, pagination },
+    error,
   } = useSuspenseQuery(createVehiclesListQueryOptions(search))
-  const columns = React.useMemo(() => getVehicleTableColumns(), [])
+  const [_, setRowAction] = useState<VehicleTableRowAction | null>(null)
+  const columns = React.useMemo(
+    () => getVehicleTableColumns({ setRowAction }),
+    [setRowAction]
+  )
 
   useFetchEror(error)
 
@@ -40,14 +43,6 @@ export function VehicleTable() {
   return (
     <DataTable table={table}>
       <DataTableToolbar table={table}>
-        <Can permission={"vehicles:create"}>
-          <Button asChild>
-            <Link to={"/vehicles/new"}>
-              <PlusIcon />
-              New Vehicle
-            </Link>
-          </Button>
-        </Can>
         <DataTableSortList table={table} align="end" />
       </DataTableToolbar>
     </DataTable>
@@ -55,11 +50,5 @@ export function VehicleTable() {
 }
 
 export function VehicleTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={getVehicleTableColumns().length}
-      filterCount={1}
-      shrinkZero
-    />
-  )
+  return <DataTableSkeleton columnCount={8} filterCount={1} shrinkZero />
 }

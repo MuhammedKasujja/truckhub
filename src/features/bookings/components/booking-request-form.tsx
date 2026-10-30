@@ -29,7 +29,7 @@ import { toast } from "sonner"
 import { useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
-import { ListIcon, Trash2Icon } from "lucide-react"
+import { ListIcon } from "lucide-react"
 import { createBookingFn } from "@/features/bookings/services"
 import { AutoComplete } from "@/components/ui/autocomplete"
 import { Service } from "@/features/services/types"
@@ -44,6 +44,7 @@ import { ClientPicker } from "@/features/clients/components"
 import { Client } from "@/features/clients/types"
 import { ClientContactsList } from "@/features/clients/components/client-contacts-list"
 import { useSearch } from "@tanstack/react-router"
+import { ActionIcon } from "@/components/icons"
 
 type BookingRequestFormProps = {
   initialData?: BookingUpdateSchemaType
@@ -129,7 +130,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
   useEffect(() => {
     setValue("client_id", search.clientId ?? "")
     if (clients) {
-      const client = clients.find((c) => c.id === search.clientId)
+      const client = clients.data.find((c) => c.id === search.clientId)
       setClient(client ?? null)
     }
   }, [search, clients])
@@ -318,7 +319,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                                     setActiveServiceTab("services.0")
                                   }}
                                 >
-                                  <Trash2Icon />
+                                  <ActionIcon action="delete" />
                                 </Button>
                               </CardAction>
                             </CardHeader>
@@ -356,9 +357,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                             </CardContent>
                             <CardFooter>
                               Total:{" "}
-                              {formatMoney(serviceWithTotal?.lineTotal, {
-                                showZeroAsNumber: true,
-                              })}
+                              {formatMoney(serviceWithTotal?.lineTotal)}
                             </CardFooter>
                           </Card>
                         </TabsContent>
@@ -405,9 +404,7 @@ export function BookingRequestForm({ initialData }: BookingRequestFormProps) {
                         </CardContent>
                         <CardFooter>
                           Total:{" "}
-                          {formatMoney(serviceWithTotal?.lineTotal, {
-                            showZeroAsNumber: true,
-                          })}
+                          {formatMoney(serviceWithTotal?.lineTotal)}
                         </CardFooter>
                       </Card>
                     )

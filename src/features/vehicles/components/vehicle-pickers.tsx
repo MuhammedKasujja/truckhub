@@ -1,72 +1,86 @@
-import { Vehicle } from "../types"
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { EntityPickerProps } from "@/common/types"
 import {
-  FormAutoComplete,
-  FormAutoCompleteProps,
-} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
-import { FieldValues } from "react-hook-form"
+  EngineType,
+  EngineTypes,
+  Gearbox,
+  vehicleTransmissionList,
+  Vehicle,
+} from "../types"
+import {
+  vehicleDetailsQueryOptions,
+  vehicleSearchQueryOptions,
+} from "../query-options"
+import { createEntityPicker } from "@/components/entity-picker"
+import { VehicleListSearchParams } from "../schemas"
 import { AutoComplete } from "@/components/ui/autocomplete-modified"
-import { vehicleSearchQueryOptions } from "../query-options"
+import { EntityPickerProps } from "@/common/types"
 
-export function VehiclePicker({
+export const { Picker: VehiclePicker, PickerField: VehiclePickerField } =
+  createEntityPicker<Vehicle, VehicleListSearchParams>({
+    mode: "remote",
+    entityName: "vehicle",
+    listQueryOptions: vehicleSearchQueryOptions,
+    detailQueryOptions: vehicleDetailsQueryOptions,
+    defaultSearchParams: { search: "", perPage: 20, page: 1 },
+    getOptionValue: (v) => v.id,
+    renderOption: (v) => (
+      <div>
+        <div>
+          {v.car_model.car_brand.name} {v.car_model.name} {v.year}
+        </div>
+        <div className="text-muted-foreground text-xs">{v.plate_number}</div>
+      </div>
+    ),
+    renderValue:(v) => (
+      <div>
+        <div>
+          {v.car_model.car_brand.name} {v.car_model.name} {v.year} <span className="text-muted-foreground text-xs">({v.plate_number})</span>
+        </div>
+      </div>
+    ),
+    // createRoute: "/vehicles/new",
+    label: "Vehicle",
+  })
+
+export function EngineTypePicker({
   value,
   id,
   onSelected,
-}: EntityPickerProps<Vehicle>) {
-  const [query, setQuery] = useState("")
-  const { data, isLoading } = useQuery({
-    ...vehicleSearchQueryOptions(query),
-    // enabled: query.trim().length > 2,
-  })
+}: EntityPickerProps<EngineType>) {
   return (
-    <AutoComplete<Vehicle>
+    <AutoComplete<EngineType>
       id={id}
-      options={data?.data ?? []}
-      loading={isLoading}
+      options={[...EngineTypes]}
+      loading={false}
       value={value}
-      onChange={(vehicle) => {
-        onSelected?.(vehicle)
+      onChange={(status) => {
+        onSelected?.(status)
       }}
-      filterFn={(u, q) =>
-        u.display_name.toLowerCase().includes(q.toLowerCase())
-      }
-      label="Vehicle"
-      getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.plate_number}</span>}
+      filterFn={(u, q) => u.toLowerCase().includes(q.toLowerCase())}
+      label="Engine"
+      getOptionValue={(u) => u}
+      renderOption={(u) => <span>{u}</span>}
     />
   )
 }
 
-export function VehiclePickerField<TFieldValues extends FieldValues>({
-  name,
+export function GearboxTypePicker({
+  value,
+  id,
   onSelected,
-  label,
-  description,
-  remote = false,
-  control,
-  ...props
-}: FormAutoCompleteProps<TFieldValues, Vehicle>) {
-  const [query, setQuery] = useState("")
-  const { data, isLoading } = useQuery(vehicleSearchQueryOptions(query))
+}: EntityPickerProps<Gearbox>) {
   return (
-    <FormAutoComplete
-      name={name}
-      loading={isLoading}
-      description={description}
-      options={data?.data ?? []}
-      control={control}
-      label={label}
-      remote={remote}
-      onSearch={(q) => setQuery(q)}
-      filterFn={(u, q) =>
-        u.display_name.toLowerCase().includes(q.toLowerCase())
-      }
-      getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.plate_number}</span>}
-      onSelected={onSelected}
-      {...props}
+    <AutoComplete<Gearbox>
+      id={id}
+      options={[...vehicleTransmissionList]}
+      loading={false}
+      value={value}
+      onChange={(status) => {
+        onSelected?.(status)
+      }}
+      filterFn={(u, q) => u.toLowerCase().includes(q.toLowerCase())}
+      label="Transmission"
+      getOptionValue={(u) => u}
+      renderOption={(u) => <span>{u}</span>}
     />
   )
 }

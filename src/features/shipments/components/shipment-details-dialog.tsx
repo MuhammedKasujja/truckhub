@@ -9,7 +9,19 @@ import { Shipment } from "../types"
 import { Badge } from "@/components/ui/badge"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
-import { PlusIcon, ReceiptPoundSterlingIcon } from "lucide-react"
+import {
+  ArrowRight,
+  CircleCheckIcon,
+  Fuel,
+  Gauge,
+  Mail,
+  MapPin,
+  Phone,
+  PlusIcon,
+  TimerIcon,
+  Truck,
+  User,
+} from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useState } from "react"
@@ -18,8 +30,22 @@ import { DispatchShipmentDialog } from "./dispatch-shipment-dailog"
 import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
-import { formatDate, formatMoney, formatNumber } from "@/lib/format"
+import { ChangeShipmentVehicleDialog } from "./change-shipment-vehicle-dialog"
+import {
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  formatNumber,
+} from "@/lib/format"
 import { Empty, EmptyContent } from "@/components/ui/empty"
+import { useShipmentDetails } from "../hooks/use-shipment-details"
+import { cn } from "@/lib/utils"
+import Decimal from "decimal.js"
+import { IconReceiptTax, IconSend } from "@tabler/icons-react"
+import { ShimpmentRouteDetails } from "./shipment-route-details"
+import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
+import { useTranslation } from "@/i18n"
+
 type ShipmentDialogProps = {
   shipment?: Shipment
   open: boolean
@@ -27,127 +53,161 @@ type ShipmentDialogProps = {
 }
 
 export function ShipmentDetailsDialog({
-  shipment,
   open,
   onOpenChange,
+  ...rest
 }: ShipmentDialogProps) {
   const [openModal, setOpenModal] = useState<
-    "dispatch" | "record" | "assign-vehicle" | "asign-driver" | "end-shipment"
+    | "dispatch"
+    | "record"
+    | "assign-vehicle"
+    | "change-vehicle"
+    | "asign-driver"
+    | "end-shipment"
   >()
+  const { shipment } = useShipmentDetails(rest.shipment)
+  const tr = useTranslation()
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] min-h-[90vh] flex-col overflow-hidden p-0 md:min-w-[90vw]">
-          <div className="flex flex-col">
-            <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-              <DialogTitle className="text-lg font-semibold tracking-tight">
-                Shipment<span className="text-muted-foreground mx-1">•</span>{shipment?.number} <Badge>{shipment?.status}</Badge>
-              </DialogTitle>
-              <DialogDescription className="flex items-center gap-4">
-                <ButtonGroup>
+        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col gap-0 overflow-hidden p-0 md:min-w-[90vw]">
+          <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              Shipment<span className="mx-1 text-muted-foreground">•</span>
+              {shipment?.number}{" "}
+              {shipment && (
+                <Badge>{tr(`shipments.status.${shipment?.status}`)}</Badge>
+              )}
+            </DialogTitle>
+            <DialogDescription className="flex items-center gap-4">
+              <ButtonGroup>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("dispatch")}
+                >
+                  <IconSend />
+                  Dispatch
+                </Button>
+                {!shipment?.vehicle && (
                   <Button
                     variant={"outline"}
-                    onClick={() => setOpenModal("dispatch")}
+                    onClick={() => setOpenModal("assign-vehicle")}
                   >
-                    Dispatch
+                    Assign Vehicle
                   </Button>
-                  {!shipment?.vehicle && (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setOpenModal("assign-vehicle")}
-                    >
-                      Assign Vehicle
-                    </Button>
+                )}
+                {!shipment?.driver && (
+                  <Button
+                    variant={"outline"}
+                    onClick={() => setOpenModal("asign-driver")}
+                  >
+                    Assign Driver
+                  </Button>
+                )}
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("end-shipment")}
+                >
+                  Finish
+                </Button>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setOpenModal("record")}
+                >
+                  <IconReceiptTax />
+                  Capture Details
+                </Button>
+              </ButtonGroup>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid flex-1 gap-0 overflow-hidden md:grid-flow-col md:grid-cols-6">
+            <div className="flex flex-col gap-4 overflow-y-auto border-r p-6 md:col-span-4">
+              {shipment && <ShipmentOverviewDetails shipment={shipment} />}
+            </div>
+            <div className="w-full space-y-6 overflow-y-auto bg-background/95 p-6 backdrop-blur supports-backdrop-filter:bg-background/80 md:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">Vehicle</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {shipment?.vehicle ? (
+                    <div>
+                      <PanelField
+                        icon={Truck}
+                        label="Vehicle"
+                        value={`${shipment.vehicle.number} • ${shipment.vehicle.plate_number}`}
+                      />
+                      <PanelField
+                        icon={Gauge}
+                        label="Model Year"
+                        value={shipment.vehicle.vehicle_year}
+                      />
+                      <Button
+                        className="mt-3"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setOpenModal("change-vehicle")}
+                      >
+                        Change vehicle
+                      </Button>
+                    </div>
+                  ) : (
+                    <Empty className="border border-dashed">
+                      <EmptyContent>
+                        <Button
+                          variant={"outline"}
+                          size={"icon-sm"}
+                          onClick={() => setOpenModal("assign-vehicle")}
+                        >
+                          <PlusIcon />
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
                   )}
-                  {!shipment?.driver && (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setOpenModal("asign-driver")}
-                    >
-                      Assign Driver
-                    </Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-primary">Driver</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {shipment?.driver ? (
+                    <div>
+                      <PanelField
+                        icon={User}
+                        label="Name"
+                        value={shipment.driver.fullname}
+                      />
+                      <PanelField
+                        icon={Phone}
+                        label="Phone"
+                        value={shipment.driver.phone}
+                      />
+                      <PanelField
+                        icon={Mail}
+                        label="Email"
+                        value={shipment.driver.email}
+                      />
+                    </div>
+                  ) : (
+                    <Empty className="border border-dashed">
+                      <EmptyContent>
+                        <Button
+                          variant={"outline"}
+                          size={"icon-sm"}
+                          onClick={() => setOpenModal("asign-driver")}
+                        >
+                          <PlusIcon />
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
                   )}
-                  <Button
-                    variant={"outline"}
-                    onClick={() => setOpenModal("end-shipment")}
-                  >
-                    Finish
-                  </Button>
-                  <Button
-                    variant={"outline"}
-                    onClick={() => setOpenModal("record")}
-                  >
-                    <ReceiptPoundSterlingIcon />
-                    Record Details
-                  </Button>
-                </ButtonGroup>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-5 p-6 md:grid-flow-col md:grid-cols-6">
-              <div className="md:col-span-4">
-                {shipment && <ShipmentOverviewDetails shipment={shipment} />}
-              </div>
-              {/* <Separator/> */}
-              <div className="space-y-6 md:col-span-2">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Vehicle</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {shipment?.vehicle ? (
-                      <div>
-                        <div>Number: {shipment?.vehicle?.number}</div>
-                        <div>Plate No. {shipment?.vehicle?.plate_number}</div>
-                        <div>
-                          Consumption Rate:{" "}
-                          {formatNumber(
-                            shipment?.vehicle?.fuel_consumption_rate
-                          )}{" "}
-                          km/l
-                        </div>
-                      </div>
-                    ) : (
-                      <Empty className="border border-dashed">
-                        <EmptyContent>
-                          <Button
-                            variant={"outline"}
-                            size={"icon-sm"}
-                            onClick={() => setOpenModal("assign-vehicle")}
-                          >
-                            <PlusIcon />
-                          </Button>
-                        </EmptyContent>
-                      </Empty>
-                    )}
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Driver</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {shipment?.vehicle ? (
-                      <div>
-                        <div>{shipment?.driver?.number}</div>
-                        <div>{shipment?.driver?.fullname}</div>
-                      </div>
-                    ) : (
-                      <Empty className="border border-dashed">
-                        <EmptyContent>
-                          <Button
-                            variant={"outline"}
-                            size={"icon-sm"}
-                            onClick={() => setOpenModal("asign-driver")}
-                          >
-                            <PlusIcon />
-                          </Button>
-                        </EmptyContent>
-                      </Empty>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+                </CardContent>
+              </Card>
+              {shipment?.history && (
+                <ShipmentHistoryTimeline history={shipment?.history} />
+              )}
             </div>
           </div>
         </DialogContent>
@@ -162,6 +222,11 @@ export function ShipmentDetailsDialog({
         open={openModal === "assign-vehicle"}
         onOpenChange={() => setOpenModal(undefined)}
       />
+      <ChangeShipmentVehicleDialog
+        shipment={shipment}
+        open={openModal === "change-vehicle"}
+        onOpenChange={() => setOpenModal(undefined)}
+      />
       <ShipmentAssignDriverDialog
         shipment={shipment}
         open={openModal === "asign-driver"}
@@ -169,7 +234,7 @@ export function ShipmentDetailsDialog({
       />
       <RecordShipmentDetailsDialog
         shipment={shipment}
-        open={openModal === "record"}
+        open={!!shipment && openModal === "record"}
         onOpenChange={() => setOpenModal(undefined)}
       />
       <EndShipmentDialog
@@ -186,23 +251,232 @@ type Props = {
 }
 
 function ShipmentOverviewDetails({ shipment }: Props) {
+  const trip = shipment
+  const distance = trip?.consumption?.distance_km
+  const consumptionRate = parseFloat(
+    trip?.vehicle?.fuel_consumption_rate ?? "0"
+  )
+  const totalFuelCharge = new Decimal(
+    shipment.consumption?.total_fuel_charge ?? "0"
+  )
+  const subtotal = new Decimal(shipment.item.unit_price ?? "0").plus(
+    totalFuelCharge
+  )
+
+  const totalDue = subtotal.minus(shipment.item.discount ?? "0").toString()
+
   return (
-    <div className="space-y-4">
-      <div>
-        {formatDate(shipment.actual_start)} - {formatDate(shipment.actual_end)}
+    <div className="space-y-5">
+      <div className="grid gap-5 md:grid-cols-3">
+        <Card className="bg-background/30 col-span-2">
+          <CardContent className="space-y-1.5">
+            {shipment.item.display_name ?? "Service"}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                trip.item.is_round_trip ? "Round trip" : "One-way",
+                `${trip.item.item_type} item`,
+                `${trip.item.engine_mode} hire`,
+              ].map((opt) => (
+                <span
+                  key={opt}
+                  className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase"
+                >
+                  {opt}
+                </span>
+              ))}
+              {trip.item.source === "route" ||
+                (trip.item.source === "distance" && (
+                  <span className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase">
+                    {trip.item.tonnage} Tons
+                  </span>
+                ))}
+              {trip.item.source === "distance" && (
+                <span className="rounded-sm bg-accent px-2.5 py-1 font-mono text-[10px] tracking-widest uppercase">
+                  {trip.item.distance_km} km
+                </span>
+              )}
+            </div>
+            <div className="flex w-full gap-2">
+              <div className="w-full space-y-1.5 rounded bg-accent p-4">
+                <div className="flex items-center gap-2">
+                  <TimerIcon className="size-4 text-muted-foreground" />
+                  <span>Scheduled</span>
+                </div>
+                <div>{formatDate(trip.item.scheduled_start)}</div>
+                <div>{formatDate(trip.item.scheduled_end)}</div>
+              </div>
+              <div className="w-full space-y-1.5 rounded bg-accent p-4">
+                <div className="flex items-center gap-2">
+                  <CircleCheckIcon className="size-4 text-primary" />
+                  <span>Actual</span>
+                </div>
+                <div>
+                  {trip.actual_start
+                    ? formatDateTime(trip.actual_start)
+                    : "Not started"}
+                </div>
+                <div>
+                  {trip.actual_start &&
+                    (trip.actual_end
+                      ? formatDateTime(trip.actual_end)
+                      : "on going")}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <ShimpmentRouteDetails route={trip.item.route} />
       </div>
-      <div>
-        Scheduled: {shipment.item.scheduled_start} -{" "}
-        {shipment.item.scheduled_end}
-      </div>
-      <div>{shipment.item.is_round_trip && <>Round Trip</>}</div>
-      <div>{shipment.item.engine_mode}</div>
-      <div>{shipment.item.item_type}</div>
-      <div>{formatMoney(shipment.item.unit_price)}</div>
-      <div>{shipment.item.with_driver && <>Needs Driver</>}</div>
-      {shipment.item.item_type === "truck" && (
-        <div>{shipment.item.with_loaders && <>Needs Loaders</>}</div>
+      {/* Odometer & consumption */}
+      {trip.consumption && (
+        <Card className="bg-background/15">
+          <CardContent className="pt-4">
+            <SectionLabel>Odometer &amp; Consumption</SectionLabel>
+            <div className="mb-5 flex items-center justify-center gap-5 rounded-md bg-accent p-5">
+              <div className="min-w-40 text-center">
+                <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+                  {formatNumber(trip?.consumption?.start_mileage)}
+                </div>
+                <p className="mt-2 text-[10px] tracking-widest uppercase">
+                  Start (km)
+                </p>
+              </div>
+              <ArrowRight className="mb-5 size-5" />
+              <div className="min-w-40 text-center">
+                <div className="min-h-11 rounded-sm border bg-background/60 px-4 py-2 font-mono text-xl font-semibold text-primary">
+                  {formatNumber(trip?.consumption?.end_mileage)}
+                </div>
+                <p className="mt-2 text-[10px] tracking-widest uppercase">
+                  End (km)
+                </p>
+              </div>
+            </div>
+            {distance && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <StatBox
+                  label="Distance"
+                  value={`${formatNumber(distance)} km`}
+                />
+                <StatBox
+                  label="Fuel Rate"
+                  value={`${formatMoney(trip?.consumption?.fuel_rate)} / L`}
+                />
+                <StatBox
+                  label="Est. Fuel Used"
+                  value={`${formatNumber(trip.consumption.fuel_used_litres)} L`}
+                  note={`${formatNumber(distance)} km / ${consumptionRate} (consumption rate)`}
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
+      {/* <Card style={{ background: PANEL, border: `1px solid ${LINE}` }}> */}
+      <Card className="bg-background/15">
+        <CardContent className="pt-4">
+          <SectionLabel>Billing</SectionLabel>
+          <BillLine
+            label="Unit price"
+            value={formatMoney(shipment.item.unit_price)}
+          />
+          <BillLine
+            label={`Fuel Consumption @${consumptionRate} km/l`}
+            value={formatMoney(totalFuelCharge.toString())}
+          />
+          <Separator className="my-1" />
+          <div className="pt-3">
+            <BillLine
+              label="Total due (before tax)"
+              value={formatMoney(totalDue)}
+              isTotal
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+function BillLine({
+  label,
+  value,
+  isTotal,
+}: {
+  label: string
+  value: string
+  isTotal?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between py-2.5",
+        isTotal ? "border-b-0" : "border-b"
+      )}
+    >
+      <span
+        className={cn(
+          "text-muted-foreground",
+          isTotal ? "text-sm font-bold tracking-wide" : "text-sm"
+        )}
+      >
+        {label}
+      </span>
+      <span
+        className={cn(
+          "font-mono",
+          isTotal ? "text-lg font-semibold text-primary" : "text-sm"
+        )}
+        // style={{ color: total ? AMBER : TEXT }}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-4 text-[11px] font-medium tracking-widest text-muted-foreground uppercase">
+      {children}
+    </p>
+  )
+}
+
+function StatBox({
+  label,
+  value,
+  note,
+}: {
+  label: string
+  value: string
+  note?: string
+}) {
+  return (
+    <div
+      className="rounded-md bg-muted px-4 py-3"
+      // style={{ background: PANEL_ALT, border: `1px solid ${LINE}` }}
+    >
+      <p className="mb-1.5 text-[10px] tracking-widest text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="font-mono text-base">{value}</p>
+      {note && <p className="mt-1 text-[10px] text-muted-foreground">{note}</p>}
+    </div>
+  )
+}
+
+function PanelField({ icon: Icon, label, value }) {
+  return (
+    <div className="flex items-start gap-2.5 py-2">
+      <div className="flex size-6 items-center justify-center rounded bg-primary/15">
+        <Icon className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+      </div>
+      <div>
+        <p className="mb-0.5 text-[10px] tracking-widest text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="font-mono text-sm">{value}</p>
+      </div>
     </div>
   )
 }

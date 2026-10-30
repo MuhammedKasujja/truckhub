@@ -10,6 +10,7 @@ import {
   EditSettingsSchema,
   EditInvoiceTermsSchema,
 } from "@/features/settings/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 const endpoint = "/v1/settings"
 
@@ -20,7 +21,7 @@ export const getSettingsFn = createServerFn().handler(async () => {
 export const updateSettingsFn = createServerFn()
   .inputValidator(EditSettingsSchema)
   .handler(async ({ data }) => {
-    return await apiClient.patchFn<Settings>(endpoint, data)
+    return apiResponseTransform(apiClient.patchFn<Settings>(endpoint, data))
   })
 
 export const updateInvoiceTermsFn = createServerFn()

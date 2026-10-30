@@ -1,181 +1,172 @@
-"use client"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
-  AutoCompleteField,
   MoneyField,
   NumberField,
-  TextareaField,
-  TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
   ServiceCreateSchema,
+  ServiceCreateSchemaInput,
   ServiceUpdateSchema,
+  ServiceUpdateSchemaInput,
 } from "@/features/services/schemas"
-import { createServiceFn, updateServiceFn } from "@/features/services/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
-import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
-import { CarBrandPickerField } from "@/features/settings/car-brand/components"
-import { CarModelPickerField } from "@/features/settings/car-model/components"
+import { CarBrandPickerField } from "@/features/settings/vehicle-config/car-brand/components"
+import { CarModelPickerField } from "@/features/settings/vehicle-config/car-model/components"
+import { BaseFormProps } from "@/common/types"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from "@/components/ui/item"
+import { cn } from "@/lib/utils"
+import { useMemo } from "react"
+import { VehicleCategoryPickerField } from "@/features/settings/vehicle-config/vehicle-categories/components"
 
-type ServiceFormProps = {
-  initialData?: z.infer<typeof ServiceUpdateSchema>
-}
+type ServiceFormProps = BaseFormProps<
+  ServiceCreateSchemaInput,
+  ServiceUpdateSchemaInput
+>
 
-export function ServiceForm({ initialData }: ServiceFormProps) {
+export function ServiceForm({
+  defaultValues,
+  mode,
+  onSubmit,
+}: ServiceFormProps) {
   const tr = useTranslation()
-  const { data } = useVehicleConfigurations()
-  const queryInvalidator = useQueryInvalidator()
-
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
   const formSchema = isEdit ? ServiceUpdateSchema : ServiceCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const defaultDerivedValues = useMemo(() => {
+    const target = (
+      defaultValues?.vehicle_category_id ? "category" : "model"
+    ) as const
+    return defaultValues
+      ? { ...defaultValues, target: target }
+      : { target: target }
+  }, [defaultValues])
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultDerivedValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateServiceFn({ data: values })
-        : createServiceFn({ data: values })
+  const target = form.watch("target")
 
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.services.list.invalidate()
+  async function handleSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(ServiceUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(ServiceCreateSchema.parse(values))
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {isEdit ? tr("services.edit_service") : tr("services.new_service")}
-        </CardTitle>
-        <CardDescription>{tr("services.create_new_service")}</CardDescription>
-      </CardHeader>
-      <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.log(errors)
-        })}
-      >
-        <CardContent className="pb-6">
-          <FieldGroup className="grid grid-flow-row grid-cols-1 md:grid-cols-2">
-            <AutoCompleteField
-              label={tr("common.vehicle_type")}
+    <form
+      id="service-form"
+      onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+        console.log(errors)
+      })}
+    >
+      <p className="pb-2">Select a pricing rule</p>
+      <div className="@container">
+        <Field orientation={"horizontal"} className="pb-5">
+          <Item
+            variant={"outline"}
+            className={cn(
+              "cursor-pointer",
+              target === "model" && "bg-primary/5 dark:bg-primary/10 border border-primary"
+            )}
+            onClick={() => {
+              form.setValue("target", "model")
+            }}
+          >
+            <ItemContent>
+              <ItemTitle>A Car Model</ItemTitle>
+              <ItemDescription>e.g. Toyota Hillux</ItemDescription>
+            </ItemContent>
+          </Item>
+          <Item
+            variant={"outline"}
+            className={cn(
+              "cursor-pointer",
+              target === "category" && "bg-primary/5 dark:bg-primary/10 border border-primary"
+            )}
+            onClick={() => {
+              form.setValue("target", "category")
+            }}
+          >
+            <ItemContent>
+              <ItemTitle>A Category</ItemTitle>
+              <ItemDescription>e.g. any Sedan</ItemDescription>
+            </ItemContent>
+          </Item>
+        </Field>
+      </div>
+      <div className="@container pb-6">
+        <FieldGroup className="grid grid-flow-row grid-cols-1 @md:grid-cols-2">
+          {target === "category" && (
+            <VehicleCategoryPickerField
+              label={tr("common.vehicleCaterory")}
               control={form.control}
               name={"vehicle_category_id"}
-              placeholder="Select Vehicle"
-              emptyPlaceholder="No vehicles found"
-              options={
-                data?.vehicle_types.map((opt) => ({
-                  label: opt.name,
-                  value: opt.id,
-                })) ?? []
-              }
+              placeholder="Select Vehicle category"
             />
-            <TextField
-              label={tr("common.form.serviceName")}
-              name={"name"}
-              control={form.control}
-            />
-            {/* <TextField
-              label={tr("common.display_name")}
-              name={"display_name"}
-              control={form.control}
-            /> */}
-            <Field orientation={"horizontal"}>
-              <YearPickerField
-                label={"Start Year"}
-                name={"start_year"}
+          )}
+          {target === "model" && (
+            <>
+              <CarBrandPickerField
+                label={tr("services.car_brand")}
+                name={"car_brand_id"}
                 control={form.control}
               />
-              <TextField
-                label={"End Year"}
-                name={"end_year"}
+              <CarModelPickerField
+                disabled={form.watch("car_brand_id") == undefined}
+                label={tr("services.car_model")}
+                name={"car_model_id"}
+                carBrandId={form.watch("car_brand_id")}
                 control={form.control}
               />
-            </Field>
-            <NumberField
-              label={tr("services.seating_capacity")}
-              name={"seats"}
-              control={form.control}
-              required={false}
-            />
-            <MoneyField
-              label={tr("services.price")}
-              name={"base_fare"}
-              control={form.control}
-              required={false}
-            />
-            <MoneyField
-              label={tr("services.last_price")}
-              name={"min_fare"}
-              control={form.control}
-              required={false}
-            />
-            <MoneyField
-              label={tr("services.price_per_min")}
-              name={"price_per_min"}
+            </>
+          )}
+          {/* <TextField
+            label={tr("common.form.serviceName")}
+            name={"name"}
+            control={form.control}
+          /> */}
+
+          <Field orientation={"horizontal"}>
+            <YearPickerField
+              label={"Manufacture Year"}
+              name={"start_year"}
               control={form.control}
             />
-            <MoneyField
-              label={tr("services.price_per_unit_distance")}
-              name={"price_per_unit_distance"}
-              control={form.control}
-            />
-            {/* <NumberField
-              label={tr("services.booking_fee")}
-              name={"booking_fee"}
-              control={form.control}
-              required={false}
-            /> */}
-            <CarBrandPickerField
-              label={tr("services.car_brand")}
-              name={"car_brand_id"}
-              control={form.control}
-            />
-            <CarModelPickerField
-              disabled={form.watch("car_brand_id") == undefined}
-              label={tr("services.car_model")}
-              name={"car_model_id"}
-              carBrandId={form.watch("car_brand_id")}
-              control={form.control}
-            />
-            <TextareaField
-              label={tr("common.form.description")}
-              name={"description"}
-              control={form.control}
-              required={false}
-            />
-          </FieldGroup>
-        </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={form.formState.isSubmitting}
+          </Field>
+          <NumberField
+            label={tr("services.seating_capacity")}
+            name={"seats"}
+            control={form.control}
+            required={false}
           />
-        </CardFooter>
-      </form>
-    </Card>
+          <MoneyField
+            label={tr("services.price")}
+            name={"base_fare"}
+            control={form.control}
+          />
+          <MoneyField
+            label={tr("services.last_price")}
+            name={"min_fare"}
+            control={form.control}
+          />
+        </FieldGroup>
+      </div>
+    </form>
   )
 }

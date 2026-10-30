@@ -17,24 +17,33 @@ export const ConfigModulePermissions = {
     "settings:entity_numbers:update",
     "settings:entity_numbers:read",
   ],
-  "config:pricing_plans:view": [],
-  "config:vehicle_config:view": [],
-  "config:user:management": ["users:view", "users:read", "roles:read",],
-  // car_models routes
-  "config:car_model:view": ["car_models:read", "car_models:view"],
-  "config:car_model:create": ["car_models:create"],
-  "config:car_model:delete": ["car_models:delete"],
-  "config:car_model:edit": ["car_models:update"],
-  // car_brands routes
-  "config:car_brand:view": ["car_brands:read", "car_brands:view"],
-  "config:car_brand:create": ["car_brands:create"],
-  "config:car_brand:delete": ["car_brands:delete"],
-  "config:car_brand:edit": ["car_brands:update"],
-  // vehicle_types routes
-  "config:vehicle_types:view": ["vehicle_types:read", "vehicle_types:view"],
-  "config:vehicle_types:create": ["vehicle_types:create"],
-  "config:vehicle_types:delete": ["vehicle_types:delete"],
-  "config:vehicle_types:edit": ["vehicle_types:update"],
+  "config:vehicle_config:view": [
+    "car_models:read",
+    "car_models:view",
+    "car_brands:read",
+    "car_brands:view",
+    "vehicle_categories:read",
+    "vehicle_categories:view",
+    "drive_trains:read",
+    "drive_trains:view",
+  ],
+  "config:vehicle_config:edit": [
+    "car_models:create",
+    "car_models:update",
+    "car_brands:create",
+    "car_brands:update",
+    "vehicle_categories:create",
+    "vehicle_categories:update",
+    "drive_trains:create",
+    "drive_trains:update",
+  ],
+  "config:vehicle_config:delete": [
+    "car_models:delete",
+    "car_brands:delete",
+    "vehicle_categories:delete",
+    "drive_trains:delete",
+  ],
+  "config:user:management": ["users:view", "users:read", "roles:read"],
   // tax_rates routes
   "config:tax_rates:view": ["tax_rates:read", "tax_rates:view"],
   "config:tax_rates:create": ["tax_rates:create"],
@@ -45,33 +54,50 @@ export const ConfigModulePermissions = {
   "config:routes:create": ["routes:create"],
   "config:routes:delete": ["routes:delete"],
   "config:routes:edit": ["routes:update"],
-  // Distance Pricing routes
-  "config:distance_pricing:view": [
-    "distance_tonnage:read",
-    "distance_tonnage:view",
-  ],
-  "config:distance_pricing:create": ["distance_tonnage:create"],
+  // Company Pricing
   "config:distance_pricing:delete": ["distance_tonnage:delete"],
-  "config:distance_pricing:edit": ["distance_tonnage:update"],
-  // Loading Fees routes
-  "config:loading_fees:view": [
-    "loading_offloading:read",
-    "loading_offloading:view",
-  ],
-  "config:loading_fees:create": ["loading_offloading:create"],
   "config:loading_fees:delete": ["loading_offloading:delete"],
-  "config:loading_fees:edit": ["loading_offloading:update"],
-  // Island Pricings
-  "config:island_pricing:view": [
-    "island_pricings:read",
-    "island_pricings:view",
-  ],
-  "config:island_pricing:create": ["island_pricings:create"],
   "config:island_pricing:delete": ["island_pricings:delete"],
-  "config:island_pricing:edit": ["island_pricings:update"],
 
   // Vehicle Features
-  "config:vehicle_features:edit": ["settings:update"],
+  "config:vehicle_features:edit": [
+    "settings:update",
+    "vehicles:features:update",
+  ],
+
+  "config:pricing:manage": [
+    "island_pricings:create",
+    "island_pricings:update",
+    "loading_offloading:create",
+    "loading_offloading:update",
+    "distance_tonnage:create",
+    "distance_tonnage:update",
+    "island_pricings:read",
+    "island_pricings:view",
+    "loading_offloading:read",
+    "loading_offloading:view",
+    "distance_tonnage:read",
+    "distance_tonnage:view",
+    "route_pricings:read",
+  ],
+  "config:pricing:view": [
+    "route_pricings:active",
+    "distance_tonnage:active",
+    "island_pricings:active",
+    "loading_offloading:active",
+  ],
+  "config:pricing:activate": [
+    "route_pricings:activate",
+    "distance_tonnage:active",
+    "island_pricings:active",
+    "loading_offloading:active",
+  ],
+  "config:banks:view": [
+    "banks:view",
+    "banks:read",
+    "bank_accounts:read",
+    "bank_accounts:view",
+  ],
 } as const
 
 export type ConfigPermissions = keyof typeof ConfigModulePermissions

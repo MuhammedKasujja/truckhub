@@ -9,6 +9,12 @@ export const RefreshTokenSchema = z.object({
   refreshToken: z.string("Required").min(1, "Required").trim(),
 })
 
+export const TokenResponseSchema = z.object({
+  refresh_token: z.string("Required").min(1, "Required").trim(),
+  access_token: z.string("Required").min(1, "Required").trim(),
+  expires_in: z.number("Required").min(1, "Required"),
+})
+
 export type LoginSchemaType = z.infer<typeof LoginSchema>
 
 export const ChangePasswordSchema = z.object({

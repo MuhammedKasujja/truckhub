@@ -27,7 +27,7 @@ interface NotificationSettingsFormProps {
 export function NotificationSettingsForm({
   onSubmit,
 }: NotificationSettingsFormProps) {
-  const { history, clearHistory } = useNavigationHistory()
+  // const { history, clearHistory } = useNavigationHistory()
 
   return (
     <Card>
@@ -67,16 +67,16 @@ export function NotificationSettingsForm({
         </Item>
         <Item>
           <ItemContent>
-            <ItemTitle>Push Notifications</ItemTitle>
+            <ItemTitle>In-app Notifications</ItemTitle>
             <ItemDescription>
-              Receive push notifications in your browser
+              Receive notifications directly in the browser
             </ItemDescription>
           </ItemContent>
           <ItemActions>
             <Switch />
           </ItemActions>
         </Item>
-        <Separator />
+        {/* <Separator />
         <Item>
           <ItemContent>
             <ItemTitle>Push Notifications</ItemTitle>
@@ -87,9 +87,9 @@ export function NotificationSettingsForm({
           <ItemActions>
             <Switch />
           </ItemActions>
-        </Item>
+        </Item> */}
       </CardContent>
-      <CardFooter>
+      {/* <CardFooter>
         <div>
           {history.map((entry) => (
             <div key={entry.timestamp}>{entry.pathname}</div>
@@ -98,7 +98,7 @@ export function NotificationSettingsForm({
         <Button type="button" onClick={() => clearHistory()}>
           Clear ({history.length})
         </Button>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   )
 }

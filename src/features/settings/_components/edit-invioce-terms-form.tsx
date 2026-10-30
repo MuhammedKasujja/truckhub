@@ -83,7 +83,8 @@ export function EditInvoiceTermsForm({
                 />
                 <Button
                   type="button"
-                  variant={"destructive"}
+                  variant={"secondary"}
+                  className="hover:text-destructive hover:bg-destructive/20"
                   onClick={() => invoiceTermsFields.remove(index)}
                   size={"icon-sm"}
                 >

@@ -4,7 +4,7 @@ import { getSettingsFn, getVehicleSettingsFn } from "./service"
 export const settingsQueryKeys = {
   all: () => ["settings"] as const,
   list: () => [...settingsQueryKeys.all(), "list"] as const,
-  vehicles: () => [...settingsQueryKeys.all(), "vehicles-config"] as const,
+  vehiclesConfig: () => [...settingsQueryKeys.all(), "vehicles-config"] as const,
 } as const
 
 export const settingsQueryOptions = () =>
@@ -16,6 +16,6 @@ export const settingsQueryOptions = () =>
 
 export const createVehicleConfigurationsQueryOptions = () =>
   queryOptions({
-    queryKey: settingsQueryKeys.vehicles(),
+    queryKey: settingsQueryKeys.vehiclesConfig(),
     queryFn: getVehicleSettingsFn,
   })

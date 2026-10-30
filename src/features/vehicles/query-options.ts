@@ -3,33 +3,49 @@ import { queryOptions } from "@tanstack/react-query"
 import {
   getVehiclesFn,
   getVehiclesByQueryFn,
+  getVehicleStatisticsFn,
   getVehicleDetailsByIdFn,
 } from "./services"
+import { EntityId } from "@/schemas"
 
 export const vehicleQueryKeys = {
   all: () => ["vehicles"],
   list: () => [...vehicleQueryKeys.all(), "list"],
+  statistics: () => [...vehicleQueryKeys.list(), "statistics"],
   details: () => [...vehicleQueryKeys.all(), "detail"],
-  detail: (id: string) => [...vehicleQueryKeys.details(), id],
-  search: (search?: string) => [...vehicleQueryKeys.all(), "search", search],
+  detail: (id: EntityId) => [...vehicleQueryKeys.details(), id],
+  search: (params: VehicleListSearchParams) => [
+    ...vehicleQueryKeys.list(),
+    "search",
+    params,
+  ],
 } as const
 
 export const createVehiclesListQueryOptions = (
-  searchParams: VehicleListSearchParams
+  search: VehicleListSearchParams
 ) =>
   queryOptions({
-    queryKey: [...vehicleQueryKeys.list(), searchParams],
-    queryFn: () => getVehiclesFn({ data: searchParams }),
+    queryKey: [...vehicleQueryKeys.list(), search],
+    queryFn: () => getVehiclesFn({ data: search }),
   })
 
-export const vehicleDetailsQueryOptions = (vehicleId: string) =>
+export const vehicleDetailsQueryOptions = (vehicleId: EntityId) =>
   queryOptions({
     queryKey: vehicleQueryKeys.detail(vehicleId),
     queryFn: () => getVehicleDetailsByIdFn({ data: { id: vehicleId } }),
   })
 
-export const vehicleSearchQueryOptions = (search?: string) =>
+export const vehicleSearchQueryOptions = (params: VehicleListSearchParams) => ({
+  queryKey: vehicleQueryKeys.search(params), // no page here
+  queryFn: ({ pageParam }: { pageParam: number }) =>
+    getVehiclesByQueryFn({
+      data: { ...params, page: pageParam },
+    }),
+  initialPageParam: 1,
+})
+
+export const vehicleStatisticsQueryOptions = () =>
   queryOptions({
-    queryKey: vehicleQueryKeys.search(search),
-    queryFn: () => getVehiclesByQueryFn({ data: { search } }),
+    queryKey: vehicleQueryKeys.statistics(),
+    queryFn: () => getVehicleStatisticsFn(),
   })

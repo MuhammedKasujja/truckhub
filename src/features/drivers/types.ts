@@ -1,17 +1,19 @@
-import { EntityId } from "@/schemas";
-import { VehicleBase } from "@/features/vehicles/types";
+import { EntityId } from "@/schemas"
+import { VehicleBase } from "@/features/vehicles/types"
 
 export type Driver = {
-  id: EntityId;
-  number: string;
-  fullname: string;
-  first_name: string;
-  last_name: string;
-  user_name: string | undefined;
-  phone: string;
-  email: string;
-  rating: number;
-  created_at: Date;
-  updated_at: Date;
-  vehicle: VehicleBase | null;
-};
+  id: EntityId
+  number: string
+  fullname: string
+  first_name: string
+  last_name: string
+  user_name: string | undefined
+  phone: string | undefined
+  email: string
+  rating: number
+  created_at: Date
+  updated_at: Date
+  vehicle: VehicleBase | null
+  photo_url: string | undefined
+  licence_number: string | undefined
+}

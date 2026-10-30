@@ -3,12 +3,13 @@ import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { clientRoutePricingQueryOptions } from "@/features/clients/query-options"
+import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricing, TonnageRange } from "@/features/settings/pricing/types"
 import { useDataGrid } from "@/hooks/use-data-grid"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { ColumnDef } from "@tanstack/react-table"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 function bandLabel(band: TonnageRange): string {
   return `${band.min_tons}–${band.max_tons}T`
@@ -31,10 +32,24 @@ function RouteComponent() {
   const { data, isLoading } = useQuery(
     clientRoutePricingQueryOptions(Route.useParams().clientId)
   )
+  const [selectedRoutes, setSelectedRoutes] = useState<[]>([])
 
-  if (isLoading || !data?.data) return <div>Loading data</div>
+  if (isLoading) return <div>Loading data</div>
 
   const pricings = data?.data
+
+  return (
+    <>
+    <RouteTonnagePricingGrid
+      isSelectable
+      // routes={pricings?.routes ?? []}
+      effectiveDate={pricings?.effective_date ?? (new Date()).toDateString()}
+      title="Client Pricing"
+      onRowSelect={setSelectedRoutes}
+    />
+    {selectedRoutes.map((r)=><div>{JSON.stringify(r)}</div>)}
+    </>
+  )
 
   const columns = useMemo<ColumnDef<RoutePricing>[]>(() => {
     const mainCols: ColumnDef<RoutePricing>[] = [

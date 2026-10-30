@@ -12,7 +12,6 @@ import {
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
-import { PlusIcon } from "lucide-react"
 import { useTranslation } from "@/i18n"
 import { clientsQueryOptions } from "@/features/clients/query-options"
 import { ClientSearchParamsCache } from "@/features/clients/schemas"
@@ -23,7 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { ClientType, ClientTypeList } from "@/config/constants"
+import { ClientType, ClientTypeListOptions } from "@/config/constants"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/clients/")({
   validateSearch: ClientSearchParamsCache,
@@ -40,7 +40,7 @@ function RouteComponent() {
   const navigate = useNavigate({ from: "/clients/" })
   const { client_type } = Route.useSearch()
 
-  function updateClientType(value: ClientType) {
+  function updateClientType(value: ClientType | undefined) {
     navigate({
       search: (prev) => ({
         ...prev,
@@ -68,10 +68,10 @@ function RouteComponent() {
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              {ClientTypeList.map((b) => (
-                <SelectItem key={b} value={b}>
-                  {b}
+            <SelectContent position="popper">
+              {ClientTypeListOptions.map((b) => (
+                <SelectItem key={b.value} value={b.value}>
+                  {b.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -79,8 +79,8 @@ function RouteComponent() {
           <Can permission={"clients:create"}>
             <Button asChild>
               <Link to={"/clients/new"}>
-                <PlusIcon />
-                New Customer
+                <ActionIcon action="create"/>
+                Add Client
               </Link>
             </Button>
           </Can>

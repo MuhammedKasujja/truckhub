@@ -1,4 +1,4 @@
-import { createFileRoute, ErrorComponent } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   Stat,
   StatIndicator,
@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/stat"
 import {
   RecentPaymentsTable,
-  RecentBookingTable,
-  RecentRidesTable,
-  WeeklyQuotationStatistics,
-  AnalyticsCard,
+  RecentInvoicesTable,
+  RecentQuotationsTable,
 } from "@/features/dashboard/components"
 import { DollarSign, TrendingUp } from "lucide-react"
 import { formatMoney } from "@/lib/format"
@@ -20,10 +18,12 @@ import { DateRangePicker } from "@/components/ui/date-range-picker/date-range-pi
 import { DateRangePicker as DateRangePicker2 } from "@/components/ui/date-picker/date-range-picker"
 import { dashboardQueryOptions } from "@/features/dashboard/query-options"
 import { CalendarDatePicker } from "@/components/calendar-date-picker"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/dashboard/")({
   component: RouteComponent,
   // errorComponent: ErrorComponent,
+  beforeLoad: () => requirePermission("dashboard:view"),
   loader: async ({ context }) =>
     context.queryClient.ensureQueryData(dashboardQueryOptions()),
 })
@@ -42,14 +42,14 @@ function RouteComponent() {
           <CalendarDatePicker
             date={{
               from: new Date(),
-              // to: dates.to,
+              to: new Date(),
             }}
             onDateSelect={({}) => {}}
             // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
             className={`w-fit cursor-pointer`}
             variant="outline"
           />
-          <DateRangePicker2
+          {/* <DateRangePicker2
             initialDateFrom={new Date()}
             initialDateTo={
               new Date(new Date().setDate(new Date().getDate() + 7))
@@ -62,11 +62,11 @@ function RouteComponent() {
             align="start"
             locale="en-GB"
             showCompare={false}
-          />
+          /> */}
         </PageAction>
       </PageHeader>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Stat>
+        <Stat className="space-y-4">
           <StatLabel>Payments</StatLabel>
           <StatValue>
             {formatMoney(data.statistics.payments.total_amount)}
@@ -76,15 +76,15 @@ function RouteComponent() {
           </StatIndicator>
         </Stat>
         <Stat>
-          <StatLabel>Bookings</StatLabel>
-          <StatValue>{data.statistics.bookings.total}</StatValue>
+          <StatLabel>Invoices</StatLabel>
+          <StatValue>{data.statistics.invoices.total}</StatValue>
           <StatIndicator variant="icon" color="success">
             <DollarSign />
           </StatIndicator>
         </Stat>
 
         <Stat>
-          <StatLabel>Customers</StatLabel>
+          <StatLabel>Clients</StatLabel>
           <StatValue>{data.statistics.clients.total}</StatValue>
           <StatIndicator variant="badge" color="info">
             +24
@@ -92,12 +92,11 @@ function RouteComponent() {
         </Stat>
 
         <Stat>
-          <StatLabel>Rides</StatLabel>
-          <StatValue>{data.statistics.rides.total}</StatValue>
+          <StatLabel>Quotations</StatLabel>
+          <StatValue>{data.statistics.quotations.total}</StatValue>
           <StatIndicator variant="icon" color="warning">
             <TrendingUp />
           </StatIndicator>
-          <StatTrend trend="down">Capacity threshold reached</StatTrend>
         </Stat>
       </div>
       {/* <div className="flex">
@@ -105,8 +104,8 @@ function RouteComponent() {
         <WeeklyQuotationStatistics />
       </div> */}
       <RecentPaymentsTable payments={data.recent_payments} />
-      <RecentBookingTable bookings={data.recent_bookings} />
-      <RecentRidesTable rides={data.recent_rides} />
+      <RecentInvoicesTable invoices={data.recent_invoices} />
+      <RecentQuotationsTable quotations={data.recent_quotations} />
     </div>
   )
 }

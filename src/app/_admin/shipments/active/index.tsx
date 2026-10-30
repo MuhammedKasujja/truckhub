@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_admin/shipments/active/")({
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
-    context.queryClient.ensureQueryData(shipmentsActiveQueryOptions(search)),
+    context.queryClient.prefetchQuery(shipmentsActiveQueryOptions(search)),
 })
 
 function RouteComponent() {

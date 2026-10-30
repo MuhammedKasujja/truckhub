@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -12,60 +11,53 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command"
 import { useHotkey } from "@tanstack/react-hotkeys"
 import { Route as QuotationCreate } from "@/app/_admin/quotations/new"
-import { Route as BookingCreate } from "@/app/_admin/bookings/new"
 import { Route as ClientCreate } from "@/app/_admin/clients/new"
 import { Route as DriverCreate } from "@/app/_admin/drivers/new"
 import { Route as ServiceCreate } from "@/app/_admin/services/new"
 import { Route as VehicleCreate } from "@/app/_admin/vehicles/new"
-import { Route as RideCreate } from "@/app/_admin/rides/new"
+import { Route as InvoiceCreate } from "@/app/_admin/invoices/create"
 import { Can } from "./has-permission"
 import { useNavigate } from "@tanstack/react-router"
+import { ActionIcon } from "./icons"
 
 const entityList = [
   {
     to: QuotationCreate.to,
-    label: "quotation",
+    label: "Create Quotation",
     command: "⌘B",
     permission: "quotations:create",
   },
   {
-    to: BookingCreate.to,
-    label: "booking",
+    to: InvoiceCreate.to,
+    label: "Create Invoice",
     command: "⌘B",
-    permission: "bookings:create",
+    permission: "invoices:create",
   },
   {
     to: ClientCreate.to,
-    label: "client",
+    label: "New client",
     command: "⌘C",
     permission: "clients:create",
   },
   {
     to: DriverCreate.to,
-    label: "driver",
+    label: "Add driver",
     command: "⌘D",
     permission: "drivers:create",
   },
   {
-    to: RideCreate.to,
-    label: "ride",
-    command: "⌘R",
-    permission: "rides:create",
-  },
-  {
     to: ServiceCreate.to,
-    label: "service",
+    label: "Create Service",
     command: "⌘S",
     permission: "services:create",
   },
   {
     to: VehicleCreate.to,
-    label: "vehicle",
+    label: "Add Vehicle",
     command: "⌘V",
     permission: "vehicles:create",
   },
@@ -84,14 +76,14 @@ export function CreateEntityDialog() {
   return (
     <div>
       <Button onClick={() => setOpen(true)} variant="outline" size={"icon-xs"}>
-        <PlusIcon />
+        <ActionIcon action="create"/>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command>
           <CommandInput placeholder="Search create entity ..." />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Navigation">
+            <CommandGroup heading="Quick actions">
               {entityList.map((entity) => (
                 <Can permission={entity.permission} key={entity.to}>
                   <CommandItem
@@ -100,20 +92,12 @@ export function CreateEntityDialog() {
                       navigate({ to: entity.to })
                     }}
                   >
-                    <PlusIcon />
+                    <ActionIcon action="create"/>
                     <span>{entity.label}</span>
                     <CommandShortcut>{entity.command}</CommandShortcut>
                   </CommandItem>
                 </Can>
               ))}
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Actions">
-              <CommandItem>
-                <PlusIcon />
-                <span>New File</span>
-                <CommandShortcut>⌘N</CommandShortcut>
-              </CommandItem>
             </CommandGroup>
           </CommandList>
         </Command>

@@ -96,7 +96,7 @@ function ServiceList({ lineItems }: BookingServiceListProps) {
   return (
     <div className="grid gap-4">
       {lineItems.map((lineItem, index) => (
-        <Item key={`${lineItem.service_id}*${index}`} variant={"outline"}>
+        <Item key={`${lineItem.tempId}*${index}`} variant={"outline"}>
           <ItemContent>
             <ItemTitle>{formatMoney(lineItem.line_total)} {lineItem.item_type}</ItemTitle>
             <ItemDescription>

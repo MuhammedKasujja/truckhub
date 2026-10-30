@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { DownloadCloud, EditIcon, EyeIcon, MailIcon, MoreVertical } from "lucide-react"
+import { MoreVertical } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -14,8 +14,12 @@ import { Quotation, QuotationTableRowAction } from "../types"
 import { isNotInEnum } from "@/common/types"
 import {
   useAcceptQuotation,
+  useMarkQuotationCancelled,
   useMarkQuotationRejected,
+  useSendQuotationEmail,
 } from "../hooks/use-quotation-actions"
+import { isInEnum } from "@/common/enums"
+import { ActionIcon } from "@/components/icons"
 
 interface TableActionsProps {
   quotation: Quotation
@@ -27,6 +31,8 @@ interface TableActionsProps {
 export function QuotationTableActions({ quotation }: TableActionsProps) {
   const { acceptQuotation } = useAcceptQuotation()
   const { markQuotationRejected } = useMarkQuotationRejected()
+  const { sendQuotationEmail } = useSendQuotationEmail()
+  const { markQuotationCancelled } = useMarkQuotationCancelled()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -42,7 +48,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
                 to={"/quotations/$quotationId/edit"}
                 params={{ quotationId: quotation.id }}
               >
-                <EditIcon />
+                <ActionIcon action="edit" />
                 Edit
               </Link>
             </DropdownMenuItem>
@@ -53,7 +59,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
                 to={"/quotations/$quotationId/view"}
                 params={{ quotationId: quotation.id }}
               >
-                <EyeIcon />
+                <ActionIcon action="view" />
                 View
               </Link>
             </DropdownMenuItem>
@@ -67,10 +73,23 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
             )}
           </Can>
           <Can permission={"quotations:email"}>
-            <DropdownMenuItem>
-              <MailIcon />
+            <DropdownMenuItem onClick={() => sendQuotationEmail(quotation.id)}>
+              <ActionIcon action="email" />
               Email
             </DropdownMenuItem>
+          </Can>
+          <Can permission={"quotations:cancel"}>
+            {isInEnum(quotation.status, ["accepted"]) && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => markQuotationCancelled(quotation.id)}
+                >
+                  Cancel
+                </DropdownMenuItem>
+              </>
+            )}
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>
@@ -92,8 +111,8 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
               to={"/quotations/$quotationId/pdf"}
               params={{ quotationId: quotation.id }}
             >
-              <DownloadCloud />
-              Pdf
+              <ActionIcon action="view-pdf"/>
+              View Pdf
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

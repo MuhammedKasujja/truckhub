@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Service, ServiceGroup } from "@/features/services/types"
 import { formatMoney } from "@/lib/format"
 import { ColumnDef } from "@tanstack/react-table"
-import { EyeIcon, EditIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import {
   HoverCard,
@@ -12,6 +11,7 @@ import {
 } from "@/components/ui/hover-card"
 import { useTranslation } from "@/i18n"
 import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 
 export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
   return [
@@ -50,11 +50,11 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
         return (
           <div className="flex gap-2">
             <Button variant={"outline"} size={"icon"}>
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <Button variant={"outline"} size={"icon"}>
               {/* <Link to={`/services/${row.original.id}/edit`}> */}
-              <EditIcon />
+              <ActionIcon action="edit" />
               {/* </Link> */}
             </Button>
             <ActionButton
@@ -73,7 +73,7 @@ export function getServiceTableColumns(): ColumnDef<ServiceGroup>[] {
                 // }
               }}
             >
-              <Trash2Icon />
+              <ActionIcon action="delete" />
             </ActionButton>
           </div>
         )

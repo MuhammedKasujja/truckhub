@@ -1,19 +1,21 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getPayments,
-  updatePayment,
   createPayment,
   getPaymentById,
+  reversePayment,
   deletePaymentById,
   getPaymentsByQuery,
   getPaymentsStatistics,
 } from "./server"
 import {
-  EditPaymentSchema,
+  paymentRequestSchema,
+  reversePaymentSchema,
   PaymentSearchParamsCache,
 } from "@/features/payments/schemas"
 import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getPaymentsFn = createServerFn()
   .inputValidator(PaymentSearchParamsCache)
@@ -44,14 +46,8 @@ export const deletePaymentFn = createServerFn()
     return deletePaymentById(data.id)
   })
 
-export const updatePaymentFn = createServerFn()
-  .inputValidator(EditPaymentSchema)
-  .handler(async ({ data }) => {
-    return updatePayment(data)
-  })
-
 export const createPaymentFn = createServerFn()
-  .inputValidator(EditPaymentSchema.omit({ id: true }))
+  .inputValidator(paymentRequestSchema)
   .handler(async ({ data }) => {
     return createPayment(data)
   })
@@ -59,3 +55,9 @@ export const createPaymentFn = createServerFn()
 export const getPaymentsStatisticsFn = createServerFn().handler(async () => {
   return getPaymentsStatistics()
 })
+
+export const reversePaymentFn = createServerFn()
+  .inputValidator(reversePaymentSchema)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(reversePayment(data))
+  })

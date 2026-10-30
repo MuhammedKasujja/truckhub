@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,7 +13,7 @@ import {
   vehicleAssignDriverFn,
   vehicleUnAssignDriverFn,
 } from "@/features/vehicles/services"
-import { Edit2Icon, TrashIcon } from "lucide-react"
+import { TrashIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
@@ -24,11 +22,21 @@ import { Driver } from "../types"
 import {
   PageAction,
   PageBackButton,
+  PageDescription,
   PageHeader,
   PageTitle,
 } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Vehicle } from "@/features/vehicles/types"
+import { ActionIcon } from "@/components/icons"
+import {
+  Attachment,
+  AttachmentDescription,
+  AttachmentGroup,
+  AttachmentMedia,
+  AttachmentTitle,
+} from "@/components/ui/attachment"
+import { generateAvatorFallback } from "@/lib/format"
 
 type DriverDetailsProps = {
   driver: Driver
@@ -71,34 +79,54 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-2">
       <PageHeader className="pb-2">
-        <PageTitle>
-          <PageBackButton />
-          {driver?.fullname}
-        </PageTitle>
+        <PageTitle>{driver?.fullname}</PageTitle>
+        <PageDescription>Driver ID: {driver.number}</PageDescription>
         <PageAction>
+          <PageBackButton />
           <Can permission="drivers:edit">
-            <Button asChild size={"icon"}>
+            <Button asChild>
               <Link
                 to={"/drivers/$driverId/edit"}
                 params={{ driverId: driver?.id }}
               >
-                <Edit2Icon />
+                <ActionIcon action="edit" />
+                Edit
               </Link>
             </Button>
           </Can>
         </PageAction>
       </PageHeader>
-      <div className="grid grid-flow-col gap-5 md:grid-cols-5">
+      <div className="my-6 grid grid-flow-col gap-5 md:grid-cols-5">
         <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="capitalize">{driver?.fullname}</CardTitle>
-            <CardDescription>{driver.number}</CardDescription>
-          </CardHeader>
           <CardContent className="space-y-4">
-            <div>{driver?.email}</div>
-            <div>{driver?.phone}</div>
+            <AttachmentGroup>
+              <Attachment orientation="vertical" className="size-50">
+                <AttachmentMedia variant={"image"}>
+                  <img
+                    src={driver?.photo_url}
+                    alt={generateAvatorFallback(driver.fullname)}
+                  />
+                </AttachmentMedia>
+              </Attachment>
+              <div className="flex flex-col gap-4">
+                <div className="mt-2 space-y-2">
+                  <AttachmentDescription className="text-sm">Email</AttachmentDescription>
+                  <AttachmentTitle>{driver?.email}</AttachmentTitle>
+                </div>
+                <div className="space-y-2">
+                  <AttachmentDescription className="text-sm">Phone</AttachmentDescription>
+                  <AttachmentTitle>{driver?.phone}</AttachmentTitle>
+                </div>
+                <div className="space-y-2">
+                  <AttachmentDescription className="text-sm">Licence</AttachmentDescription>
+                  <AttachmentTitle>
+                    {driver?.licence_number ?? "_"}
+                  </AttachmentTitle>
+                </div>
+              </div>
+            </AttachmentGroup>
           </CardContent>
         </Card>
         <Card className="md:col-span-2">
@@ -109,7 +137,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
           <CardContent className="flex">
             <VehiclePicker
               value={selectedVehicle}
-              onSelected={(vehicle) => setSelectedVehicle(vehicle)}
+              onChange={(vehicle) => setSelectedVehicle(vehicle)}
             />
           </CardContent>
           <CardFooter>
@@ -137,7 +165,7 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
               </Can>
             </CardAction>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="grid space-y-4 md:grid-cols-2">
             <DetailItem label="Vehicle Number" value={vehicle.number} />
 
             <DetailItem label="Plate Number" value={vehicle.plate_number} />
@@ -152,8 +180,8 @@ export function DriverDetails({ driver }: DriverDetailsProps) {
             <DetailItem label="Seats" value={vehicle.seats} />
 
             <DetailItem
-              label="Tank Capacity"
-              value={`${vehicle.tank_capacity} L`}
+              label="Engine Capacity"
+              value={`${vehicle.tank_capacity} cc`}
             />
 
             <DetailItem label="Exterior Color" value={vehicle.color} />

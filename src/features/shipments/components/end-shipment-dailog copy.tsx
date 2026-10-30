@@ -13,7 +13,7 @@ import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { EndShipmentInput, endShipmentSchema } from "../schemas"
-import { NumberField } from "@/components/ui/form-fields"
+import { DateTimePickerField, NumberField } from "@/components/ui/form-fields"
 
 type Props = {
   shipment?: Shipment
@@ -53,6 +53,11 @@ export function EndShipmentDialog({ shipment, onOpenChange, open }: Props) {
             label="Vehicle meter reading"
             control={form.control}
             name="endMileage"
+          />
+          <DateTimePickerField
+            label="Trip End time"
+            control={form.control}
+            name="endedAt"
           />
           <DialogFooter>
             <DialogClose asChild>

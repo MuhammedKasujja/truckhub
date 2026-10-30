@@ -4,6 +4,7 @@ export const PaymentModulePermissions = {
   "payments:view": ["payments:read", "payments:view"],
   "payments:delete": ["payments:delete"],
   "payments:edit": ["payments:update"],
+  "payments:reverse": ["payments:reverse"],
 } as const;
 
 export type PaymentPermissions = keyof typeof PaymentModulePermissions;

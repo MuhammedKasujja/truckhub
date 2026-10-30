@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form"
 import { DispatchShipmentInput, dispatchShipmentSchema } from "../schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useDispatchShipment } from "../hooks/use-shipment-actions"
-import { NumberField } from "@/components/ui/form-fields"
+import { NumberField, TextField } from "@/components/ui/form-fields"
 import { SubmitButton } from "@/components/ui/submit-button"
 
 type Props = {
@@ -48,16 +48,19 @@ export function DispatchShipmentDialog({
           </DialogHeader>
           <div className="space-y-4">
             <NumberField
-              label="Vehicle Mileage"
+              label="Current Mileage"
               name="startMileage"
+              control={form.control}
+            />
+            <TextField
+              label="Contact Person"
+              name="contactName"
               control={form.control}
             />
           </div>
           <DialogFooter>
             <DialogClose>
-              {/* <Button type="button" variant={"ghost"}> */}
               Cancle
-              {/* </Button> */}
             </DialogClose>
             <SubmitButton isSubmitting={isPending} />
           </DialogFooter>

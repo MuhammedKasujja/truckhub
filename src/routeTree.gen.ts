@@ -25,16 +25,19 @@ import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/inde
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
+import { Route as AdminMaintenanceIndexRouteImport } from './app/_admin/maintenance/index'
+import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
+import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/index'
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminClientsIndexRouteImport } from './app/_admin/clients/index'
+import { Route as AdminCalendarIndexRouteImport } from './app/_admin/calendar/index'
 import { Route as AdminBookingsIndexRouteImport } from './app/_admin/bookings/index'
-import { Route as AdminShipmentsLiveRouteImport } from './app/_admin/shipments/live'
 import { Route as AdminRidesNewRouteImport } from './app/_admin/rides/new'
 import { Route as AdminRidesLiveRouteImport } from './app/_admin/rides/live'
+import { Route as AdminInvoicesCreateRouteImport } from './app/_admin/invoices/create'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
 import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rates'
-import { Route as AdminClientsPricingRatesRouteImport } from './app/_admin/clients/pricing-rates'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
@@ -47,18 +50,20 @@ import { Route as AdminSettingsUserProfileIndexRouteImport } from './app/_admin/
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
 import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
+import { Route as AdminSettingsIslandsIndexRouteImport } from './app/_admin/settings/islands/index'
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
+import { Route as AdminSettingsBankAccountsIndexRouteImport } from './app/_admin/settings/bank-accounts/index'
 import { Route as AdminSettingsAdvancedIndexRouteImport } from './app/_admin/settings/advanced/index'
 import { Route as AdminServicesNewIndexRouteImport } from './app/_admin/services/new/index'
+import { Route as AdminReportsInvoicesIndexRouteImport } from './app/_admin/reports/invoices/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
 import { Route as AdminQuotationsNewIndexRouteImport } from './app/_admin/quotations/new/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminBillingQuotationsIndexRouteImport } from './app/_admin/billing/quotations/index'
 import { Route as AdminBillingOverviewIndexRouteImport } from './app/_admin/billing/overview/index'
-import { Route as AdminBillingInvoicesIndexRouteImport } from './app/_admin/billing/invoices/index'
 import { Route as AdminVehiclesVehicleIdViewRouteImport } from './app/_admin/vehicles/$vehicleId.view'
 import { Route as AdminVehiclesVehicleIdEditRouteImport } from './app/_admin/vehicles/$vehicleId.edit'
 import { Route as AdminSettingsPricingConfigRouteTonnagePricingRouteImport } from './app/_admin/settings/pricing-config/route-tonnage-pricing'
@@ -72,6 +77,8 @@ import { Route as AdminRidesRideIdEditRouteImport } from './app/_admin/rides/$ri
 import { Route as AdminQuotationsQuotationIdViewRouteImport } from './app/_admin/quotations/$quotationId.view'
 import { Route as AdminQuotationsQuotationIdPdfRouteImport } from './app/_admin/quotations/$quotationId.pdf'
 import { Route as AdminQuotationsQuotationIdEditRouteImport } from './app/_admin/quotations/$quotationId.edit'
+import { Route as AdminInvoicesInvoiceIdViewRouteImport } from './app/_admin/invoices/$invoiceId.view'
+import { Route as AdminInvoicesInvoiceIdPdfRouteImport } from './app/_admin/invoices/$invoiceId.pdf'
 import { Route as AdminDriversDriverIdViewRouteImport } from './app/_admin/drivers/$driverId.view'
 import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drivers/$driverId.edit'
 import { Route as AdminClientsDataClientIdRouteImport } from './app/_admin/clients/data/$clientId'
@@ -88,7 +95,6 @@ import { Route as AdminSettingsVehicleConfigCarBrandsIndexRouteImport } from './
 import { Route as AdminSettingsUserManagementUsersIndexRouteImport } from './app/_admin/settings/user-management/users/index'
 import { Route as AdminSettingsUserManagementRolesIndexRouteImport } from './app/_admin/settings/user-management/roles/index'
 import { Route as AdminSettingsUserManagementPermissionsIndexRouteImport } from './app/_admin/settings/user-management/permissions/index'
-import { Route as AdminBillingInvoicesInvoiceIdViewRouteImport } from './app/_admin/billing/invoices/$invoiceId.view'
 import { Route as AdminSettingsUserManagementUsersNewIndexRouteImport } from './app/_admin/settings/user-management/users/new/index'
 import { Route as AdminSettingsUserManagementUsersUserIdViewRouteImport } from './app/_admin/settings/user-management/users/$userId.view'
 import { Route as AdminSettingsUserManagementUsersUserIdEditRouteImport } from './app/_admin/settings/user-management/users/$userId.edit'
@@ -172,6 +178,21 @@ const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   path: '/payments/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminMaintenanceIndexRoute = AdminMaintenanceIndexRouteImport.update({
+  id: '/maintenance/',
+  path: '/maintenance/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminLiveMapIndexRoute = AdminLiveMapIndexRouteImport.update({
+  id: '/live-map/',
+  path: '/live-map/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInvoicesIndexRoute = AdminInvoicesIndexRouteImport.update({
+  id: '/invoices/',
+  path: '/invoices/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminDriversIndexRoute = AdminDriversIndexRouteImport.update({
   id: '/drivers/',
   path: '/drivers/',
@@ -187,15 +208,15 @@ const AdminClientsIndexRoute = AdminClientsIndexRouteImport.update({
   path: '/clients/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminCalendarIndexRoute = AdminCalendarIndexRouteImport.update({
+  id: '/calendar/',
+  path: '/calendar/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminBookingsIndexRoute = AdminBookingsIndexRouteImport.update({
   id: '/bookings/',
   path: '/bookings/',
   getParentRoute: () => AdminRouteRoute,
-} as any)
-const AdminShipmentsLiveRoute = AdminShipmentsLiveRouteImport.update({
-  id: '/live',
-  path: '/live',
-  getParentRoute: () => AdminShipmentsRouteRoute,
 } as any)
 const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
   id: '/rides/new',
@@ -205,6 +226,11 @@ const AdminRidesNewRoute = AdminRidesNewRouteImport.update({
 const AdminRidesLiveRoute = AdminRidesLiveRouteImport.update({
   id: '/rides/live',
   path: '/rides/live',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminInvoicesCreateRoute = AdminInvoicesCreateRouteImport.update({
+  id: '/invoices/create',
+  path: '/invoices/create',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
@@ -217,12 +243,6 @@ const AdminClientsRatesRoute = AdminClientsRatesRouteImport.update({
   path: '/clients/rates',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminClientsPricingRatesRoute =
-  AdminClientsPricingRatesRouteImport.update({
-    id: '/clients/pricing-rates',
-    path: '/clients/pricing-rates',
-    getParentRoute: () => AdminRouteRoute,
-  } as any)
 const AdminSettingsVehicleConfigRouteRoute =
   AdminSettingsVehicleConfigRouteRouteImport.update({
     id: '/vehicle-config',
@@ -294,6 +314,12 @@ const AdminSettingsNotificationsIndexRoute =
     path: '/notifications/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
+const AdminSettingsIslandsIndexRoute =
+  AdminSettingsIslandsIndexRouteImport.update({
+    id: '/islands/',
+    path: '/islands/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminSettingsGenerateNumbersIndexRoute =
   AdminSettingsGenerateNumbersIndexRouteImport.update({
     id: '/generate-numbers/',
@@ -312,6 +338,12 @@ const AdminSettingsBookingRoutesIndexRoute =
     path: '/booking-routes/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
+const AdminSettingsBankAccountsIndexRoute =
+  AdminSettingsBankAccountsIndexRouteImport.update({
+    id: '/bank-accounts/',
+    path: '/bank-accounts/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
 const AdminSettingsAdvancedIndexRoute =
   AdminSettingsAdvancedIndexRouteImport.update({
     id: '/advanced/',
@@ -323,6 +355,12 @@ const AdminServicesNewIndexRoute = AdminServicesNewIndexRouteImport.update({
   path: '/services/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminReportsInvoicesIndexRoute =
+  AdminReportsInvoicesIndexRouteImport.update({
+    id: '/reports/invoices/',
+    path: '/reports/invoices/',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminReportsAuditsIndexRoute = AdminReportsAuditsIndexRouteImport.update({
   id: '/reports/audits/',
   path: '/reports/audits/',
@@ -353,12 +391,6 @@ const AdminBillingOverviewIndexRoute =
   AdminBillingOverviewIndexRouteImport.update({
     id: '/overview/',
     path: '/overview/',
-    getParentRoute: () => AdminBillingRouteRoute,
-  } as any)
-const AdminBillingInvoicesIndexRoute =
-  AdminBillingInvoicesIndexRouteImport.update({
-    id: '/invoices/',
-    path: '/invoices/',
     getParentRoute: () => AdminBillingRouteRoute,
   } as any)
 const AdminVehiclesVehicleIdViewRoute =
@@ -435,6 +467,18 @@ const AdminQuotationsQuotationIdEditRoute =
   AdminQuotationsQuotationIdEditRouteImport.update({
     id: '/quotations/$quotationId/edit',
     path: '/quotations/$quotationId/edit',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminInvoicesInvoiceIdViewRoute =
+  AdminInvoicesInvoiceIdViewRouteImport.update({
+    id: '/invoices/$invoiceId/view',
+    path: '/invoices/$invoiceId/view',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
+const AdminInvoicesInvoiceIdPdfRoute =
+  AdminInvoicesInvoiceIdPdfRouteImport.update({
+    id: '/invoices/$invoiceId/pdf',
+    path: '/invoices/$invoiceId/pdf',
     getParentRoute: () => AdminRouteRoute,
   } as any)
 const AdminDriversDriverIdViewRoute =
@@ -532,12 +576,6 @@ const AdminSettingsUserManagementPermissionsIndexRoute =
     path: '/permissions/',
     getParentRoute: () => AdminSettingsUserManagementRouteRoute,
   } as any)
-const AdminBillingInvoicesInvoiceIdViewRoute =
-  AdminBillingInvoicesInvoiceIdViewRouteImport.update({
-    id: '/invoices/$invoiceId/view',
-    path: '/invoices/$invoiceId/view',
-    getParentRoute: () => AdminBillingRouteRoute,
-  } as any)
 const AdminSettingsUserManagementUsersNewIndexRoute =
   AdminSettingsUserManagementUsersNewIndexRouteImport.update({
     id: '/users/new/',
@@ -569,16 +607,19 @@ export interface FileRoutesByFullPath {
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
-  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings/': typeof AdminBookingsIndexRoute
+  '/calendar/': typeof AdminCalendarIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
   '/dashboard/': typeof AdminDashboardIndexRoute
   '/drivers/': typeof AdminDriversIndexRoute
+  '/invoices/': typeof AdminInvoicesIndexRoute
+  '/live-map/': typeof AdminLiveMapIndexRoute
+  '/maintenance/': typeof AdminMaintenanceIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
@@ -594,6 +635,8 @@ export interface FileRoutesByFullPath {
   '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
+  '/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
   '/quotations/$quotationId/pdf': typeof AdminQuotationsQuotationIdPdfRoute
   '/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
@@ -607,18 +650,20 @@ export interface FileRoutesByFullPath {
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
-  '/billing/invoices/': typeof AdminBillingInvoicesIndexRoute
   '/billing/overview/': typeof AdminBillingOverviewIndexRoute
   '/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
   '/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
+  '/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
   '/services/new/': typeof AdminServicesNewIndexRoute
   '/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/islands/': typeof AdminSettingsIslandsIndexRoute
   '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
@@ -628,7 +673,6 @@ export interface FileRoutesByFullPath {
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
-  '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
   '/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -653,16 +697,19 @@ export interface FileRoutesByTo {
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
-  '/shipments/live': typeof AdminShipmentsLiveRoute
   '/bookings': typeof AdminBookingsIndexRoute
+  '/calendar': typeof AdminCalendarIndexRoute
   '/clients': typeof AdminClientsIndexRoute
   '/dashboard': typeof AdminDashboardIndexRoute
   '/drivers': typeof AdminDriversIndexRoute
+  '/invoices': typeof AdminInvoicesIndexRoute
+  '/live-map': typeof AdminLiveMapIndexRoute
+  '/maintenance': typeof AdminMaintenanceIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
@@ -678,6 +725,8 @@ export interface FileRoutesByTo {
   '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
+  '/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
   '/quotations/$quotationId/pdf': typeof AdminQuotationsQuotationIdPdfRoute
   '/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
@@ -691,18 +740,20 @@ export interface FileRoutesByTo {
   '/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
-  '/billing/invoices': typeof AdminBillingInvoicesIndexRoute
   '/billing/overview': typeof AdminBillingOverviewIndexRoute
   '/billing/quotations': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
   '/quotations/new': typeof AdminQuotationsNewIndexRoute
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
+  '/reports/invoices': typeof AdminReportsInvoicesIndexRoute
   '/services/new': typeof AdminServicesNewIndexRoute
   '/settings/advanced': typeof AdminSettingsAdvancedIndexRoute
+  '/settings/bank-accounts': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/settings/islands': typeof AdminSettingsIslandsIndexRoute
   '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
@@ -712,7 +763,6 @@ export interface FileRoutesByTo {
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
-  '/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles': typeof AdminSettingsUserManagementRolesIndexRoute
   '/settings/user-management/users': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -739,16 +789,19 @@ export interface FileRoutesById {
   '/_admin/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/_admin/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
-  '/_admin/clients/pricing-rates': typeof AdminClientsPricingRatesRoute
   '/_admin/clients/rates': typeof AdminClientsRatesRoute
   '/_admin/drivers/new': typeof AdminDriversNewRoute
+  '/_admin/invoices/create': typeof AdminInvoicesCreateRoute
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
-  '/_admin/shipments/live': typeof AdminShipmentsLiveRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
+  '/_admin/calendar/': typeof AdminCalendarIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
   '/_admin/dashboard/': typeof AdminDashboardIndexRoute
   '/_admin/drivers/': typeof AdminDriversIndexRoute
+  '/_admin/invoices/': typeof AdminInvoicesIndexRoute
+  '/_admin/live-map/': typeof AdminLiveMapIndexRoute
+  '/_admin/maintenance/': typeof AdminMaintenanceIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
@@ -764,6 +817,8 @@ export interface FileRoutesById {
   '/_admin/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/_admin/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/_admin/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/_admin/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
+  '/_admin/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/_admin/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
   '/_admin/quotations/$quotationId/pdf': typeof AdminQuotationsQuotationIdPdfRoute
   '/_admin/quotations/$quotationId/view': typeof AdminQuotationsQuotationIdViewRoute
@@ -777,18 +832,20 @@ export interface FileRoutesById {
   '/_admin/settings/pricing-config/route-tonnage-pricing': typeof AdminSettingsPricingConfigRouteTonnagePricingRoute
   '/_admin/vehicles/$vehicleId/edit': typeof AdminVehiclesVehicleIdEditRoute
   '/_admin/vehicles/$vehicleId/view': typeof AdminVehiclesVehicleIdViewRoute
-  '/_admin/billing/invoices/': typeof AdminBillingInvoicesIndexRoute
   '/_admin/billing/overview/': typeof AdminBillingOverviewIndexRoute
   '/_admin/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
   '/_admin/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
+  '/_admin/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
   '/_admin/services/new/': typeof AdminServicesNewIndexRoute
   '/_admin/settings/advanced/': typeof AdminSettingsAdvancedIndexRoute
+  '/_admin/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
+  '/_admin/settings/islands/': typeof AdminSettingsIslandsIndexRoute
   '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
@@ -798,7 +855,6 @@ export interface FileRoutesById {
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
-  '/_admin/billing/invoices/$invoiceId/view': typeof AdminBillingInvoicesInvoiceIdViewRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/_admin/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
   '/_admin/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -825,16 +881,19 @@ export interface FileRouteTypes {
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
-    | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
+    | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
-    | '/shipments/live'
     | '/bookings/'
+    | '/calendar/'
     | '/clients/'
     | '/dashboard/'
     | '/drivers/'
+    | '/invoices/'
+    | '/live-map/'
+    | '/maintenance/'
     | '/payments/'
     | '/quotations/'
     | '/reports/'
@@ -850,6 +909,8 @@ export interface FileRouteTypes {
     | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
+    | '/invoices/$invoiceId/pdf'
+    | '/invoices/$invoiceId/view'
     | '/quotations/$quotationId/edit'
     | '/quotations/$quotationId/pdf'
     | '/quotations/$quotationId/view'
@@ -863,18 +924,20 @@ export interface FileRouteTypes {
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
-    | '/billing/invoices/'
     | '/billing/overview/'
     | '/billing/quotations/'
     | '/bookings/new/'
     | '/clients/new/'
     | '/quotations/new/'
     | '/reports/audits/'
+    | '/reports/invoices/'
     | '/services/new/'
     | '/settings/advanced/'
+    | '/settings/bank-accounts/'
     | '/settings/booking-routes/'
     | '/settings/company-details/'
     | '/settings/generate-numbers/'
+    | '/settings/islands/'
     | '/settings/notifications/'
     | '/settings/pdf-templates/'
     | '/settings/tax-rates/'
@@ -884,7 +947,6 @@ export interface FileRouteTypes {
     | '/shipments/confirmed/'
     | '/shipments/requests/'
     | '/vehicles/new/'
-    | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions/'
     | '/settings/user-management/roles/'
     | '/settings/user-management/users/'
@@ -909,16 +971,19 @@ export interface FileRouteTypes {
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
-    | '/clients/pricing-rates'
     | '/clients/rates'
     | '/drivers/new'
+    | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
-    | '/shipments/live'
     | '/bookings'
+    | '/calendar'
     | '/clients'
     | '/dashboard'
     | '/drivers'
+    | '/invoices'
+    | '/live-map'
+    | '/maintenance'
     | '/payments'
     | '/quotations'
     | '/reports'
@@ -934,6 +999,8 @@ export interface FileRouteTypes {
     | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
+    | '/invoices/$invoiceId/pdf'
+    | '/invoices/$invoiceId/view'
     | '/quotations/$quotationId/edit'
     | '/quotations/$quotationId/pdf'
     | '/quotations/$quotationId/view'
@@ -947,18 +1014,20 @@ export interface FileRouteTypes {
     | '/settings/pricing-config/route-tonnage-pricing'
     | '/vehicles/$vehicleId/edit'
     | '/vehicles/$vehicleId/view'
-    | '/billing/invoices'
     | '/billing/overview'
     | '/billing/quotations'
     | '/bookings/new'
     | '/clients/new'
     | '/quotations/new'
     | '/reports/audits'
+    | '/reports/invoices'
     | '/services/new'
     | '/settings/advanced'
+    | '/settings/bank-accounts'
     | '/settings/booking-routes'
     | '/settings/company-details'
     | '/settings/generate-numbers'
+    | '/settings/islands'
     | '/settings/notifications'
     | '/settings/pdf-templates'
     | '/settings/tax-rates'
@@ -968,7 +1037,6 @@ export interface FileRouteTypes {
     | '/shipments/confirmed'
     | '/shipments/requests'
     | '/vehicles/new'
-    | '/billing/invoices/$invoiceId/view'
     | '/settings/user-management/permissions'
     | '/settings/user-management/roles'
     | '/settings/user-management/users'
@@ -994,16 +1062,19 @@ export interface FileRouteTypes {
     | '/_admin/settings/pricing-config'
     | '/_admin/settings/user-management'
     | '/_admin/settings/vehicle-config'
-    | '/_admin/clients/pricing-rates'
     | '/_admin/clients/rates'
     | '/_admin/drivers/new'
+    | '/_admin/invoices/create'
     | '/_admin/rides/live'
     | '/_admin/rides/new'
-    | '/_admin/shipments/live'
     | '/_admin/bookings/'
+    | '/_admin/calendar/'
     | '/_admin/clients/'
     | '/_admin/dashboard/'
     | '/_admin/drivers/'
+    | '/_admin/invoices/'
+    | '/_admin/live-map/'
+    | '/_admin/maintenance/'
     | '/_admin/payments/'
     | '/_admin/quotations/'
     | '/_admin/reports/'
@@ -1019,6 +1090,8 @@ export interface FileRouteTypes {
     | '/_admin/clients/data/$clientId'
     | '/_admin/drivers/$driverId/edit'
     | '/_admin/drivers/$driverId/view'
+    | '/_admin/invoices/$invoiceId/pdf'
+    | '/_admin/invoices/$invoiceId/view'
     | '/_admin/quotations/$quotationId/edit'
     | '/_admin/quotations/$quotationId/pdf'
     | '/_admin/quotations/$quotationId/view'
@@ -1032,18 +1105,20 @@ export interface FileRouteTypes {
     | '/_admin/settings/pricing-config/route-tonnage-pricing'
     | '/_admin/vehicles/$vehicleId/edit'
     | '/_admin/vehicles/$vehicleId/view'
-    | '/_admin/billing/invoices/'
     | '/_admin/billing/overview/'
     | '/_admin/billing/quotations/'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
     | '/_admin/quotations/new/'
     | '/_admin/reports/audits/'
+    | '/_admin/reports/invoices/'
     | '/_admin/services/new/'
     | '/_admin/settings/advanced/'
+    | '/_admin/settings/bank-accounts/'
     | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
     | '/_admin/settings/generate-numbers/'
+    | '/_admin/settings/islands/'
     | '/_admin/settings/notifications/'
     | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/tax-rates/'
@@ -1053,7 +1128,6 @@ export interface FileRouteTypes {
     | '/_admin/shipments/confirmed/'
     | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
-    | '/_admin/billing/invoices/$invoiceId/view'
     | '/_admin/settings/user-management/permissions/'
     | '/_admin/settings/user-management/roles/'
     | '/_admin/settings/user-management/users/'
@@ -1190,6 +1264,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPaymentsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/maintenance/': {
+      id: '/_admin/maintenance/'
+      path: '/maintenance'
+      fullPath: '/maintenance/'
+      preLoaderRoute: typeof AdminMaintenanceIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/live-map/': {
+      id: '/_admin/live-map/'
+      path: '/live-map'
+      fullPath: '/live-map/'
+      preLoaderRoute: typeof AdminLiveMapIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/invoices/': {
+      id: '/_admin/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices/'
+      preLoaderRoute: typeof AdminInvoicesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/drivers/': {
       id: '/_admin/drivers/'
       path: '/drivers'
@@ -1211,19 +1306,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/calendar/': {
+      id: '/_admin/calendar/'
+      path: '/calendar'
+      fullPath: '/calendar/'
+      preLoaderRoute: typeof AdminCalendarIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/bookings/': {
       id: '/_admin/bookings/'
       path: '/bookings'
       fullPath: '/bookings/'
       preLoaderRoute: typeof AdminBookingsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/shipments/live': {
-      id: '/_admin/shipments/live'
-      path: '/live'
-      fullPath: '/shipments/live'
-      preLoaderRoute: typeof AdminShipmentsLiveRouteImport
-      parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/rides/new': {
       id: '/_admin/rides/new'
@@ -1239,6 +1334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRidesLiveRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/invoices/create': {
+      id: '/_admin/invoices/create'
+      path: '/invoices/create'
+      fullPath: '/invoices/create'
+      preLoaderRoute: typeof AdminInvoicesCreateRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/drivers/new': {
       id: '/_admin/drivers/new'
       path: '/drivers/new'
@@ -1251,13 +1353,6 @@ declare module '@tanstack/react-router' {
       path: '/clients/rates'
       fullPath: '/clients/rates'
       preLoaderRoute: typeof AdminClientsRatesRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
-    '/_admin/clients/pricing-rates': {
-      id: '/_admin/clients/pricing-rates'
-      path: '/clients/pricing-rates'
-      fullPath: '/clients/pricing-rates'
-      preLoaderRoute: typeof AdminClientsPricingRatesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/settings/vehicle-config': {
@@ -1344,6 +1439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsNotificationsIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/islands/': {
+      id: '/_admin/settings/islands/'
+      path: '/islands'
+      fullPath: '/settings/islands/'
+      preLoaderRoute: typeof AdminSettingsIslandsIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/settings/generate-numbers/': {
       id: '/_admin/settings/generate-numbers/'
       path: '/generate-numbers'
@@ -1365,6 +1467,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsBookingRoutesIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
+    '/_admin/settings/bank-accounts/': {
+      id: '/_admin/settings/bank-accounts/'
+      path: '/bank-accounts'
+      fullPath: '/settings/bank-accounts/'
+      preLoaderRoute: typeof AdminSettingsBankAccountsIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
     '/_admin/settings/advanced/': {
       id: '/_admin/settings/advanced/'
       path: '/advanced'
@@ -1377,6 +1486,13 @@ declare module '@tanstack/react-router' {
       path: '/services/new'
       fullPath: '/services/new/'
       preLoaderRoute: typeof AdminServicesNewIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/reports/invoices/': {
+      id: '/_admin/reports/invoices/'
+      path: '/reports/invoices'
+      fullPath: '/reports/invoices/'
+      preLoaderRoute: typeof AdminReportsInvoicesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/reports/audits/': {
@@ -1419,13 +1535,6 @@ declare module '@tanstack/react-router' {
       path: '/overview'
       fullPath: '/billing/overview/'
       preLoaderRoute: typeof AdminBillingOverviewIndexRouteImport
-      parentRoute: typeof AdminBillingRouteRoute
-    }
-    '/_admin/billing/invoices/': {
-      id: '/_admin/billing/invoices/'
-      path: '/invoices'
-      fullPath: '/billing/invoices/'
-      preLoaderRoute: typeof AdminBillingInvoicesIndexRouteImport
       parentRoute: typeof AdminBillingRouteRoute
     }
     '/_admin/vehicles/$vehicleId/view': {
@@ -1517,6 +1626,20 @@ declare module '@tanstack/react-router' {
       path: '/quotations/$quotationId/edit'
       fullPath: '/quotations/$quotationId/edit'
       preLoaderRoute: typeof AdminQuotationsQuotationIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/invoices/$invoiceId/view': {
+      id: '/_admin/invoices/$invoiceId/view'
+      path: '/invoices/$invoiceId/view'
+      fullPath: '/invoices/$invoiceId/view'
+      preLoaderRoute: typeof AdminInvoicesInvoiceIdViewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/invoices/$invoiceId/pdf': {
+      id: '/_admin/invoices/$invoiceId/pdf'
+      path: '/invoices/$invoiceId/pdf'
+      fullPath: '/invoices/$invoiceId/pdf'
+      preLoaderRoute: typeof AdminInvoicesInvoiceIdPdfRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/drivers/$driverId/view': {
@@ -1631,13 +1754,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsUserManagementPermissionsIndexRouteImport
       parentRoute: typeof AdminSettingsUserManagementRouteRoute
     }
-    '/_admin/billing/invoices/$invoiceId/view': {
-      id: '/_admin/billing/invoices/$invoiceId/view'
-      path: '/invoices/$invoiceId/view'
-      fullPath: '/billing/invoices/$invoiceId/view'
-      preLoaderRoute: typeof AdminBillingInvoicesInvoiceIdViewRouteImport
-      parentRoute: typeof AdminBillingRouteRoute
-    }
     '/_admin/settings/user-management/users/new/': {
       id: '/_admin/settings/user-management/users/new/'
       path: '/users/new'
@@ -1663,18 +1779,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminBillingRouteRouteChildren {
-  AdminBillingInvoicesIndexRoute: typeof AdminBillingInvoicesIndexRoute
   AdminBillingOverviewIndexRoute: typeof AdminBillingOverviewIndexRoute
   AdminBillingQuotationsIndexRoute: typeof AdminBillingQuotationsIndexRoute
-  AdminBillingInvoicesInvoiceIdViewRoute: typeof AdminBillingInvoicesInvoiceIdViewRoute
 }
 
 const AdminBillingRouteRouteChildren: AdminBillingRouteRouteChildren = {
-  AdminBillingInvoicesIndexRoute: AdminBillingInvoicesIndexRoute,
   AdminBillingOverviewIndexRoute: AdminBillingOverviewIndexRoute,
   AdminBillingQuotationsIndexRoute: AdminBillingQuotationsIndexRoute,
-  AdminBillingInvoicesInvoiceIdViewRoute:
-    AdminBillingInvoicesInvoiceIdViewRoute,
 }
 
 const AdminBillingRouteRouteWithChildren =
@@ -1766,9 +1877,11 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsUserManagementRouteRoute: typeof AdminSettingsUserManagementRouteRouteWithChildren
   AdminSettingsVehicleConfigRouteRoute: typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   AdminSettingsAdvancedIndexRoute: typeof AdminSettingsAdvancedIndexRoute
+  AdminSettingsBankAccountsIndexRoute: typeof AdminSettingsBankAccountsIndexRoute
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
+  AdminSettingsIslandsIndexRoute: typeof AdminSettingsIslandsIndexRoute
   AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
@@ -1783,10 +1896,12 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsVehicleConfigRouteRoute:
     AdminSettingsVehicleConfigRouteRouteWithChildren,
   AdminSettingsAdvancedIndexRoute: AdminSettingsAdvancedIndexRoute,
+  AdminSettingsBankAccountsIndexRoute: AdminSettingsBankAccountsIndexRoute,
   AdminSettingsBookingRoutesIndexRoute: AdminSettingsBookingRoutesIndexRoute,
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
   AdminSettingsGenerateNumbersIndexRoute:
     AdminSettingsGenerateNumbersIndexRoute,
+  AdminSettingsIslandsIndexRoute: AdminSettingsIslandsIndexRoute,
   AdminSettingsNotificationsIndexRoute: AdminSettingsNotificationsIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
@@ -1797,7 +1912,6 @@ const AdminSettingsRouteRouteWithChildren =
   AdminSettingsRouteRoute._addFileChildren(AdminSettingsRouteRouteChildren)
 
 interface AdminShipmentsRouteRouteChildren {
-  AdminShipmentsLiveRoute: typeof AdminShipmentsLiveRoute
   AdminShipmentsActiveIndexRoute: typeof AdminShipmentsActiveIndexRoute
   AdminShipmentsCompletedIndexRoute: typeof AdminShipmentsCompletedIndexRoute
   AdminShipmentsConfirmedIndexRoute: typeof AdminShipmentsConfirmedIndexRoute
@@ -1805,7 +1919,6 @@ interface AdminShipmentsRouteRouteChildren {
 }
 
 const AdminShipmentsRouteRouteChildren: AdminShipmentsRouteRouteChildren = {
-  AdminShipmentsLiveRoute: AdminShipmentsLiveRoute,
   AdminShipmentsActiveIndexRoute: AdminShipmentsActiveIndexRoute,
   AdminShipmentsCompletedIndexRoute: AdminShipmentsCompletedIndexRoute,
   AdminShipmentsConfirmedIndexRoute: AdminShipmentsConfirmedIndexRoute,
@@ -1819,15 +1932,19 @@ interface AdminRouteRouteChildren {
   AdminBillingRouteRoute: typeof AdminBillingRouteRouteWithChildren
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
   AdminShipmentsRouteRoute: typeof AdminShipmentsRouteRouteWithChildren
-  AdminClientsPricingRatesRoute: typeof AdminClientsPricingRatesRoute
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
+  AdminInvoicesCreateRoute: typeof AdminInvoicesCreateRoute
   AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
   AdminBookingsIndexRoute: typeof AdminBookingsIndexRoute
+  AdminCalendarIndexRoute: typeof AdminCalendarIndexRoute
   AdminClientsIndexRoute: typeof AdminClientsIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminDriversIndexRoute: typeof AdminDriversIndexRoute
+  AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
+  AdminLiveMapIndexRoute: typeof AdminLiveMapIndexRoute
+  AdminMaintenanceIndexRoute: typeof AdminMaintenanceIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -1843,6 +1960,8 @@ interface AdminRouteRouteChildren {
   AdminClientsDataClientIdRoute: typeof AdminClientsDataClientIdRoute
   AdminDriversDriverIdEditRoute: typeof AdminDriversDriverIdEditRoute
   AdminDriversDriverIdViewRoute: typeof AdminDriversDriverIdViewRoute
+  AdminInvoicesInvoiceIdPdfRoute: typeof AdminInvoicesInvoiceIdPdfRoute
+  AdminInvoicesInvoiceIdViewRoute: typeof AdminInvoicesInvoiceIdViewRoute
   AdminQuotationsQuotationIdEditRoute: typeof AdminQuotationsQuotationIdEditRoute
   AdminQuotationsQuotationIdPdfRoute: typeof AdminQuotationsQuotationIdPdfRoute
   AdminQuotationsQuotationIdViewRoute: typeof AdminQuotationsQuotationIdViewRoute
@@ -1856,6 +1975,7 @@ interface AdminRouteRouteChildren {
   AdminClientsNewIndexRoute: typeof AdminClientsNewIndexRoute
   AdminQuotationsNewIndexRoute: typeof AdminQuotationsNewIndexRoute
   AdminReportsAuditsIndexRoute: typeof AdminReportsAuditsIndexRoute
+  AdminReportsInvoicesIndexRoute: typeof AdminReportsInvoicesIndexRoute
   AdminServicesNewIndexRoute: typeof AdminServicesNewIndexRoute
   AdminVehiclesNewIndexRoute: typeof AdminVehiclesNewIndexRoute
 }
@@ -1864,15 +1984,19 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminBillingRouteRoute: AdminBillingRouteRouteWithChildren,
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
   AdminShipmentsRouteRoute: AdminShipmentsRouteRouteWithChildren,
-  AdminClientsPricingRatesRoute: AdminClientsPricingRatesRoute,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
+  AdminInvoicesCreateRoute: AdminInvoicesCreateRoute,
   AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,
   AdminBookingsIndexRoute: AdminBookingsIndexRoute,
+  AdminCalendarIndexRoute: AdminCalendarIndexRoute,
   AdminClientsIndexRoute: AdminClientsIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminDriversIndexRoute: AdminDriversIndexRoute,
+  AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
+  AdminLiveMapIndexRoute: AdminLiveMapIndexRoute,
+  AdminMaintenanceIndexRoute: AdminMaintenanceIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
@@ -1888,6 +2012,8 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminClientsDataClientIdRoute: AdminClientsDataClientIdRoute,
   AdminDriversDriverIdEditRoute: AdminDriversDriverIdEditRoute,
   AdminDriversDriverIdViewRoute: AdminDriversDriverIdViewRoute,
+  AdminInvoicesInvoiceIdPdfRoute: AdminInvoicesInvoiceIdPdfRoute,
+  AdminInvoicesInvoiceIdViewRoute: AdminInvoicesInvoiceIdViewRoute,
   AdminQuotationsQuotationIdEditRoute: AdminQuotationsQuotationIdEditRoute,
   AdminQuotationsQuotationIdPdfRoute: AdminQuotationsQuotationIdPdfRoute,
   AdminQuotationsQuotationIdViewRoute: AdminQuotationsQuotationIdViewRoute,
@@ -1901,6 +2027,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminClientsNewIndexRoute: AdminClientsNewIndexRoute,
   AdminQuotationsNewIndexRoute: AdminQuotationsNewIndexRoute,
   AdminReportsAuditsIndexRoute: AdminReportsAuditsIndexRoute,
+  AdminReportsInvoicesIndexRoute: AdminReportsInvoicesIndexRoute,
   AdminServicesNewIndexRoute: AdminServicesNewIndexRoute,
   AdminVehiclesNewIndexRoute: AdminVehiclesNewIndexRoute,
 }

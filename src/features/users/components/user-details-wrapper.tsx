@@ -7,9 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { formatDate } from "@/lib/format"
+import { formatDateTime } from "@/lib/format"
 import { SystemUser } from "../types"
 import {
   Item,
@@ -17,6 +16,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item"
+import { ActionIcon } from "@/components/icons"
 
 type UserDetailsWrapperProps = {
   user: SystemUser | undefined
@@ -34,7 +34,7 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
                 to={"/settings/user-management/users/$userId/edit"}
                 params={{ userId: user!.id }}
               >
-                <Edit2Icon />
+                <ActionIcon action={"edit"}/>
               </Link>
             </Button>
           </CardAction>
@@ -62,19 +62,19 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           <Item>
             <ItemContent>
               <ItemDescription>Username</ItemDescription>
-              <ItemTitle>{user?.username??"-"}</ItemTitle>
+              <ItemTitle>{user?.username ?? "-"}</ItemTitle>
             </ItemContent>
           </Item>
           <Item>
             <ItemContent>
               <ItemDescription>Last Login</ItemDescription>
-              <ItemTitle>{formatDate(user?.last_login)}</ItemTitle>
+              <ItemTitle>{formatDateTime(user?.last_login)}</ItemTitle>
             </ItemContent>
           </Item>
           <Item>
             <ItemContent>
               <ItemDescription>Registration Date</ItemDescription>
-              <ItemTitle>{formatDate(user?.created_at)}</ItemTitle>
+              <ItemTitle>{formatDateTime(user?.created_at)}</ItemTitle>
             </ItemContent>
           </Item>
         </CardContent>

@@ -1,5 +1,3 @@
-// src/hooks/useIdleTimer.ts
-import { logger } from "@/lib/logger"
 import { useEffect, useRef, useCallback } from "react"
 
 interface UseIdleTimerOptions {
@@ -19,16 +17,8 @@ interface UseIdleTimerOptions {
   enabled?: boolean
 }
 
-const DEFAULT_EVENTS = [
-  "mousedown",
-  "touchstart",
-  "keydown",
-  "focus",
-  ///
-  //   "mousemove",
-  //   "scroll",
-  //   "wheel",
-]
+const DEFAULT_EVENTS = ["mousedown", "touchstart", "keydown", "focus"]
+const THROTTLE_MS = 1000
 
 export function useIdleTimer({
   promptTimeout,
@@ -39,76 +29,88 @@ export function useIdleTimer({
   events = DEFAULT_EVENTS,
   enabled = true,
 }: UseIdleTimerOptions) {
-  const promptTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const isPromptedRef = useRef(false)
+  // Latest-callback ref: callers can pass inline functions without
+  // re-triggering the effect or restarting timers.
+  const cbRef = useRef({ onPrompt, onIdle, onActive })
+  useEffect(() => {
+    cbRef.current = { onPrompt, onIdle, onActive }
+  })
 
-  const reset = useCallback(() => {
-    logger.info("User Activity Tracking")
-    // ← Guard: if we're already in the "prompted" state, don't reset
-    // from passive DOM events. Only stayActive() can reset from here.
-    if (isPromptedRef.current) return
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const promptedRef = useRef(false)
+  const lastActivityRef = useRef(Date.now())
 
-    if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+  const clearTimer = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = null
+  }, [])
 
-    if (isPromptedRef.current) {
-      isPromptedRef.current = false
-      onActive?.()
-      logger.info("User is active")
+  // Single source of truth: elapsed time since last activity.
+  const evaluate = useCallback(() => {
+    clearTimer()
+    const elapsed = Date.now() - lastActivityRef.current
+
+    if (elapsed >= timeout) {
+      promptedRef.current = false
+      cbRef.current.onIdle()
+      return
     }
+    if (elapsed >= promptTimeout) {
+      if (!promptedRef.current) {
+        promptedRef.current = true
+        cbRef.current.onPrompt()
+      }
+      timerRef.current = setTimeout(evaluate, timeout - elapsed)
+    } else {
+      timerRef.current = setTimeout(evaluate, promptTimeout - elapsed)
+    }
+  }, [promptTimeout, timeout, clearTimer])
 
-    promptTimerRef.current = setTimeout(() => {
-      isPromptedRef.current = true
-      onPrompt()
-      logger.info("System is Idle")
-      // start the final countdown to logout
-      idleTimerRef.current = setTimeout(() => {
-        // TODO: Handle clear session trackers after user is logged out
-        logger.info("System is about to logout")
-        onIdle()
-      }, timeout - promptTimeout)
-    }, promptTimeout)
-  }, [promptTimeout, timeout, onPrompt, onIdle, onActive])
+  // Passive DOM activity: ignored once the warning is showing.
+  const onActivity = useCallback(() => {
+    if (promptedRef.current) return
+    const now = Date.now()
+    if (now - lastActivityRef.current < THROTTLE_MS) return
+    lastActivityRef.current = now
+    evaluate()
+  }, [evaluate])
 
-  /** Call from the "stay logged in" button to dismiss the warning and reset */
+  // Explicit "Stay logged in" only.
   const stayActive = useCallback(() => {
-    isPromptedRef.current = false
-    onActive?.()
-    reset()
-  }, [reset])
+    lastActivityRef.current = Date.now()
+    if (promptedRef.current) {
+      promptedRef.current = false
+      cbRef.current.onActive?.()
+    }
+    evaluate()
+  }, [evaluate])
 
   useEffect(() => {
     if (!enabled) {
-      if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-      isPromptedRef.current = false; // ← reset so re-enabling starts clean
+      clearTimer()
+      promptedRef.current = false
       return
     }
 
-    reset() // start the timer immediately
+    lastActivityRef.current = Date.now()
+    evaluate()
 
-    // deliberate user interaction events
-    events.forEach((event) =>
-      window.addEventListener(event, reset, { passive: true })
+    events.forEach((e) =>
+      window.addEventListener(e, onActivity, { passive: true })
     )
 
-    // tab/window regains focus — separate from element focus bubbling
-    window.addEventListener("focus", stayActive)
-
-    function onVisibility() {
-      if (document.visibilityState === "visible") stayActive()
+    // On return to the tab, re-check elapsed time. Do NOT reset it.
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") evaluate()
     }
     document.addEventListener("visibilitychange", onVisibility)
 
     return () => {
-      if (promptTimerRef.current) clearTimeout(promptTimerRef.current)
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-      events.forEach((event) => window.removeEventListener(event, reset))
-      window.removeEventListener("focus", stayActive)
+      clearTimer()
+      events.forEach((e) => window.removeEventListener(e, onActivity))
       document.removeEventListener("visibilitychange", onVisibility)
     }
-  }, [enabled, events, reset, stayActive])
+  }, [enabled, events, evaluate, onActivity, clearTimer])
 
   return { stayActive }
 }

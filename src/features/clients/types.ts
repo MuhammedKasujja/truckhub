@@ -10,6 +10,13 @@ export type ClientContact = {
   is_primary?: boolean
 }
 
+export type FinancialSummary = {
+  total_paid: string
+  balance: string
+  credit_available: string
+  amount_due: string
+}
+
 export type Client = {
   id: EntityId
   number: string
@@ -24,11 +31,12 @@ export type Client = {
   has_pricing: boolean
   contacts: ClientContact[]
   client_type: ClientType
+  financial_summary: FinancialSummary | null
 }
 
 export type Customer = Client
 
-export interface ClientsDataTableRowAction extends DataTableRowAction<
+export interface ClientsTableRowAction extends DataTableRowAction<
   Client,
   "update" | "delete" | "view"
 > {}

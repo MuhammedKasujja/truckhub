@@ -1,5 +1,7 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { PageHeader, PageTitle } from "@/components/page-header"
 import { ClientForm } from "@/features/clients/components"
+import { useEditClient } from "@/features/clients/hooks/use-client"
 import { clientEditQueryOptions } from "@/features/clients/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requirePermission } from "@/lib/auth"
@@ -17,6 +19,21 @@ export const Route = createFileRoute("/_admin/clients/$clientId/edit")({
 
 function RouteComponent() {
   const { data, error } = Route.useLoaderData()
+  const { clientId } = Route.useParams()
   useFetchEror(error)
-  return <ClientForm initialData={data} />
+  const { editClient } = useEditClient()
+  return (
+    <>
+      <PageHeader>
+        <PageTitle>Edit Client</PageTitle>
+      </PageHeader>
+      <ClientForm
+        mode="edit"
+        defaultValues={{ ...data, id: clientId }}
+        onSubmit={(data) => {
+          editClient({ ...data, id: clientId })
+        }}
+      />
+    </>
+  )
 }

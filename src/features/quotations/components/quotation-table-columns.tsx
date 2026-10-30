@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Quotation } from "../types"
 import { TFunction } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDateTime, formatMoney } from "@/lib/format"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
 import { QuotationTableActions } from "./quotation-table-actions"
@@ -22,7 +22,7 @@ export function getQuotationTableColumns({
     },
     {
       accessorKey: "number",
-      header: tr("quotation_number"),
+      header: tr("quotations.quotationNumber"),
       cell: ({ row }) => {
         return (
           <Link
@@ -36,15 +36,19 @@ export function getQuotationTableColumns({
     },
     {
       accessorKey: "client",
-      header: tr("client"),
+      header: tr("common.client"),
       cell: ({ row }) => {
+        const client = row.original.client
         return (
+          <>
           <Link
             to="/clients/$clientId/view"
-            params={{ clientId: row.original.client.id }}
+            params={{ clientId: client.id }}
           >
-            {row.original.client.name}
+            {client.name}
           </Link>
+          <p className="text-muted-foreground text-xs">{client.phone}</p>
+          </>
         )
       },
     },
@@ -52,28 +56,28 @@ export function getQuotationTableColumns({
       accessorKey: "amount",
       header: tr("common.form.amount"),
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.amount)}</p>
-      },
-    },
-    {
-      accessorKey: "status",
-      header: tr("status"),
-      cell: ({ row }) => {
-        return <Badge variant={"outline"}>{row.original.status}</Badge>
+        return <p>{formatMoney(row.original.current_version.total_amount)}</p>
       },
     },
     {
       id: "revesions",
-      header: "Revisions",
+      header: tr("quotations.revisions"),
       cell: ({ row }) => {
-        return <p>{row.original.versions.length}</p>
+        return <p className="text-center w-20">{row.original.current_version.version_number}</p>
+      },
+    },
+    {
+      accessorKey: "status",
+      header: tr("common.status"),
+      cell: ({ row }) => {
+        return <div><Badge variant={"outline"}>{row.original.status}</Badge></div>
       },
     },
     {
       accessorKey: "created_at",
-      header: "Created",
+      header: tr("common.createdAt"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
   ]

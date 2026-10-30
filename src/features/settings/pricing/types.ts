@@ -2,8 +2,8 @@ import { EntityId } from "@/schemas"
 
 export type TonnagePricing = {
   id: EntityId
-  min_tons: string | number
-  max_tons: string | number
+  min_tons: string
+  max_tons: string
   price: string
 }
 
@@ -16,9 +16,9 @@ export type RoutePricing = {
   route_id: EntityId
   origin: string
   destination: string
-  distance_km: string | number
-  min_hrs: string | number
-  max_hrs: string | number
+  distance_km: string
+  min_hrs: string
+  max_hrs: string
   pricings: TonnagePricing[]
 }
 
@@ -29,9 +29,8 @@ export type RoutePricingResponse = {
 }
 
 type IslandPricingDto = {
-  name: string
-  locations: string[]
-  price: number | string
+  island_id: EntityId
+  price: string
 }
 
 export type IslandPricingCreateDto = {
@@ -39,13 +38,20 @@ export type IslandPricingCreateDto = {
   valid_from: string | Date
 }
 
-export type IslandPricingResponse = {
+export type IslandPricingItem = {
+  id: EntityId
+  island_id: string
   name: string
   locations: string[]
-  general_price: number | string
+  general_price: string
 }
 
-export type DistanceTonnagePricingResponse = {
+export type IslandPricingResponse = {
+  effective_date: string
+  pricings: IslandPricingItem[]
+}
+
+export type DistanceTonnagePricingItem = {
   id: EntityId
   distance_min_km: number
   distance_max_km: number | null
@@ -55,3 +61,53 @@ export type DistanceTonnagePricingResponse = {
   min_price: string
   max_price: string
 }
+
+export type DistanceTonnagePricingResponse = {
+  effective_date: string
+  pricings: DistanceTonnagePricingItem[]
+}
+
+export type LoadingOffloadingPricingItem = {
+  id: EntityId
+  tonnage_min: string
+  tonnage_max: string
+  cbm_min: string
+  cbm_max: string
+  loading_fees: string
+  offloading_fees: string
+}
+
+export type LoadingOffloadingPricingResponse = {
+  effective_date: string
+  pricings: LoadingOffloadingPricingItem[]
+}
+
+export type LoadingOffloadingPricingSnapshot = LoadingOffloadingPricingResponse
+
+export type PricingDates = {
+  dates: string[]
+  active_date: string | undefined
+}
+
+export type CompanyPricingDates = {
+  route_tonnage: PricingDates
+  island: PricingDates
+  distance_tonnage: PricingDates
+  loading_offloading: PricingDates
+}
+
+export type CompanyPricingType = keyof CompanyPricingDates
+
+export const COMPANY_PRICING_TYPES = [
+  "route",
+  "island",
+  "distance",
+  "loading",
+] as const
+
+export type ClientPricingDates = {
+  routes: PricingDates
+  loading: PricingDates
+}
+
+export type ClientPricingTypes = keyof ClientPricingDates

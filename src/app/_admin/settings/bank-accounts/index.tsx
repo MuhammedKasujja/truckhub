@@ -1,0 +1,86 @@
+import { ActionIcon, ModuleIcon } from "@/components/icons"
+import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import { Button } from "@/components/ui/button"
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty"
+import {
+  BankAccountForm,
+  BankAccountList,
+  BankDetailsForm,
+} from "@/features/settings/bank-accounts/components"
+import { bankAccountsListQueryOptions } from "@/features/settings/bank-accounts/query-options"
+import { IconCloud } from "@tabler/icons-react"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
+import React from "react"
+
+export const Route = createFileRoute("/_admin/settings/bank-accounts/")({
+  component: RouteComponent,
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(bankAccountsListQueryOptions()),
+})
+
+function RouteComponent() {
+  const { data } = useSuspenseQuery(bankAccountsListQueryOptions())
+  const [open, setOpen] = React.useState<"bank" | "account">()
+
+  return (
+    <div className="space-y-5">
+      <PageHeader>
+        <PageTitle>Bank Accounts</PageTitle>
+        <PageAction className="space-x-2">
+          <Button variant="outline" size="sm" onClick={() => setOpen("bank")}>
+            <ActionIcon action="create" />
+            Bank
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setOpen("account")}
+          >
+            <ActionIcon action="create" />
+            Add Account
+          </Button>
+        </PageAction>
+      </PageHeader>
+      {data.length === 0 && (
+        <Empty className="h-100 border border-dashed">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <IconCloud />
+            </EmptyMedia>
+            <EmptyTitle>No Active Bank Account</EmptyTitle>
+            <EmptyDescription>
+              Set default active bank account for payments.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setOpen("account")}
+            >
+              <ModuleIcon module="Settings" />
+              Configure Account
+            </Button>
+          </EmptyContent>
+        </Empty>
+      )}
+      <BankAccountForm
+        open={open == "account"}
+        onOpenChange={() => setOpen(undefined)}
+      />
+      <BankDetailsForm
+        open={open == "bank"}
+        onOpenChange={() => setOpen(undefined)}
+      />
+      <BankAccountList accounts={data} />
+    </div>
+  )
+}

@@ -8,9 +8,23 @@ import {
 import { FieldValues } from "react-hook-form"
 import { EntityPickerProps } from "@/common/types"
 import { Invoice } from "../types"
-import { invoiceListSearchQueryOptions } from "../query-options"
+import { invoiceDetailsQueryOptions, invoiceListSearchQueryOptions } from "../query-options"
+import { createEntityPicker } from "@/components/entity-picker"
+import { InvoiceListSearchParams } from "../schemas"
 
-export function InvoicePicker({
+export const { Picker: InvoicePicker, PickerField: InvoicePickerField } =
+  createEntityPicker<Invoice, InvoiceListSearchParams>({
+    mode: "remote",
+    entityName: "invoice",
+    listQueryOptions: invoiceListSearchQueryOptions,
+    detailQueryOptions: invoiceDetailsQueryOptions,
+    defaultSearchParams: { search: "", perPage: 20, page: 1, sort:[] },
+    getOptionValue: (v) => v.id,
+    renderOption: (v) => v.number,
+    label: "Invoice",
+  })
+
+export function InvoicePickerOld({
   value,
   id,
   remote,
@@ -38,7 +52,7 @@ export function InvoicePicker({
   )
 }
 
-export function InvoicePickerField<TFieldValues extends FieldValues>({
+export function InvoicePickerFieldOld<TFieldValues extends FieldValues>({
   name,
   onSelected,
   label,

@@ -3,7 +3,9 @@ import { ChangePasswordForm } from "@/features/auth/components"
 import { PasswordStrengthChecker } from "@/features/auth/components/password-checker"
 import { UserProfileView } from "@/features/users/components"
 import { userProfileQueryOptions } from "@/features/users/query-options"
+import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requireAuth } from "@/lib/auth"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import { ShieldIcon, UserIcon } from "lucide-react"
 
@@ -15,8 +17,10 @@ export const Route = createFileRoute("/_admin/settings/user-profile/")({
 })
 
 function RouteComponent() {
-  const { data: user, error } = Route.useLoaderData()
-  if (!user) {
+  const { data: user, error } = useSuspenseQuery(userProfileQueryOptions())
+
+  useFetchEror(error)
+  if (!user.data) {
     return <div>Failed to load user profile {error?.message}</div>
   }
   return (
@@ -32,11 +36,11 @@ function RouteComponent() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="profile">
-        <UserProfileView user={user} />
+        <UserProfileView user={user.data} />
       </TabsContent>
       <TabsContent value="change-password">
         <ChangePasswordForm />
-        <PasswordStrengthChecker/>
+        <PasswordStrengthChecker />
       </TabsContent>
     </Tabs>
   )

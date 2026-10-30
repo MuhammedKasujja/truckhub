@@ -1,16 +1,31 @@
-import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
-import { formatDateTime } from "@/lib/format"
-import { deleteVehicleFn } from "@/features/vehicles/services"
 import { Vehicle } from "@/features/vehicles/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
+import { VehicleStatusIndicator } from "./vehicle-status-indicator"
+import { vehicleStatuses } from "../enums"
+import {
+  type VehicleRowAction,
+  VehicleTableActions,
+} from "./vehicle-table-actions"
 
-export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
+type Props = {
+  setRowAction: VehicleRowAction
+}
+
+export function getVehicleTableColumns({
+  setRowAction,
+}: Props): ColumnDef<Vehicle>[] {
   return [
+    {
+      id: "left-actions",
+      size: 20,
+      maxSize: 16,
+      cell: ({ row }) => (
+        <VehicleTableActions vehicleRow={{ row }} setRowAction={setRowAction} />
+      ),
+    },
     {
       accessorKey: "number",
       header: "ID",
@@ -30,10 +45,20 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       },
     },
     {
-      accessorKey: "plate_number",
-      header: "License",
+      id: "model",
+      header: "Make/Model",
       cell: ({ row }) => {
-        return <>{row.original.plate_number}</>
+        const vehicle = row.original
+        return (
+          <div className="space-y-1">
+            <div>
+              {vehicle.car_model.car_brand.name}/{vehicle.car_model.name}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {vehicle.plate_number}
+            </div>
+          </div>
+        )
       },
     },
     {
@@ -59,11 +84,21 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
       },
     },
     {
-      accessorKey: "year",
-      header: "Year",
+      id: "status",
+      accessorKey: "status",
+      header: "Status",
       cell: ({ row }) => {
-        return <p>{row.original.year}</p>
+        return <VehicleStatusIndicator status={row.original.status} />
       },
+      meta: {
+        label: "Status",
+        variant: "select",
+        options: vehicleStatuses.map((status) => ({
+          label: status,
+          value: `${status}`,
+        })),
+      },
+      enableColumnFilter: true,
     },
     {
       id: "driver",
@@ -83,63 +118,6 @@ export function getVehicleTableColumns(): ColumnDef<Vehicle>[] {
               </Link>
             </Button>
           </Can>
-        )
-      },
-    },
-    {
-      accessorKey: "created_at",
-      header: "Date",
-      cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
-      },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const vehicle = row.original
-        return (
-          <div className="flex gap-2">
-            <Can permission={"vehicles:view"}>
-              <Button variant={"outline"} size={"icon"}>
-                <Link
-                  to={`/vehicles/$vehicleId/view`}
-                  params={{ vehicleId: vehicle.id }}
-                >
-                  <EyeIcon />
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"vehicles:edit"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link
-                  to={`/vehicles/$vehicleId/edit`}
-                  params={{ vehicleId: vehicle.id }}
-                >
-                  <EditIcon />
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"vehicles:delete"}>
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  const { isSuccess, error, message } = await deleteVehicleFn({
-                    data: { id: vehicle.id },
-                  })
-                  if (isSuccess) {
-                    toast.success(message)
-                    return { error: false }
-                  } else {
-                    return { error: true, message: error?.message }
-                  }
-                }}
-              >
-                <Trash2Icon />
-              </ActionButton>
-            </Can>
-          </div>
         )
       },
     },

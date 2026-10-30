@@ -50,6 +50,10 @@ export interface AutoCompleteProps<T> {
    *  purely a UI hook for the caller to react to (e.g. navigate to a create page). */
   onCreateNew?: (search: string) => void
   createNewLabel?: (search: string) => React.ReactNode
+
+  /** true while a string `value` is being resolved to a full object — shows a spinner
+   *  in the trigger instead of falling back to raw text. */
+  triggerLoading?: boolean
 }
 
 export function AutoComplete<T>({
@@ -70,11 +74,12 @@ export function AutoComplete<T>({
   disabled,
   clearable = true,
   noResultsMessage,
+  triggerLoading,
 
   onCreateNew,
   createNewLabel,
   className,
-  searchPlaceholder
+  searchPlaceholder,
 }: AutoCompleteProps<T>) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
@@ -142,7 +147,7 @@ export function AutoComplete<T>({
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder={ searchPlaceholder??`Search...`}
+            placeholder={searchPlaceholder ?? `Search...`}
             value={search}
             onValueChange={(val) => {
               setSearch(val)
@@ -150,7 +155,10 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList>
+          <CommandList
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />

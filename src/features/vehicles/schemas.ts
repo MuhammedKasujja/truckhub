@@ -1,20 +1,25 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
-import { DefaultSearchParamsSchema } from "@/common/schemas"
-import { EngineTypes, Gearboxes, Vehicle } from "@/features/vehicles/types"
+import { vehicleStatuses } from "./enums"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import { DefaultSearchParamsSchema, plateNumberSchema } from "@/common/schemas"
+import {
+  Vehicle,
+  EngineTypes,
+  vehicleTransmissionList,
+} from "@/features/vehicles/types"
 
 export const VehicleCreateSchema = z.object({
-  plate_number: z.string(),
+  plate_number: plateNumberSchema,
   color: z.string("Exteria color is needed"),
   interior_color: z.string().optional().nullable(),
-  cylinders: z.string(),
-  tank_capacity: z.number(),
-  fuel_consumption_rate: z.number(),
-  engine_type: z.enum(EngineTypes),
-  gearbox: z.enum(Gearboxes),
+  cylinders: z.string("Required"),
+  tank_capacity: z.number("Required"),
+  fuel_consumption_rate: z.number("Required"),
+  engine_type: z.enum(EngineTypes, "Required"),
+  gearbox: z.enum(vehicleTransmissionList, "Required"),
   // year: z.number().min(2010).max((new Date()).getFullYear()),
-  year: z.string(),
+  year: z.string("Required"),
   seats: z.number().optional().nullable(),
   total_axles: z.string().optional().nullable(),
   vehicle_category_id: IDSchema,
@@ -37,11 +42,18 @@ export type VehicleCreateSchemaType = z.infer<typeof VehicleCreateSchema>
 export type VehicleUpdateSchemaType = z.infer<typeof VehicleUpdateSchema>
 
 export const VehicleSearchParamsCache = z.object({
-  sort: getSortingStateSchema<Vehicle>().default([
-    { id: "created_at", desc: true },
-  ]),
-  // advanced filter
-  filters: getFiltersStateSchema().optional(),
+  sort: getSortingStateSchema<Vehicle>()
+    .default([{ id: "created_at", desc: true }])
+    .optional(),
+  status: z.enum(vehicleStatuses).optional(),
+  brand_id: IDSchema.nullable().optional(),
+  model_id: IDSchema.nullable().optional(),
+  category_id: IDSchema.nullable().optional(),
+  tonnage: z.string().nullable().optional(),
+  engine_type: z.enum(EngineTypes).nullable().optional(),
+  gearbox: z.enum(vehicleTransmissionList).nullable().optional(),
+  consumption_rate: z.string().nullable().optional(),
+  filters: getFiltersStateSchema().nullable().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

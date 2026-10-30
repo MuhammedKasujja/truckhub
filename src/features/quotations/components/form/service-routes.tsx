@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/item"
 import { useBookingRoutes } from "@/features/settings/booking-routes/hooks/use-booking-routes"
 import { EntityId } from "@/schemas"
-import { RouteServiceInput } from "../../schemas"
+import { RouteServiceInput } from "@/features/quotations/schemas"
 import { useMemo, useState } from "react"
 import {
   InputGroup,

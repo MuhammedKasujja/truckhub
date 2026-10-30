@@ -10,6 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useState } from "react"
+import { useInvoiceStatistics } from "../hooks/use-invoice-statistics"
+import { DateRange } from "react-day-picker"
 
 const DATE_FILTERS = [
   { value: "today", label: "Today" },
@@ -33,10 +35,15 @@ const EXPORT_TYPES = [
 export function InvoiceTableFilter() {
   const [type, setType] = useState("last7")
   const [exportType, setExportType] = useState("")
+  const { data: statistics } = useInvoiceStatistics()
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: new Date(),
+    to: new Date(),
+  })
   return (
-    <div className="flex flex-row justify-between gap-4">
+    <div className="flex w-full flex-row justify-between gap-4">
       <div className="flex flex-row gap-2">
-        <ButtonGroup>
+        {/* <ButtonGroup>
           <Select value={type} onValueChange={setType}>
             <SelectTrigger>
               <SelectValue />
@@ -50,48 +57,57 @@ export function InvoiceTableFilter() {
             </SelectContent>
           </Select>
           <CalendarDatePicker
-            date={{
-              from: new Date(),
-              // to: dates.to,
-            }}
-            onDateSelect={({}) => {}}
+            date={range}
+            onDateSelect={(value) => setRange(value as DateRange)}
             // className={`w-fit cursor-pointer ${getInputSizeClass(config.size)}`}
             className={`w-fit cursor-pointer`}
             variant="outline"
+            numberOfMonths={2}
           />
-        </ButtonGroup>
+        </ButtonGroup> */}
         <ButtonGroup>
           <Button variant="outline" className="text-xs">
-            All <span className="text-muted-foreground">100</span>
+            All{" "}
+            <span className="text-muted-foreground">{statistics?.total}</span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Draft <span className="text-muted-foreground">25</span>
+            Draft{" "}
+            <span className="text-muted-foreground">{statistics?.drafts}</span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Outstanding <span className="text-muted-foreground">5</span>
+            Outstanding{" "}
+            <span className="text-muted-foreground">
+              {statistics?.outstanding}
+            </span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Past Due <span className="text-muted-foreground">10</span>
+            Past Due{" "}
+            <span className="text-muted-foreground">
+              {statistics?.past_due}
+            </span>
           </Button>
           <Button variant="outline" className="text-xs">
-            Paid <span className="text-muted-foreground">40</span>
+            Paid{" "}
+            <span className="text-muted-foreground">{statistics?.paid}</span>
           </Button>
         </ButtonGroup>
       </div>
-      <Field className="max-w-30">
-        <Select value={exportType} onValueChange={setExportType}>
-          <SelectTrigger>
-            <SelectValue placeholder={"Export"} />
-          </SelectTrigger>
-          <SelectContent>
-            {EXPORT_TYPES.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                <span className="text-xs">{o.label}</span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+      {/* <Field className="w-full" orientation={"horizontal"}>
+        <div className="max-w-30">
+          <Select value={exportType} onValueChange={setExportType}>
+            <SelectTrigger>
+              <SelectValue placeholder={"Export"} />
+            </SelectTrigger>
+            <SelectContent>
+              {EXPORT_TYPES.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  <span className="text-xs">{o.label}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </Field> */}
     </div>
   )
 }

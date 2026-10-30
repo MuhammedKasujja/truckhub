@@ -1,5 +1,3 @@
-"use client"
-
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -12,13 +10,10 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { clientsQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { useTranslation } from "@/i18n"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { ClientsTableRowAction } from "../types"
+import { Can } from "@/components/has-permission"
+import { ConfirmDialog } from "@/components/confirm-dialog"
+import { useDeleteClient } from "../hooks/use-client"
 
 export function CustomerTable() {
   // const [{ data, error, pagination }] = React.use(props.promises);
@@ -29,10 +24,17 @@ export function CustomerTable() {
     clientsQueryOptions(search)
   )
   const tr = useTranslation()
-  const columns = useMemo(() => getClientsTableColumns(tr), [tr])
+  const [rowAction, setRowAction] = useState<ClientsTableRowAction | null>(null)
+
+  const columns = useMemo(
+    () => getClientsTableColumns({ tr, setRowAction }),
+    [tr, setRowAction]
+  )
   const { data, pagination } = response
 
   useFetchEror(error)
+
+  const { deleteClient, isPending } = useDeleteClient()
 
   const { table } = useDataTable({
     data,
@@ -71,6 +73,15 @@ export function CustomerTable() {
           <DataTableSortList table={table} align="end" />
         </DataTableToolbar>
       </DataTable>
+      <Can permission="clients:delete">
+        <ConfirmDialog
+          key={rowAction?.row.original.id}
+          open={rowAction?.variant === "delete"}
+          onOpenChange={() => setRowAction(null)}
+          isLoading={isPending}
+          onConfirm={() => deleteClient(rowAction!.row.original.id)}
+        />
+      </Can>
     </>
   )
 }

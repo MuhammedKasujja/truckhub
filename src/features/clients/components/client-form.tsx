@@ -4,67 +4,59 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Field, FieldGroup } from "@/components/ui/field"
 import {
   EmailField,
+  TelephoneField,
   TextField,
+  TinNumberField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
-  CustomerCreateSchema,
-  CustomerUpdateSchema,
+  ClientCreateInput,
+  ClientCreateSchema,
+  ClientUpdateInput,
+  ClientUpdateSchema,
 } from "@/features/clients/schemas"
-import { createClientFn, updateClientFn } from "@/features/clients/services"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { toast } from "sonner"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { UserPickerField } from "@/features/users/components/user-picker"
+import { BaseFormProps } from "@/common/types"
 
-type ClientFormProps = {
-  initialData?: z.infer<typeof CustomerUpdateSchema>
-}
+type ClientFormProps = BaseFormProps<ClientCreateInput, ClientUpdateInput>
 
-export function ClientForm({ initialData }: ClientFormProps) {
+export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
   const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
 
-  const isEdit = !!initialData
+  const isEdit = mode === "edit"
 
-  const formSchema = isEdit ? CustomerUpdateSchema : CustomerCreateSchema
+  const formSchema = isEdit ? ClientUpdateSchema : ClientCreateSchema
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  type Values = z.infer<typeof formSchema>
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: defaultValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateClientFn({ data: values })
-        : createClientFn({ data: values })
-
-    const { isSuccess, error, message } = await promise
-    if (isSuccess) {
-      toast.success(message)
-      queryInvalidator.clients.list.invalidate()
+  async function handleSubmit(values: Values) {
+    if (mode === "edit") {
+      onSubmit(ClientUpdateSchema.parse(values))
     } else {
-      toast.error(error?.message)
+      onSubmit(ClientCreateSchema.parse(values))
     }
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{isEdit ? "Edit Client details" : "New Client"}</CardTitle>
         <CardDescription>Create new client</CardDescription>
       </CardHeader>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
           console.log(errors)
         })}
       >
@@ -84,18 +76,16 @@ export function ClientForm({ initialData }: ClientFormProps) {
               />
             </Field>
             <Field orientation={"horizontal"} className="gap-4">
-              <TextField
+              <TelephoneField
                 label={tr("common.form.phone")}
                 name={"phone"}
                 control={form.control}
-                required={false}
               />
             </Field>
-            <TextField
+            <TinNumberField
               label={"Tin Number"}
               name={"tin_number"}
               control={form.control}
-              required={false}
             />
             <TextField
               label={"Address"}
@@ -103,6 +93,20 @@ export function ClientForm({ initialData }: ClientFormProps) {
               control={form.control}
               required={false}
             />
+            <Field orientation={"horizontal"} className="w-full">
+              <TextField
+                label={"City"}
+                name={"city"}
+                control={form.control}
+                required={false}
+              />
+              <TextField
+                label={"Country"}
+                name={"country"}
+                control={form.control}
+                required={false}
+              />
+            </Field>
             <EmailField
               label={tr("common.form.email")}
               name={"email"}

@@ -213,4 +213,4 @@ export const VEHICLE_START_DATE = 2000
 /**
  * Allowed vehicle input end dates
  */
-export const VEHICLE_END_DATE = 2025
+export const VEHICLE_END_DATE = (new Date()).getFullYear()

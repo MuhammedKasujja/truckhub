@@ -4,18 +4,18 @@ import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
 import {
   EndShipmentInput,
-  FinishShipmentInput,
   DispatchShipmentInput,
   ShipmentSearchParamsInput,
   AssignShipmentDriverInput,
+  RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
+  ChangeShipmentVehicleInput,
 } from "../schemas"
 
 const endpoint = "/v1/trips"
 
 export async function getShipments(input: ShipmentSearchParamsInput) {
   const params = generateApiSearchParams(input)
-  console.log("params", params)
   const response = await apiClient.getPaginatedFn<Shipment[]>(
     `${endpoint}?${params}`
   )
@@ -34,23 +34,27 @@ export async function getShipmentById(unitId: EntityId) {
 export async function dispatchShipment(data: DispatchShipmentInput) {
   return await apiClient.postFn<Shipment>(
     `${endpoint}/${data.unitId}/dispatch`,
-    { start_mileage: data.startMileage }
+    { start_mileage: data.startMileage, contact_name: data.contactName }
   )
 }
 
 export async function endShipment(data: EndShipmentInput) {
-  return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/end`, {
-    end_mileage: data.endMileage,
-  })
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${data.unitId}/complete`,
+    {
+      end_mileage: data.endMileage,
+      ended_at: data.endedAt,
+    }
+  )
 }
 
-export async function finishShipment(data: FinishShipmentInput) {
+export async function recordShipmentDetails(data: RecordShipmentDetailsInput) {
   const { unitId, consumedFuelRates, notes, endMileage } = data
   const fuelRates = consumedFuelRates
     .filter((r) => r.value)
     .map((rate) => rate.value)
 
-  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/complete`, {
+  return await apiClient.postFn<Shipment>(`${endpoint}/${unitId}/details`, {
     notes,
     end_mileage: endMileage,
     consumed_fuel_rates: fuelRates,
@@ -59,8 +63,16 @@ export async function finishShipment(data: FinishShipmentInput) {
 
 export async function shipmentAssignVehicle(data: AssignShipmentVehicleInput) {
   return await apiClient.postFn<Shipment>(
-    `${endpoint}/${data.unitId}/vehicle`,
+    `${endpoint}/${data.unitId}/vehicle/assign`,
     { vehicle_id: data.vehicleId }
+  )
+}
+
+export async function changeShipmentVehicle(data: ChangeShipmentVehicleInput) {
+  const { unitId, reason, newVehicleId, note } = data
+  return await apiClient.postFn<Shipment>(
+    `${endpoint}/${unitId}/vehicle/reassign`,
+    { new_vehicle_id: newVehicleId, reason, note }
   )
 }
 

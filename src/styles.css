@@ -55,6 +55,8 @@
   --color-info-foreground: var(--info-foreground);
   --color-info: var(--info);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-invert-foreground: var(--invert-foreground);
+  --color-invert: var(--invert);
 }
 
 :root {
@@ -99,7 +101,7 @@
   --success: oklch(0.696 0.17 162.48);                   /* emerald-500 */
   --success-foreground: oklch(0.508 0.118 165.612);      /* emerald-700 */
   --warning: oklch(0.769 0.188 70.08);                   /* amber-500 */
-  --warning-foreground: oklch(0.555 0.163 48.998);       /* amber-700 */
+  --warning-foreground: oklch(0.555 0.163 48.998);       /* amber-700 */       --invert: var(--color-zinc-900);       --invert-foreground: var(--color-zinc-50);
 }
 
 .dark {
@@ -142,7 +144,7 @@
   --success: oklch(0.696 0.17 162.48);                    /* emerald-500 */
   --success-foreground: oklch(0.765 0.177 163.223);       /* emerald-400 */
   --warning: oklch(0.769 0.188 70.08);                    /* amber-500 */
-  --warning-foreground: oklch(0.828 0.189 84.429);        /* amber-400 */
+  --warning-foreground: oklch(0.828 0.189 84.429);        /* amber-400 */        --invert: var(--color-zinc-700);        --invert-foreground: var(--color-zinc-50);
 }
 
 @layer base {

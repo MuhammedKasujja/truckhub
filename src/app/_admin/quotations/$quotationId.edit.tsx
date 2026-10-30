@@ -5,15 +5,19 @@ import { QuotationForm } from "@/features/quotations/components"
 import { getEditableQuotation } from "@/features/quotations/utils"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
 import { IDSchema } from "@/schemas"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import z from "zod"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { useEditQuotation } from "@/features/quotations/hooks/use-edit-quotation"
+import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
+import { requirePermission } from "@/lib/auth"
+import { SubmitButton } from "@/components/ui/submit-button"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  beforeLoad: () => requirePermission("quotations:edit"),
   validateSearch: z.object({
     clientId: IDSchema.optional(),
   }),
@@ -26,9 +30,10 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
 
 function RouteComponent() {
   const { quotationId } = Route.useParams()
-  const { data: quotation } = Route.useLoaderData()
+  const { data: quotation } = useQuotaionDetailsSuspenseQuery(quotationId)
   const back = useBackNavigation()
-  const { editQuotation } = useEditQuotation()
+  const { editQuotation, isPending } = useEditQuotation()
+  const navigate = useNavigate()
 
   return (
     <div>
@@ -38,17 +43,32 @@ function RouteComponent() {
           <Badge variant={"outline"}>v{quotation.versions.length}</Badge>
         </PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"} onClick={back}>
+          <Button type="button" variant={"outline"} onClick={back}>
             Cancel
           </Button>
-          <Button type="submit" form="form-quotation">
-            Submit
-          </Button>
+          <SubmitButton
+            type="submit"
+            isSubmitting={isPending}
+            text="Save Quotation"
+            form="form-quotation"
+          />
         </PageAction>
       </PageHeader>
       <QuotationForm
         initialData={getEditableQuotation(quotation)}
-        onSubmit={(data) => editQuotation({ ...data, quotationId })}
+        onSubmit={(data) =>
+          editQuotation(
+            { ...data, quotationId },
+            {
+              onSuccess: () => {
+                navigate({
+                  to: "/quotations/$quotationId/view",
+                  params: { quotationId },
+                })
+              },
+            }
+          )
+        }
       />
     </div>
   )

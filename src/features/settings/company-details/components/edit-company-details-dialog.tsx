@@ -5,51 +5,53 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Field, FieldGroup } from "@/components/ui/field"
-import { TextField } from "@/components/ui/form-fields"
+import {
+  EmailField,
+  TelephoneField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { useForm } from "react-hook-form"
-import { Company, CompanySchema } from "../../schemas"
+import { Company, CompanySchema } from "@/features/settings/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
-import { Button } from "@/components/ui/button"
-import { Edit } from "lucide-react"
-import { updateCompanyDetailsFn } from "../services"
-import { toast } from "sonner"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { useEditCompanyDetails } from "@/features/settings/hooks/use-settings"
 
 type EditCompanyDetailsDialogProps = {
   company: Company
+  isOpen: boolean
+  onOpenChanged: (open: boolean) => void
 }
 
 export function EditCompanyDetailsDialog({
   company,
+  isOpen,
+  onOpenChanged,
 }: EditCompanyDetailsDialogProps) {
-  const invalidator = useQueryInvalidator()
+  const { editCompany } = useEditCompanyDetails()
+
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
-    defaultValues: { ...company },
+    defaultValues: {
+      ...company,
+      phone: company.phone ?? "",
+      phone_2: company.phone_2 ?? "",
+    },
   })
 
   async function onSubmit(data: z.infer<typeof CompanySchema>) {
-    const { message, error } = await updateCompanyDetailsFn({ data })
-    if (error) {
-      toast.error(error.message)
-      invalidator.settings.refresh()
-    } else {
-      toast.success(message)
-    }
+    editCompany(data, {
+      onSuccess: () => {
+        form.reset()
+        onOpenChanged(false)
+      },
+    })
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button type="button" size={"icon"}>
-          <Edit />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onOpenChanged}>
       <DialogContent className="max-w-[90%] ring-4 md:min-w-3xl">
         <DialogHeader>
           <DialogTitle>Edit Company Details</DialogTitle>
@@ -64,8 +66,27 @@ export function EditCompanyDetailsDialog({
               control={form.control}
               name="name"
             />
-            <TextField label="Phone" control={form.control} name="phone" />
-            <TextField label="Email" control={form.control} name="email" />
+            <Field orientation={"horizontal"} className="gap-4">
+              <TelephoneField
+                label="Phone"
+                control={form.control}
+                name="phone"
+              />
+              <TelephoneField
+                label="Phone 2"
+                control={form.control}
+                name="phone_2"
+              />
+            </Field>
+            <Field orientation={"horizontal"} className="gap-4">
+              <EmailField label="Email" control={form.control} name="email" />
+              <EmailField
+                label="Email 2"
+                control={form.control}
+                name="email_2"
+                required={false}
+              />
+            </Field>
             <TextField
               label="Address"
               control={form.control}

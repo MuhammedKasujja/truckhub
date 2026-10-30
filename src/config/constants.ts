@@ -15,7 +15,7 @@ export const PaymentModeList = [
   "cash",
   "mobile_money",
   "bank_transfer",
-  "paypal",
+  // "paypal",
   "credit_card",
 ] as const
 
@@ -24,13 +24,17 @@ export const PaymentStatuses = [
   "pending",
   "cancelled",
   "partially_refunded",
-  "refunded",
+  "reversed",
   "failed",
 ] as const // ["pending", "processing", "paid", "failed"]
 
 export const AuditLogSource = ["system", "user"] as const
 
 export const ClientTypeList = ["normal", "premium"] as const
+
+export const ClientTypeListOptions = [undefined, ...ClientTypeList].map(
+  (p) => ({ label: p ? p : "Select client", value: p })
+)
 
 export const VehicleCylinderList = [2, 4, 5, 6, 8]
 
@@ -48,3 +52,7 @@ export const MAP_TILE_URL =
 export const MAP_LIGHT_STYLE_URL = "https://tiles.openfreemap.org/styles/bright"
 
 export const MAP_DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"
+
+export const SUPPORTED_IMAGE_EXTENSIONS = ["image/jpeg", "image/png", "image/webp"];
+
+export const SUPPORTED_DOC_EXTENSIONS = ["application/pdf"]

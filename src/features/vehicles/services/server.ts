@@ -1,7 +1,5 @@
-"use server"
-
 import * as apiClient from "@/lib/api-client"
-import { Vehicle } from "@/features/vehicles/types"
+import { Vehicle, VehicleStatistics } from "@/features/vehicles/types"
 import {
   AssignDriverVehicleType,
   VehicleCreateSchemaType,
@@ -72,4 +70,8 @@ export async function vehicleUnAssignDriver(vehicleId: EntityId) {
     `${endpoint}/${vehicleId}/assignments/unassign`,
     {}
   )
+}
+
+export async function getVehicleStatistics() {
+  return await apiClient.getFn<VehicleStatistics>(`${endpoint}/statistics`)
 }

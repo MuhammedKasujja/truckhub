@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DriverPicker } from "@/features/drivers/components"
-import { Edit2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import React from "react"
 import { toast } from "sonner"
@@ -24,8 +23,8 @@ import { Field } from "@/components/ui/field"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { formatNumber } from "@/lib/format"
-import { Status, StatusLabel } from "@/components/ui/status"
-import { StatIndicator } from "@/components/ui/stat"
+import { VehicleStatusIndicator } from "./vehicle-status-indicator"
+import { ActionIcon } from "@/components/icons"
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
@@ -68,10 +67,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             <div>
               {vehicle.number} • {vehicle.plate_number}
             </div>
-            <Status>
-              <StatIndicator color={"success"}>•</StatIndicator>
-              <StatusLabel>{vehicle.status}</StatusLabel>
-            </Status>
+            <VehicleStatusIndicator status={vehicle.status}/>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -84,7 +80,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 to="/vehicles/$vehicleId/edit"
                 params={{ vehicleId: vehicle.id }}
               >
-                <Edit2Icon />
+                <ActionIcon action={"edit"} />
               </Link>
             </Button>
           </Can>
@@ -111,9 +107,9 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
 
         <Card>
           <CardContent className="space-y-2 p-4">
-            <p className="text-sm text-muted-foreground">Tank Capacity</p>
+            <p className="text-sm text-muted-foreground">Engine Capacity</p>
             <p className="text-2xl font-bold">
-              {formatNumber(vehicle.tank_capacity)} L
+              {formatNumber(vehicle.tank_capacity)} cc
             </p>
           </CardContent>
         </Card>
@@ -163,7 +159,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
 
               <DetailItem label="Year" value={vehicle.year} />
 
-              <DetailItem label="Gearbox" value={vehicle.gearbox} />
+              <DetailItem label="Transmission" value={vehicle.gearbox} />
 
               <DetailItem label="Engine Type" value={vehicle.engine_type} />
 

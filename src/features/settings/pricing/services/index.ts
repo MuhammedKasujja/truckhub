@@ -1,22 +1,34 @@
 import { createServerFn } from "@tanstack/react-start"
 import {
   getIslandsPricings,
+  getClientPricingDates,
+  getRouteTonnagePricing,
+  getCompanyPricingDates,
+  activateCompanyPricing,
   createBatchIslandPricing,
+  getActiveIslandsPricings,
   getDistanceTonnagePricing,
   createBatchLoadingPricing,
   getLoadingOffloadingFrees,
   createBatchDistancePricing,
+  getActiveRouteTonnagePricing,
   createBatchRouteTonnagePricing,
   updateBatchRouteTonnagePricing,
+  getActiveLoadingOffloadingFrees,
+  getCompanyActiveDistancePricing,
 } from "./server"
 import {
   IslandPricingRequest,
+  ActivatePricingSchema,
   IslandsListPricingSchema,
+  PricingSearchParamsCache,
   ListDistancePricingSchema,
   LoadingOffloadingPricingSchema,
+  ActivePricingSearchParamsCache,
   BatchPricingPayloadUpdateSchema,
 } from "../schemas"
-import { ApiError } from "@/types"
+import { EntityIdSchema } from "@/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn()
   .inputValidator(BatchPricingPayloadUpdateSchema)
@@ -33,20 +45,33 @@ export const createBatchRoutePricingFn = createServerFn()
 export const createBatchDistancePricingFn = createServerFn()
   .inputValidator(ListDistancePricingSchema)
   .handler(async ({ data }) => {
-    const result = await createBatchDistancePricing(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return await apiResponseTransform(createBatchDistancePricing(data))
   })
 
-export const getDistanceTonnagePricingFn = createServerFn().handler(
+export const getDistanceTonnagePricingFn = createServerFn()
+  .inputValidator(PricingSearchParamsCache)
+  .handler(async ({ data: req }) => {
+    const { data } = await apiResponseTransform(getDistanceTonnagePricing(req))
+    return data
+  })
+
+export const getCompanyActiveDistancePricingFn = createServerFn().handler(
+  () => {
+    return apiResponseTransform(getCompanyActiveDistancePricing())
+  }
+)
+
+export const getRouteTonnagePricingFn = createServerFn()
+  .inputValidator(PricingSearchParamsCache)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getRouteTonnagePricing(data))
+    return result.data
+  })
+
+export const getActiveRouteTonnagePricingFn = createServerFn().handler(
   async () => {
-    const result = await getDistanceTonnagePricing()
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data ??[], message: result.message }
+    const result = await apiResponseTransform(getActiveRouteTonnagePricing())
+    return result.data
   }
 )
 
@@ -56,35 +81,64 @@ export const createBatchLoadingPricingFn = createServerFn()
     return createBatchLoadingPricing(data)
   })
 
-export const getLoadingOffloadingFreesFn = createServerFn().handler(
-  async () => {
-    return getLoadingOffloadingFrees()
-  }
-)
+export const getLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(PricingSearchParamsCache)
+  .handler(async ({ data }) => {
+    return getLoadingOffloadingFrees(data)
+  })
+
+export const getActiveLoadingOffloadingFreesFn = createServerFn()
+  .inputValidator(ActivePricingSearchParamsCache)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(getActiveLoadingOffloadingFrees(data))
+  })
 
 export const createBatchIslandPricingsFn = createServerFn()
   .inputValidator(IslandsListPricingSchema)
   .handler(async ({ data }) => {
     const pricings = data.pricings.map((p) => ({
-      name: p.name,
+      island_id: p.island_id,
       price: p.priceRate,
-      locations: p.locations.map((l) => l.value),
     }))
-    return createBatchIslandPricing({
-      pricings,
-      valid_from: data.validFromDate.toISOString().split("T")[0],
-    })
+    return apiResponseTransform(
+      createBatchIslandPricing({
+        pricings,
+        valid_from: data.validFromDate,
+      })
+    )
   })
 
-export const getIslandPricingsFn = createServerFn().handler(async () => {
-  const { data } = await getIslandsPricings()
-  if (data) {
-    const pricings: IslandPricingRequest[] = data.map((p) => ({
-      name: p.name,
-      priceRate: Number(p.general_price),
-      locations: p.locations.map((l) => ({ value: l })),
-    }))
-    return pricings
+export const getIslandPricingsFn = createServerFn()
+  .inputValidator(PricingSearchParamsCache)
+  .handler(async ({ data }) => {
+    const response = await apiResponseTransform(getIslandsPricings(data))
+    return {
+      pricings: response?.data?.pricings ?? [],
+      validFromDate: response?.data?.effective_date,
+    }
+  })
+
+export const getActiveIslandPricingsFn = createServerFn().handler(
+  async () => {
+    const response = await apiResponseTransform(getActiveIslandsPricings())
+    return {
+      pricings: response?.data?.pricings ?? [],
+      validFromDate: response?.data?.effective_date,
+    }
   }
-  return undefined
-})
+)
+
+export const getCompanyPricingDatesFn = createServerFn().handler(
+  async () => await getCompanyPricingDates()
+)
+
+export const getClientPricingDatesFn = createServerFn()
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const response = await apiResponseTransform(getClientPricingDates(data.id))
+    return response.data
+  })
+
+export const activateCompanyPricingFn = createServerFn()
+  .inputValidator(ActivatePricingSchema)
+  .handler(({ data }) => apiResponseTransform(activateCompanyPricing(data)))

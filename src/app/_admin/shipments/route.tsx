@@ -20,16 +20,16 @@ import { useBackNavigation } from "@/hooks/use-back-navigation"
 
 const shipmentTabs = [
   {
-    name: "active",
-    route: ActiveShipmentsRoute.to,
+    name: "requests",
+    route: RequestedShipmentsRoute.to,
   },
   {
     name: "confirmed",
     route: ConfirmedShipmentsRoute.to,
   },
   {
-    name: "requests",
-    route: RequestedShipmentsRoute.to,
+    name: "inTransit",
+    route: ActiveShipmentsRoute.to,
   },
   {
     name: "completed",
@@ -39,7 +39,7 @@ const shipmentTabs = [
 
 export const Route = createFileRoute("/_admin/shipments")({
   component: RouteComponent,
-  beforeLoad: ()=> requirePermission("shipments:module")
+  beforeLoad: () => requirePermission("shipments:module"),
 })
 
 function RouteComponent() {
@@ -57,13 +57,17 @@ function RouteComponent() {
           <Button variant={"outline"} size={"sm"} onClick={handleBack}>
             Back
           </Button>
-          <Button variant={"outline"} size={"sm"}>
-            <CalendarIcon/>
-            Calendar
-          </Button>
+          <Can permission="rides:active">
+            <Button variant={"outline"} size={"sm"} asChild>
+              <Link to={"/calendar"}>
+                <CalendarIcon />
+                Calendar
+              </Link>
+            </Button>
+          </Can>
           <Can permission="rides:active">
             <Button size={"sm"} asChild>
-              <Link to={"/shipments/live"}>
+              <Link to={"/live-map"}>
                 <MapIcon />
                 Live Map
               </Link>

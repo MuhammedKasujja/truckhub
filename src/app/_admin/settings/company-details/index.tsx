@@ -11,6 +11,7 @@ import {
   EditQuotationTermsForm,
 } from "@/features/settings/_components"
 import { CompanyDetailsView } from "@/features/settings/company-details/components"
+import { useSettings } from "@/features/settings/hooks/use-settings"
 import { settingsQueryOptions } from "@/features/settings/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 import { SquareDotIcon } from "lucide-react"
@@ -22,22 +23,37 @@ function transformToTerms(terms?: string[] | null) {
 export const Route = createFileRoute("/_admin/settings/company-details/")({
   component: RouteComponent,
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(settingsQueryOptions()),
+    context.queryClient.prefetchQuery(settingsQueryOptions()),
 })
 
 function RouteComponent() {
-  const { data: settings } = Route.useLoaderData()
+  const { settings, error, isLoading } = useSettings()
 
-  if (!settings) {
-    return "Failed to load"
+  if (isLoading) {
+    return <div>Loading....</div>
+  }
+
+  if (error || !settings) {
+    return <div>Failed to load company details</div>
   }
 
   return (
     <div className="flex flex-col gap-5">
+      {/* for a rebuild when settings change */}
       <CompanyDetailsView company={settings?.company} />
       <Card>
         <CardHeader>
           <CardTitle>Invoice Terms</CardTitle>
+          <CardAction>
+            <Can permission="config:payment_terms:edit">
+              <EditInvoiceTermsForm
+                initialData={{
+                  invoiceTerms: transformToTerms(settings.invoice_terms),
+                  quotationTerms: transformToTerms(settings.quotation_terms),
+                }}
+              />
+            </Can>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -53,14 +69,6 @@ function RouteComponent() {
           </div>
         </CardContent>
       </Card>
-      <Can permission="config:payment_terms:edit">
-        <EditInvoiceTermsForm
-          initialData={{
-            invoiceTerms: transformToTerms(settings.invoice_terms),
-            quotationTerms: transformToTerms(settings.quotation_terms),
-          }}
-        />
-      </Can>
       <Card>
         <CardHeader>
           <CardTitle>Quotation Terms</CardTitle>

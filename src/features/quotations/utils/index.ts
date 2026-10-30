@@ -2,27 +2,27 @@ import { Quotation } from "../types"
 import { makeId } from "@/features/settings/pricing/utils/distance-tonnage-pricing-utils"
 import {
   LineItemResponse,
-  SmallLineItemRequest,
-  TruckLineItemRequest,
+  RouteLineItemRequest,
+  ServiceLineItemRequest,
   CreateQuotationRequest,
   DistanceLineItemRequest,
 } from "../schemas"
 
-export function generateEmptyLineItem() {
-  const emptyLineItem: SmallLineItemRequest = {
-    tempId: makeId("__car_line_item__"),
+export function generateServiceEmptyLineItem() {
+  const emptyLineItem: ServiceLineItemRequest = {
+    tempId: makeId("__service_line_item__"),
     is_round_trip: false,
     unit_price: null,
     subtotal: null,
     line_total: null,
-    locations: [],
+    route: { origin: "", destination: "", checkpoints: [] },
     vehicle_addons: [],
     item_type: "small",
     quantity: 1,
     discount: null,
-    car_brand_id: "",
     source: "service",
     car_model_id: "",
+    service_id: "",
     with_driver: false,
     estimated_consumption_rate_km: undefined,
     engine_mode: "wet",
@@ -30,17 +30,18 @@ export function generateEmptyLineItem() {
   return emptyLineItem
 }
 
-export function generateTruckEmptyLineItem() {
-  const emptyLineItem: TruckLineItemRequest = {
+export function generateRouteEmptyLineItem() {
+  const emptyLineItem: RouteLineItemRequest = {
     tempId: makeId("__route_line_item__"),
     is_round_trip: false,
     unit_price: null,
     subtotal: null,
     line_total: null,
-    locations: [],
+    route: { origin: "", destination: "", checkpoints: [] },
     item_type: "truck",
     source: "route",
     quantity: 1,
+    route_id: "",
     discount: null,
     with_driver: false,
     estimated_consumption_rate_km: 0,
@@ -58,7 +59,7 @@ export function generateDistanceEmptyLineItem() {
     unit_price: null,
     subtotal: null,
     line_total: null,
-    locations: [],
+    route: { origin: "", destination: "", checkpoints: [] },
     item_type: "truck",
     source: "distance",
     quantity: 1,
@@ -91,7 +92,10 @@ export function getEditableQuotation(quotation: Quotation) {
   return {
     client_id: quotation.client.id,
     line_items: validateLineItem(activeVersion.line_items),
-    tax_rates: activeVersion.tax_rates.map((tax)=>({...tax, rate: Number(tax.rate)})),
+    tax_rates: activeVersion.tax_rates.map((tax) => ({
+      ...tax,
+      rate: Number(tax.rate),
+    })),
     expiry_date: activeVersion.valid_until,
     start_date: activeVersion.start_date,
     end_date: activeVersion.end_date,

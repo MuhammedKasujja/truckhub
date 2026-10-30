@@ -1,12 +1,14 @@
 import { ApiError } from "@/types"
+import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 import { createInvoiceSchema, InvoiceSearchParams } from "../schemas"
 import {
   getInvoices,
   createInvoice,
+  getInvoicePdf,
+  sendInvoiceEmail,
   getInvoiceDetails,
-  getInvoicesByQuery,
+  getInvoiceStatistics,
 } from "./server"
 
 export const getInvoicesFn = createServerFn()
@@ -30,11 +32,13 @@ export const getInvoiceDetailsFn = createServerFn()
     return { data: result.data!, message: result.message }
   })
 
-export const getInvoicesByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
-  .handler(async ({ data }) => {
-    return getInvoicesByQuery(data)
-  })
+export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
+  const result = await getInvoiceStatistics()
+  if (result.error) {
+    throw new ApiError(result.error.message, 400)
+  }
+  return { data: result.data! }
+})
 
 export const createInvoiceFn = createServerFn()
   .inputValidator(createInvoiceSchema)
@@ -44,4 +48,33 @@ export const createInvoiceFn = createServerFn()
       throw new ApiError(result.error.message, 400)
     }
     return { data: result.data, message: result.message }
+  })
+
+export const sendInvoiceEmailFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await sendInvoiceEmail(data.id)
+    if (result.error) {
+      throw new ApiError(result.error.message, result.error.statusCode ?? 400)
+    }
+    return { data: result.data, message: result.message }
+  })
+
+export const getInvoicePdfFn = createServerFn({ method: "GET" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    try {
+      const response = await getInvoicePdf(data.id)
+
+      return new Response(response.data, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename=${data.id}-demo"}.pdf"`,
+        },
+      })
+    } catch (error: any) {
+      console.error("PDF generation error:", error?.response?.data || error)
+      throw new Error(`Failed to generate PDF: ${error.message}`)
+    }
   })

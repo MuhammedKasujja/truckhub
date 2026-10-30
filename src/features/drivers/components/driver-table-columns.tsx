@@ -4,17 +4,17 @@ import { formatDateTime } from "@/lib/format"
 import { deleteDriverFn } from "@/features/drivers/services"
 import { Driver } from "@/features/drivers/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { EditIcon, EyeIcon, Trash2Icon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Can } from "@/components/has-permission"
 import { TFunction } from "@/i18n"
+import { ActionIcon } from "@/components/icons"
 
 export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
   return [
     {
       accessorKey: "name",
-      header: tr('common.form.name'),
+      header: tr("common.form.name"),
       cell: ({ row }) => {
         return (
           <Button variant={"link"} asChild>
@@ -30,21 +30,21 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
     },
     {
       accessorKey: "email",
-      header: tr('common.form.name'),
+      header: tr("common.form.email"),
       cell: ({ row }) => {
         return <p>{row.original.email}</p>
       },
     },
     {
       accessorKey: "phone",
-      header: tr('common.form.phone'),
+      header: tr("common.form.phone"),
       cell: ({ row }) => {
         return <p>{row.original.phone}</p>
       },
     },
     {
       accessorKey: "created_at",
-      header: tr('common.form.date'),
+      header: tr("common.form.date"),
       cell: ({ row }) => {
         return <p>{formatDateTime(row.original.created_at)}</p>
       },
@@ -60,7 +60,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   to={`/drivers/$driverId/view`}
                   params={{ driverId: row.original.id }}
                 >
-                  <EyeIcon />
+                  <ActionIcon action="view" />
                 </Link>
               </Button>
             </Can>
@@ -70,7 +70,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   to={`/drivers/$driverId/edit`}
                   params={{ driverId: row.original.id }}
                 >
-                  <EditIcon />
+                  <ActionIcon action="edit" />
                 </Link>
               </Button>
             </Can>
@@ -91,7 +91,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
                   }
                 }}
               >
-                <Trash2Icon />
+                <ActionIcon action="delete" />
               </ActionButton>
             </Can>
           </div>

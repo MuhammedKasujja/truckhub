@@ -1,11 +1,11 @@
-import { en as rideEn } from "./modules/ride";
-import { en as usersEn } from "./modules/users";
-import { en as paymentEn } from "./modules/payments";
-import { en as serviceEn } from "./modules/services";
-import { en as bookingsEn } from "./modules/bookings";
-import { en as vehiclesEn } from "./modules/vehicles";
-import { en as settingsEn } from "./modules/settings";
-import { en as permissionsEn } from "./modules/permissions";
+import { en as rideEn } from "./modules/ride"
+import { en as usersEn } from "./modules/users"
+import { en as paymentEn } from "./modules/payments"
+import { en as serviceEn } from "./modules/services"
+import { en as bookingsEn } from "./modules/bookings"
+import { en as vehiclesEn } from "./modules/vehicles"
+import { en as settingsEn } from "./modules/settings"
+import { en as permissionsEn } from "./modules/permissions"
 
 const tripModuleTranslations = {
   new_trip: "New Ride request",
@@ -13,7 +13,7 @@ const tripModuleTranslations = {
   edit_trip: "Edit Ride",
   trip_created_successfully: "Ride created successfully",
   trip_updated_successfully: "Ride updated successfully",
-} as const;
+} as const
 
 const bookingModuleTranslations = {
   client: "Client",
@@ -22,7 +22,7 @@ const bookingModuleTranslations = {
   edit_booking: "Edit Booking",
   booking_created_successfully: "Booking created successfully",
   booking_updated_successfully: "Booking updated successfully",
-} as const;
+} as const
 
 const en = {
   app_name: "Truckhub",
@@ -41,6 +41,8 @@ const en = {
     drivers: "Drivers",
     vehicles: "Vehicles",
     users: "Users",
+    permissions: "Permissions",
+    roles: "Roles",
   },
   common: {
     locale: {
@@ -50,15 +52,26 @@ const en = {
       en: "English",
       de: "Deutsch",
     },
+    status: "Status",
+    amount: "Amount",
+    createdAt: "Created at",
+    created: "Created",
+    date: "Date",
     year: "Year",
     driver: "Driver",
     passenger: "Passenger",
     clients: "Clients",
+    client: "Client",
+    dueDate: "Due Date",
+    vehicle: "Vehicle",
+    vehicles: "Vehicles",
     customers: "Customers",
+    startDate: "Start Date",
+    endDate: "End Date",
     service: "Service",
     services: "Services",
-    vehicle_type: "Vehicle type",
-    vehicle_types: "Vehicle types",
+    vehicleCaterory: "Vehicle category",
+    vehicleCategories: "Vehicle categories",
     car_model: "Car model",
     car_brand: "Car brand",
     drive_train: "Drive train",
@@ -88,6 +101,7 @@ const en = {
     quotation: "Quotation",
     quotations: "Quotations",
     active: "Active",
+    inTransit: "In Transit",
     confirmed: "Confirmed",
     requests: "Requests",
     completed: "Completed",
@@ -121,6 +135,7 @@ const en = {
       amount: "Amount",
       balance: "Balance",
       serviceName: "Service Name",
+      licenceNumber: "Licence Number",
     },
     change_password: "Change Password",
     confirm_password: "Confirm Password",
@@ -144,6 +159,8 @@ const en = {
     quotations: "Quotations",
     invoices: "Invoices",
     dispatch: "Dispatch",
+    shipments: "Shipments",
+    maintenance: "Maintenance",
   },
   users: "Users",
   roles: "Roles",
@@ -156,7 +173,57 @@ const en = {
   payments: { ...paymentEn },
   rides: { ...rideEn },
   permissions: { ...permissionsEn },
+  shipments: {
+    shipmentNumber: "Shipment No",
+    recordDetails: "Record Details",
+    dispatch: "Dispatch",
+    status: {
+      unassigned: "Unassigned",
+      vehicle_assigned: "Vehicle Assigned",
+      assigned: "Driver Assigned",
+      dispatched: "Dispatched",
+      in_progress: "In Transit",
+      completed: "Completed",
+      captured_details: "Details captured",
+      invoiced: "Invoiced",
+      cancelled: "Cancelled",
+      delayed: "Delayed",
+      idel: "Idel",
+    },
+  },
   settings: { ...settingsEn },
-} as const;
+  quotations: {
+    quotationNumber: "Quotation No",
+    revisions: "Revisions",
+  },
+  invoices: {
+    invoiceNumber: "Invoice No.",
+    revisions: "Revisions",
+    statuses: {
+      issued: "Issued",
+      draft: "Draft",
+      refunded: "Refunded",
+      partially_paid: "Partially Paid",
+      paid: "Paid",
+      cancelled: "Cancelled",
+      void: "Voided",
+      mailed: "Mailed",
+      over_due: "Over due",
+    },
+  },
+  maintenance: {
+    types: {
+      routine: "Routine",
+      repair: "Repair",
+      inspection: "Inspection",
+    },
+    statuses: {
+      scheduled: "Scheduled",
+      in_progress: "In Progress",
+      completed: "Completed",
+      cancelled: "Cancelled",
+    },
+  },
+} as const
 
-export default en;
+export default en

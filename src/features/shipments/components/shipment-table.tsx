@@ -8,6 +8,7 @@ import { useDataTable } from "@/hooks/use-data-table"
 import { Shipment, ShipmentTableRowAction } from "../types"
 import { Pagination } from "@/types"
 import { ShipmentDetailsDialog } from "./shipment-details-dialog"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 
 interface ShipmentTableProps {
   data: Shipment[] | undefined
@@ -51,4 +52,8 @@ export function ShipmentTable({ data, pagination }: ShipmentTableProps) {
       />
     </>
   )
+}
+
+export function ShipmentTableSkeleton() {
+  return <DataTableSkeleton columnCount={6} />
 }

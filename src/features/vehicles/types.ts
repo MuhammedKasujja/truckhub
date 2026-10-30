@@ -1,10 +1,13 @@
 import { EntityId } from "@/schemas"
+import { VehicleStatus } from "./enums"
+import { DataTableRowAction } from "@/types/data-table"
 
 export const EngineTypes = ["petrol", "desel"] as const
-export const Gearboxes = ["manual", "automatic"] as const
+export const vehicleTransmissionList = ["manual", "automatic"] as const
 
 export type Engine = (typeof EngineTypes)[number]
-export type Gearbox = (typeof Gearboxes)[number]
+export type EngineType = Engine
+export type Gearbox = (typeof vehicleTransmissionList)[number]
 
 export type VehicleDriver = {
   id: EntityId
@@ -26,7 +29,7 @@ export interface VehicleBase {
   engine_type: Engine
   gearbox: Gearbox
   year: string
-  status: string
+  status: VehicleStatus
   seats: number
   vehicle_category_id: EntityId
   car_model_id: EntityId
@@ -64,3 +67,17 @@ export interface Vehicle extends VehicleBase {
     name: string
   }[]
 }
+
+
+export type VehicleStatistics = {
+  total: number
+  available: number
+  reserved: number
+  maintenance: number
+  on_trip: number
+}
+
+export interface VehicleTableRowAction extends DataTableRowAction<
+  Vehicle,
+  "update" | "view"| "maintanence"
+> {}

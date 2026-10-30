@@ -1,5 +1,3 @@
-"use client";
-
 import { Slot as SlotPrimitive } from "radix-ui";
 import * as React from "react";
 import { useComposedRefs } from "@/lib/compose-refs";

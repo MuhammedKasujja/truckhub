@@ -1,11 +1,14 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Invoice } from "../types"
 import { TFunction } from "@/i18n"
-import { formatDate, formatMoney } from "@/lib/format"
+import { formatDate, formatDateTime, formatMoney } from "@/lib/format"
 import {
   InvoiceTableActions,
   SetInvoiceTableAction,
 } from "./invoice-table-actions"
+import { Button } from "@/components/ui/button"
+import { Link } from "@tanstack/react-router"
+import { InvoiceStatusIndicator } from "./invoice-status-indicator"
 
 type Props = {
   tr: TFunction
@@ -27,14 +30,24 @@ export function getInvoiceTableColumns({
     },
     {
       accessorKey: "number",
-      header: () => <p className="uppercase">{tr("invoice_number")}</p>,
+      header: () => <p className="uppercase">{tr("invoices.invoiceNumber")}</p>,
       cell: ({ row }) => {
-        return <p>{row.original.number}</p>
+        const invoice = row.original
+        return (
+          <Button type="button" variant={"link"} asChild>
+            <Link
+              to="/invoices/$invoiceId/view"
+              params={{ invoiceId: invoice.id }}
+            >
+              {invoice.number}
+            </Link>
+          </Button>
+        )
       },
     },
     {
       accessorKey: "client",
-      header: () => <p className="uppercase">{tr("client")}</p>,
+      header: () => <p className="uppercase">{tr("common.client")}</p>,
       cell: ({ row }) => {
         return <p>{row.original.client.name}</p>
       },
@@ -50,28 +63,34 @@ export function getInvoiceTableColumns({
       accessorKey: "balance_due",
       header: () => <p className="uppercase">{tr("common.form.balance")}</p>,
       cell: ({ row }) => {
-        return <p>{formatMoney(row.original.balance_due)}</p>
+        return (
+          <p>
+            {formatMoney(row.original.balance_due, { showZeroFallaback: true })}
+          </p>
+        )
       },
     },
     {
       accessorKey: "status",
-      header: () => <p className="uppercase">{tr("status")}</p>,
+      header: () => <p className="uppercase">{tr("common.status")}</p>,
       cell: ({ row }) => {
-        return <p>{row.original.status}</p>
+        return <InvoiceStatusIndicator status={row.original.status} />
       },
     },
     {
       accessorKey: "due_date",
-      header: () => <p className="uppercase">Due Date</p>,
+      header: () => <p className="uppercase">{tr("common.dueDate")}</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.due_date)}</p>
+        return (
+          <p>{formatDate(row.original.due_date, { timeStyle: undefined })}</p>
+        )
       },
     },
     {
       accessorKey: "created_at",
-      header: () => <p className="uppercase">Created</p>,
+      header: () => <p className="uppercase">{tr("common.created")}</p>,
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
     },
   ]

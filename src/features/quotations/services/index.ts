@@ -5,17 +5,22 @@ import {
   createQuotationSchema,
   QuotationSearchParams,
   updateQuotationSchema,
+  quotationShipmentParams,
 } from "../schemas"
 import {
   getQuotations,
   createQuotation,
   updateQuotation,
+  sendQuotationEmail,
   getQuotationDetails,
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
   getQuotationReportPdf,
+  getQuotationShipments,
+  markQuotationCancelled,
 } from "./server"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getQuotationsFn = createServerFn()
   .inputValidator(QuotationSearchParams)
@@ -37,50 +42,49 @@ export const createQuotationFn = createServerFn({ method: "POST" })
 export const updateQuotationFn = createServerFn({ method: "POST" })
   .inputValidator(updateQuotationSchema)
   .handler(async ({ data }) => {
-    const result = await updateQuotation(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
+    const result = await apiResponseTransform(updateQuotation(data))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationAcceptedFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await markQuotationAccepted(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
+    const result = await apiResponseTransform(markQuotationAccepted(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationRejectedFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await markQuotationRejected(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
+    const result = await apiResponseTransform(markQuotationRejected(data.id))
+    return { data: result.data, message: result.message }
+  })
+
+export const sendQuotationEmailFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(sendQuotationEmail(data.id))
+    return { data: result.data, message: result.message }
+  })
+
+export const markQuotationCancelledFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(markQuotationCancelled(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationExpiredFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await markQuotationExpired(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
+    const result = await apiResponseTransform(markQuotationExpired(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const getQuotationDetailsFn = createServerFn({ method: "GET" })
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    const result = await getQuotationDetails(data.id)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
+    const result = await apiResponseTransform(getQuotationDetails(data.id))
 
     const quotation = result.data!
     const versions = quotation.versions.toReversed()
@@ -109,4 +113,15 @@ export const getQuotationReportPdfFn = createServerFn({ method: "GET" })
       console.error("PDF generation error:", error?.response?.data || error)
       throw new Error(`Failed to generate PDF: ${error.message}`)
     }
+  })
+
+export const getQuotationShipmentsFn = createServerFn()
+  .inputValidator(quotationShipmentParams)
+  .handler(async ({ data }) => {
+    const response = await getQuotationShipments(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
   })

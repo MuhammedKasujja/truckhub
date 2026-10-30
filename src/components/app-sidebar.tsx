@@ -16,23 +16,22 @@ import { useLocation, useMatchRoute } from "@tanstack/react-router"
 import { Link } from "@tanstack/react-router"
 import { GlobalKeys, useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
-import type { LucideIcon } from "lucide-react"
 import { UserPermission } from "@/features/auth/permissions"
 import { Can } from "./has-permission"
 import { Route as DashboardRoute } from "@/app/_admin/dashboard"
-import { Route as ShipmentRoute } from "@/app/_admin/shipments/active"
-import { Route as RidesRoute } from "@/app/_admin/rides"
-import { Route as BookingsRoute } from "@/app/_admin/bookings"
+import { Route as ShipmentRoute } from "@/app/_admin/shipments/requests"
+import { Route as LiveMapRoute } from "@/app/_admin/live-map"
+import { Route as MaintenanceRoute } from "@/app/_admin/maintenance"
 import { Route as PaymentsRoute } from "@/app/_admin/payments"
 import { Route as ServicesRoute } from "@/app/_admin/services"
 import { Route as ClientsRoute } from "@/app/_admin/clients"
 import { Route as DriversRoute } from "@/app/_admin/drivers"
 import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
 import { Route as ReportsRoute } from "@/app/_admin/reports"
-import { Route as BillingModuleRoute } from "@/app/_admin/billing/overview"
 import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
 import { Route as QuotationsRoute } from "@/app/_admin/quotations"
-import { getModuleIcon } from "@/components/icons"
+import { Route as InvoicesRoute } from "@/app/_admin/invoices"
+import { getModuleIcon, IconComponent } from "@/components/icons"
 
 export const sibebarModules: SidebarItem[] = [
   {
@@ -43,6 +42,12 @@ export const sibebarModules: SidebarItem[] = [
   },
   {
     title: "routes.dispatch",
+    url: LiveMapRoute.to,
+    icon: getModuleIcon("Dispatches"),
+    permission: "dashboard:view",
+  },
+  {
+    title: "routes.shipments",
     url: ShipmentRoute.to,
     icon: getModuleIcon("Shipments"),
     permission: "dashboard:view",
@@ -51,19 +56,13 @@ export const sibebarModules: SidebarItem[] = [
     title: "routes.quotations",
     url: QuotationsRoute.to,
     icon: getModuleIcon("Quotations"),
-    permission: "rides:module",
+    permission: "quotations:module",
   },
-  // {
-  //   title: "routes.rides",
-  //   url: RidesRoute.to,
-  //   icon: getModuleIcon("Rides"),
-  //   permission: "rides:module",
-  // },
   {
-    title: "routes.bookings",
-    url: BookingsRoute.to,
-    icon: getModuleIcon("Bookings"),
-    permission: "bookings:module",
+    title: "routes.maintenance",
+    url: MaintenanceRoute.to,
+    icon: getModuleIcon("Maintenance"),
+    permission: "maintenance:module",
   },
   {
     title: "routes.payments",
@@ -95,11 +94,17 @@ export const sibebarModules: SidebarItem[] = [
     icon: getModuleIcon("Vehicles"),
     permission: "vehicles:module",
   },
+  // {
+  //   title: "routes.billing",
+  //   url: BillingModuleRoute.to,
+  //   icon: getModuleIcon("Billing"),
+  //   permission: "billing:module",
+  // },
   {
-    title: "routes.billing",
-    url: BillingModuleRoute.to,
-    icon: getModuleIcon("Billing"),
-    permission: "billing:module",
+    title: "routes.invoices",
+    url: InvoicesRoute.to,
+    icon: getModuleIcon("Invoices"),
+    permission: "invoices:module",
   },
   {
     title: "routes.reports",
@@ -120,7 +125,7 @@ export const sibebarModules: SidebarItem[] = [
 type SidebarItem = {
   title: GlobalKeys
   url: string
-  icon?: LucideIcon
+  icon?: IconComponent
   permission: UserPermission
 }
 

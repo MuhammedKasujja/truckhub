@@ -6,23 +6,27 @@ import {
 } from "@tanstack/react-router"
 import { Route as OverviewRoute } from "@/app/_admin/billing/overview"
 import { Route as QuotationsRoute } from "@/app/_admin/billing/quotations"
-import { Route as InvoicesRoute } from "@/app/_admin/billing/invoices"
+import { Route as InvoicesRoute } from "@/app/_admin/invoices"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { BookOpenTextIcon, CalendarRangeIcon, FileTextIcon } from "lucide-react"
 
 const biilingTabs = [
   {
+    icon: CalendarRangeIcon,
     name: "overview",
     route: OverviewRoute.to,
   },
   {
-    name: "quotation",
+    name: "quotations",
+    icon: BookOpenTextIcon,
     route: QuotationsRoute.to,
   },
   {
-    name: "invoice",
+    name: "invoices",
+    icon: FileTextIcon,
     route: InvoicesRoute.to,
   },
 ] as const
@@ -52,6 +56,7 @@ function RouteComponent() {
         <TabsList>
           {biilingTabs.map((section) => (
             <TabsTrigger key={section.name} value={section.route}>
+              <section.icon/>
               {tr(`common.${section.name}`)}
             </TabsTrigger>
           ))}

@@ -8,10 +8,12 @@ import { BookingModulePermissions } from "./booking_permissions";
 import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
 import { BillingModulePermissions } from "./billing_permissions";
+import { InvoiceModulePermissions } from "./invoice_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
 import { ShipmentModulePermissions } from "./shipment_permissions";
 import { QuotationModulePermissions } from "./quotation_permissions";
 import { DashboardModulePermissions } from "./dashboard_permissions";
+import { MaintenanceModulePermissions } from "./maintenance_permissions";
 
 /**
  * Derived system permissions based on the `StoreDatabasePermissions`
@@ -19,18 +21,20 @@ import { DashboardModulePermissions } from "./dashboard_permissions";
 export const KeyNamedPermissions = {
   ...DashboardModulePermissions,
   ...QuotationModulePermissions,
+  ...InvoiceModulePermissions,
   ...ShipmentModulePermissions,
   ...UserModulePermissions,
-  ...BookingModulePermissions,
+  // ...BookingModulePermissions,
   ...ServiceModulePermissions,
-  ...RideModulePermissions,
+  // ...RideModulePermissions,
   ...PaymentModulePermissions,
   ...ClientModulePermissions,
   ...BillingModulePermissions,
   ...DriverModulePermissions,
   ...VehicleModulePermissions,
   ...ConfigModulePermissions,
-  ...ReportsModulePermissions
+  ...ReportsModulePermissions,
+  ...MaintenanceModulePermissions
 } as const;
 
 export type UserPermission = keyof typeof KeyNamedPermissions;
@@ -38,15 +42,17 @@ export type UserPermission = keyof typeof KeyNamedPermissions;
 export const SystemPermissions = {
   dashboard: DashboardModulePermissions,
   quotations: QuotationModulePermissions,
+  invoices: InvoiceModulePermissions,
   shipment: ShipmentModulePermissions,
-  bookings: BookingModulePermissions,
+  // bookings: BookingModulePermissions,
   services: ServiceModulePermissions,
-  rides: RideModulePermissions,
+  // rides: RideModulePermissions,
   payments: PaymentModulePermissions,
   billing: BillingModulePermissions,
   customers: ClientModulePermissions,
   drivers: DriverModulePermissions,
   vehicles: VehicleModulePermissions,
+  maintenance: MaintenanceModulePermissions,
   users: UserModulePermissions,
   config: ConfigModulePermissions,
   reports: ReportsModulePermissions,

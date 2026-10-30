@@ -2,30 +2,39 @@ import { CURRENCY_CODE } from "@/config/constants"
 
 export function formatMoney(
   amount?: number | string | null,
-  { showZeroAsNumber = false } = {}
+  { showZeroAsNumber = true, showZeroFallaback = false } = {}
 ) {
   if (amount === undefined || amount === null) return ""
 
   const formatter = new Intl.NumberFormat(undefined, {
     style: "currency",
     currency: CURRENCY_CODE,
-    minimumFractionDigits: 0//Number.isInteger(amount) ? 0 : 2,
+    minimumFractionDigits: 0, //Number.isInteger(amount) ? 0 : 2,
   })
 
-  if (amount === 0 && !showZeroAsNumber) return "Free"
-  return formatter.format(Number(amount))
+  const convertedAmount = Number(amount)
+
+  if (convertedAmount === 0 && showZeroFallaback) return "-"
+
+  if (convertedAmount === 0 && !showZeroAsNumber) return "Free"
+  return formatter.format(convertedAmount)
 }
 
+type NumberOpts = { fallback: string }
+
 export function formatNumber(
-  value: number | string | undefined,
-  options?: Intl.NumberFormatOptions
+  value: number | string | undefined | null,
+  opts?: NumberOpts
 ) {
   // return Number(value).toLocaleString(undefined, {
   //   minimumFractionDigits: 0,
   //   maximumFractionDigits: 2,
   // });
-  const formatter = new Intl.NumberFormat(undefined, options)
-  return formatter.format(Number(value))
+  // const formatter = new Intl.NumberFormat(undefined)
+  // return formatter.format(Number(value))
+
+  if (!value) return opts?.fallback ?? ""
+  return Number(value).toString()
 }
 
 export function formatDate(
@@ -39,7 +48,7 @@ export function formatDate(
       // day: opts.day ?? "numeric",
       // year: opts.year ?? "numeric",
       dateStyle: "medium",
-      timeStyle: "short",
+      timeStyle: undefined,
       ...opts,
     }).format(new Date(date))
   } catch (_) {

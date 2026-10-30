@@ -1,19 +1,47 @@
 import { EntityId } from "@/schemas"
 import { ShipmentStatus } from "./enums"
+import { LineItemType } from "@/common/enums"
 import { DataTableRowAction } from "@/types/data-table"
 import { LineItemResponse } from "../quotations/schemas"
 
 export type ShipmentLineItem = LineItemResponse & {
   scheduled_start: string
   scheduled_end: string
+  car_brand_id: EntityId
+  tonnage: string | null
+  car_brand: { id: EntityId; name: string } | null
+  car_model: { id: EntityId; name: string } | null
+  vehicle_category: { id: EntityId; name: string; is_truck: boolean } | null
+  service_id: EntityId | null
+  car_model_id: EntityId | null
+  vehicle_category_id: EntityId | null
+  with_loaders: boolean
+  with_driver: boolean
+  estimated_fuel_rate_km: string | null
+  locations: []
+  vehicle_addons: string[]
+  item_type: LineItemType
+  discount: string | null
+  is_round_trip: boolean
+  vehicle_year: string | null
 }
 
 export type ShipmentVehicleConsumption = {
-  start_mileage: string | number
-  end_mileage: number | undefined
-  distance_km: string | number | null
-  fuel_rate: string | number | null
+  start_mileage: string
+  end_mileage: string | undefined
+  distance_km: string | undefined
+  fuel_rate: string | null
   days: number | null
+  fuel_used_litres: string | null
+  consumed_fuel_rates: string[]
+  total_fuel_charge: string | null
+}
+
+export type ShipmentHistory = {
+  status: ShipmentStatus
+  note: string | null
+  changed_by: EntityId
+  created_at: Date
 }
 
 export type Shipment = {
@@ -23,6 +51,8 @@ export type Shipment = {
   started_at?: Date
   actual_start?: Date
   actual_end?: Date
+  contact_name?: string
+  quotation_id: EntityId
   driver?: {
     id: EntityId
     number: string
@@ -34,10 +64,13 @@ export type Shipment = {
     id: EntityId
     number: string
     plate_number: string
-    fuel_consumption_rate: string | number
+    vehicle_year: string
+    fuel_consumption_rate: string
   }
   item: ShipmentLineItem
   consumption: ShipmentVehicleConsumption | null
+  updated_at: string
+  history: ShipmentHistory[] | null
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<

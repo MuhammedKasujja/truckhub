@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import { Suspense } from "react"
 import {
   BookingTable,
@@ -6,10 +6,7 @@ import {
 } from "@/features/bookings/components/booking-table"
 import { requirePermission } from "@/lib/auth"
 import { BookingStatisticsCard } from "@/features/bookings/components"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
-import { Can } from "@/components/has-permission"
-import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
+import { PageHeader, PageTitle } from "@/components/page-header"
 import {
   createBookingQueryOptions,
   createBookingStatisticsQueryOptions,
@@ -35,16 +32,6 @@ function RouteComponent() {
     <>
       <PageHeader>
         <PageTitle>Bookings</PageTitle>
-        <PageAction>
-          <Can permission="bookings:create">
-            <Button asChild>
-              <Link to={"/bookings/new"}>
-                <PlusIcon />
-                New Booking
-              </Link>
-            </Button>
-          </Can>
-        </PageAction>
       </PageHeader>
       <BookingStatisticsCard statistics={statistics} />
       <Suspense fallback={<BookingTableSkeleton />}>

@@ -7,8 +7,7 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { PlusIcon } from "lucide-react"
-import { Suspense, useState } from "react"
+import { useState } from "react"
 import {
   paymentsQueryOptions,
   paymentStatisticsQueryOptions,
@@ -22,25 +21,28 @@ import {
   PaymentTableSkeleton,
   EnterPaymentModal,
 } from "@/features/payments/components"
+import { useQuery } from "@tanstack/react-query"
+import { ActionIcon } from "@/components/icons"
 
 export const Route = createFileRoute("/_admin/payments/")({
   validateSearch: PaymentSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
+  pendingComponent: PaymentTableSkeleton,
   beforeLoad: () => requirePermission("payments:module"),
   loader: async ({ context: { queryClient }, deps: { search } }) => {
     await queryClient.ensureQueryData(paymentsQueryOptions(search))
-    return queryClient.ensureQueryData(paymentStatisticsQueryOptions())
+    // return queryClient.ensureQueryData(paymentStatisticsQueryOptions())
   },
 })
 
 function RouteComponent() {
   const [openModal, setOpenModal] = useState(false)
 
-  const { data: statistics } = Route.useLoaderData()
+  // const { data } = useQuery(paymentStatisticsQueryOptions())
   const tr = useTranslation()
   return (
-    <Suspense fallback={<PaymentTableSkeleton />}>
+    <>
       <PageHeader>
         <PageTitle>
           <PageBackButton />
@@ -49,7 +51,7 @@ function RouteComponent() {
         <PageAction>
           <Can permission={"payments:create"}>
             <Button onClick={() => setOpenModal(true)}>
-              <PlusIcon />
+              <ActionIcon action="create"/>
               {tr("payments.form.new_payment")}
             </Button>
             <EnterPaymentModal
@@ -62,8 +64,8 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
-      <PaymentStatisticsCard statistics={statistics} />
+      {/* <PaymentStatisticsCard statistics={data?.data} /> */}
       <PaymentTable />
-    </Suspense>
+    </>
   )
 }

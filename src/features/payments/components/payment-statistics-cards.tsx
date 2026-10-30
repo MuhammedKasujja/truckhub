@@ -21,20 +21,42 @@ export function PaymentStatisticsCard({
       <Card>
         <CardHeader>
           <CardDescription className="font-semibold">
-            Total Revenue
+            Week Revenue
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-flow-col gap-5">
           <div className="space-y-1.5">
             <CardTitle className="font-bold">
-              {formatMoney(statistics?.grandTotal.newValue)}
+              {formatMoney(statistics?.weekly.newValue)}
+            </CardTitle>
+            <CardDescription>This week</CardDescription>
+          </div>
+          <Separator orientation="vertical" />
+          <div className="space-y-1.5">
+            <CardTitle className="font-bold text-muted-foreground">
+              {formatMoney(statistics?.weekly.oldValue)}
+            </CardTitle>
+            <CardDescription>Last week</CardDescription>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardDescription className="font-semibold">
+            Month Revenue
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-flow-col gap-5">
+          <div className="space-y-1.5">
+            <CardTitle className="font-bold">
+              {formatMoney(statistics?.monthly.newValue)}
             </CardTitle>
             <CardDescription>This month</CardDescription>
           </div>
           <Separator orientation="vertical" />
           <div className="space-y-1.5">
             <CardTitle className="font-bold text-muted-foreground">
-              {formatMoney(statistics?.grandTotal.oldValue)}
+              {formatMoney(statistics?.monthly.oldValue)}
             </CardTitle>
             <CardDescription>Last month</CardDescription>
           </div>
@@ -43,44 +65,22 @@ export function PaymentStatisticsCard({
       <Card>
         <CardHeader>
           <CardDescription className="font-semibold">
-            Booking Revenue
+            Yearly Revenue
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-flow-col gap-5">
           <div className="space-y-1.5">
             <CardTitle className="font-bold">
-              {formatMoney(statistics?.bookings.newValue)}
+              {formatMoney(statistics?.yearly.newValue)}
             </CardTitle>
-            <CardDescription>This month</CardDescription>
+            <CardDescription>This year</CardDescription>
           </div>
           <Separator orientation="vertical" />
           <div className="space-y-1.5">
             <CardTitle className="font-bold text-muted-foreground">
-              {formatMoney(statistics?.bookings.oldValue)}
+              {formatMoney(statistics?.yearly.oldValue)}
             </CardTitle>
-            <CardDescription>Last month</CardDescription>
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardDescription className="font-semibold">
-            Ride Revenue
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-flow-col gap-5">
-          <div className="space-y-1.5">
-            <CardTitle className="font-bold">
-              {formatMoney(statistics?.rides.newValue)}
-            </CardTitle>
-            <CardDescription>This month</CardDescription>
-          </div>
-          <Separator orientation="vertical" />
-          <div className="space-y-1.5">
-            <CardTitle className="font-bold text-muted-foreground">
-              {formatMoney(statistics?.rides.oldValue)}
-            </CardTitle>
-            <CardDescription>Last month</CardDescription>
+            <CardDescription>Last year</CardDescription>
           </div>
         </CardContent>
       </Card>

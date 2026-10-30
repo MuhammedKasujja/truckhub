@@ -1,6 +1,4 @@
-"use client"
-
-import React from "react"
+import React, { useState } from "react"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -12,6 +10,8 @@ import { useTranslation } from "@/i18n"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { paymentsQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
+import { PaymentTableActions } from "./payment-table-actions"
+import { PaymentTableRowAction } from "../types"
 
 export function PaymentTable() {
   const search = useSearch({ from: "/_admin/payments/" })
@@ -21,7 +21,11 @@ export function PaymentTable() {
   } = useSuspenseQuery(paymentsQueryOptions(search))
 
   const tr = useTranslation()
-  const columns = React.useMemo(() => getPaymentTableColumns(tr), [tr])
+  const [rowAction, setRowAction] = useState<PaymentTableRowAction | null>(null)
+  const columns = React.useMemo(
+    () => getPaymentTableColumns({ tr, setRowAction }),
+    [tr]
+  )
 
   useFetchEror(error)
 
@@ -30,7 +34,7 @@ export function PaymentTable() {
     columns,
     pageCount: pagination.totalPages,
     initialState: {
-      sorting: [{ id: "date", desc: true }],
+      sorting: [{ id: "paid_at", desc: true }],
       //   columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
@@ -39,14 +43,24 @@ export function PaymentTable() {
   })
 
   return (
-    <DataTable table={table}>
-      <DataTableToolbar table={table}>
-        <DataTableSortList table={table} align="end" />
-      </DataTableToolbar>
-    </DataTable>
+    <>
+      <DataTable table={table}>
+        <DataTableToolbar table={table}>
+          <DataTableSortList table={table} align="end" />
+        </DataTableToolbar>
+      </DataTable>
+      <PaymentTableActions setRowAction={setRowAction} rowAction={rowAction} />
+    </>
   )
 }
 
 export function PaymentTableSkeleton() {
-  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />
+  return (
+    <DataTableSkeleton
+      columnCount={6}
+      rowCount={25}
+      filterCount={1}
+      shrinkZero
+    />
+  )
 }

@@ -4,9 +4,8 @@ import { DataTableRowAction } from "@/types/data-table"
 import { EngineMode, LineItemType } from "@/common/enums"
 import {
   LineItemResponse,
-  SmallLineItemRequest,
-  TruckLineItemRequest,
-  LocationSourceResponse,
+  RouteLineItemRequest,
+  ServiceLineItemRequest,
   DistanceLineItemRequest,
 } from "./schemas"
 
@@ -23,8 +22,8 @@ interface LineItemOut {
   with_driver: boolean
 }
 
-export type ServiceLineItem = SmallLineItemRequest
-export type RouteLineItem = TruckLineItemRequest
+export type ServiceLineItem = ServiceLineItemRequest
+export type RouteLineItem = RouteLineItemRequest
 export type DistanceLineItem = DistanceLineItemRequest
 
 type QuotationLineItemResponse = {
@@ -32,7 +31,7 @@ type QuotationLineItemResponse = {
   unit_price: string
   subtotal: string
   line_total: string
-  services: LocationSourceResponse
+  services: Record<string, unknown>
   vehicle_addons: {
     id: string
     name: string
@@ -72,16 +71,18 @@ export type Quotation = {
   id: EntityId
   number: string
   status: QuotationStatus
-  amount: string
   last_updated_at: Date
   created_at: Date
   versions: QuotationVersion[]
+  current_version: QuotationVersion
   activeRevision: QuotationVersion
   client: {
     id: EntityId
     number: string
     name: string
     short_name: string
+    phone: string
+    email: string | null
   }
 }
 

@@ -17,6 +17,7 @@ import {
 } from "./server"
 import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getUsersFn = createServerFn()
   .inputValidator(UserSearchParamsCache)
@@ -39,13 +40,12 @@ export const getUsersByQueryFn = createServerFn()
 export const getUserDetailsFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(async ({ data }) => {
-    return getUserById(data.id)
+    return apiResponseTransform(getUserById(data.id))
   })
 
-export const getUserProfileDetailsFn = createServerFn()
-  .handler(async () => {
-    return getUserProfileById()
-  })
+export const getUserProfileDetailsFn = createServerFn().handler(async () => {
+  return apiResponseTransform(getUserProfileById())
+})
 
 export const deleteUserFn = createServerFn()
   .inputValidator(EntityIdSchema)

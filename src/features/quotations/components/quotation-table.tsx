@@ -7,6 +7,7 @@ import { getQuotationTableColumns } from "./quotation-table-columns"
 import { useDataTable } from "@/hooks/use-data-table"
 import { Quotation } from "../types"
 import { Pagination } from "@/types"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 
 interface QuotationTableProps {
   data: Quotation[] | undefined
@@ -36,4 +37,8 @@ export function QuotationTable({ data, pagination }: QuotationTableProps) {
       </DataTableToolbar>
     </DataTable>
   )
+}
+
+export function QuotationTableSkeleton() {
+  return <DataTableSkeleton columnCount={6} filterCount={1} shrinkZero />
 }

@@ -4,11 +4,11 @@ import type {
   AuditLogTableRowAction,
 } from "@/features/audit_logs/types"
 import { TFunction } from "@/i18n"
-import { formatDate } from "@/lib/format"
+import { formatDateTime } from "@/lib/format"
 import { ActionButton } from "@/components/ui/action-button"
-import { EyeIcon, Trash2Icon } from "lucide-react"
 import { AuditLogSource } from "@/config/constants"
 import { Button } from "@/components/ui/button"
+import { ActionIcon } from "@/components/icons"
 
 type Props = {
   tr: TFunction
@@ -57,7 +57,7 @@ export function getAuditLogTableColumns({
       accessorKey: "created_at",
       header: tr("payments.date"),
       cell: ({ row }) => {
-        return <p>{formatDate(row.original.created_at)}</p>
+        return <p>{formatDateTime(row.original.created_at)}</p>
       },
       meta: {
         label: tr("payments.date"),
@@ -75,7 +75,7 @@ export function getAuditLogTableColumns({
               variant={"outline"}
               onClick={() => setRowAction({ row, variant: "view" })}
             >
-              <EyeIcon />
+              <ActionIcon action="view" />
             </Button>
             <ActionButton
               variant={"destructive"}
@@ -85,7 +85,7 @@ export function getAuditLogTableColumns({
                 return { error: true, message: "Not implemented yet...." }
               }}
             >
-              <Trash2Icon />
+              <ActionIcon action="delete" />
             </ActionButton>
           </div>
         )
