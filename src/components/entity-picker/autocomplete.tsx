@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback, useEffect } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -91,8 +91,9 @@ export function AutoComplete<T>({
   // CommandList renders the actual scrollable element, so we watch it
   // directly rather than the viewport (the popover content may otherwise
   // never fully leave the viewport, and the observer would never fire).
-  const listRef = useRef<HTMLDivElement>(null)
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  // const listRef = useRef<HTMLDivElement>(null)
+  // const sentinelRef = useRef<HTMLDivElement>(null)
+  const [sentinelEl, setSentinelEl] = useState<HTMLDivElement | null>(null)
 
   const filteredOptions = useMemo(() => {
     // Remote mode (React Query / API)
@@ -129,26 +130,26 @@ export function AutoComplete<T>({
   }, [onLoadMore, hasMore, loadingMore])
 
   useEffect(() => {
-    if (!open || !onLoadMore) return
-    const sentinel = sentinelRef.current
-    const root = listRef.current
-    if (!sentinel || !root) return
+    if (!open || !onLoadMore || !sentinelEl) return
+    // cmdk's list element is the scroll container. Finding it from the sentinel
+    // avoids depending on CommandList forwarding a ref.
+    const root = sentinelEl.closest<HTMLElement>("[cmdk-list]")
+
+    if (!root) return
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          handleLoadMore()
-        }
+      ([entry]) => {
+        if (entry?.isIntersecting) handleLoadMore()
       },
-      { root, rootMargin: "80px" } // fire a bit before it's fully visible
+      { root, rootMargin: "80px" }
     )
 
-    observer.observe(sentinel)
+    observer.observe(sentinelEl)
     return () => observer.disconnect()
     // re-attach when the popover opens, or when the option list length
     // changes (sentinel position moves — some observer implementations need
     // a fresh observe call after layout shifts this significantly)
-  }, [open, onLoadMore, handleLoadMore, filteredOptions.length])
+  }, [open, onLoadMore, handleLoadMore, sentinelEl])
 
   console.log("Loading", loading, "Options", filteredOptions.length)
 
@@ -194,7 +195,7 @@ export function AutoComplete<T>({
             }}
           />
 
-          <CommandList ref={listRef} className="max-h-72 overflow-y-auto">
+          <CommandList className="max-h-72 overflow-y-auto">
             {loading && (
               <div className="flex justify-center p-3">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -235,7 +236,7 @@ export function AutoComplete<T>({
             {/* sentinel — invisible, purely a scroll-position marker for the observer */}
             {onLoadMore && hasMore && (
               <div
-                ref={sentinelRef}
+                ref={setSentinelEl}
                 className="h-px w-full"
                 aria-hidden="true"
               />
