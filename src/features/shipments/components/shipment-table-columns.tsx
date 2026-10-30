@@ -2,14 +2,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Shipment } from "../types"
 import { TFunction } from "@/i18n"
 import { formatDate } from "@/lib/format"
-import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
-import {
-  SetShipmentTableAction,
-  ShipmentTableActions,
-} from "./shipment-table-actions"
+import { SetShipmentTableAction } from "./shipment-table-actions"
 import { Button } from "@/components/ui/button"
 import { CopyIcon } from "lucide-react"
+import { ShipmentStatusIndicator } from "./shipment-status-indicator"
 
 type Props = {
   tr: TFunction
@@ -83,11 +80,7 @@ export function getShipmentTableColumns({
       accessorKey: "status",
       header: tr("common.status"),
       cell: ({ row }) => {
-        return (
-          <Badge variant={"outline"}>
-            {tr(`shipments.status.${row.original.status}`)}
-          </Badge>
-        )
+        return <ShipmentStatusIndicator status={row.original.status} />
       },
     },
     {

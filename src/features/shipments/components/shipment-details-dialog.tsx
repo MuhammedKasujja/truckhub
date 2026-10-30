@@ -45,6 +45,7 @@ import { IconReceiptTax, IconSend } from "@tabler/icons-react"
 import { ShimpmentRouteDetails } from "./shipment-route-details"
 import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
 import { useTranslation } from "@/i18n"
+import { ShipmentStatusIndicator } from "./shipment-status-indicator"
 
 type ShipmentDialogProps = {
   shipment?: Shipment
@@ -76,9 +77,7 @@ export function ShipmentDetailsDialog({
             <DialogTitle className="text-lg font-semibold tracking-tight">
               Shipment<span className="mx-1 text-muted-foreground">•</span>
               {shipment?.number}{" "}
-              {shipment && (
-                <Badge>{tr(`shipments.status.${shipment?.status}`)}</Badge>
-              )}
+              {shipment && <ShipmentStatusIndicator status={shipment.status} />}
             </DialogTitle>
             <DialogDescription className="flex items-center gap-4">
               <ButtonGroup>
@@ -268,7 +267,7 @@ function ShipmentOverviewDetails({ shipment }: Props) {
   return (
     <div className="space-y-5">
       <div className="grid gap-5 md:grid-cols-3">
-        <Card className="bg-background/30 col-span-2">
+        <Card className="col-span-2 bg-background/30">
           <CardContent className="space-y-1.5">
             {shipment.item.display_name ?? "Service"}
             <div className="mt-4 flex flex-wrap gap-2">
