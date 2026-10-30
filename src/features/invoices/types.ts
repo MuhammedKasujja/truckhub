@@ -21,6 +21,8 @@ export type Invoice = {
   is_payable: boolean
   amount_paid: string | null
   balance_due: string
+  loading_charge: string | null
+  offloading_charge: string | null
   discount: string | null
   subtotal: string | null
   tax_amount: string | null

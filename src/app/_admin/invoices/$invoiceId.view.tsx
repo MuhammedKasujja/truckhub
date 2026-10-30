@@ -1,6 +1,12 @@
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { InvoiceStatusIndicator } from "@/features/invoices/components"
 import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
@@ -10,6 +16,7 @@ import { requirePermission } from "@/lib/auth"
 import { formatDate, formatMoney } from "@/lib/format"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { cn } from "cn"
 import Decimal from "decimal.js"
 import { useState } from "react"
 
@@ -50,10 +57,7 @@ function RouteComponent() {
           <div className="flex gap-2">
             {invoice.is_payable && (
               <Can permission={"payments:create"}>
-                <Button
-                  variant={"secondary"}
-                  onClick={() => setOpenModal(true)}
-                >
+                <Button onClick={() => setOpenModal(true)}>
                   <ActionIcon action="create" />
                   {tr("payments.form.enterPayment")}
                 </Button>
@@ -89,8 +93,8 @@ function RouteComponent() {
 
         {/* Overview */}
         <div className="rounded-lg border border-border bg-card p-6 text-card-foreground shadow-sm">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-4">
+            <div className="space-y-1.5">
               <p className="text-xs font-medium text-muted-foreground">
                 Bill to
               </p>
@@ -101,7 +105,7 @@ function RouteComponent() {
                 Client {invoice.client.number} · {invoice.client.short_name}
               </p>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <p className="text-xs font-medium text-muted-foreground">
                 Issued
               </p>
@@ -109,12 +113,23 @@ function RouteComponent() {
                 {formatDate(invoice.created_at)}
               </p>
             </div>
-            <div>
+            <div className="space-y-1.5">
               <p className="text-xs font-medium text-muted-foreground">
                 Due date
               </p>
               <p className="mt-1 text-sm text-foreground">
                 {formatDate(invoice.due_date)}
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-xs font-medium text-muted-foreground">
+                Balance due
+              </p>
+              <p className="mt-1 text-lg font-bold text-foreground">
+                {formatMoney(invoice.balance_due)}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                of {formatMoney(invoice.total)}
               </p>
             </div>
           </div>
@@ -144,7 +159,7 @@ function RouteComponent() {
                   <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground">
                     Fuel surcharge
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground">
+                  <th className="px-6 py-3 text-right text-xl font-bold text-muted-foreground">
                     Total
                   </th>
                 </tr>
@@ -193,7 +208,6 @@ function RouteComponent() {
                 value={`- ${formatMoney(invoice.discount)}`}
               />
             )}
-            <div className="my-2 h-px bg-border" />
             <SummaryRow
               label="Fuel charge"
               value={formatMoney(
@@ -205,6 +219,18 @@ function RouteComponent() {
                   .toString()
               )}
             />
+            {Number(invoice.loading_charge) > 0 && (
+              <SummaryRow
+                label="Loading Fees"
+                value={formatMoney(invoice.loading_charge)}
+              />
+            )}
+            {Number(invoice.offloading_charge) > 0 && (
+              <SummaryRow
+                label="Offloading Fees"
+                value={formatMoney(invoice.offloading_charge)}
+              />
+            )}
             <div className="my-2 h-px bg-border" />
             <SummaryRow label="Total" value={formatMoney(invoice.total)} bold />
             <SummaryRow
@@ -212,12 +238,14 @@ function RouteComponent() {
               value={formatMoney(invoice.amount_paid)}
               muted
             />
-            <div className="my-2 h-px bg-border" />
-            <SummaryRow
-              label="Balance due"
-              value={formatMoney(invoice.balance_due)}
-              bold
-            />
+            <Card className="bg-background">
+              <CardHeader>
+                <CardDescription>Balance due</CardDescription>
+                <CardTitle className="text-xl font-bold text-primary">
+                  {formatMoney(invoice.balance_due)}
+                </CardTitle>
+              </CardHeader>
+            </Card>
           </div>
         </div>
       </div>
@@ -241,13 +269,15 @@ function SummaryRow({
   return (
     <div className="flex items-center justify-between py-1.5">
       <span
-        className={`text-sm ${muted ? "text-muted-foreground" : "text-foreground"}`}
+        className={cn(
+          `text-sm text-foreground`,
+          muted && "text-muted-foreground",
+          bold && "font-bold"
+        )}
       >
         {label}
       </span>
-      <span
-        className={`text-sm ${bold ? "font-semibold text-foreground" : "text-foreground"}`}
-      >
+      <span className={cn(`text-sm text-foreground`, bold && "font-bold")}>
         {value}
       </span>
     </div>
