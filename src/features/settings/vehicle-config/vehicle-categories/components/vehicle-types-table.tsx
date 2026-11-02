@@ -87,7 +87,9 @@ function VehicleCategoryCard({ category }: { category: VehicleCategory }) {
         )}
       </div>
       <CardHeader>
-        <CardTitle className="truncate text-lg">{category.name}</CardTitle>
+        <CardTitle className="truncate text-lg">
+          {category.display_name ?? category.name}
+        </CardTitle>
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">
         {category.type}

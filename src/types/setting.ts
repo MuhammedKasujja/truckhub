@@ -1,5 +1,6 @@
 import { type EntityId } from "@/schemas"
 import { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
+import { VehicleCategory } from "@/features/settings/vehicle-config/vehicle-categories/types"
 
 export type Setting = {
   key: string
@@ -31,14 +32,7 @@ export type VehicleFeature = {
 }
 
 export type VehicleConfigurations = {
-  vehicle_types: [
-    {
-      name: string
-      is_truck: boolean
-      id: EntityId
-      type: VehicleType
-    },
-  ]
+  vehicle_types: VehicleCategory[]
   car_brands: [
     {
       name: string
