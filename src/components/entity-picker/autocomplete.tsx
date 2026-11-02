@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react"
+import { useState, useMemo, useRef, useCallback, useEffect } from "react"
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -23,8 +23,7 @@ export interface AutoCompleteProps<T> {
   value?: T | null
   loading?: boolean
 
-  /** true while a selected value's id is being resolved to a full object upstream —
-   *  shows a spinner in the trigger instead of the placeholder. */
+  /** true while a selected value's id is being resolved upstream */
   triggerLoading?: boolean
 
   onChange: (value: T | null | undefined) => void
@@ -36,18 +35,18 @@ export interface AutoCompleteProps<T> {
   filterFn?: (option: T, query: string) => boolean
 
   getOptionValue: (option: T) => string
-
   renderOption: (option: T, selected: boolean) => React.ReactNode
   renderValue?: (option: T) => React.ReactNode
 
-  /** Infinite scroll: called automatically when the sentinel at the bottom
-   *  of the list scrolls into view. Omit (or leave hasMore falsy) to disable. */
+  /** Infinite scroll: fires when the sentinel at the bottom of the list
+   *  scrolls into view (after the user has scrolled). */
   onLoadMore?: () => void
   loadingMore?: boolean
   hasMore?: boolean
 
-  /** shown as a persistent row at the bottom of the list; purely a UI hook,
-   *  doesn't touch value/onChange itself */
+  /** reports popover open/close (needed for fetchOnOpen upstream) */
+  onOpenChange?: (open: boolean) => void
+
   onCreateNew?: (search: string) => void
   createNewLabel?: (search: string) => React.ReactNode
 
@@ -72,6 +71,7 @@ export function AutoComplete<T>({
   onLoadMore,
   loadingMore = false,
   hasMore = false,
+  onOpenChange,
   getOptionValue,
   renderOption,
   renderValue,
@@ -87,23 +87,18 @@ export function AutoComplete<T>({
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
 
-  // scroll container for the IntersectionObserver's `root` — cmdk's
-  // CommandList renders the actual scrollable element, so we watch it
-  // directly rather than the viewport (the popover content may otherwise
-  // never fully leave the viewport, and the observer would never fire).
-  // const listRef = useRef<HTMLDivElement>(null)
-  // const sentinelRef = useRef<HTMLDivElement>(null)
+  // callback ref (state, not useRef) so the observer effect re-runs the
+  // moment the portaled sentinel actually mounts
   const [sentinelEl, setSentinelEl] = useState<HTMLDivElement | null>(null)
 
-  const filteredOptions = useMemo(() => {
-    // Remote mode (React Query / API)
-    if (onSearch) return options
+  // plain mutable flag, not attached to any element
+  const userScrolledRef = useRef(false)
 
-    // Local filter mode
+  const filteredOptions = useMemo(() => {
+    if (onSearch) return options // remote mode: server already filtered
     if (filterFn && search) {
       return options.filter((opt) => filterFn(opt, search))
     }
-
     return options
   }, [options, search, filterFn, onSearch])
 
@@ -121,40 +116,73 @@ export function AutoComplete<T>({
     setOpen(false)
   }
 
-  // stable callback so the observer effect doesn't need to reattach every
-  // render just because a new closure was created
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next)
+    onOpenChange?.(next)
+  }
+
   const handleLoadMore = useCallback(() => {
     if (onLoadMore && hasMore && !loadingMore) {
       onLoadMore()
     }
   }, [onLoadMore, hasMore, loadingMore])
 
+  // reset the scroll flag each time the popover opens/closes.
+  // Declared BEFORE the observer effect so it runs first.
+  useEffect(() => {
+    userScrolledRef.current = false
+  }, [open])
+
   useEffect(() => {
     if (!open || !onLoadMore || !sentinelEl) return
-    // cmdk's list element is the scroll container. Finding it from the sentinel
-    // avoids depending on CommandList forwarding a ref.
-    const root = sentinelEl.closest<HTMLElement>("[cmdk-list]")
 
+    // cmdk's list element is the scroll container; finding it from the
+    // sentinel doesn't depend on CommandList forwarding a ref
+    const root = sentinelEl.closest<HTMLElement>("[cmdk-list]")
     if (!root) return
+
+    // an unbounded list can never clip the sentinel, so pages would
+    // chain-load. Refuse and say why.
+    const { overflowY } = getComputedStyle(root)
+    if (overflowY !== "auto" && overflowY !== "scroll") {
+      console.warn(
+        "AutoComplete: [cmdk-list] needs max-height + overflow-y-auto for infinite scroll"
+      )
+      return
+    }
+
+    const markScrolled = () => {
+      userScrolledRef.current = true
+    }
+    root.addEventListener("scroll", markScrolled, { passive: true })
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) handleLoadMore()
+        if (!entry?.isIntersecting) return
+
+        // overflowing list: wait for the user to scroll first (ignores the
+        // initial report on observe). Non-overflowing list can't be
+        // scrolled, so load more to fill it.
+        const canScroll = root.scrollHeight > root.clientHeight + 1
+        if (canScroll && !userScrolledRef.current) return
+
+        handleLoadMore()
       },
       { root, rootMargin: "80px" }
     )
 
     observer.observe(sentinelEl)
-    return () => observer.disconnect()
-    // re-attach when the popover opens, or when the option list length
-    // changes (sentinel position moves — some observer implementations need
-    // a fresh observe call after layout shifts this significantly)
-  }, [open, onLoadMore, handleLoadMore, sentinelEl])
+    return () => {
+      root.removeEventListener("scroll", markScrolled)
+      observer.disconnect()
+    }
+  }, [open, onLoadMore, sentinelEl, handleLoadMore])
 
-  console.log("Loading", loading, "Options", filteredOptions.length)
+  const showTypeToSearchHint =
+    !!onSearch && search.length === 0 && filteredOptions.length === 0
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           id={id}
@@ -184,14 +212,13 @@ export function AutoComplete<T>({
             onWheel={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
             placeholder={
-              (searchPlaceholder ?? label)
-                ? `Search ${label?.toLowerCase()}...`
-                : "Search...."
+              searchPlaceholder ??
+              (label ? `Search ${label.toLowerCase()}...` : "Search...")
             }
             value={search}
             onValueChange={(val) => {
               setSearch(val)
-              onSearch?.(val) // 🔥 remote mode trigger
+              onSearch?.(val)
             }}
           />
 
@@ -204,9 +231,12 @@ export function AutoComplete<T>({
 
             {!loading && filteredOptions.length === 0 && (
               <CommandEmpty className="text-muted-foreground">
-                {(noResultsMessage ?? label)
-                  ? `No ${label?.toLowerCase()} found.`
-                  : "No data found."}
+                {showTypeToSearchHint
+                  ? "Type to search..."
+                  : (noResultsMessage ??
+                    (label
+                      ? `No ${label.toLowerCase()} found.`
+                      : "No data found."))}
               </CommandEmpty>
             )}
 
@@ -233,7 +263,7 @@ export function AutoComplete<T>({
               })}
             </CommandGroup>
 
-            {/* sentinel — invisible, purely a scroll-position marker for the observer */}
+            {/* sentinel: invisible scroll-position marker for the observer */}
             {onLoadMore && hasMore && (
               <div
                 ref={setSentinelEl}

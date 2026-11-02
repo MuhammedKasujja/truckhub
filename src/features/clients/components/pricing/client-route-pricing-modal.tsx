@@ -54,7 +54,9 @@ export function ClientRouteTonnagePricingModal({
     )
     if (isSuccess && message) {
       toast.success(message)
-      queryInvaidator.clients.profile(clientId).routePricing.invalidate()
+      queryInvaidator.clients
+        .profile(clientId)
+        .routePricing.invalidate(clientId)
     }
     if (error) {
       toast.error(error.message)
@@ -68,8 +70,9 @@ export function ClientRouteTonnagePricingModal({
             <div className="space-y-2">
               <FieldLabel htmlFor="date">
                 Select pricing date{" "}
-                {pricingConfig?.routes.active_date ===
-                  search?.referenceDate && <Badge>Current</Badge>}
+                {search.referenceDate &&
+                  pricingConfig?.routes.active_date ===
+                    search?.referenceDate && <Badge>Current</Badge>}
               </FieldLabel>
               <Select
                 value={search?.referenceDate}

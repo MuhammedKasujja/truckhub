@@ -56,7 +56,7 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
             <div className="space-y-2">
               <FieldLabel htmlFor="date">
                 Select pricing date{" "}
-                {pricingConfig?.loading.active_date ===
+                {search.referenceDate &&pricingConfig?.loading.active_date ===
                   search.referenceDate && <Badge>Current</Badge>}
               </FieldLabel>
               <Select
