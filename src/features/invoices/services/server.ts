@@ -3,7 +3,6 @@ import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Invoice, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
-import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 import { InvoiceCreateInput, InvoiceListSearchParams } from "../schemas"
 
 const endpoint = "/v1/invoices"

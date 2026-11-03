@@ -1,4 +1,4 @@
-import { DriverDetails } from "@/features/drivers/components/driver-details"
+import { DriverDetails, DriverDetailsSkeleton } from "@/features/drivers/components/driver-details"
 import { useDriverProfileQuery } from "@/features/drivers/hooks/user-driver"
 import { driverProfileQueryOptions } from "@/features/drivers/queries"
 import { useFetchEror } from "@/hooks/use-fetch-error"
@@ -7,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/drivers/$driverId/view")({
   component: RouteComponent,
+  pendingComponent: DriverDetailsSkeleton,
   beforeLoad: () => requirePermission("drivers:view"),
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(

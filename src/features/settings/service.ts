@@ -41,7 +41,7 @@ export const updateQoutationTermsFn = createServerFn()
   })
 
 export const getVehicleSettingsFn = createServerFn().handler(async () => {
-  return await apiClient.getFn<VehicleConfigurations>(
+  return await apiResponseTransform(apiClient.getFn<VehicleConfigurations>(
     "/v1/settings/vehicle-config"
-  )
+  ))
 })

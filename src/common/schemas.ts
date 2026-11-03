@@ -1,9 +1,10 @@
 import { z } from "zod"
 import { PLATE_REGEX } from "@/common/constants"
+import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
 export const DefaultSearchParamsSchema = z.object({
   page: z.number().int().min(1).default(1),
-  perPage: z.number().int().min(1).max(100).default(10),
+  perPage: z.number().int().min(1).max(100).default(DEFAULT_FITER_QUERY_PER_PAGE),
   search: z.string().default(""),
   created_at: z.array(z.number().int()).optional(),
   joinOperator: z.enum(["and", "or"]).optional(),

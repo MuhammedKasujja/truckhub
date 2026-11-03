@@ -37,6 +37,7 @@ import {
   AttachmentTitle,
 } from "@/components/ui/attachment"
 import { generateAvatorFallback } from "@/lib/format"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type DriverDetailsProps = {
   driver: Driver
@@ -208,4 +209,34 @@ function DetailItem({
       <p className="wrap-break-words font-medium">{value}</p>
     </div>
   )
+}
+
+
+export function DriverDetailsSkeleton() {
+  return (
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 p-4 sm:p-6" aria-busy="true" aria-label="Loading driver">
+      <div className="flex items-center gap-4">
+        <Skeleton className="size-14 rounded-full" />
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-56" />
+          <Skeleton className="h-5 w-72" />
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28" />)}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Skeleton className="h-52" />
+          <Skeleton className="h-52" />
+          <Skeleton className="h-80" />
+        </div>
+        <div className="space-y-6">
+          <Skeleton className="h-52" />
+          <Skeleton className="h-44" />
+          <Skeleton className="h-36" />
+        </div>
+      </div>
+    </div>
+  );
 }
