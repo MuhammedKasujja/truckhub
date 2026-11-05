@@ -13,7 +13,7 @@ import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { EnterPaymentModal } from "@/features/payments/components"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
-import { formatDate, formatMoney } from "@/lib/format"
+import { daysUntil, formatDate, formatMoney } from "@/lib/format"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { cn } from "cn"
@@ -119,6 +119,9 @@ function RouteComponent() {
               </p>
               <p className="mt-1 text-sm text-foreground">
                 {formatDate(invoice.due_date)}
+              </p>
+              <p className="mt-1 text-sm text-foreground">
+                {daysUntil(invoice.due_date)} days
               </p>
             </div>
             <div className="space-y-1.5">

@@ -107,3 +107,11 @@ export const generateAvatorFallback = (fullname: string | undefined) => {
   if (lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
   return firstName[0]
 }
+
+export const formatSize = (bytes: number) =>
+  bytes >= 1024 * 1024
+    ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(bytes / 1024))} KB`
+
+export const daysUntil = (date: string) =>
+  Math.ceil((new Date(date).getTime() - Date.now()) / 86_400_000)

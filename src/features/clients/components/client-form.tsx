@@ -51,82 +51,91 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>Create new client</CardDescription>
-      </CardHeader>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log(errors)
-        })}
-      >
-        <CardContent className="pb-6">
-          <FieldGroup>
-            <Field orientation={"horizontal"} className="gap-4">
-              <TextField
-                label={tr("common.form.name")}
-                name={"name"}
+    <div className="grid grid-cols-5 gap-5">
+      <Card className="col-span-3">
+        <form
+          onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+            console.log(errors)
+          })}
+        >
+          <CardContent className="pb-6">
+            <FieldGroup>
+              <Field orientation={"horizontal"} className="gap-4">
+                <TextField
+                  label={tr("common.form.name")}
+                  name={"name"}
+                  control={form.control}
+                />
+                <TextField
+                  required={false}
+                  label={tr("common.form.short_name")}
+                  name={"short_name"}
+                  control={form.control}
+                />
+              </Field>
+              <Field orientation={"horizontal"} className="gap-4">
+                <TelephoneField
+                  label={tr("common.form.phone")}
+                  name={"phone"}
+                  control={form.control}
+                />
+              </Field>
+              <TinNumberField
+                label={"Tin Number"}
+                name={"tin_number"}
                 control={form.control}
               />
               <TextField
-                required={false}
-                label={tr("common.form.short_name")}
-                name={"short_name"}
-                control={form.control}
-              />
-            </Field>
-            <Field orientation={"horizontal"} className="gap-4">
-              <TelephoneField
-                label={tr("common.form.phone")}
-                name={"phone"}
-                control={form.control}
-              />
-            </Field>
-            <TinNumberField
-              label={"Tin Number"}
-              name={"tin_number"}
-              control={form.control}
-            />
-            <TextField
-              label={"Address"}
-              name={"address"}
-              control={form.control}
-              required={false}
-            />
-            <Field orientation={"horizontal"} className="w-full">
-              <TextField
-                label={"City"}
-                name={"city"}
+                label={"Address"}
+                name={"address"}
                 control={form.control}
                 required={false}
               />
-              <TextField
-                label={"Country"}
-                name={"country"}
+              <Field orientation={"horizontal"} className="w-full">
+                <TextField
+                  label={"City"}
+                  name={"city"}
+                  control={form.control}
+                  required={false}
+                />
+                <TextField
+                  label={"Country"}
+                  name={"country"}
+                  control={form.control}
+                  required={false}
+                />
+              </Field>
+              <EmailField
+                label={tr("common.form.email")}
+                name={"email"}
                 control={form.control}
-                required={false}
+                placeholder="user@mail.com"
               />
-            </Field>
-            <EmailField
-              label={tr("common.form.email")}
-              name={"email"}
-              control={form.control}
-              placeholder="user@mail.com"
+              <UserPickerField
+                label={tr("common.form.assigned")}
+                control={form.control}
+                name={"asssigned_user_id"}
+              />
+            </FieldGroup>
+          </CardContent>
+          <CardFooter>
+            <SubmitButton
+              text={tr("common.form.submit")}
+              isSubmitting={form.formState.isSubmitting}
             />
-            <UserPickerField
-              label={tr("common.form.assigned")}
-              control={form.control}
-              name={"asssigned_user_id"}
-            />
-          </FieldGroup>
-        </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text={tr("common.form.submit")}
-            isSubmitting={form.formState.isSubmitting}
-          />
-        </CardFooter>
-      </form>
-    </Card>
+          </CardFooter>
+        </form>
+      </Card>
+      <div className="col-span-2 flex flex-col gap-5 gap-5">
+        <Card className="col-span-2">
+          <CardHeader>Contacts</CardHeader>
+          <CardContent></CardContent>
+        </Card>
+        <Card className="col-span-2">
+          <CardHeader>Address</CardHeader>
+          <CardContent></CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }

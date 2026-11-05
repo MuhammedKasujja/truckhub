@@ -26,7 +26,7 @@ export type Invoice = {
   discount: string | null
   subtotal: string | null
   tax_amount: string | null
-  due_date: Date
+  due_date: string
   purpose: string | null
   created_at: Date
   line_items: InvoiceLineItem[]
