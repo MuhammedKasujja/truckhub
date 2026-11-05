@@ -1,5 +1,5 @@
 import { Service, ServiceGroup } from "@/features/services/types"
-import { SearchIcon } from "lucide-react"
+import { SearchIcon, SearchXIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ServiceList } from "./service-list"
 import { useMemo, useState } from "react"
@@ -15,6 +15,20 @@ import {
 } from "@/components/ui/input-group"
 import { ActionIcon } from "@/components/icons"
 import { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty"
+
+const vehicleTypeFilters: { value: VehicleType; label: string }[] = [
+  { value: "truck", label: "Trucks" },
+  { value: "van", label: "Vans" },
+  { value: "car", label: "Cars" },
+]
 
 type ServiceListWrapperProps = {
   services: Service[]
@@ -37,27 +51,39 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
     }))
   }, [services])
 
-  const { trucksTotal, vansTotal, carsTotal } = useMemo(() => {
-    const trucksTotal = services.filter((s) => s.source === "truck").length
-    const vansTotal = services.filter((s) => s.source === "van").length
-    const carsTotal = services.filter((s) => s.source === "car").length
-    return {
-      trucksTotal,
-      vansTotal,
-      carsTotal,
+  const totalsByType = useMemo(() => {
+    const totals: Record<VehicleType, number> = { truck: 0, van: 0, car: 0 }
+    for (const service of services) {
+      if (service.source in totals) totals[service.source]++
     }
+    return totals
   }, [services])
 
   const filteredServices = useMemo(() => {
+    const query = search.trim().toLowerCase()
     return services.filter((service) => {
-      const matchesSearch = service.display_name
-        .toLowerCase()
-        .includes(search.toLowerCase())
+      const matchesSearch =
+        !query ||
+        [
+          service.display_name,
+          service.name,
+          service.category,
+          service.vehicle_category?.name,
+          service.car_model?.name,
+          service.car_model?.car_brand.name,
+        ].some((value) => value?.toLowerCase().includes(query))
 
       const matchesSource = !vehicleType || service.source === vehicleType
       return matchesSearch && matchesSource
     })
   }, [services, search, vehicleType])
+
+  const hasActiveFilters = search.trim() !== "" || !!vehicleType
+
+  function clearFilters() {
+    setSearch("")
+    setVehicleType(undefined)
+  }
 
   return (
     <div className="space-y-4">
@@ -88,22 +114,65 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
             ></InputGroupInput>
           </InputGroup>
 
-          <Button variant={"outline"}>
-            <Badge variant={"outline"}>{trucksTotal}</Badge> Trucks
+          {vehicleTypeFilters.map(({ value, label }) => {
+            const active = vehicleType === value
+            return (
+              <Button
+                key={value}
+                variant={active ? "default" : "outline"}
+                aria-pressed={active}
+                onClick={() => setVehicleType(active ? undefined : value)}
+              >
+                <Badge variant={active ? "secondary" : "outline"}>
+                  {totalsByType[value]}
+                </Badge>
+                {label}
+              </Button>
+            )
+          })}
+          <Button
+            variant={!vehicleType ? "default" : "outline"}
+            aria-pressed={!vehicleType}
+            onClick={() => setVehicleType(undefined)}
+          >
+            <Badge variant={!vehicleType ? "secondary" : "outline"}>
+              {services.length}
+            </Badge>
+            Total
           </Button>
-          <Button variant={"outline"}>
-            <Badge variant={"outline"}>{vansTotal}</Badge> Vans
-          </Button>
-          <Button variant={"outline"}>
-            <Badge variant={"outline"}>{carsTotal}</Badge> Cars
-          </Button>
-          <Button variant={"outline"}>
-            <Badge variant={"outline"}>{services.length}</Badge> Total
-          </Button>
+          {hasActiveFilters && (
+            <Button variant={"ghost"} onClick={clearFilters}>
+              <XIcon />
+              Clear filters
+            </Button>
+          )}
         </div>
         <Separator />
       </div>
-      <ServiceList services={filteredServices} />
+      {filteredServices.length > 0 ? (
+        <ServiceList services={filteredServices} />
+      ) : (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <SearchXIcon />
+            </EmptyMedia>
+            <EmptyTitle>No services found</EmptyTitle>
+            <EmptyDescription>
+              {hasActiveFilters
+                ? "No services match the current filters."
+                : "No services have been created yet."}
+            </EmptyDescription>
+          </EmptyHeader>
+          {hasActiveFilters && (
+            <EmptyContent>
+              <Button variant={"outline"} onClick={clearFilters}>
+                Clear filters
+              </Button>
+            </EmptyContent>
+          )}
+        </Empty>
+      )}
     </div>
   )
 }
