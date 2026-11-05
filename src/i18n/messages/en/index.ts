@@ -1,5 +1,6 @@
 import { en as rideEn } from "./modules/ride"
 import { en as usersEn } from "./modules/users"
+import { en as clientsEn } from "./modules/clients"
 import { en as paymentEn } from "./modules/payments"
 import { en as serviceEn } from "./modules/services"
 import { en as bookingsEn } from "./modules/bookings"
@@ -166,6 +167,7 @@ const en = {
   roles: "Roles",
   ...vehiclesEn,
   services: { ...serviceEn },
+  clients: { ...clientsEn },
   trips: { ...tripModuleTranslations },
   ...usersEn,
   ...bookingModuleTranslations,

@@ -82,13 +82,13 @@ export const deleteClientFn = createServerFn({ method: "POST" })
 export const updateClientFn = createServerFn({ method: "POST" })
   .inputValidator(ClientUpdateSchema)
   .handler(async ({ data }) => {
-    return updateClient(data)
+    return apiResponseTransform(updateClient(data))
   })
 
 export const createClientFn = createServerFn({ method: "POST" })
   .inputValidator(ClientCreateSchema)
   .handler(async ({ data }) => {
-    return createClient(data)
+    return apiResponseTransform(createClient(data))
   })
 
 export const getClientPaymentsFn = createServerFn()

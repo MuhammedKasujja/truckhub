@@ -26,7 +26,10 @@ import { useSearch } from "@tanstack/react-router"
 import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
-import { useEffect, useMemo, useState } from "react"
+import { clientProfileQueryOptions } from "@/features/clients/query-options"
+import { EntityId } from "@/schemas"
+import { useQuery } from "@tanstack/react-query"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
@@ -82,6 +85,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     resolver: zodResolver(createQuotationSchema),
     defaultValues: initialData ?? {
       client_id: search.clientId,
+      contacts: [],
       line_items: [],
       tax_rates: [],
     },
@@ -97,6 +101,38 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
   const lineItems = form.watch("line_items")
 
   const taxRates = form.watch("tax_rates")
+
+  const selectedContactIds = form.watch("contacts")
+
+  // A client picked from the list may not include contacts, so load the profile
+  const clientProfile = useQuery({
+    ...clientProfileQueryOptions(selectedClient?.id ?? ""),
+    enabled: !!selectedClient,
+  })
+  const clientContacts =
+    clientProfile.data?.data?.contacts ?? selectedClient?.contacts ?? []
+  const isClientProfileLoading = !!selectedClient && clientProfile.isPending
+
+  // Runs once per selected client, so a profile refetch can't undo a user's
+  // selection. It can't live in handleClientSelected: form.reset() clears it.
+  const defaultedClientId = useRef<EntityId | null>(null)
+  useEffect(() => {
+    const clientId = selectedClient?.id
+    if (!clientId) {
+      defaultedClientId.current = null
+      return
+    }
+    if (isClientProfileLoading || defaultedClientId.current === clientId) return
+    defaultedClientId.current = clientId
+    // Editing the saved client keeps the contacts saved on the quotation. The
+    // picker also fires onChange when it preloads that client.
+    if (clientId === initialData?.client_id) return
+    setValue(
+      "contacts",
+      clientContacts.filter((c) => c.is_primary).map((c) => c.id),
+      { shouldDirty: true }
+    )
+  }, [selectedClient?.id, isClientProfileLoading])
 
   function handleClientSelected(client?: Client | null) {
     // navigate({
@@ -193,12 +229,6 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   onChange={handleClientSelected}
                 />
               )}
-              {/* {selectedClient && (
-              <ClientContactsList
-                contacts={selectedClient?.contacts}
-                // onSelected={setContacts}
-              />
-            )} */}
               {selectedClient && (
                 <CardHeader className="gap-2 p-0">
                   <CardTitle className="text-lg">
@@ -212,6 +242,15 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                     <ActionIcon action="edit" />
                   </CardAction>
                 </CardHeader>
+              )}
+              {clientContacts.length > 0 && (
+                <ClientContactsList
+                  contacts={clientContacts}
+                  selectedIds={selectedContactIds}
+                  onSelected={(contactIds) =>
+                    setValue("contacts", contactIds, { shouldDirty: true })
+                  }
+                />
               )}
             </CardContent>
           </Card>

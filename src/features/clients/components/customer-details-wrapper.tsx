@@ -45,6 +45,7 @@ import {
 } from "@/features/payments/components"
 import { useState } from "react"
 import { useClientProfileSuspenseQuery } from "../hooks/use-client"
+import { ClientContactsList } from "./client-contacts-list"
 import { ModuleIcon } from "@/components/icons"
 import { InvoiceStatusIndicator } from "@/features/invoices/components"
 
@@ -103,6 +104,17 @@ export function CustomerDetailsWrapper({
           </div>
         </CardContent>
       </Card>
+
+      {!!client?.contacts?.length && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{tr("clients.contacts")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ClientContactsList contacts={client.contacts} />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card>

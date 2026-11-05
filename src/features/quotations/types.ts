@@ -2,6 +2,7 @@ import { EntityId } from "@/schemas"
 import { QuotationStatus } from "./enums"
 import { DataTableRowAction } from "@/types/data-table"
 import { EngineMode, LineItemType } from "@/common/enums"
+import { ClientContact } from "@/features/clients/types"
 import {
   LineItemResponse,
   RouteLineItemRequest,
@@ -84,6 +85,7 @@ export type Quotation = {
     phone: string
     email: string | null
   }
+  contacts?: ClientContact[]
 }
 
 export interface QuotationTableRowAction extends DataTableRowAction<

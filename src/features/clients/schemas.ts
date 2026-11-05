@@ -8,6 +8,25 @@ import { PricingSearchParamsCache } from "../settings/pricing/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { ServiceCreateSchema, ServiceUpdateSchema } from "../services/schemas"
 
+export const ClientContactSchema = z.object({
+  id: IDSchema.optional(),
+  name: z.string().trim().min(1, "Required"),
+  phone: z.string().trim().min(3, "Required"),
+  // A blank input submits "" and the API can return null
+  email: z.union([z.email(), z.literal("")]).optional().nullable(),
+  is_primary: z.boolean(),
+})
+
+export type ClientContactInput = z.infer<typeof ClientContactSchema>
+
+export const ClientContactsSchema = z
+  .array(ClientContactSchema)
+  .min(1, "Add at least one contact")
+  .refine(
+    (contacts) => contacts.filter((c) => c.is_primary).length === 1,
+    "Choose exactly one primary contact"
+  )
+
 export const ClientCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
   short_name: z.string().optional().nullable(),
@@ -19,11 +38,13 @@ export const ClientCreateSchema = z.object({
   email: z.email().trim().min(3, "Required"),
   tin_number: z.string().trim().min(3, "Required"),
   asssigned_user_id: IDSchema.optional().nullable(),
+  contacts: ClientContactsSchema,
 })
 
 export const ClientUpdateSchema = z.object({
   id: IDSchema,
   ...ClientCreateSchema.partial().shape,
+  contacts: ClientContactsSchema,
 })
 
 export type ClientCreateInput = z.infer<typeof ClientCreateSchema>
