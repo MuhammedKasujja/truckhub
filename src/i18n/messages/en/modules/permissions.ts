@@ -120,4 +120,9 @@ export const en = {
   "reports:view": "View Reports",
   "reports:edit": "Edit Reports",
   "reports:audit_logs:view": "View Audit Logs",
+  "reports:invoices:view": "View Invoice Reports",
+  "reports:quotations:view": "View Quotation Reports",
+  "reports:payments:view": "View Payment Reports",
+  "reports:shipments:view": "View Shipment Reports",
+  "reports:pricings:view": "View Pricing Reports",
 } as const

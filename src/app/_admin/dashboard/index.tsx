@@ -1,20 +1,22 @@
 import { parseISO } from "date-fns"
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Link, createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from "@tanstack/react-router"
 import {
   BanknoteIcon,
   FileTextIcon,
   GaugeIcon,
-  PlusIcon,
   ReceiptIcon,
   RepeatIcon,
   TruckIcon,
   UsersIcon,
 } from "lucide-react"
 import type { DashboardStatistics } from "@/features/dashboard/types"
+import {
+  isDashboardPreviewEnabled,
+  withDashboardPreview,
+} from "@/features/dashboard/preview-data"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
-import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { requirePermission } from "@/lib/auth"
@@ -72,7 +74,12 @@ function RouteComponent() {
   const period = useMemo(() => resolveDashboardPeriod(search), [search])
   const { data: response } = useQuery(dashboardQueryOptions(period))
 
-  const data = response?.data
+  const preview = isDashboardPreviewEnabled(search.preview)
+  const data = useMemo(
+    () =>
+      preview ? withDashboardPreview(response?.data, period) : response?.data,
+    [preview, response?.data, period]
+  )
 
   const periodLabel =
     search.range === "custom"
@@ -93,10 +100,22 @@ function RouteComponent() {
           <DashboardRangePicker
             search={search}
             period={period}
-            onChange={(next) => navigate({ search: next, replace: true })}
+            onChange={(next) =>
+              navigate({
+                search: { ...next, preview: search.preview },
+                replace: true,
+              })
+            }
           />
         </PageAction>
       </PageHeader>
+
+      {preview && (
+        <div className="rounded-lg border border-dashed border-info/40 bg-info/10 px-3 py-2 text-xs text-info-foreground">
+          Preview mode: fields the API doesn't return yet are filled with sample
+          data. Remove <code>?preview=true</code> to see real data only.
+        </div>
+      )}
 
       {!data ? (
         <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">

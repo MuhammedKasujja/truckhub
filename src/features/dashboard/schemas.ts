@@ -1,12 +1,12 @@
 import { z } from "zod"
 import {
-  differenceInCalendarDays,
-  endOfDay,
   format,
+  subDays,
+  endOfDay,
   parseISO,
   startOfDay,
   startOfMonth,
-  subDays,
+  differenceInCalendarDays,
 } from "date-fns"
 
 export const dashboardRanges = ["today", "7d", "30d", "mtd", "custom"] as const
@@ -21,6 +21,8 @@ export const DashboardSearchParams = z.object({
   from: z.string().optional(),
   /** yyyy-MM-dd, only used when range is "custom" */
   to: z.string().optional(),
+  /** DEV-only: fill missing fields with sample data (see preview-data.ts) */
+  preview: z.boolean().optional().default(true),
 })
 
 export type DashboardSearchParamsInput = z.infer<typeof DashboardSearchParams>
