@@ -31,10 +31,10 @@ function RouteComponent() {
   useGlobalShortcuts()
   return (
     <AuthProvider>
-      <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
+      <SidebarProvider className="overflow-x-clip" defaultOpen={false}>
         <AppSidebar />
-        <SidebarInset className="overflow-x-hidden">
-          <nav className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
+        <SidebarInset className="overflow-x-clip">
+          <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
             {/* <SidebarTrigger className="-ml-1" /> */}
             <div className="">Dashboard</div>
             {/* <Separator
