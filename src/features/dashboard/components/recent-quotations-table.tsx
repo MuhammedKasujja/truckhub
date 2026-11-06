@@ -30,9 +30,70 @@ import { ActionIcon } from "@/components/icons"
 
 type TableProps = {
   quotations: Quotation[]
+  /** Render only the table, without the card chrome */
+  embedded?: boolean
 }
 
-export function RecentQuotationsTable({ quotations }: TableProps) {
+export function RecentQuotationsTable({ quotations, embedded = false }: TableProps) {
+  const table = (
+    <div className="overflow-hidden rounded-lg border bg-background">
+      <Table>
+        <TableHeader className="bg-muted">
+          <TableRow>
+            <TableHead className="w-25">Number</TableHead>
+            <TableHead>Client</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Start Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {quotations.length ? (
+            quotations.map((quotation) => (
+              <TableRow key={`quotation-${quotation.id.toString()}`}>
+                <TableCell className="font-medium">
+                  {quotation.number}
+                </TableCell>
+                <TableCell>{quotation.client.name}</TableCell>
+                <TableCell>
+                  <Badge variant={"outline"}>{quotation.status}</Badge>
+                </TableCell>
+                <TableCell>{formatMoney(quotation.current_version.total_amount)}</TableCell>
+                <TableCell>
+                  {formatDate(quotation.created_at, {
+                    timeStyle: undefined,
+                  })}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center">
+                <Empty className="">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Can permission="quotations:create">
+                        <Button type="button" asChild size={"icon"}>
+                          <Link to={"/quotations/new"}>
+                            <ActionIcon action="create"/>
+                          </Link>
+                        </Button>
+                      </Can>
+                    </EmptyMedia>
+                    <EmptyTitle>No Quotations Found</EmptyTitle>
+                  </EmptyHeader>
+                  <EmptyContent></EmptyContent>
+                </Empty>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+
+  if (embedded) return table
+
   return (
     <Card>
       <CardHeader>
@@ -48,60 +109,7 @@ export function RecentQuotationsTable({ quotations }: TableProps) {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="overflow-hidden rounded-lg border bg-background">
-          <Table>
-            <TableHeader className="bg-muted">
-              <TableRow>
-                <TableHead className="w-25">Number</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Start Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {quotations.length ? (
-                quotations.map((quotation) => (
-                  <TableRow key={`quotation-${quotation.id.toString()}`}>
-                    <TableCell className="font-medium">
-                      {quotation.number}
-                    </TableCell>
-                    <TableCell>{quotation.client.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={"outline"}>{quotation.status}</Badge>
-                    </TableCell>
-                    <TableCell>{formatMoney(quotation.current_version.total_amount)}</TableCell>
-                    <TableCell>
-                      {formatDate(quotation.created_at, {
-                        timeStyle: undefined,
-                      })}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    <Empty className="">
-                      <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                          <Can permission="quotations:create">
-                            <Button type="button" asChild size={"icon"}>
-                              <Link to={"/quotations/new"}>
-                                <ActionIcon action="create"/>
-                              </Link>
-                            </Button>
-                          </Can>
-                        </EmptyMedia>
-                        <EmptyTitle>No Quotations Found</EmptyTitle>
-                      </EmptyHeader>
-                      <EmptyContent></EmptyContent>
-                    </Empty>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {table}
       </CardContent>
     </Card>
   )

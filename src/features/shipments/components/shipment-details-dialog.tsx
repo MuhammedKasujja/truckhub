@@ -6,16 +6,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Shipment } from "../types"
-import { Badge } from "@/components/ui/badge"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
   CircleCheckIcon,
-  Fuel,
   Gauge,
   Mail,
-  MapPin,
   Phone,
   PlusIcon,
   TimerIcon,
@@ -72,9 +69,9 @@ export function ShipmentDetailsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="flex max-h-[90vh] min-h-[90vh] flex-col gap-0 overflow-hidden p-0 md:min-w-[90vw]">
+        <DialogContent className="flex max-h-[95vh] min-h-[95vh] flex-col gap-0 overflow-hidden p-0 md:min-w-[95vw]">
           <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
+            <DialogTitle className="text-lg font-semibold tracking-tight flex gap-1 items-center">
               Shipment<span className="mx-1 text-muted-foreground">•</span>
               {shipment?.number}{" "}
               {shipment && <ShipmentStatusIndicator status={shipment.status} />}
