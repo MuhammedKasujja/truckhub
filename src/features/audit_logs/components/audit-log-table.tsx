@@ -1,6 +1,10 @@
-"use client"
-
 import React, { useState } from "react"
+import { useNavigate, useSearch } from "@tanstack/react-router"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { createAuditLogsQueryOptions } from "../query-options"
+import { getAuditLogTableColumns } from "./audit-log-table-columns"
+import { AuditLogTableActions } from "./audit-log-table-actions"
+import type { AuditLogTableRowAction } from "../types"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
@@ -8,14 +12,7 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useTranslation } from "@/i18n"
-import { getAuditLogTableColumns } from "./audit-log-table-columns"
-import { useNavigate, useSearch } from "@tanstack/react-router"
-import { useSuspenseQuery } from "@tanstack/react-query"
-import { createAuditLogsQueryOptions } from "../query-options"
 import { UserPicker } from "@/features/users/components/user-picker"
-import { Label } from "@/components/ui/label"
-import { AuditLogTableRowAction } from "../types"
-import { AuditLogTableActions } from "./audit-log-table-actions"
 
 export function AuditLogTable() {
   const search = useSearch({ from: "/_admin/reports/audits/" })
@@ -41,6 +38,8 @@ export function AuditLogTable() {
     pageCount: pagination.totalPages,
     initialState: {
       sorting: [{ id: "created_at", desc: true }],
+      // Source is shown inside the actor cell; the column only powers the filter
+      columnVisibility: { source: false },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
@@ -48,26 +47,24 @@ export function AuditLogTable() {
   })
 
   return (
-    <div className="space-y-4">
-      <div className="max-w-72 space-y-4">
-        <Label htmlFor="user">User</Label>
-        <UserPicker
-          id="user"
-          placeholder="filter by user"
-          value={search.user_ids?.at(0)}
-          onSelected={(user) =>
-            navigate({
-              search: (prev) => ({
-                ...prev,
-                user_ids: user?.id ? [user?.id] : undefined,
-                page: 1,
-              }),
-            })
-          }
-        />
-      </div>
+    <>
       <DataTable table={table}>
         <DataTableToolbar table={table}>
+          <div className="w-56">
+            <UserPicker
+              id="audit-user"
+              value={search.user_ids?.at(0)}
+              onSelected={(user) =>
+                navigate({
+                  search: (prev) => ({
+                    ...prev,
+                    user_ids: user?.id ? [user.id] : undefined,
+                    page: 1,
+                  }),
+                })
+              }
+            />
+          </div>
           <DataTableSortList table={table} align="end" />
         </DataTableToolbar>
       </DataTable>
@@ -76,13 +73,7 @@ export function AuditLogTable() {
         rowAction={rowAction}
         setRowAction={setRowAction}
       />
-      {/* <AuditLogViewDialog
-        key={rowAction?.row.original.id}
-        data={rowAction?.row.original ?? {}}
-        open={rowAction?.variant === "view"}
-        onOpenChange={() => setRowAction(null)}
-      /> */}
-    </div>
+    </>
   )
 }
 
@@ -90,9 +81,9 @@ export function AuditLogTableSkeleton() {
   return (
     <DataTableSkeleton
       columnCount={6}
-      filterCount={1}
+      filterCount={2}
       shrinkZero
-      rowCount={25}
+      rowCount={12}
     />
   )
 }

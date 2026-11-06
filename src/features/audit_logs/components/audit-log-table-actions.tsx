@@ -1,5 +1,5 @@
-import { AuditLogTableRowAction } from "../types"
 import { AuditLogViewDialog } from "./audit-log-view-dialog"
+import type { AuditLogTableRowAction } from "../types"
 
 interface AuditLogTableActionsProps {
   rowAction: AuditLogTableRowAction | null

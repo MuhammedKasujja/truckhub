@@ -1,5 +1,5 @@
-import { EntityId } from "@/schemas"
-import { DataTableRowAction } from "@/types/data-table"
+import type { EntityId } from "@/schemas"
+import type { DataTableRowAction } from "@/types/data-table"
 
 export type AuditLog = {
   id: EntityId

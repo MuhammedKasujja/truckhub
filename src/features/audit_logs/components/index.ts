@@ -1,1 +1,1 @@
-export {AuditLogTable, AuditLogTableSkeleton} from "./audit-log-table"
+export { AuditLogTable, AuditLogTableSkeleton } from "./audit-log-table"
