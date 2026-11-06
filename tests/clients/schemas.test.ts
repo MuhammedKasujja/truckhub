@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest"
 import {
-  ClientContactsSchema,
   ClientCreateSchema,
   ClientUpdateSchema,
-} from "./schemas"
-import type { ClientContactInput } from "./schemas"
+  ClientContactsSchema,
+} from "../../src/features/clients/schemas"features/clients/schemas"rc/features/clients/schemas"features/clients/schemas"
+import type { ClientContactInput } from "../../src/features/clients/schemas"
 
 const contact = (overrides: Partial<ClientContactInput> = {}) => ({
   name: "Jane",

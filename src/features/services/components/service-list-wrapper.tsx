@@ -1,4 +1,4 @@
-import { Service, ServiceGroup } from "@/features/services/types"
+import { Service } from "@/features/services/types"
 import { SearchIcon, SearchXIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ServiceList } from "./service-list"
@@ -25,9 +25,9 @@ import {
 } from "@/components/ui/empty"
 
 const vehicleTypeFilters: { value: VehicleType; label: string }[] = [
-  { value: "truck", label: "Trucks" },
-  { value: "van", label: "Vans" },
   { value: "car", label: "Cars" },
+  { value: "van", label: "Vans" },
+  { value: "truck", label: "Trucks" },
 ]
 
 type ServiceListWrapperProps = {
@@ -37,19 +37,6 @@ type ServiceListWrapperProps = {
 export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
   const [search, setSearch] = useState("")
   const [vehicleType, setVehicleType] = useState<VehicleType>()
-
-  const groupedServices: ServiceGroup[] = useMemo(() => {
-    const grouped = Object.groupBy(
-      services! ?? [],
-      (service, _) => service.category
-    )
-
-    return Object.entries(grouped).map(([category, services]) => ({
-      category: category,
-      is_truck: services?.at(0)?.is_truck ?? false,
-      services: services ?? [],
-    }))
-  }, [services])
 
   const totalsByType = useMemo(() => {
     const totals: Record<VehicleType, number> = { truck: 0, van: 0, car: 0 }
@@ -113,12 +100,23 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
               onChange={(e) => setSearch(e.target.value)}
             ></InputGroupInput>
           </InputGroup>
-
+          <Button
+            className="h-8"
+            variant={!vehicleType ? "default" : "outline"}
+            aria-pressed={!vehicleType}
+            onClick={() => setVehicleType(undefined)}
+          >
+            <Badge variant={!vehicleType ? "secondary" : "outline"}>
+              {services.length}
+            </Badge>
+            All
+          </Button>
           {vehicleTypeFilters.map(({ value, label }) => {
             const active = vehicleType === value
             return (
               <Button
                 key={value}
+                className="h-8"
                 variant={active ? "default" : "outline"}
                 aria-pressed={active}
                 onClick={() => setVehicleType(active ? undefined : value)}
@@ -130,18 +128,9 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
               </Button>
             )
           })}
-          <Button
-            variant={!vehicleType ? "default" : "outline"}
-            aria-pressed={!vehicleType}
-            onClick={() => setVehicleType(undefined)}
-          >
-            <Badge variant={!vehicleType ? "secondary" : "outline"}>
-              {services.length}
-            </Badge>
-            Total
-          </Button>
+
           {hasActiveFilters && (
-            <Button variant={"ghost"} onClick={clearFilters}>
+            <Button variant={"ghost"} onClick={clearFilters} className="h-8">
               <XIcon />
               Clear filters
             </Button>
