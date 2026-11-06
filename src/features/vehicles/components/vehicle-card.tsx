@@ -1,192 +1,173 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Link } from "@tanstack/react-router"
+import { Cog, Fuel, Milestone, Phone, UserRoundX } from "lucide-react"
+import { engineLabel, humanize, vehicleName } from "../format"
+import { VehicleStatusIndicator } from "./vehicle-status-indicator"
+import { ColorDot, PlateNumber, VehicleIconTile, carColor } from "./vehicle-visuals"
+import type { Vehicle } from "../types"
+import { formatNumber, generateAvatorFallback } from "@/lib/format"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import {
-  Cog,
-  Fuel,
-  Gauge,
-  Palette,
-  Phone,
-  Users,
-  UserRound,
-} from "lucide-react"
-import { Vehicle } from "../types"
-import { formatNumber } from "@/lib/format"
+import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/ui/card"
 
-// "metallicSilver" -> "Metallic Silver", "on_trip" -> "On trip"
-const humanize = (value: string) => {
-  const spaced = value
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/[_-]/g, " ")
-    .toLowerCase()
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
-}
+const MAX_FEATURES = 3
 
-// Fix known data typos before display
-const engineLabel = (engine: string) =>
-  engine.toLowerCase() === "desel" ? "Diesel" : humanize(engine)
-
-// Status -> shadcn Badge variant (all colors come from theme tokens)
-const STATUS_VARIANT: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  available: "default",
-  on_trip: "secondary",
-  maintenance: "destructive",
-}
-
-const initials = (name: string) =>
-  name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
-
-/* ---------- Small pieces ---------- */
-
-function ColorText({ name, label }: { name: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 text-sm">
-      <Palette className="size-4 text-muted-foreground" aria-hidden />
-      <span className="text-muted-foreground">{label}</span>
-      <span>{humanize(name)}</span>
-    </span>
-  )
-}
-
-function Spec({
-  icon: Icon,
+function Metric({
   label,
   value,
+  unit,
 }: {
-  icon: React.ComponentType<{ className?: string }>
   label: string
   value: React.ReactNode
+  unit?: string
 }) {
   return (
-    <div className="flex items-start gap-2">
-      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="truncate text-sm font-medium">{value}</p>
-      </div>
+    <div className="min-w-0 px-3 py-2.5">
+      <p className="truncate text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="mt-0.5 truncate text-sm font-semibold tabular-nums">
+        {value}
+        {unit && (
+          <span className="ml-0.5 text-xs font-normal text-muted-foreground">
+            {unit}
+          </span>
+        )}
+      </p>
     </div>
   )
 }
 
-/* ---------- Card ---------- */
-
 export function VehicleCard({ vehicle: v }: { vehicle: Vehicle }) {
-  const statusVariant = STATUS_VARIANT[v.status] ?? "outline"
+  const isTruck = v.category.is_truck
+  const extraFeatures = v.features.length - MAX_FEATURES
 
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <CardDescription>
-              {v.number} · {v.category.name}
-            </CardDescription>
-            <CardTitle className="mt-1 truncate text-lg">
-              {v.car_model.car_brand.name} {v.car_model.name}
-            </CardTitle>
-          </div>
-          <Badge variant={statusVariant} className="shrink-0">
-            {humanize(v.status)}
-          </Badge>
+    <Card className="group relative gap-0 overflow-hidden py-0 transition-shadow hover:shadow-md has-[a[data-card-link]:focus-visible]:ring-2 has-[a[data-card-link]:focus-visible]:ring-ring">
+      {/* Header */}
+      <div className="flex items-start gap-3 p-4 pb-3">
+        <VehicleIconTile isTruck={isTruck} />
+        <div className="min-w-0 flex-1">
+          <Link
+            to="/vehicles/$vehicleId/view"
+            params={{ vehicleId: v.id }}
+            data-card-link
+            className="block truncate font-semibold outline-none after:absolute after:inset-0 group-hover:text-primary"
+          >
+            {vehicleName(v)}
+          </Link>
+          <p className="truncate text-xs text-muted-foreground">
+            {v.number} · {v.category.name} · {v.year}
+          </p>
         </div>
+        <VehicleStatusIndicator status={v.status} className="shrink-0" />
+      </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="rounded-md border-2 border-foreground bg-background px-2 py-0.5 font-mono text-sm font-semibold tracking-wider">
-            {v.plate_number}
-          </span>
-          {v.second_plate_number && (
-            <span className="rounded-md border-2 border-foreground bg-background px-2 py-0.5 font-mono text-sm font-semibold tracking-wider">
-              {v.second_plate_number}
-            </span>
-          )}
-          <span className="text-sm text-muted-foreground">{v.year}</span>
-        </div>
-      </CardHeader>
+      {/* Plates */}
+      <div className="flex flex-wrap items-center gap-2 px-4">
+        <PlateNumber value={v.plate_number} />
+        {v.second_plate_number && <PlateNumber value={v.second_plate_number} />}
+      </div>
 
-      <CardContent className="flex flex-1 flex-col gap-4">
-        <div className="grid grid-cols-2 gap-x-5 gap-y-3">
-          <Spec
-            icon={Fuel}
-            label="Engine"
-            value={`${engineLabel(v.engine_type)} · ${v.cylinders} cyl`}
+      {/* Key metrics */}
+      <div className="mx-4 mt-3 grid grid-cols-3 divide-x rounded-lg border bg-muted/40">
+        <Metric
+          label="Engine"
+          value={formatNumber(v.tank_capacity)}
+          unit="cc"
+        />
+        <Metric
+          label="Economy"
+          value={formatNumber(v.fuel_consumption_rate)}
+          unit="km/L"
+        />
+        {isTruck ? (
+          <Metric
+            label="Payload"
+            value={
+              v.tonnage_capacity != null ? formatNumber(v.tonnage_capacity) : "-"
+            }
+            unit={v.tonnage_capacity != null ? "t" : undefined}
           />
-          <Spec icon={Cog} label="Gearbox" value={humanize(v.gearbox)} />
-          <Spec
-            icon={Gauge}
-            label="Drive train · Axles"
-            value={`${v.drive_train.name} · ${v.total_axles}`}
-          />
-          <Spec icon={Users} label="Seats" value={v.seats ?? "Not set"} />
-          <Spec
-            icon={Fuel}
-            label="Tank capacity"
-            value={`${formatNumber(v.tank_capacity)} L`}
-          />
-          <Spec
-            icon={Gauge}
-            label="Fuel rate"
-            value={formatNumber(v.fuel_consumption_rate)}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          <ColorText name={v.color} label="Exterior" />
-          <ColorText name={v.interior_color} label="Interior" />
-        </div>
-
-        {v.features.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {v.features.map((f) => (
-              <Badge key={f.id} variant="outline" className="font-normal">
-                {f.name}
-              </Badge>
-            ))}
-          </div>
+        ) : (
+          <Metric label="Seats" value={v.seats ?? "-"} />
         )}
-      </CardContent>
+      </div>
 
-      <Separator />
+      {/* Specs line */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pt-3 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1">
+          <Fuel className="size-3.5" aria-hidden />
+          {engineLabel(v.engine_type)} · {v.cylinders} cyl
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Cog className="size-3.5" aria-hidden />
+          {humanize(v.gearbox)}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Milestone className="size-3.5" aria-hidden />
+          {v.drive_train.name}
+          {v.total_axles ? ` · ${v.total_axles} axles` : ""}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <ColorDot name={v.color} className="size-3" />
+          <ColorDot name={v.interior_color} className="-ml-2.5 size-3" />
+          <span title={`Exterior / interior`}>
+            {carColor(v.color).label} / {carColor(v.interior_color).label}
+          </span>
+        </span>
+      </div>
 
-      <CardFooter className="pt-4">
+      {/* Features */}
+      <div className="flex min-h-6 flex-1 flex-wrap content-start gap-1.5 px-4 pt-3">
+        {v.features.slice(0, MAX_FEATURES).map((f) => (
+          <Badge key={f.id} variant="secondary" className="font-normal capitalize">
+            {f.name}
+          </Badge>
+        ))}
+        {extraFeatures > 0 && (
+          <Badge
+            variant="outline"
+            className="font-normal"
+            title={v.features
+              .slice(MAX_FEATURES)
+              .map((f) => f.name)
+              .join(", ")}
+          >
+            +{extraFeatures} more
+          </Badge>
+        )}
+      </div>
+
+      {/* Driver */}
+      <div className="mt-4 border-t bg-muted/30 px-4 py-3">
         {v.driver ? (
-          <div className="flex w-full items-center gap-3">
-            <Avatar>
-              <AvatarFallback>{initials(v.driver.name)}</AvatarFallback>
+          <div className="flex items-center gap-3">
+            <Avatar className="size-8">
+              <AvatarFallback className="text-xs">
+                {generateAvatorFallback(v.driver.name)}
+              </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{v.driver.name}</p>
-              <a
-                href={`tel:${v.driver.phone.replace(/\s/g, "")}`}
-                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-              >
-                <Phone className="size-3" />
-                {v.driver.phone}
-              </a>
+              <p className="truncate text-sm font-medium capitalize">
+                {v.driver.name}
+              </p>
+              <p className="text-xs text-muted-foreground">Driver</p>
             </div>
+            <a
+              href={`tel:${v.driver.phone.replace(/\s/g, "")}`}
+              className="relative z-10 inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-muted-foreground hover:bg-background hover:text-foreground"
+            >
+              <Phone className="size-3" aria-hidden />
+              {v.driver.phone}
+            </a>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <UserRound className="size-4" />
+          <div className="flex h-8 items-center gap-2 text-sm text-muted-foreground">
+            <UserRoundX className="size-4" aria-hidden />
             No driver assigned
           </div>
         )}
-      </CardFooter>
+      </div>
     </Card>
   )
 }
