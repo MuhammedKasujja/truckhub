@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query"
+import { createFileRoute } from "@tanstack/react-router"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import {
   ShipmentTable,
@@ -5,33 +7,23 @@ import {
 } from "@/features/shipments/components"
 import { shipmentsCompletedQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
-import { useQuery } from "@tanstack/react-query"
-import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/shipments/completed/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  pendingComponent: ShipmentTableSkeleton,
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
-  loader: ({ context, deps: { search } }) => {
-    context.queryClient.ensureQueryData(shipmentsCompletedQueryOptions(search))
-  },
+  loader: ({ context, deps: { search } }) =>
+    context.queryClient.prefetchQuery(shipmentsCompletedQueryOptions(search)),
 })
 
 function RouteComponent() {
   const search = Route.useSearch()
+  const { data, isLoading } = useQuery(shipmentsCompletedQueryOptions(search))
 
-  const { data, isLoading, isFetching } = useQuery(
-    shipmentsCompletedQueryOptions(search)
-  )
+  // Only the first load shows a skeleton; refetches keep the table in place
+  if (isLoading) return <ShipmentTableSkeleton />
 
-  if (isLoading || isFetching) {
-    return <ShipmentTableSkeleton />
-  }
-
-  return (
-    <div>
-      <ShipmentTable data={data?.data} pagination={data?.pagination} />
-    </div>
-  )
+  return <ShipmentTable data={data?.data} pagination={data?.pagination} />
 }

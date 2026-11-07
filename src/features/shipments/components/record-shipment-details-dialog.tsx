@@ -1,37 +1,58 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Shipment } from "../types"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
-import {
-  RecordShipmentDetailsInput,
-  recordShipmentDetailsSchema,
-} from "../schemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
-import {
-  MoneyField,
-  TextareaField,
-  TextField,
-} from "@/components/ui/form-fields"
-import { SubmitButton } from "@/components/ui/submit-button"
 import { useEffect } from "react"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { XIcon } from "lucide-react"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { IconReceiptTax } from "@tabler/icons-react"
+import { Fuel, Gauge, Plus, X } from "lucide-react"
+import { recordShipmentDetailsSchema } from "../schemas"
+import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
+import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import type { RecordShipmentDetailsInput } from "../schemas"
+import type { Shipment } from "../types"
+import type React from "react"
+import { TextField, TextareaField } from "@/components/ui/form-fields"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Decimal from "@/lib/decimal-config"
-import { ActionIcon } from "@/components/icons"
+import { formatMoney } from "@/lib/format"
 
 type Props = {
   shipment?: Shipment
   open: boolean
   onOpenChange: (v: boolean) => void
+}
+
+const safeDecimal = (value: unknown) => {
+  try {
+    return new Decimal(
+      value === undefined || value === null || value === "" ? 0 : String(value)
+    )
+  } catch {
+    return new Decimal(0)
+  }
+}
+
+// Digits with at most one decimal point and two decimal places
+const sanitizeAmount = (raw: string) => {
+  const cleaned = raw.replace(/[^0-9.]/g, "")
+  const [whole, ...rest] = cleaned.split(".")
+  return rest.length ? `${whole}.${rest.join("").slice(0, 2)}` : whole
+}
+
+function defaultsFor(shipment?: Shipment): RecordShipmentDetailsInput {
+  const consumption = shipment?.consumption
+  const rates = consumption?.consumed_fuel_rates ?? []
+  return {
+    unitId: shipment?.id as RecordShipmentDetailsInput["unitId"],
+    startMileage: consumption?.start_mileage ?? "",
+    endMileage: consumption?.end_mileage ?? "",
+    distanceKm: consumption?.distance_km ?? "",
+    vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
+    consumedFuelRates: rates.length
+      ? rates.map((value) => ({ value }))
+      : [{ value: undefined }],
+    actualFuelConsumed: "0",
+    notes: "",
+  }
 }
 
 export function RecordShipmentDetailsDialog({
@@ -41,208 +62,260 @@ export function RecordShipmentDetailsDialog({
 }: Props) {
   const { saveShipmentDetails, isPending } = useRecordShipmentDetails()
 
-  const consumption = shipment?.consumption
-  const consumedFuelRates = consumption?.consumed_fuel_rates ?? []
-
   const form = useForm<RecordShipmentDetailsInput>({
     resolver: zodResolver(recordShipmentDetailsSchema),
-    defaultValues: {
-      unitId: shipment?.id,
-      startMileage: consumption?.start_mileage,
-      endMileage: consumption?.end_mileage,
-      vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
-      consumedFuelRates:
-        consumedFuelRates.length > 0
-          ? consumedFuelRates.map((rate) => ({
-              value: rate,
-            }))
-          : [{ value: "0" }],
-      actualFuelConsumed: "0",
-    },
+    defaultValues: defaultsFor(shipment),
     reValidateMode: "onChange",
   })
 
-  const startMileage = form.watch("startMileage")
-  const endMileage = form.watch("endMileage")
-  const fuelRate = form.watch("fuelRate")
-  const litresConsumed = form.watch("fuelUsedLitres")
+  useEffect(() => {
+    if (open) form.reset(defaultsFor(shipment))
+  }, [form, open, shipment])
 
-  const fuelConsumptionRatesFields = useFieldArray({
+  const rateFields = useFieldArray({
     control: form.control,
     name: "consumedFuelRates",
   })
 
-  const fuelConsumptionRates = form.watch("consumedFuelRates")
+  const startMileage = useWatch({ control: form.control, name: "startMileage" })
+  const endMileage = useWatch({ control: form.control, name: "endMileage" })
+  const consumptionRate = useWatch({
+    control: form.control,
+    name: "vehicleConsumptionRate",
+  })
+  const fuelRates = useWatch({
+    control: form.control,
+    name: "consumedFuelRates",
+  })
+  const litres = useWatch({ control: form.control, name: "fuelUsedLitres" })
+  const avgRate = useWatch({ control: form.control, name: "fuelRate" })
+  const fuelCharge = useWatch({
+    control: form.control,
+    name: "actualFuelConsumed",
+  })
 
+  // Distance and litres used from the odometer readings
   useEffect(() => {
-    const newStartMileage = new Decimal(startMileage ?? 0)
-    const newEndMileage = new Decimal(endMileage ?? 0)
-
-    if (newStartMileage.greaterThan(newEndMileage)) {
+    const start = safeDecimal(startMileage)
+    const end = safeDecimal(endMileage)
+    if (!endMileage) return
+    if (start.greaterThan(end)) {
       form.setError("endMileage", {
-        message: "Invalid end mileage",
+        message: "Must be higher than the start reading",
       })
-    } else {
-      // form.clearErrors()
-      const distance = newEndMileage.minus(newStartMileage)
-      form.setValue("distanceKm", distance.toFixed())
-      const consumptionRate = form.getValues("vehicleConsumptionRate")
-      const litresUsed = new Decimal(distance).div(consumptionRate)
-      form.setValue("fuelUsedLitres", litresUsed.toFixed(2))
+      return
     }
-  }, [startMileage, endMileage, open])
-
-  useEffect(() => {
-    const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
-    form.setValue("actualFuelConsumed", consumedFuel.toFixed(2))
-  }, [fuelRate, litresConsumed])
-
-  useEffect(() => {
-    const validFuelRates = fuelConsumptionRates.filter(
-      (rate) => rate.value != null
+    form.clearErrors("endMileage")
+    const distance = end.minus(start)
+    form.setValue("distanceKm", distance.toFixed())
+    const rate = safeDecimal(consumptionRate)
+    form.setValue(
+      "fuelUsedLitres",
+      rate.greaterThan(0) ? distance.div(rate).toFixed(2) : "0"
     )
-    const rates = validFuelRates.reduce(
-      (curr, rate) => curr.plus(new Decimal(rate.value?.toString() ?? 0)),
-      new Decimal(0)
-    )
-    const averageFuelRate = rates.dividedBy(validFuelRates.length)
+  }, [form, startMileage, endMileage, consumptionRate])
 
-    form.setValue("fuelRate", averageFuelRate.toString())
-  }, [fuelConsumptionRates])
+  // Average fuel price across the receipts entered
+  useEffect(() => {
+    const valid = fuelRates.filter((r) => r.value && safeDecimal(r.value).gt(0))
+    const avg = valid.length
+      ? valid
+          .reduce((sum, r) => sum.plus(safeDecimal(r.value)), new Decimal(0))
+          .div(valid.length)
+          .toFixed(2)
+      : "0"
+    form.setValue("fuelRate", avg)
+  }, [form, fuelRates])
+
+  // Fuel charge = litres × average price
+  useEffect(() => {
+    form.setValue(
+      "actualFuelConsumed",
+      safeDecimal(avgRate).times(safeDecimal(litres)).toFixed(2)
+    )
+  }, [form, avgRate, litres])
+
+  const distance = useWatch({ control: form.control, name: "distanceKm" })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden ring-4 sm:max-w-sm md:min-w-lg">
-        <DialogHeader>
-          <DialogTitle>Record Shipment Details</DialogTitle>
-        </DialogHeader>
-        <form
-          id="shipment-details"
-          onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
-            console.log(errors.consumedFuelRates)
-          })}
-          className="no-scrollbar min-h-full flex-1 space-y-4 overflow-y-auto"
-        >
-          <Field orientation={"horizontal"}>
+    <ShipmentActionDialog
+      open={open && !!shipment}
+      onOpenChange={onOpenChange}
+      shipment={shipment}
+      icon={IconReceiptTax}
+      title="Capture trip details"
+      description="Odometer and fuel figures used to bill this trip."
+      formId="shipment-details"
+      submitLabel="Save details"
+      isSubmitting={isPending}
+      className="sm:max-w-lg"
+    >
+      <form
+        id="shipment-details"
+        className="space-y-6"
+        onSubmit={form.handleSubmit((values) =>
+          closeOnSuccess(
+            () =>
+              saveShipmentDetails({
+                ...values,
+                consumedFuelRates: values.consumedFuelRates.filter(
+                  (r) => !!r.value
+                ),
+              }),
+            () => onOpenChange(false)
+          )
+        )}
+      >
+        {/* Odometer */}
+        <section className="space-y-3">
+          <SectionTitle icon={Gauge}>Odometer</SectionTitle>
+          <div className="grid grid-cols-2 gap-3">
             <TextField
               readOnly
               required={false}
-              label="Start Mileage"
+              label="Start (km)"
               name="startMileage"
               control={form.control}
             />
             <TextField
-              required={false}
-              label="End Mileage"
+              label="End (km)"
               name="endMileage"
               control={form.control}
             />
-          </Field>
-          <TextField
-            readOnly
-            required={false}
-            label="Distance (km)"
-            name="distanceKm"
-            control={form.control}
-          />
+          </div>
+          <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm">
+            <span className="text-muted-foreground">Distance travelled</span>
+            <span className="font-medium tabular-nums">
+              {distance ? `${distance} km` : "—"}
+            </span>
+          </div>
+        </section>
 
-          <Field orientation={"horizontal"}>
+        {/* Fuel */}
+        <section className="space-y-3">
+          <SectionTitle icon={Fuel}>Fuel</SectionTitle>
+          <div className="grid grid-cols-2 gap-3">
             <TextField
               readOnly
               required={false}
-              label="Vehicle Consumption Rate (km/l)"
+              label="Vehicle economy (km/L)"
               name="vehicleConsumptionRate"
               control={form.control}
             />
             <TextField
               readOnly
               required={false}
-              label="Litres consumed"
+              label="Litres used"
               name="fuelUsedLitres"
               control={form.control}
             />
-          </Field>
-          <FieldGroup className="rounded-lg border border-dashed p-4">
-            <FieldLabel>
-              Fuel Consumptions{" "}
+          </div>
+
+          <div className="space-y-2 rounded-lg border border-dashed p-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">Fuel price per litre</p>
+                <p className="text-xs text-muted-foreground">
+                  Add one price per fill-up; the average is billed.
+                </p>
+              </div>
               <Button
                 type="button"
-                variant={"outline"}
-                size={"icon-sm"}
-                onClick={() => fuelConsumptionRatesFields.append({})}
+                variant="outline"
+                size="sm"
+                onClick={() => rateFields.append({ value: undefined })}
               >
-                <ActionIcon action="create" />
+                <Plus className="size-3.5" />
+                Add
               </Button>
-            </FieldLabel>
-            {fuelConsumptionRatesFields.fields.map((ele, index) => (
-              <Field key={ele.id} orientation={"horizontal"}>
+            </div>
+            {rateFields.fields.map((row, index) => (
+              <div key={row.id} className="flex items-center gap-2">
+                <span className="w-6 text-right text-xs text-muted-foreground tabular-nums">
+                  {index + 1}.
+                </span>
                 <Controller
                   control={form.control}
                   name={`consumedFuelRates.${index}.value`}
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      type={"number"}
+                      value={field.value ?? ""}
                       inputMode="decimal"
-                      id={field.name}
+                      placeholder="Price per litre"
+                      aria-label={`Fuel price ${index + 1}`}
                       aria-invalid={fieldState.invalid}
-                      value={field.value}
                       autoComplete="off"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault()
-                          fuelConsumptionRatesFields.append({})
+                          rateFields.append({ value: undefined })
                         }
                       }}
-                      onChange={(e) => {
-                        field.onChange(e.target.value.replace(/[^0-9]/g, ""))
-                      }}
+                      onChange={(e) =>
+                        field.onChange(
+                          sanitizeAmount(e.target.value) || undefined
+                        )
+                      }
                     />
                   )}
                 />
                 <Button
                   type="button"
-                  variant={"destructive"}
-                  onClick={() => fuelConsumptionRatesFields.remove(index)}
-                  size={"icon-sm"}
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={rateFields.fields.length === 1}
+                  onClick={() => rateFields.remove(index)}
+                  aria-label={`Remove fuel price ${index + 1}`}
                 >
-                  <XIcon />
+                  <X />
                 </Button>
-              </Field>
+              </div>
             ))}
-          </FieldGroup>
-          <MoneyField
-            readOnly
-            required={false}
-            label="Fuel Rate"
-            name="fuelRate"
-            control={form.control}
-          />
-          <MoneyField
-            readOnly
-            required={false}
-            label="Actual Fuel Consumed"
-            name="actualFuelConsumed"
-            control={form.control}
-          />
+          </div>
+        </section>
 
-          <TextareaField
-            label="Notes"
-            name="notes"
-            control={form.control}
-            required={false}
-            placeholder="optional"
-          />
-        </form>
-        <DialogFooter>
-          <DialogClose>
-            {/* <Button type="button" variant={"ghost"}> */}
-            Cancle
-            {/* </Button> */}
-          </DialogClose>
-          <SubmitButton isSubmitting={isPending} form="shipment-details" />
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        {/* Result */}
+        <dl className="space-y-2 rounded-lg bg-muted/40 p-3 text-sm">
+          <div className="flex justify-between">
+            <dt className="text-muted-foreground">Average price</dt>
+            <dd className="tabular-nums">{formatMoney(avgRate ?? 0)} / L</dd>
+          </div>
+          <div className="flex justify-between">
+            <dt className="text-muted-foreground">Litres used</dt>
+            <dd className="tabular-nums">{litres ?? "0"} L</dd>
+          </div>
+          <div className="flex items-center justify-between border-t pt-2">
+            <dt className="font-medium">Fuel charge</dt>
+            <dd className="text-base font-semibold text-primary tabular-nums">
+              {formatMoney(fuelCharge)}
+            </dd>
+          </div>
+        </dl>
+
+        <TextareaField
+          label="Notes"
+          name="notes"
+          control={form.control}
+          required={false}
+          placeholder="Anything worth noting about this trip (optional)"
+        />
+      </form>
+    </ShipmentActionDialog>
+  )
+}
+
+function SectionTitle({
+  icon: Icon,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  children: React.ReactNode
+}) {
+  return (
+    <h3 className="flex items-center gap-2 text-sm font-medium">
+      <Icon className="size-4 text-muted-foreground" />
+      {children}
+    </h3>
   )
 }

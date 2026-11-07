@@ -1,27 +1,39 @@
-import { Badge } from "@/components/reui/badge"
-import { ShipmentStatus } from "../enums"
+import type { ShipmentStatus } from "../enums"
 import { useTranslation } from "@/i18n"
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
+import { cn } from "@/lib/utils"
+
+type StatusTone = "success" | "info" | "warning" | "error" | "default"
+
+export const SHIPMENT_STATUS_TONE: Record<ShipmentStatus, StatusTone> = {
+  unassigned: "warning",
+  vehicle_assigned: "info",
+  assigned: "info",
+  dispatched: "info",
+  in_progress: "info",
+  delayed: "error",
+  idel: "warning",
+  completed: "success",
+  captured_details: "success",
+  invoiced: "default",
+  cancelled: "default",
+}
 
 type Props = {
   status: ShipmentStatus
+  className?: string
 }
 
-function getStatusColor(status: ShipmentStatus) {
-  if (status == "completed") return "success-outline"
-  else if (status == "in_progress") return "secondary"
-  else if (status == "cancelled") return "destructive-light"
-  else if (status == "invoiced") return "warning-light"
-  else if (status == "vehicle_assigned" || status == "assigned") return "focus-light"
-  return "invert-light"
-}
-
-export function ShipmentStatusIndicator({ status }: Props) {
+export function ShipmentStatusIndicator({ status, className }: Props) {
   const tr = useTranslation()
 
   return (
-    <Badge radius={"full"} variant={getStatusColor(status)}>
-      <span className="ms-px size-1.25 rounded-full! bg-[currentColor]" />
-      {tr(`shipments.status.${status}`)}
-    </Badge>
+    <Status
+      variant={SHIPMENT_STATUS_TONE[status]}
+      className={cn("gap-1.5 py-0.5", className)}
+    >
+      <StatusIndicator />
+      <StatusLabel>{tr(`shipments.status.${status}`)}</StatusLabel>
+    </Status>
   )
 }

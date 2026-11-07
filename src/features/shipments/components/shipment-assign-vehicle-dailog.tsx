@@ -1,37 +1,26 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Shipment } from "../types"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import {
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Check, Truck } from "lucide-react"
+import { assignShipmentVehicleSchema } from "../schemas"
+import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
+import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import type {
   AssignShipmentVehicleInput,
-  assignShipmentVehicleSchema,
   ShipmentVehicleFilters,
 } from "../schemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
-import { SubmitButton } from "@/components/ui/submit-button"
+import type { Shipment } from "../types"
 import { VehiclePickerField } from "@/features/vehicles/components"
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemTitle,
-} from "@/components/ui/item"
-import { useState } from "react"
 import { useVehicleConfigurations } from "@/features/settings/hooks/use-vehicle-configurations"
-import { cn } from "cn"
+import { cn } from "@/lib/utils"
 
 type Props = {
   shipment?: Shipment
   open: boolean
   onOpenChange: (v: boolean) => void
 }
+
+type FilterKey = keyof ShipmentVehicleFilters
 
 export function ShipmentAssignVehicleDialog({
   shipment,
@@ -40,168 +29,139 @@ export function ShipmentAssignVehicleDialog({
 }: Props) {
   const { assignShipmentVehicle, isPending } = useAssignShipmentVehicle()
   const { data: config } = useVehicleConfigurations()
+  const [filters, setFilters] = useState<ShipmentVehicleFilters>({})
 
   const form = useForm<AssignShipmentVehicleInput>({
     resolver: zodResolver(assignShipmentVehicleSchema),
-    defaultValues: {
-      unitId: shipment?.id,
-    },
+    defaultValues: { unitId: shipment?.id },
   })
-  const [filters, setFilters] = useState<ShipmentVehicleFilters>({})
+
+  useEffect(() => {
+    if (open && shipment) {
+      form.reset({ unitId: shipment.id })
+      setFilters({})
+    }
+  }, [form, open, shipment])
+
+  const item = shipment?.item
+  const requirements: {
+    key: FilterKey
+    label: string
+    display: string | undefined
+    value: string | null | undefined
+  }[] = item
+    ? [
+        {
+          key: "category_id",
+          label: "Category",
+          display: config?.vehicle_types.find(
+            (e) => e.id === item.vehicle_category_id
+          )?.name,
+          value: item.vehicle_category_id,
+        },
+        {
+          key: "brand_id",
+          label: "Make",
+          display: config?.car_brands.find((e) => e.id === item.car_brand_id)
+            ?.name,
+          value: item.car_brand_id,
+        },
+        {
+          key: "model_id",
+          label: "Model",
+          display: config?.car_models.find((e) => e.id === item.car_model_id)
+            ?.name,
+          value: item.car_model_id,
+        },
+        {
+          key: "tonnage",
+          label: "Tonnage",
+          display: item.tonnage ? `${item.tonnage} t` : undefined,
+          value: item.tonnage,
+        },
+        {
+          key: "consumption_rate",
+          label: "Fuel economy",
+          display: item.estimated_fuel_rate_km
+            ? `${item.estimated_fuel_rate_km} km/L`
+            : undefined,
+          value: item.estimated_consumption_rate_km?.toString(),
+        },
+      ].filter((r) => !!r.value)
+    : []
+
+  function toggle(key: FilterKey, value: string | null | undefined) {
+    setFilters((prev) => ({ ...prev, [key]: prev[key] ? undefined : value }))
+  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="ring-4 sm:max-w-sm md:min-w-lg">
-        <form
-          onSubmit={form.handleSubmit(assignShipmentVehicle, (errors) => {
-            console.log(errors)
-          })}
-          className="flex flex-col gap-4"
-        >
-          <DialogHeader>
-            <DialogTitle>Assign Vehicle</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            {shipment?.item.item_type === "small" && (
-              <div className="space-y-4">
-                {shipment?.item.service_id && (
-                  <Item variant={"outline"}>
-                    <ItemContent>
-                      <ItemDescription>Service</ItemDescription>
-                      <ItemTitle>{shipment.item.display_name}</ItemTitle>
-                    </ItemContent>
-                  </Item>
-                )}
-              </div>
-            )}
-            {shipment?.item.vehicle_category_id && (
-              <Item
-                variant={filters.category_id ? "muted" : "outline"}
-                className={cn(filters.category_id && "border-primary")}
-                onClick={() =>
-                  setFilters((pre) => ({
-                    ...pre,
-                    category_id: pre.category_id
-                      ? undefined
-                      : shipment?.item.vehicle_category_id,
-                  }))
-                }
-              >
-                <ItemContent>
-                  <ItemDescription>Category</ItemDescription>
-                  <ItemTitle>
-                    {
-                      config?.vehicle_types.find(
-                        (e) => e.id === shipment?.item?.vehicle_category_id
-                      )?.name
-                    }
-                  </ItemTitle>
-                </ItemContent>
-              </Item>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              {shipment?.item?.car_brand_id && (
-                <Item
-                  variant={filters.brand_id ? "muted" : "outline"}
-                  className={cn(filters.brand_id && "border-primary")}
-                  onClick={() =>
-                    setFilters((pre) => ({
-                      ...pre,
-                      brand_id: pre.brand_id
-                        ? undefined
-                        : shipment?.item.car_brand_id,
-                    }))
-                  }
-                >
-                  <ItemContent>
-                    <ItemDescription>Make</ItemDescription>
-                    <ItemTitle>
-                      {
-                        config?.car_brands.find(
-                          (e) => e.id === shipment?.item?.car_brand_id
-                        )?.name
-                      }
-                    </ItemTitle>
-                  </ItemContent>
-                </Item>
-              )}
-              {shipment?.item?.car_model_id && (
-                <Item
-                  variant={filters.model_id ? "muted" : "outline"}
-                  className={cn(filters.model_id && "border-primary")}
-                  onClick={() =>
-                    setFilters((pre) => ({
-                      ...pre,
-                      model_id: pre.model_id
-                        ? undefined
-                        : shipment?.item.car_model_id,
-                    }))
-                  }
-                >
-                  <ItemContent>
-                    <ItemDescription>Model</ItemDescription>
-                    <ItemTitle>
-                      {
-                        config?.car_models.find(
-                          (e) => e.id === shipment?.item?.car_model_id
-                        )?.name
-                      }
-                    </ItemTitle>
-                  </ItemContent>
-                </Item>
-              )}
-            </div>
-            {shipment?.item.estimated_fuel_rate_km && (
-              <Item
-                variant={filters.consumption_rate ? "muted" : "outline"}
-                className={cn(filters.consumption_rate && "border-primary")}
-                onClick={() =>
-                  setFilters((pre) => ({
-                    ...pre,
-                    consumption_rate: pre.consumption_rate
-                      ? undefined
-                      : shipment?.item.estimated_consumption_rate_km?.toString(),
-                  }))
-                }
-              >
-                <ItemContent>
-                  <ItemDescription>Consumption Rate</ItemDescription>
-                  <ItemTitle>
-                    {shipment.item.estimated_fuel_rate_km} km / l
-                  </ItemTitle>
-                </ItemContent>
-              </Item>
-            )}
-            {shipment?.item.tonnage && (
-              <Item
-                variant={filters.tonnage ? "muted" : "outline"}
-                className={cn(filters.tonnage && "border-primary")}
-                onClick={() =>
-                  setFilters((pre) => ({
-                    ...pre,
-                    tonnage: pre.tonnage ? undefined : shipment?.item.tonnage,
-                  }))
-                }
-              >
-                <ItemContent>
-                  <ItemDescription>Tonnage</ItemDescription>
-                  <ItemTitle>{shipment.item.tonnage} Tons</ItemTitle>
-                </ItemContent>
-              </Item>
-            )}
-            <VehiclePickerField
-              label="Vehicle"
-              name="vehicleId"
-              control={form.control}
-              filters={{ status: "available", ...filters }}
-            />
+    <ShipmentActionDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      shipment={shipment}
+      icon={Truck}
+      title="Assign vehicle"
+      description="Pick an available vehicle for this trip."
+      formId="assign-vehicle-form"
+      submitLabel="Assign vehicle"
+      isSubmitting={isPending}
+    >
+      {item?.item_type === "small" && item.service_id && item.display_name && (
+        <div className="text-sm">
+          <p className="text-xs text-muted-foreground">Service</p>
+          <p className="font-medium">{item.display_name}</p>
+        </div>
+      )}
+
+      {requirements.length > 0 && (
+        <div className="space-y-2">
+          <div>
+            <p className="text-sm font-medium">Match requirements</p>
+            <p className="text-xs text-muted-foreground">
+              Turn on a requirement to only list vehicles that meet it.
+            </p>
           </div>
-          <DialogFooter>
-            <DialogClose>Cancle</DialogClose>
-            <SubmitButton isSubmitting={isPending} />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          <div className="flex flex-wrap gap-2">
+            {requirements.map((req) => {
+              const active = !!filters[req.key]
+              return (
+                <button
+                  key={req.key}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => toggle(req.key, req.value)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors hover:bg-muted",
+                    active &&
+                      "border-primary bg-primary/10 text-primary hover:bg-primary/15"
+                  )}
+                >
+                  {active && <Check className="size-3.5" />}
+                  <span className="text-muted-foreground">{req.label}</span>
+                  <span className="font-medium">{req.display ?? "—"}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <form
+        id="assign-vehicle-form"
+        onSubmit={form.handleSubmit((values) =>
+          closeOnSuccess(
+            () => assignShipmentVehicle(values),
+            () => onOpenChange(false)
+          )
+        )}
+      >
+        <VehiclePickerField
+          label="Vehicle"
+          name="vehicleId"
+          control={form.control}
+          filters={{ status: "available", ...filters }}
+        />
+      </form>
+    </ShipmentActionDialog>
   )
 }

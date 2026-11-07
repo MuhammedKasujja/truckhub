@@ -1,13 +1,17 @@
-import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
-import { ShipmentTable } from "@/features/shipments/components"
-import { shipmentsConfirmedQueryOptions } from "@/features/shipments/query-options"
-import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import {
+  ShipmentTable,
+  ShipmentTableSkeleton,
+} from "@/features/shipments/components"
+import { shipmentsConfirmedQueryOptions } from "@/features/shipments/query-options"
+import { ShipmentSearchParams } from "@/features/shipments/schemas"
 
 export const Route = createFileRoute("/_admin/shipments/confirmed/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  pendingComponent: ShipmentTableSkeleton,
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
@@ -16,11 +20,10 @@ export const Route = createFileRoute("/_admin/shipments/confirmed/")({
 
 function RouteComponent() {
   const search = Route.useSearch()
+  const { data, isLoading } = useQuery(shipmentsConfirmedQueryOptions(search))
 
-  const { data } = useQuery(shipmentsConfirmedQueryOptions(search))
-  return (
-    <div>
-      <ShipmentTable data={data?.data} pagination={data?.pagination} />
-    </div>
-  )
+  // Only the first load shows a skeleton; refetches keep the table in place
+  if (isLoading) return <ShipmentTableSkeleton />
+
+  return <ShipmentTable data={data?.data} pagination={data?.pagination} />
 }
