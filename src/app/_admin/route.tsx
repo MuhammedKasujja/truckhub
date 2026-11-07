@@ -11,6 +11,7 @@ import { GlobalSearchDialog } from "@/components/global-search-dialog"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs"
 
 export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
@@ -36,14 +37,11 @@ function RouteComponent() {
         <SidebarInset className="overflow-x-clip">
           <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
             {/* <SidebarTrigger className="-ml-1" /> */}
-            <div className="">Dashboard</div>
-            {/* <Separator
-              orientation="vertical"
-              className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-            /> */}
             <div className="flex w-full items-center justify-between gap-4">
-              {/* <div></div> */}
-              <NavigationButtons />
+              <div className="flex min-w-0 items-center gap-3">
+                <NavigationButtons />
+                <AppBreadcrumbs />
+              </div>
               <div className="flex items-center gap-2">
                 <GlobalSearchDialog />
                 <CreateEntityDialog />
