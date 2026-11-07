@@ -1,39 +1,36 @@
-import { useTranslation } from "@/i18n";
-import { InvoiceStatus } from "../enums";
-import { Badge } from "@/components/ui/badge";
+import type { InvoiceStatus } from "../enums"
+import { useTranslation } from "@/i18n"
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
+import { cn } from "@/lib/utils"
+
+type StatusTone = "success" | "info" | "warning" | "error" | "default"
+
+const INVOICE_STATUS_TONE: Record<InvoiceStatus, StatusTone> = {
+  draft: "default",
+  issued: "info",
+  mailed: "info",
+  partially_paid: "warning",
+  over_due: "error",
+  paid: "success",
+  refunded: "default",
+  cancelled: "default",
+  void: "default",
+}
 
 type Props = {
   status: InvoiceStatus
+  className?: string
 }
 
-// const getStatusColor = (status: InvoiceStatus) => {
-//   switch (status) {
-//     case "completed":
-//       return "bg-emerald-500";
-//     case "partially_refunded":
-//       return "bg-muted-foreground/64";
-//     case "pending":
-//       return "bg-amber-500";
-//     case "cancelled":
-//     case "failed":
-//       return "bg-red-500";
-//     default:
-//       return "bg-muted-foreground/64";
-//   }
-// };
-
-export function InvoiceStatusIndicator({ status }: Props) {
+export function InvoiceStatusIndicator({ status, className }: Props) {
   const tr = useTranslation()
   return (
-    <Badge
-      variant="outline"
-      className="flex items-center justify-center rounded-sm capitalize"
+    <Status
+      variant={INVOICE_STATUS_TONE[status]}
+      className={cn("gap-1.5 py-0.5", className)}
     >
-      {/* <span
-        aria-hidden="true"
-        className={cn("size-1.5 rounded-sm", getStatusColor(status))}
-      /> */}
-      {tr(`invoices.statuses.${status}`)}
-    </Badge>
+      <StatusIndicator />
+      <StatusLabel>{tr(`invoices.statuses.${status}`)}</StatusLabel>
+    </Status>
   )
 }
