@@ -1,100 +1,79 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
+import React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import z from "zod"
+import { CarFront } from "lucide-react"
+import type z from "zod"
+import type { CarBrandUpdateSchemaType } from "@/features/settings/vehicle-config/car-brand/schemas"
 import {
   CarBrandCreateSchema,
   CarBrandUpdateSchema,
-  CarBrandUpdateSchemaType,
 } from "@/features/settings/vehicle-config/car-brand/schemas"
 import {
   createCarBrandFn,
   updateCarBrandFn,
 } from "@/features/settings/vehicle-config/car-brand/services"
 import { TextField } from "@/components/ui/form-fields"
-import React from "react"
-import { useTranslation } from "@/i18n"
-import { SubmitButton } from "@/components/ui/submit-button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ActionIcon } from "@/components/icons"
+import { SettingsFormDialog } from "@/features/settings/_components/settings-ui"
 
 type Props = {
-  trigger?: React.ReactNode
   initialData?: CarBrandUpdateSchemaType
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function CarBrandForm({ trigger, initialData }: Props) {
-  const tr = useTranslation()
-  const queryInvalidator = useQueryInvalidator()
+const emptyValues = { name: "" }
 
-  const [open, setOpen] = React.useState(false)
+export function CarBrandForm({ initialData, open, onOpenChange }: Props) {
+  const queryInvalidator = useQueryInvalidator()
   const isEdit = !!initialData
 
   const formSchema = isEdit ? CarBrandUpdateSchema : CarBrandCreateSchema
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ?? emptyValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateCarBrandFn({ data: values })
-        : createCarBrandFn({ data: values })
+  // Start from the saved values each time the dialog opens.
+  React.useEffect(() => {
+    if (open) form.reset(initialData ?? emptyValues)
+  }, [open])
 
-    const { isSuccess, error, message } = await promise
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { isSuccess, error, message } =
+      "id" in values
+        ? await updateCarBrandFn({ data: values })
+        : await createCarBrandFn({ data: values })
+
     if (isSuccess) {
       toast.success(message)
-      form.reset()
       queryInvalidator.settings.carBrands.list()
+      onOpenChange(false)
     } else {
       toast.error(error?.message)
     }
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
-            Car Brand
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>
-              {isEdit ? "Edit Car Brand" : "Add Car Brand"}
-            </DialogTitle>
-            <DialogDescription>Create new car brand</DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="grid flex-1 gap-4">
-              <TextField label="Name" control={form.control} name={"name"} />
-            </div>
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={CarFront}
+      eyebrow={isEdit ? "Edit car make" : "New car make"}
+      title={isEdit ? (initialData.name ?? "Car make") : "Add a car make"}
+      description="The manufacturer, e.g. Isuzu or Toyota. Add its models on the Car models tab."
+      size="sm"
+      submitText={isEdit ? "Save changes" : "Add make"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <TextField
+        label="Name"
+        control={form.control}
+        name="name"
+        placeholder="e.g. Isuzu"
+      />
+    </SettingsFormDialog>
   )
 }

@@ -1,8 +1,8 @@
 import z from "zod"
+import type { CarModel } from "@/features/settings/vehicle-config/car-model/types"
 import { IDSchema, ImageSchema } from "@/schemas"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
-import { CarModel } from "@/features/settings/vehicle-config/car-model/types"
 
 export const CarModelCreateSchema = z.object({
   name: z.string(),
@@ -28,6 +28,8 @@ export const CarModelSearchParamsCache = z.object({
   // advanced filter
   filters: getFiltersStateSchema().default([]),
   ...DefaultSearchParamsSchema.shape,
+  /** Show only this make's models (client-side filter, not sent to the API). */
+  brand: z.string().optional(),
 })
 
 export type CarModelListSearchParams = z.infer<typeof CarModelSearchParamsCache>

@@ -3,8 +3,6 @@ import { Link } from "@tanstack/react-router"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import {
-  Bus,
-  Car,
   MoreHorizontal,
   PencilIcon,
   Truck,
@@ -13,6 +11,7 @@ import {
 import { deleteServiceFn } from "../services"
 import type { Service } from "@/features/services/types"
 import type { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
+import { vehicleTypeMeta } from "@/features/settings/vehicle-config/vehicle-categories/vehicle-type-meta"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/confirm-dialog"
@@ -29,14 +28,7 @@ import { useTranslation } from "@/i18n"
 import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
-export const vehicleTypeMeta: Record<
-  VehicleType,
-  { label: string; icon: typeof Truck }
-> = {
-  truck: { label: "Truck", icon: Truck },
-  van: { label: "Van", icon: Bus },
-  car: { label: "Car", icon: Car },
-}
+export { vehicleTypeMeta }
 
 /** "Isuzu FVR · 2018+" for model pricing, else the vehicle category. */
 export function serviceVehicleLabel(service: Service) {

@@ -1,118 +1,152 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
-import { useForm } from "react-hook-form"
+import React from "react"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import z from "zod"
+import { Layers } from "lucide-react"
+import { vehicleTypesList } from "../enums"
+import { vehicleTypeMeta } from "../vehicle-type-meta"
+import {
+  useCreateVehicleCategory,
+  useEditVehicleCategory,
+} from "../../hooks/use-vehicle-category"
+import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
+import type z from "zod"
+import type { VehicleCategory } from "../types"
+import type { VehicleType } from "../enums"
 import {
   VehicleCategoryCreateSchema,
   VehicleCategoryUpdateSchema,
 } from "@/features/settings/vehicle-config/vehicle-categories/schemas"
-import { ImageField, SelectField, TextField } from "@/components/ui/form-fields"
-import React from "react"
-import { SubmitButton } from "@/components/ui/submit-button"
+import { ImageField, TextField } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
-import { VehicleCategoryPickerField } from "./vehicle-category-pickers"
-import { ActionIcon } from "@/components/icons"
-import { vehicleTypesList } from "../enums"
-import { BaseFormProps } from "@/common/types"
+import {
+  FormGroup,
+  OptionTile,
+  SettingsFormDialog,
+} from "@/features/settings/_components/settings-ui"
 
 type VehicleCategoryFormProps = {
-  trigger?: React.ReactNode
-} & BaseFormProps<
-  z.infer<typeof VehicleCategoryCreateSchema>,
-  z.infer<typeof VehicleCategoryUpdateSchema>
->
+  /** The category to edit; omit to create one. */
+  category?: VehicleCategory
+  /** Pre-select a type when creating. */
+  defaultType?: VehicleType
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
 export function VehicleCategoryForm({
-  trigger,
-  defaultValues,
-  mode,
-  onSubmit,
+  category,
+  defaultType,
+  open,
+  onOpenChange,
 }: VehicleCategoryFormProps) {
   const tr = useTranslation()
-  const [open, setOpen] = React.useState(false)
-  const isEdit = mode === "edit"
+  const isEdit = !!category
+  const create = useCreateVehicleCategory()
+  const edit = useEditVehicleCategory()
 
   const formSchema = isEdit
     ? VehicleCategoryUpdateSchema
     : VehicleCategoryCreateSchema
+  type Values = z.infer<typeof formSchema>
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const initialValues = (): Partial<Values> =>
+    category ? { ...category } : { name: "", type: defaultType }
+
+  const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: initialValues(),
   })
 
-  async function handleSubmit(values: z.infer<typeof formSchema>) {
-    if (mode === "edit") {
-      onSubmit(VehicleCategoryUpdateSchema.parse(values))
-    } else {
-      onSubmit(VehicleCategoryCreateSchema.parse(values))
+  React.useEffect(() => {
+    if (open) form.reset(initialValues())
+  }, [open])
+
+  async function handleSubmit(values: Values) {
+    try {
+      if (isEdit) {
+        await edit.mutateAsync(VehicleCategoryUpdateSchema.parse(values))
+      } else {
+        await create.mutateAsync(VehicleCategoryCreateSchema.parse(values))
+      }
+      onOpenChange(false)
+    } catch {
+      // The hooks show the error toast; keep the dialog open to fix it.
     }
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button size="sm" className="font-normal">
-            <ActionIcon action="create" />
-            Vehicle Category
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>
-              {isEdit ? "Edit Vehicle Category" : "New Vehicle Category"}
-            </DialogTitle>
-            <DialogDescription>Create new vehicle category</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <ImageField
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={Layers}
+      eyebrow={isEdit ? "Edit vehicle category" : "New vehicle category"}
+      title={
+        category ? (category.display_name ?? category.name) : "Add a vehicle category"
+      }
+      description="Categories group car models, like “Tipper truck” or “Minibus”."
+      size="lg"
+      submitText={isEdit ? "Save changes" : "Add category"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(handleSubmit)}
+    >
+      <div className="grid gap-6 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <FormGroup title="Photo" description="Optional.">
+          <ImageField
+            control={form.control}
+            name="image"
+            aspect={16 / 9}
+            src={category?.image_url ?? undefined}
+            width="full"
+          />
+        </FormGroup>
+
+        <div className="space-y-6">
+          <FormGroup title="Category">
+            <TextField
+              label="Name"
               control={form.control}
-              name={"image"}
-              className="col-span-2"
-              aspect={16 / 9}
-              src={form.getValues("image_url")}
-              width="full"
+              name="name"
+              placeholder="e.g. Tipper truck"
             />
-            <TextField label="Name" control={form.control} name={"name"} />
             <VehicleCategoryPickerField
-              label="Main Category"
-              name={"parent_category_id"}
+              label="Part of"
+              name="parent_category_id"
               control={form.control}
               required={false}
-              description="Leave blank if this is the main category"
+              description="Leave empty for a main category."
             />
-            <SelectField
-              label={"Type"}
+          </FormGroup>
+
+          <FormGroup title="Type">
+            <Controller
               control={form.control}
-              name={"type"}
-              placeholder="Select type"
-              options={vehicleTypesList.map((opt) => ({
-                label: tr(`vehicleTypes.${opt}`),
-                value: opt,
-              }))}
+              name="type"
+              render={({ field, fieldState }) => (
+                <div className="space-y-1.5">
+                  <div
+                    role="radiogroup"
+                    aria-label="Vehicle type"
+                    className="grid grid-cols-3 gap-2"
+                  >
+                    {vehicleTypesList.map((type) => (
+                      <OptionTile
+                        key={type}
+                        selected={field.value === type}
+                        onSelect={() => field.onChange(type)}
+                        icon={vehicleTypeMeta[type].icon}
+                        title={tr(`vehicleTypes.${type}`)}
+                      />
+                    ))}
+                  </div>
+                  {fieldState.error && (
+                    <p className="text-xs text-destructive">Choose a type</p>
+                  )}
+                </div>
+              )}
             />
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+          </FormGroup>
+        </div>
+      </div>
+    </SettingsFormDialog>
   )
 }
