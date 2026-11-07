@@ -1,8 +1,8 @@
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/auth"
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import {
   NavigationActions,
   NavigationButtons,
@@ -32,7 +32,11 @@ function RouteComponent() {
   useGlobalShortcuts()
   return (
     <AuthProvider>
-      <SidebarProvider className="overflow-x-clip" defaultOpen={false}>
+      <SidebarProvider
+        className="overflow-x-clip"
+        defaultOpen={false}
+        style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
+      >
         <AppSidebar />
         <SidebarInset className="overflow-x-clip">
           <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
