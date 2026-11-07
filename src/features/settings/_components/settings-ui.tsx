@@ -380,7 +380,8 @@ export function OptionTile({
       onClick={onSelect}
       className={cn(
         "relative flex w-full items-start gap-2.5 rounded-lg border bg-background p-3 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50",
-        selected && "border-primary bg-primary/5 ring-1 ring-primary hover:bg-primary/5"
+        selected && "border-primary bg-primary/5 ring-1 ring-primary hover:bg-primary/5",
+        className
       )}
     >
       {Icon && (

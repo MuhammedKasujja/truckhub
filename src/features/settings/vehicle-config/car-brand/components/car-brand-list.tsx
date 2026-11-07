@@ -11,7 +11,7 @@ import {
 } from "../../_components/config-ui"
 import { CarBrandForm } from "./car-brand-form"
 import type { CarBrand } from "../types"
-import type { CarModel } from "@/features/settings/vehicle-config/car-model/types"
+import type { VehicleConfigurations } from "@/types/setting"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import { SectionEmpty } from "@/features/settings/_components/settings-ui"
@@ -21,6 +21,9 @@ import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { formatPlural } from "@/lib/format"
 
 type Dialog = { kind: "form" | "delete"; brand?: CarBrand }
+
+/** A model as the cached vehicle configuration returns it. */
+type ConfigModel = VehicleConfigurations["car_models"][number]
 
 export function CarBrandList() {
   const search = useSearch({
@@ -34,7 +37,7 @@ export function CarBrandList() {
   // Model counts come from the cached vehicle configuration.
   const { data: config } = useVehicleConfigurationsQuery()
   const modelsByBrand = useMemo(() => {
-    const map = new Map<string, CarModel[]>()
+    const map = new Map<string, ConfigModel[]>()
     for (const model of config?.car_models ?? []) {
       map.set(model.car_brand_id, [...(map.get(model.car_brand_id) ?? []), model])
     }
@@ -137,7 +140,7 @@ function BrandCard({
 }: {
   brand: CarBrand
   /** Undefined while the vehicle configuration loads. */
-  models?: CarModel[]
+  models?: ConfigModel[]
   onEdit: () => void
   onDelete: () => void
 }) {
@@ -162,7 +165,7 @@ function BrandCard({
       </div>
       <Link
         to="/settings/vehicle-config/car-models"
-        search={(prev) => ({ ...prev, brand: brand.id })}
+        search={{ brand: brand.id }}
         className="mt-auto flex items-center justify-between border-t px-4 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
       >
         View models

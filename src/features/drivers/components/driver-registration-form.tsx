@@ -1,6 +1,5 @@
 import * as React from "react"
-import { useForm, useWatch, Controller } from "react-hook-form"
-import type { Control, FieldErrors, Path, Resolver } from "react-hook-form"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import {
@@ -9,9 +8,9 @@ import {
   BusFront,
   Car,
   Check,
+  Cigarette,
   CircleAlert,
   CircleCheck,
-  Cigarette,
   FileCheck2,
   FileText,
   FlaskConical,
@@ -20,13 +19,25 @@ import {
   IdCard,
   Loader2,
   Pill,
+  Plus,
   Truck,
   Upload,
   UserRound,
   Van,
   X,
 } from "lucide-react"
+import {
+  EDUCATION_LEVELS,
+  TEST_STATUSES,
+  VEHICLE_TYPES,
+  labelFor,
+  toOptions,
+} from "./driver-options"
+import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
+import type { Control, FieldErrors, Path, Resolver } from "react-hook-form"
 
+import type { TestStatus, VehicleType } from "./driver-options"
+import type { DriverPolicy } from "./driver-policy"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -50,28 +61,8 @@ import { cn } from "@/lib/utils"
 /* Config                                                              */
 /* ------------------------------------------------------------------ */
 
-const MIN_AGE = 25
-const MAX_AGE = 55
-const MIN_EXPERIENCE_YEARS = 2
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ACCEPTED_FILES = ["image/jpeg", "image/png", "application/pdf"]
-
-const VEHICLE_TYPES = [
-  "Motorcycle",
-  "Car",
-  "Pickup / Van",
-  "Minibus",
-  "Truck",
-  "Bus",
-] as const
-const EDUCATION_LEVELS = [
-  "Primary",
-  "O'Level",
-  "O'Level with a driving course",
-  "A'Level",
-  "Diploma",
-  "Degree",
-] as const
 
 const HEALTH_QUESTIONS = [
   {
@@ -104,7 +95,18 @@ const HEALTH_QUESTIONS = [
   },
 ] as const
 
-const TEST_STATUSES = ["Pending", "Passed", "Failed"] as const
+/** Vehicle types the driver is down for that the licence doesn't cover. */
+function uncoveredVehicleTypes(
+  vehicleTypes: readonly (VehicleType | undefined)[],
+  licenseCategories: readonly VehicleType[] | undefined
+) {
+  const covered = new Set(licenseCategories ?? [])
+  return [
+    ...new Set(
+      vehicleTypes.filter((t): t is VehicleType => !!t && !covered.has(t))
+    ),
+  ]
+}
 
 /* ------------------------------------------------------------------ */
 /* Schema                                                              */
@@ -129,16 +131,39 @@ const healthShape = Object.fromEntries(
 
 export type DriverFormMode = "create" | "edit"
 
-const licenseCopyFile = z
-  .instanceof(File, { message: "Upload a photocopy of the licence" })
-  .refine((f) => f.size <= MAX_FILE_SIZE, "File must be 5MB or smaller")
-  .refine((f) => ACCEPTED_FILES.includes(f.type), "Upload a JPG, PNG or PDF")
+// A non-fatal file check: `z.instanceof` aborts the parse when it fails,
+// which would also stop the cross-field checks below from running.
+const fileSchema = (message: string) =>
+  z.custom<File>().superRefine((v, ctx) => {
+    if (!(v instanceof File)) {
+      ctx.addIssue({ code: "custom", message })
+    } else if (v.size > MAX_FILE_SIZE) {
+      ctx.addIssue({ code: "custom", message: "File must be 5MB or smaller" })
+    } else if (!ACCEPTED_FILES.includes(v.type)) {
+      ctx.addIssue({ code: "custom", message: "Upload a JPG, PNG or PDF" })
+    }
+  })
+
+const licenseCopyFile = fileSchema("Upload a photocopy of the licence")
 
 /**
- * In edit mode the licence copy is already in the driver's portfolio, so a
- * new upload is optional.
+ * Builds the schema from the current system settings, so age and experience
+ * limits are never hard-coded. In edit mode the licence copy is already in
+ * the driver's portfolio, so a new upload is optional.
  */
-function buildDriverSchema(mode: DriverFormMode) {
+export function buildDriverSchema(
+  policy: DriverPolicy = DEFAULT_DRIVER_POLICY,
+  mode: DriverFormMode = "create",
+  /**
+   * Off when no yards are set up yet, so registration isn't blocked by a
+   * missing list; the payload then leaves `yardId` out.
+   */
+  { requireYard = true }: { requireYard?: boolean } = {}
+) {
+  const yardId = z
+    .number({ message: "Select the yard" })
+    .int()
+    .positive("Select the yard")
   return z
     .object({
       fullName: z.string().min(2, "Enter the driver's full name"),
@@ -153,20 +178,28 @@ function buildDriverSchema(mode: DriverFormMode) {
         )
         .refine((v) => {
           const age = ageOn(v)
-          return age >= MIN_AGE && age <= MAX_AGE
-        }, `Driver must be between ${MIN_AGE} and ${MAX_AGE} years old at registration`),
-      yard: z.string().min(1, "Enter the yard"),
+          return age >= policy.minAge && age <= policy.maxAge
+        }, `Driver must be between ${policy.minAge} and ${policy.maxAge} years old at registration`),
+      yardId: requireYard ? yardId : yardId.optional(),
 
-      vehicleType: z.enum(VEHICLE_TYPES, {
-        message: "Select the vehicle type",
-      }),
-      yearsExperience: z
-        .number({ message: "Enter years of experience" })
-        .min(
-          MIN_EXPERIENCE_YEARS,
-          `At least ${MIN_EXPERIENCE_YEARS} years of experience on the assigned vehicle type is required`
+      // Every vehicle type the driver can be assigned, each with its own
+      // experience (DRIVER_VEHICLE_TYPES).
+      vehicleTypes: z
+        .array(
+          z.object({
+            vehicleType: z.enum(VEHICLE_TYPES, {
+              message: "Select the vehicle type",
+            }),
+            yearsExperience: z
+              .number({ message: "Enter years of experience" })
+              .min(
+                policy.minExperienceYears,
+                `At least ${policy.minExperienceYears} years of experience on this vehicle type is required`
+              )
+              .max(50, "Enter a realistic number of years"),
+          })
         )
-        .max(50, "Enter a realistic number of years"),
+        .min(1, "Add at least one vehicle type"),
 
       education: z.enum(EDUCATION_LEVELS, {
         message: "Select the education level",
@@ -176,9 +209,10 @@ function buildDriverSchema(mode: DriverFormMode) {
       drugUser: z.boolean(),
 
       licenseNumber: z.string().min(3, "Enter the licence number"),
-      licenseClass: z.enum(VEHICLE_TYPES, {
-        message: "Select the licence category",
-      }),
+      // One licence can cover several categories (DRIVER_LICENSE_CLASSES).
+      licenseClasses: z
+        .array(z.enum(VEHICLE_TYPES))
+        .min(1, "Select at least one licence category"),
       licenseExpiry: z
         .string()
         .min(1, "Enter the licence expiry date")
@@ -195,51 +229,169 @@ function buildDriverSchema(mode: DriverFormMode) {
       driverConfirmed: z
         .boolean()
         .refine((v) => v, "Confirm the driver has verified the information"),
-      signedQuestionnaire: z
-        .instanceof(File)
-        .refine((f) => f.size <= MAX_FILE_SIZE, "File must be 5MB or smaller")
-        .refine(
-          (f) => ACCEPTED_FILES.includes(f.type),
-          "Upload a JPG, PNG or PDF"
-        )
-        .optional(),
+      signedQuestionnaire: fileSchema("Upload a file").optional(),
     })
-    .superRefine((data, ctx) => {
-      if (
-        data.licenseClass &&
-        data.vehicleType &&
-        data.licenseClass !== data.vehicleType
-      ) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["licenseClass"],
-          message: "Licence must be valid for the vehicle to be driven",
+    // Object-level checks normally wait until every field is valid; `when`
+    // lets each one run as soon as the fields it reads are valid, so the
+    // errors show while the rest of the form is still being filled in.
+    .superRefine(
+      (data, ctx) => {
+        // Each vehicle type only once.
+        const seen = new Set<string>()
+        data.vehicleTypes.forEach((v, i) => {
+          if (seen.has(v.vehicleType)) {
+            ctx.addIssue({
+              code: "custom",
+              path: ["vehicleTypes", i, "vehicleType"],
+              message: "Each vehicle type can only be added once",
+            })
+          }
+          seen.add(v.vehicleType)
         })
-      }
-      for (const q of HEALTH_QUESTIONS) {
-        const answer = (data as Record<string, unknown>)[q.name]
-        const details = (data as Record<string, unknown>)[
-          `${q.name}Details`
-        ] as string | undefined
-        if (answer === "yes" && !details?.trim()) {
+
+        // The licence must cover every vehicle type the driver can drive.
+        const missing = uncoveredVehicleTypes(
+          data.vehicleTypes.map((v) => v.vehicleType),
+          data.licenseClasses
+        )
+        if (missing.length > 0) {
           ctx.addIssue({
             code: "custom",
-            path: [`${q.name}Details`],
-            message: "Please give details",
+            path: ["licenseClasses"],
+            message: `Licence must cover every assigned vehicle type: ${missing
+              .map((t) => labelFor("vehicleType", t))
+              .join(", ")}`,
           })
         }
+      },
+      {
+        when: ({ issues }) =>
+          !issues.some((i) =>
+            ["vehicleTypes", "licenseClasses"].includes(String(i.path?.[0]))
+          ),
       }
-    })
+    )
+    .superRefine(
+      (data, ctx) => {
+        for (const q of HEALTH_QUESTIONS) {
+          const answer = (data as Record<string, unknown>)[q.name]
+          const details = (data as Record<string, unknown>)[
+            `${q.name}Details`
+          ] as string | undefined
+          if (answer === "yes" && !details?.trim()) {
+            ctx.addIssue({
+              code: "custom",
+              path: [`${q.name}Details`],
+              message: "Please give details",
+            })
+          }
+        }
+      },
+      // Only reads the answers and details, which are always strings.
+      { when: () => true }
+    )
 }
 
-export const driverSchema = buildDriverSchema("create")
+/** The registration schema with the default policy. */
+export const driverSchema = buildDriverSchema()
 
 export type DriverFormValues = Omit<
   z.infer<typeof driverSchema>,
-  "licenseCopy"
+  "licenseCopy" | "yardId"
 > & {
   /** Required when registering; optional when editing. */
   licenseCopy?: File
+  /** Required whenever yards are set up. */
+  yardId?: number
+}
+
+/* ------------------------------------------------------------------ */
+/* API payload                                                         */
+/* ------------------------------------------------------------------ */
+
+/** Body for POST /drivers. Matches the API's DriverCreate schema (camelCase). */
+export interface DriverCreatePayload {
+  fullName: string
+  phone: string
+  nationalId: string
+  dateOfBirth: string
+  /** Omitted while no yards are set up. */
+  yardId?: number
+  vehicleTypes: { vehicleType: VehicleType; yearsExperience: number }[]
+  education: string
+  isSmoker: boolean
+  isDrugUser: boolean
+  licenseNumber: string
+  licenseClasses: VehicleType[]
+  licenseExpiry: string
+  /** Keyed by health condition code, e.g. "serious_illness". */
+  health: Record<string, { answer: boolean; details: string | null }>
+  drugAlcoholTest: TestStatus
+  skillsTest: TestStatus
+  practicalTest: TestStatus
+  driverConfirmed: boolean
+}
+
+export type DriverSubmitData = {
+  payload: DriverCreatePayload
+  /** Upload to storage, then register with POST /drivers/{id}/documents. */
+  licenseCopy?: File
+  signedQuestionnaire?: File
+}
+
+/** Throw from `onSubmit` to show server-side validation errors on fields. */
+export class ApiFieldErrors extends Error {
+  constructor(public errors: { field: string; message: string }[]) {
+    super(errors.map((e) => e.message).join("; "))
+  }
+}
+
+const toSnake = (s: string) => s.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)
+
+/**
+ * Turns form values into the API body. Files are returned separately: they
+ * are uploaded on their own and attached to the driver afterwards.
+ */
+export function toDriverCreatePayload(
+  values: DriverFormValues
+): DriverSubmitData {
+  const v = values as Record<string, unknown>
+  const health = Object.fromEntries(
+    HEALTH_QUESTIONS.map((q) => {
+      const yes = v[q.name] === "yes"
+      const details = ((v[`${q.name}Details`] as string | undefined) ?? "").trim()
+      return [
+        toSnake(q.name),
+        { answer: yes, details: yes ? details || null : null },
+      ]
+    })
+  )
+  return {
+    licenseCopy: values.licenseCopy,
+    signedQuestionnaire: values.signedQuestionnaire,
+    payload: {
+      fullName: values.fullName.trim(),
+      phone: values.phone.trim(),
+      nationalId: values.nationalId.trim(),
+      dateOfBirth: values.dateOfBirth,
+      yardId: values.yardId,
+      vehicleTypes: values.vehicleTypes.map((t) => ({
+        vehicleType: t.vehicleType,
+        yearsExperience: t.yearsExperience,
+      })),
+      education: values.education,
+      isSmoker: values.smoker,
+      isDrugUser: values.drugUser,
+      licenseNumber: values.licenseNumber.trim(),
+      licenseClasses: values.licenseClasses,
+      licenseExpiry: values.licenseExpiry,
+      health,
+      drugAlcoholTest: values.drugAlcoholTest,
+      skillsTest: values.skillsTest,
+      practicalTest: values.practicalTest,
+      driverConfirmed: values.driverConfirmed,
+    },
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -263,19 +415,24 @@ const SECTIONS: SectionDef[] = [
     id: "details",
     title: "Driver details",
     icon: UserRound,
-    required: ["fullName", "phone", "nationalId", "dateOfBirth", "yard"],
+    required: ["fullName", "phone", "nationalId", "dateOfBirth", "yardId"],
   },
   {
     id: "experience",
-    title: "Experience",
+    title: "Vehicles & experience",
     icon: GraduationCap,
-    required: ["vehicleType", "yearsExperience", "education"],
+    required: ["vehicleTypes", "education"],
   },
   {
     id: "licence",
     title: "Driving licence",
     icon: IdCard,
-    required: ["licenseNumber", "licenseClass", "licenseExpiry", "licenseCopy"],
+    required: [
+      "licenseNumber",
+      "licenseClasses",
+      "licenseExpiry",
+      "licenseCopy",
+    ],
   },
   {
     id: "health",
@@ -305,23 +462,42 @@ const SECTIONS: SectionDef[] = [
   },
 ]
 
-const isFilled = (v: unknown) =>
-  v !== undefined && v !== null && v !== "" && v !== false
+/** Lists count once non-empty, with every field of every row filled. */
+const isFilled = (v: unknown): boolean => {
+  if (Array.isArray(v)) {
+    return (
+      v.length > 0 &&
+      v.every((item) =>
+        item && typeof item === "object"
+          ? Object.values(item).every(isFilled)
+          : isFilled(item)
+      )
+    )
+  }
+  return v !== undefined && v !== null && v !== "" && v !== false
+}
 
-function requiredFields(section: SectionDef, mode: DriverFormMode) {
-  return mode === "edit"
-    ? section.required.filter((f) => f !== "licenseCopy")
-    : section.required
+type RequiredOptions = { mode: DriverFormMode; requireYard: boolean }
+
+function requiredFields(
+  section: SectionDef,
+  { mode, requireYard }: RequiredOptions
+) {
+  return section.required.filter(
+    (f) =>
+      !(mode === "edit" && f === "licenseCopy") &&
+      !(!requireYard && f === "yardId")
+  )
 }
 
 function sectionState(
   section: SectionDef,
   values: Values,
   errors: FieldErrors<DriverFormValues>,
-  mode: DriverFormMode
+  options: RequiredOptions
 ): "done" | "error" | "todo" {
   const errorKeys = Object.keys(errors)
-  const required = requiredFields(section, mode)
+  const required = requiredFields(section, options)
   const fields = [
     ...section.required,
     ...(section.id === "health"
@@ -440,7 +616,10 @@ function SelectField({
   className,
   options,
   placeholder,
-}: BaseProps & { options: readonly string[]; placeholder: string }) {
+}: BaseProps & {
+  options: readonly { value: string; label: string }[]
+  placeholder: string
+}) {
   return (
     <Controller
       control={control}
@@ -463,8 +642,8 @@ function SelectField({
             </SelectTrigger>
             <SelectContent>
               {options.map((o) => (
-                <SelectItem key={o} value={o}>
-                  {o}
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -753,67 +932,273 @@ function HealthQuestion({
   )
 }
 
-const VEHICLE_ICONS: Record<(typeof VEHICLE_TYPES)[number], IconType> = {
-  Motorcycle: Bike,
-  Car: Car,
-  "Pickup / Van": Van,
-  Minibus: BusFront,
-  Truck: Truck,
-  Bus: Bus,
+const VEHICLE_ICONS: Record<VehicleType, IconType> = {
+  motorcycle: Bike,
+  car: Car,
+  pickup_van: Van,
+  minibus: BusFront,
+  truck: Truck,
+  bus: Bus,
 }
 
-function VehicleTypeField({ control }: { control: C }) {
+const emptyVehicle = {
+  vehicleType: undefined,
+  yearsExperience: undefined,
+} as unknown as { vehicleType: VehicleType; yearsExperience: number }
+
+/**
+ * One row per vehicle type the driver can be assigned, each with its own
+ * years of experience. A type can only be picked once.
+ */
+function VehiclesField({
+  control,
+  minExperienceYears,
+}: {
+  control: C
+  minExperienceYears: number
+}) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "vehicleTypes",
+  })
+  const vehicles: { vehicleType?: VehicleType }[] = useWatch({
+    control,
+    name: "vehicleTypes",
+  })
+  const used = vehicles.map((v) => v.vehicleType).filter(Boolean)
+  const allUsed = used.length >= VEHICLE_TYPES.length
+
   return (
     <Controller
       control={control}
-      name="vehicleType"
-      render={({ field, fieldState }) => (
-        <Field data-invalid={fieldState.invalid}>
-          <FieldLabel id="vehicleType-label">
-            Vehicle type being assigned
-          </FieldLabel>
-          <div
-            role="radiogroup"
-            aria-labelledby="vehicleType-label"
-            className="grid grid-cols-3 gap-2 sm:grid-cols-6 xl:grid-cols-3 2xl:grid-cols-6"
-          >
-            {VEHICLE_TYPES.map((type) => {
-              const Icon = VEHICLE_ICONS[type]
-              const selected = field.value === type
+      name="vehicleTypes"
+      render={({ fieldState }) => (
+        <div className="space-y-3">
+          <ul className="space-y-3">
+            {fields.map((row, index) => {
+              const current = vehicles[index]?.vehicleType
+              const Icon = current ? VEHICLE_ICONS[current] : Car
               return (
-                <button
-                  key={type}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => {
-                    field.onChange(type)
-                    field.onBlur()
-                  }}
-                  className={cn(
-                    "flex flex-col items-center gap-1.5 rounded-lg border bg-card px-2 py-3 text-xs font-medium text-muted-foreground transition-all outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring/50",
-                    selected &&
-                      "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
-                    fieldState.invalid && !selected && "border-destructive/50"
-                  )}
+                <li
+                  key={row.id}
+                  className="flex items-start gap-3 rounded-lg border bg-card p-3"
                 >
-                  <Icon className="size-5" />
-                  <span className="text-center leading-tight">{type}</span>
-                </button>
+                  <span
+                    className={cn(
+                      "mt-6 flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground",
+                      current && "bg-primary/10 text-primary"
+                    )}
+                  >
+                    <Icon className="size-4" />
+                  </span>
+                  <div className="grid min-w-0 flex-1 gap-3 sm:grid-cols-[minmax(0,1fr)_150px]">
+                    <Controller
+                      control={control}
+                      name={`vehicleTypes.${index}.vehicleType`}
+                      render={({ field, fieldState: typeState }) => (
+                        <Field data-invalid={typeState.invalid}>
+                          <FieldLabel htmlFor={`vehicleTypes-${index}-vehicleType`}>
+                            Vehicle type
+                          </FieldLabel>
+                          <Select
+                            name={field.name}
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              id={`vehicleTypes-${index}-vehicleType`}
+                              className="w-full"
+                              aria-invalid={typeState.invalid}
+                              onBlur={field.onBlur}
+                            >
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {VEHICLE_TYPES.map((type) => (
+                                <SelectItem
+                                  key={type}
+                                  value={type}
+                                  // Each type once; keep this row's own choice.
+                                  disabled={type !== current && used.includes(type)}
+                                >
+                                  {labelFor("vehicleType", type)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {typeState.invalid && (
+                            <FieldError errors={[typeState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
+                    <NumberField
+                      control={control}
+                      name={`vehicleTypes.${index}.yearsExperience`}
+                      label="Experience"
+                      suffix="years"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="mt-6 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    disabled={fields.length === 1}
+                    onClick={() => remove(index)}
+                    aria-label={`Remove ${current ? labelFor("vehicleType", current) : "vehicle type"}`}
+                  >
+                    <X />
+                  </Button>
+                </li>
               )
             })}
-          </div>
-          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-        </Field>
+          </ul>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-dashed"
+            disabled={allUsed}
+            onClick={() => append(emptyVehicle, { shouldFocus: false })}
+          >
+            <Plus />
+            Add vehicle type
+          </Button>
+          <p className="text-xs text-muted-foreground">
+            Add every vehicle type the driver can be assigned, with at least{" "}
+            {minExperienceYears} years of experience on each.
+          </p>
+          {fieldState.error?.message && (
+            <FieldError errors={[fieldState.error]} />
+          )}
+        </div>
       )}
     />
   )
 }
 
-const TEST_TONES: Partial<Record<(typeof TEST_STATUSES)[number], string>> = {
-  Passed:
+/**
+ * The categories the licence covers. Categories needed for the driver's
+ * vehicle types are marked, and any that are missing are flagged.
+ */
+function LicenceCategoriesField({
+  control,
+  needed,
+}: {
+  control: C
+  needed: VehicleType[]
+}) {
+  return (
+    <Controller
+      control={control}
+      name="licenseClasses"
+      render={({ field, fieldState }) => {
+        const selected: VehicleType[] = field.value
+        const missing = uncoveredVehicleTypes(needed, selected)
+        const toggle = (type: VehicleType) => {
+          field.onChange(
+            selected.includes(type)
+              ? selected.filter((t) => t !== type)
+              : [...selected, type]
+          )
+          field.onBlur()
+        }
+        return (
+          <Field data-invalid={fieldState.invalid}>
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <FieldLabel id="licenseClasses-label">
+                Licence categories
+              </FieldLabel>
+              {missing.length > 0 && (
+                <button
+                  type="button"
+                  className="text-xs font-medium text-primary hover:underline"
+                  onClick={() => {
+                    field.onChange([...new Set([...selected, ...missing])])
+                    field.onBlur()
+                  }}
+                >
+                  Add {missing.map((t) => labelFor("vehicleType", t)).join(", ")}
+                </button>
+              )}
+            </div>
+            <div
+              role="group"
+              aria-labelledby="licenseClasses-label"
+              className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+            >
+              {VEHICLE_TYPES.map((type) => {
+                const Icon = VEHICLE_ICONS[type]
+                const isSelected = selected.includes(type)
+                const isNeeded = needed.includes(type)
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={isSelected}
+                    onClick={() => toggle(type)}
+                    className={cn(
+                      "flex items-center gap-2.5 rounded-lg border bg-card px-3 py-2.5 text-left text-sm transition-colors outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring/50",
+                      isSelected &&
+                        "border-primary bg-primary/5 hover:bg-primary/5",
+                      isNeeded &&
+                        !isSelected &&
+                        "border-dashed border-destructive/50"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input",
+                        isSelected &&
+                          "border-primary bg-primary text-primary-foreground"
+                      )}
+                    >
+                      {isSelected && <Check className="size-3" />}
+                    </span>
+                    <Icon
+                      className={cn(
+                        "size-4 shrink-0 text-muted-foreground",
+                        isSelected && "text-primary"
+                      )}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-medium">
+                        {labelFor("vehicleType", type)}
+                      </span>
+                      {isNeeded && (
+                        <span
+                          className={cn(
+                            "block text-[11px]",
+                            isSelected
+                              ? "text-muted-foreground"
+                              : "text-destructive"
+                          )}
+                        >
+                          {isSelected ? "Drives this" : "Needed"}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+            <FieldDescription>
+              Select every category the licence covers. It must cover each
+              vehicle type the driver can be assigned.
+            </FieldDescription>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )
+      }}
+    />
+  )
+}
+
+const TEST_TONES: Partial<Record<TestStatus, string>> = {
+  passed:
     "bg-emerald-600 text-white shadow-xs dark:bg-emerald-500 dark:text-emerald-950",
-  Failed: "bg-destructive text-white shadow-xs",
+  failed: "bg-destructive text-white shadow-xs",
 }
 
 function TestResultRow({
@@ -842,8 +1227,8 @@ function TestResultRow({
           </div>
           <Segmented
             labelledBy={labelId}
-            value={field.value as (typeof TEST_STATUSES)[number]}
-            options={TEST_STATUSES.map((s) => ({ value: s, label: s }))}
+            value={field.value as TestStatus}
+            options={toOptions("testStatus", TEST_STATUSES) as { value: TestStatus; label: string }[]}
             onChange={field.onChange}
             tone={TEST_TONES}
           />
@@ -906,7 +1291,8 @@ function useActiveSection(formRef: React.RefObject<HTMLFormElement | null>) {
       }
       // The section whose top is closest above the line; ties (sections side
       // by side) go to the earlier step.
-      let best: string | null = null
+      // Widened on purpose: TS can't see the assignment inside forEach.
+      let best = null as string | null
       let bestTop = -Infinity
       els.forEach((el, i) => {
         const top = el?.getBoundingClientRect().top
@@ -1099,10 +1485,56 @@ function SectionNav({
   )
 }
 
-function AgeBadge({ dob }: { dob: string | undefined }) {
+/** Yard picker; with no yards set up it says so instead of an empty list. */
+function YardField({ control, yards }: { control: C; yards: Yard[] }) {
+  return (
+    <Controller
+      control={control}
+      name="yardId"
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <FieldLabel htmlFor="yardId">Yard</FieldLabel>
+          <Select
+            name={field.name}
+            value={field.value ? String(field.value) : undefined}
+            onValueChange={(v) => field.onChange(Number(v))}
+            disabled={yards.length === 0}
+          >
+            <SelectTrigger
+              id="yardId"
+              className="w-full"
+              aria-invalid={fieldState.invalid}
+              onBlur={field.onBlur}
+            >
+              <SelectValue
+                placeholder={yards.length === 0 ? "No yards set up" : "Select yard"}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {yards.map((y) => (
+                <SelectItem key={y.id} value={String(y.id)}>
+                  {y.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
+  )
+}
+
+function AgeBadge({
+  dob,
+  policy,
+}: {
+  dob: string | undefined
+  policy: DriverPolicy
+}) {
   if (!dob || Number.isNaN(new Date(dob).getTime())) return null
   const age = ageOn(dob)
-  const ok = age >= MIN_AGE && age <= MAX_AGE
+  const ok = age >= policy.minAge && age <= policy.maxAge
   return (
     <span
       className={cn(
@@ -1128,11 +1560,22 @@ const healthDefaults = Object.fromEntries(
   HEALTH_QUESTIONS.map((q) => [`${q.name}Details`, ""])
 )
 
+export type Yard = { id: number; name: string }
+
 type DriverRegistrationFormProps = {
   /** "edit" prefills from `initialValues` and relaxes the licence upload. */
   mode?: DriverFormMode
+  /** Current rules from system settings. Defaults to DEFAULT_DRIVER_POLICY. */
+  policy?: DriverPolicy
+  /** Yards the driver can be based at. Empty until yards are set up. */
+  yards?: Yard[]
+  defaultYardId?: number
   initialValues?: Partial<DriverFormValues>
-  onSubmit?: (values: DriverFormValues) => void | Promise<void>
+  /**
+   * Save the driver. Throw ApiFieldErrors to show server-side errors on the
+   * matching fields; any other error shows a banner above the actions.
+   */
+  onSubmit?: (data: DriverSubmitData) => void | Promise<void>
   onCancel?: () => void
   /** For mutations that don't return a promise (e.g. `mutate`). */
   isSubmitting?: boolean
@@ -1140,13 +1583,24 @@ type DriverRegistrationFormProps = {
 
 export function DriverRegistrationForm({
   mode = "create",
+  policy = DEFAULT_DRIVER_POLICY,
+  yards = [],
+  defaultYardId,
   initialValues,
   onSubmit,
   onCancel,
   isSubmitting: isSubmittingProp = false,
 }: DriverRegistrationFormProps) {
   const isEdit = mode === "edit"
-  const schema = React.useMemo(() => buildDriverSchema(mode), [mode])
+  const { minAge, maxAge, minExperienceYears } = policy
+  const requireYard = yards.length > 0
+  const schema = React.useMemo(
+    () =>
+      buildDriverSchema({ minAge, maxAge, minExperienceYears }, mode, {
+        requireYard,
+      }),
+    [minAge, maxAge, minExperienceYears, mode, requireYard]
+  )
   const form = useForm<DriverFormValues>({
     resolver: zodResolver(schema) as unknown as Resolver<DriverFormValues>,
     mode: "onTouched",
@@ -1155,15 +1609,16 @@ export function DriverRegistrationForm({
       phone: "",
       nationalId: "",
       dateOfBirth: "",
-      yard: "Seeta-Mukono",
-      yearsExperience: undefined,
+      yardId: defaultYardId ?? (yards.length === 1 ? yards[0].id : undefined),
+      vehicleTypes: [emptyVehicle],
+      licenseClasses: [],
       smoker: false,
       drugUser: false,
       licenseNumber: "",
       licenseExpiry: "",
-      drugAlcoholTest: "Pending",
-      skillsTest: "Pending",
-      practicalTest: "Pending",
+      drugAlcoholTest: "pending",
+      skillsTest: "pending",
+      practicalTest: "pending",
       driverConfirmed: false,
       ...healthDefaults,
       ...initialValues,
@@ -1177,7 +1632,7 @@ export function DriverRegistrationForm({
   const isSubmitting = form.formState.isSubmitting || isSubmittingProp
 
   const states = Object.fromEntries(
-    SECTIONS.map((s) => [s.id, sectionState(s, values, errors, mode)])
+    SECTIONS.map((s) => [s.id, sectionState(s, values, errors, { mode, requireYard })])
   ) as Record<string, "done" | "error" | "todo">
   const doneCount = SECTIONS.filter((s) => states[s.id] === "done").length
   const progress = Math.round((doneCount / SECTIONS.length) * 100)
@@ -1192,17 +1647,53 @@ export function DriverRegistrationForm({
     ["drugAlcoholTest", "skillsTest", "practicalTest"] as const
   )
     .map((k) => values[k])
-    .filter((v) => v !== "Pending").length
+    .filter((v) => v !== "pending").length
 
-  const vehicleType = values.vehicleType as string | undefined
-  const licenseClass = values.licenseClass as string | undefined
-  const licenceMatches =
-    !!vehicleType && !!licenseClass && vehicleType === licenseClass
+  // Vehicle types the licence has to cover, and the ones it doesn't yet.
+  const neededCategories = [
+    ...new Set(
+      ((values.vehicleTypes ?? []) as { vehicleType?: VehicleType }[])
+        .map((v) => v.vehicleType)
+        .filter((t): t is VehicleType => !!t)
+    ),
+  ]
+  const licenseCategories = (values.licenseClasses ?? []) as VehicleType[]
+  const missingCategories = uncoveredVehicleTypes(
+    neededCategories,
+    licenseCategories
+  )
 
   const handleSubmit = async (data: DriverFormValues) => {
-    // Save the record. Attach the signed questionnaire copy
-    // once the selection process is complete.
-    await onSubmit?.(data)
+    form.clearErrors("root")
+    try {
+      await onSubmit?.(toDriverCreatePayload(data))
+    } catch (e) {
+      if (e instanceof ApiFieldErrors) {
+        e.errors.forEach((err) =>
+          err.field
+            ? form.setError(err.field as N, {
+                type: "server",
+                message: err.message,
+              })
+            : // Not tied to one field.
+              form.setError("root.server", {
+                type: "server",
+                message: err.message,
+              })
+        )
+        handleInvalid(form.formState.errors)
+      } else {
+        form.setError("root.server", {
+          type: "server",
+          message:
+            e instanceof Error
+              ? e.message
+              : isEdit
+                ? "Couldn't save the driver. Try again."
+                : "Couldn't register the driver. Try again.",
+        })
+      }
+    }
   }
 
   const handleInvalid = (errs: FieldErrors<DriverFormValues>) => {
@@ -1210,7 +1701,7 @@ export function DriverRegistrationForm({
     const keys = Object.keys(errs)
     const first = SECTIONS.find((s) =>
       [
-        ...requiredFields(s, mode),
+        ...requiredFields(s, { mode, requireYard }),
         ...(s.id === "health"
           ? HEALTH_QUESTIONS.map((q) => `${q.name}Details`)
           : []),
@@ -1250,7 +1741,7 @@ export function DriverRegistrationForm({
           <FormSection
             id="details"
             className="xl:col-span-2"
-            description={`Drivers must be ${MIN_AGE}–${MAX_AGE} years old at registration.`}
+            description={`Drivers must be ${minAge}–${maxAge} years old at registration.`}
           >
             <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
               <TextField
@@ -1284,59 +1775,68 @@ export function DriverRegistrationForm({
                   type="date"
                 />
                 <span className="absolute top-0 right-0">
-                  <AgeBadge dob={values.dateOfBirth as string | undefined} />
+                  <AgeBadge
+                    dob={values.dateOfBirth as string | undefined}
+                    policy={policy}
+                  />
                 </span>
               </div>
-              <TextField control={control} name="yard" label="Yard" />
+              <YardField control={control} yards={yards} />
             </div>
           </FormSection>
 
           <FormSection
             id="experience"
-            description="The vehicle the driver will be assigned, and their background."
+            description="Every vehicle type the driver can be assigned, and their background."
+            aside={
+              neededCategories.length > 0 && (
+                <span className="shrink-0 text-sm font-semibold tabular-nums">
+                  {neededCategories.length}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    {neededCategories.length === 1 ? "type" : "types"}
+                  </span>
+                </span>
+              )
+            }
           >
             <div className="space-y-5">
-              <VehicleTypeField control={control} />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <NumberField
-                  control={control}
-                  name="yearsExperience"
-                  label="Experience on this vehicle type"
-                  suffix="years"
-                  description={`Minimum ${MIN_EXPERIENCE_YEARS} years.`}
-                />
-                <SelectField
-                  control={control}
-                  name="education"
-                  label="Highest education level"
-                  description="O'Level with a driving course is preferred."
-                  options={EDUCATION_LEVELS}
-                  placeholder="Select level"
-                />
-              </div>
+              <VehiclesField
+                control={control}
+                minExperienceYears={minExperienceYears}
+              />
+              <SelectField
+                control={control}
+                name="education"
+                label="Highest education level"
+                description="O'Level with a driving course is preferred."
+                options={toOptions("education", EDUCATION_LEVELS)}
+                placeholder="Select level"
+              />
             </div>
           </FormSection>
 
           <FormSection
             id="licence"
-            description="Must be valid for the vehicle to be driven."
+            description="One licence can cover several categories. It must cover every vehicle type the driver can be assigned."
             aside={
-              vehicleType &&
-              licenseClass && (
+              neededCategories.length > 0 &&
+              licenseCategories.length > 0 && (
                 <span
                   className={cn(
                     "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
-                    licenceMatches
+                    missingCategories.length === 0
                       ? "text-foreground"
                       : "border-destructive/40 text-destructive"
                   )}
                 >
-                  {licenceMatches ? (
+                  {missingCategories.length === 0 ? (
                     <CircleCheck className="size-3.5" />
                   ) : (
                     <CircleAlert className="size-3.5" />
                   )}
-                  {licenceMatches ? "Matches vehicle" : "Doesn't match vehicle"}
+                  {missingCategories.length === 0
+                    ? "Covers all vehicle types"
+                    : `Missing ${missingCategories.length}`}
                 </span>
               )
             }
@@ -1348,19 +1848,18 @@ export function DriverRegistrationForm({
                 label="Licence number"
                 className="[&_input]:font-mono [&_input]:uppercase"
               />
-              <SelectField
-                control={control}
-                name="licenseClass"
-                label="Licence category"
-                options={VEHICLE_TYPES}
-                placeholder="Select category"
-              />
               <TextField
                 control={control}
                 name="licenseExpiry"
                 label="Expiry date"
                 type="date"
               />
+              <div className="sm:col-span-2">
+                <LicenceCategoriesField
+                  control={control}
+                  needed={neededCategories}
+                />
+              </div>
               <FileField
                 control={control}
                 name="licenseCopy"
@@ -1368,7 +1867,7 @@ export function DriverRegistrationForm({
                 description={
                   isEdit
                     ? "Upload only to replace the copy on file."
-                    : "Kept in the driver's portfolio."
+                    : "Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
                 }
               />
             </div>
@@ -1475,6 +1974,25 @@ export function DriverRegistrationForm({
               />
             </div>
           </FormSection>
+
+          {errors.root?.server && (
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm xl:col-span-2"
+            >
+              <CircleAlert className="mt-0.5 size-4 shrink-0 text-destructive" />
+              <div>
+                <p className="font-medium text-destructive">
+                  {isEdit
+                    ? "Couldn't save the driver"
+                    : "Couldn't register the driver"}
+                </p>
+                <p className="text-muted-foreground">
+                  {errors.root.server.message}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Action bar */}
           <div className="sticky bottom-4 z-10 flex items-center justify-between gap-4 rounded-xl border bg-background/95 px-5 py-3 shadow-lg backdrop-blur supports-backdrop-filter:bg-background/80 xl:col-span-2">

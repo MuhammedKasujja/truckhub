@@ -1,19 +1,19 @@
+import { createFileRoute } from "@tanstack/react-router"
+import type { DriverFormValues } from "@/features/drivers/components/driver-registration-form"
+import type { Driver } from "@/features/drivers/types"
 import {
   PageDescription,
   PageHeader,
   PageTitle,
 } from "@/components/page-header"
 import { DriverRegistrationForm } from "@/features/drivers/components/driver-registration-form"
-import type { DriverFormValues } from "@/features/drivers/components/driver-registration-form"
 import {
   useDriverProfileSuspenseQuery,
   useEditDriver,
 } from "@/features/drivers/hooks/user-driver"
 import { driverProfileQueryOptions } from "@/features/drivers/queries"
-import type { Driver } from "@/features/drivers/types"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { requirePermission } from "@/lib/auth"
-import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/drivers/$driverId/edit")({
   component: RouteComponent,
@@ -61,12 +61,13 @@ function RouteComponent() {
         initialValues={toFormValues(data)}
         isSubmitting={isPending}
         onCancel={back}
-        onSubmit={(values) =>
+        // The driver API only stores name, phone and licence number so far.
+        onSubmit={({ payload }) =>
           mutate({
             id: driverId,
-            ...splitName(values.fullName),
-            phone: values.phone,
-            licence_number: values.licenseNumber,
+            ...splitName(payload.fullName),
+            phone: payload.phone,
+            licence_number: payload.licenseNumber,
           })
         }
       />
