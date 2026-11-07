@@ -1,4 +1,6 @@
 export { UserProfileView, UserProfileCard } from "./user-profile-view"
-export { UserTable, UserTableSkeleton } from "./user-table"
+export { UserList, UserListSkeleton } from "./user-list"
+export { UserAvatar, formatRelativeTime } from "./user-avatar"
+export { UserActionsMenu, DeleteUserDialog } from "./user-actions"
 export { UserForm } from "./user-form"
 export { UserPicker, UserPickerField } from "./user-picker"

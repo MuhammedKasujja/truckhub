@@ -1,101 +1,109 @@
-"use client"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
+import React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import z from "zod"
+import { Plus, UserCog } from "lucide-react"
+import type z from "zod"
+import type { RoleUpdateSchemaType } from "@/features/settings/roles/schemas"
 import {
   RoleCreateSchema,
   RoleUpdateSchema,
-  RoleUpdateSchemaType,
 } from "@/features/settings/roles/schemas"
 import { createRoleFn, updateRoleFn } from "@/features/settings/roles/services"
-import { TextareaField, TextField } from "@/components/ui/form-fields"
-import React from "react"
-import { useTranslation } from "@/i18n"
-import { SubmitButton } from "@/components/ui/submit-button"
+import { TextField, TextareaField } from "@/components/ui/form-fields"
+import { Button } from "@/components/ui/button"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ActionIcon } from "@/components/icons"
+import { SettingsFormDialog } from "@/features/settings/_components/settings-ui"
 
 type Props = {
   trigger?: React.ReactNode
   initialData?: RoleUpdateSchemaType
+  /** Control the dialog from outside instead of through `trigger`. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function RoleEditForm({ trigger, initialData }: Props) {
-  const tr = useTranslation()
+const emptyValues = { name: "", description: "" }
+
+export function RoleEditForm({
+  trigger,
+  initialData,
+  open: openProp,
+  onOpenChange,
+}: Props) {
   const queryInvalidator = useQueryInvalidator()
+  const [openState, setOpenState] = React.useState(false)
+  const open = openProp ?? openState
+  const setOpen = onOpenChange ?? setOpenState
 
-  const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
-
   const formSchema = isEdit ? RoleUpdateSchema : RoleCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ?? emptyValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateRoleFn({ data: values })
-        : createRoleFn({ data: values })
+  React.useEffect(() => {
+    if (open) form.reset(initialData ?? emptyValues)
+    // Only when the dialog opens; initialData is a fresh object each render.
+  }, [open])
 
-    const { isSuccess, error, message } = await promise
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { isSuccess, error, message } =
+      "id" in values
+        ? await updateRoleFn({ data: values })
+        : await createRoleFn({ data: values })
+
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.settings.roles.list()
+      setOpen(false)
     } else {
       toast.error(error?.message)
     }
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
-            Create Role
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>{isEdit ? "Edit Role" : "New Role"}</DialogTitle>
-            <DialogDescription>Create a new User Role</DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="grid flex-1 gap-4">
-              <TextField label="Name" control={form.control} name={"name"} />
-              <TextareaField
-                required={false}
-                label="Description"
-                control={form.control}
-                name={"description"}
-              />
-            </div>
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
+        openProp === undefined
+          ? (trigger ?? (
+              <Button>
+                <Plus />
+                New role
+              </Button>
+            ))
+          : undefined
+      }
+      icon={UserCog}
+      eyebrow={isEdit ? "Edit role" : "New role"}
+      title={isEdit ? (initialData.name ?? "Role") : "Create a role"}
+      description={
+        isEdit
+          ? "Rename the role or change its description."
+          : "Name the role, then choose its permissions on the Permissions tab."
+      }
+      size="sm"
+      submitText={isEdit ? "Save changes" : "Create role"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <TextField
+        label="Name"
+        control={form.control}
+        name="name"
+        placeholder="e.g. Dispatcher"
+      />
+      <TextareaField
+        required={false}
+        label="Description"
+        control={form.control}
+        name="description"
+        placeholder="Who this role is for and what they do"
+      />
+    </SettingsFormDialog>
   )
 }

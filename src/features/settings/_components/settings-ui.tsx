@@ -40,22 +40,27 @@ export function SettingsPageHeader({
   title,
   description,
   actions,
+  bordered = true,
 }: {
   icon: IconType
   title: string
   description?: React.ReactNode
   actions?: React.ReactNode
+  /** Turn off when something with its own border follows, like tabs. */
+  bordered?: boolean
 }) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4 border-b pb-5">
+    <header
+      className={cn(
+        "flex flex-wrap items-start justify-between gap-4",
+        bordered && "border-b pb-5"
+      )}
+    >
       <div className="flex min-w-0 items-start gap-3.5">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
           <Icon className="size-5" />
         </div>
         <div className="min-w-0 space-y-0.5">
-          <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-            Settings
-          </p>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
           {description && (
             <p className="max-w-2xl text-sm text-muted-foreground">
@@ -194,7 +199,6 @@ export function SettingsPageSkeleton({ sections = 2 }: { sections?: number }) {
       <div className="flex items-start gap-3.5 border-b pb-5">
         <div className="size-11 animate-pulse rounded-xl bg-muted" />
         <div className="space-y-2">
-          <div className="h-3 w-16 animate-pulse rounded bg-muted" />
           <div className="h-6 w-48 animate-pulse rounded bg-muted" />
           <div className="h-3 w-72 animate-pulse rounded bg-muted" />
         </div>

@@ -16,11 +16,21 @@ export type SettingsTab = {
  * vehicle config, user management), followed by the active sub-page.
  * A tab stays active on nested pages, e.g. a user's edit page under Users.
  */
-export function SettingsTabsLayout({ tabs }: { tabs: SettingsTab[] }) {
+export function SettingsTabsLayout({
+  tabs,
+  header,
+  className,
+}: {
+  tabs: SettingsTab[]
+  /** Optional page header shown above the tab bar. */
+  header?: React.ReactNode
+  className?: string
+}) {
   const { pathname } = useLocation()
 
   return (
-    <div className="flex w-full flex-col gap-5">
+    <div className={cn("flex w-full flex-col gap-5", className)}>
+      {header}
       <nav
         aria-label="Section"
         className="-mx-1 flex gap-1 overflow-x-auto border-b px-1"
