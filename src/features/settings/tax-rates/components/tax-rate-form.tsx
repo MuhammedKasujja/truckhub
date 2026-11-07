@@ -1,110 +1,151 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
-import { useForm } from "react-hook-form"
+import React from "react"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import z from "zod"
+import { Percent } from "lucide-react"
+import type z from "zod"
+import type {
+  TaxRateUpdateSchemaType} from "@/features/settings/tax-rates/schemas";
+import { Button } from "@/components/ui/button"
+import { ActionIcon } from "@/components/icons"
+import {
+  NumberField,
+  TextField,
+  TextareaField,
+} from "@/components/ui/form-fields"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { formatMoney } from "@/lib/format"
 import {
   TaxRateCreateSchema,
-  TaxRateUpdateSchema,
-  TaxRateUpdateSchemaType,
+  TaxRateUpdateSchema
 } from "@/features/settings/tax-rates/schemas"
 import {
   createTaxRateFn,
   updateTaxRateFn,
 } from "@/features/settings/tax-rates/services"
 import {
-  NumberField,
-  TextareaField,
-  TextField,
-} from "@/components/ui/form-fields"
-import React from "react"
-import { useTranslation } from "@/i18n"
-import { SubmitButton } from "@/components/ui/submit-button"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ActionIcon } from "@/components/icons"
+  FormGroup,
+  SettingsFormDialog,
+} from "@/features/settings/_components/settings-ui"
 
 type Props = {
   trigger?: React.ReactNode
   initialData?: TaxRateUpdateSchemaType
+  /** Control the dialog from outside instead of through `trigger`. */
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function TaxRateForm({ trigger, initialData }: Props) {
-  const tr = useTranslation()
+const SAMPLE_AMOUNT = 1_000_000
+
+const emptyValues = { name: "", description: "" }
+
+export function TaxRateForm({
+  trigger,
+  initialData,
+  open: openProp,
+  onOpenChange,
+}: Props) {
   const queryInvalidator = useQueryInvalidator()
+  const [openState, setOpenState] = React.useState(false)
+  const open = openProp ?? openState
+  const setOpen = onOpenChange ?? setOpenState
 
-  const [open, setOpen] = React.useState(false)
   const isEdit = !!initialData
-
   const formSchema = isEdit ? TaxRateUpdateSchema : TaxRateCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ?? emptyValues,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateTaxRateFn({ data: values })
-        : createTaxRateFn({ data: values })
+  const rate = Number(useWatch({ control: form.control, name: "rate" }) ?? 0)
+  const validRate = Number.isFinite(rate) && rate >= 0
+  const tax = validRate ? (SAMPLE_AMOUNT * rate) / 100 : 0
 
-    const { isSuccess, error, message } = await promise
+  function handleOpenChange(next: boolean) {
+    if (next) form.reset(initialData ?? emptyValues)
+    setOpen(next)
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { isSuccess, error, message } =
+      "id" in values
+        ? await updateTaxRateFn({ data: values })
+        : await createTaxRateFn({ data: values })
+
     if (isSuccess) {
       toast.success(message)
       queryInvalidator.settings.taxRates.list()
+      setOpen(false)
     } else {
       toast.error(error?.message)
     }
   }
 
   return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button size="sm" className="font-normal">
-            <ActionIcon action="create"/>
-            Tax Rate
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle>
-              {isEdit ? "Edit Tax Rate" : "Add Tax Rate"}
-            </DialogTitle>
-            <DialogDescription>Create new Tax Rate</DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="grid flex-1 gap-4">
-              <TextField label="Name" control={form.control} name={"name"} />
-              <NumberField label="Rate" control={form.control} name={"rate"} />
-              <TextareaField
-                label="Description"
-                control={form.control}
-                name={"description"}
-                required={false}
-              />
-            </div>
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={handleOpenChange}
+      trigger={
+        openProp === undefined
+          ? (trigger ?? (
+              <Button size="sm">
+                <ActionIcon action="create" />
+                Add tax rate
+              </Button>
+            ))
+          : undefined
+      }
+      icon={Percent}
+      eyebrow={isEdit ? "Edit tax rate" : "New tax rate"}
+      title={isEdit ? (initialData.name ?? "Tax rate") : "Add a tax rate"}
+      description="Tax rates can be applied to invoice and quotation items."
+      size="sm"
+      submitText={isEdit ? "Save changes" : "Add tax rate"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <FormGroup title="Details">
+        <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-3">
+          <TextField
+            label="Name"
+            control={form.control}
+            name="name"
+            placeholder="e.g. VAT"
+          />
+          <NumberField
+            label="Rate (%)"
+            control={form.control}
+            name="rate"
+            placeholder="18"
+          />
+        </div>
+        <TextareaField
+          label="Description"
+          control={form.control}
+          name="description"
+          placeholder="When this rate applies"
+          required={false}
+        />
+      </FormGroup>
+
+      <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/30 px-4 py-3">
+        <div>
+          <p className="text-xs text-muted-foreground">
+            Tax on {formatMoney(SAMPLE_AMOUNT)}
+          </p>
+          <p className="text-lg font-bold tracking-tight tabular-nums">
+            {formatMoney(tax)}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground">Total</p>
+          <p className="text-sm font-semibold tabular-nums">
+            {formatMoney(SAMPLE_AMOUNT + tax)}
+          </p>
+        </div>
+      </div>
+    </SettingsFormDialog>
   )
 }

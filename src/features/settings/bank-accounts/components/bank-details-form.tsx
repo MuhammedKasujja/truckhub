@@ -1,33 +1,28 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-
-import { useForm } from "react-hook-form"
+import { useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import z from "zod"
-import { SelectField, TextField } from "@/components/ui/form-fields"
-import { FieldGroup } from "@/components/ui/field"
-import { useTranslation } from "@/i18n"
-import { SubmitButton } from "@/components/ui/submit-button"
+import { Landmark } from "lucide-react"
+import { bankCountryCodes } from "../enums"
+import { bankCountryMeta } from "../labels"
+import type z from "zod"
+import type {
+  BankDetailsUpdateInput} from "@/features/settings/bank-accounts/schemas";
+import { TextField } from "@/components/ui/form-fields"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ActionIcon } from "@/components/icons"
 import {
   bankDetailsCreateSchema,
-  bankDetailsUpdateSchema,
-  BankDetailsUpdateInput,
+  bankDetailsUpdateSchema
 } from "@/features/settings/bank-accounts/schemas"
 import {
   createBankFn,
   updateBankFn,
 } from "@/features/settings/bank-accounts/services"
-import { bankCountryCodes } from "../enums"
+import {
+  FormGroup,
+  OptionTile,
+  SettingsFormDialog,
+} from "@/features/settings/_components/settings-ui"
 
 type BankDetailsFormProps = {
   initialData?: BankDetailsUpdateInput
@@ -35,77 +30,106 @@ type BankDetailsFormProps = {
   onOpenChange: (v: boolean) => void
 }
 
+const createDefaults = { name: "", country: "UG", swift_code: "" } as const
+
 export function BankDetailsForm({
   initialData,
   open,
-  onOpenChange
+  onOpenChange,
 }: BankDetailsFormProps) {
   const queryInvalidator = useQueryInvalidator()
-  const tr = useTranslation()
   const isEdit = !!initialData
 
   const formSchema = isEdit ? bankDetailsUpdateSchema : bankDetailsCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ?? createDefaults,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateBankFn({ data: values })
-        : createBankFn({ data: values })
+  useEffect(() => {
+    if (open) form.reset(initialData ?? createDefaults)
+  }, [open])
 
-    const { isSuccess, error, message } = await promise
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const data = {
+      ...values,
+      swift_code: values.swift_code?.trim().toUpperCase() || undefined,
+    }
+    const { isSuccess, error, message } =
+      "id" in data
+        ? await updateBankFn({ data })
+        : await createBankFn({ data })
+
     if (isSuccess) {
       toast.success(message)
-      form.reset()
       queryInvalidator.banks.list.invalidate()
+      // Accounts embed their bank, so refresh them too.
+      queryInvalidator.bankAccounts.list.invalidate()
+      onOpenChange(false)
     } else {
       toast.error(error?.message)
     }
   }
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-md">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Button variant={"outline"} size={"icon"} type="button">
-                <ActionIcon action="create" />
-              </Button>
-              Bank
-            </DialogTitle>
-            <DialogDescription>Add Bank details</DialogDescription>
-          </DialogHeader>
-          <FieldGroup>
-            <TextField label="Bank name" control={form.control} name={"name"} />
-            <SelectField
-              label="Country"
-              control={form.control}
-              name={"country"}
-              options={bankCountryCodes.map((ele) => ({
-                label: ele,
-                value: ele,
-              }))}
-            />
-            <TextField
-              label="Swift code"
-              control={form.control}
-              name={"swift_code"}
-              required={false}
-            />
-          </FieldGroup>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={Landmark}
+      eyebrow={isEdit ? "Edit bank" : "New bank"}
+      title={isEdit ? (initialData.name ?? "Bank") : "Add a bank"}
+      description="Banks you add can be picked when creating bank accounts."
+      size="sm"
+      submitText={isEdit ? "Save changes" : "Add bank"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <FormGroup title="Bank">
+        <TextField
+          label="Bank name"
+          control={form.control}
+          name="name"
+          placeholder="e.g. Stanbic Bank"
+        />
+        <TextField
+          label="SWIFT / BIC code"
+          control={form.control}
+          name="swift_code"
+          placeholder="e.g. SBICUGKX"
+          description="Needed for international transfers."
+          required={false}
+        />
+      </FormGroup>
+
+      <FormGroup title="Country">
+        <Controller
+          control={form.control}
+          name="country"
+          render={({ field, fieldState }) => (
+            <div className="space-y-1.5">
+              <div
+                role="radiogroup"
+                aria-label="Country"
+                className="grid grid-cols-2 gap-2"
+              >
+                {bankCountryCodes.map((code) => (
+                  <OptionTile
+                    key={code}
+                    selected={field.value === code}
+                    onSelect={() => field.onChange(code)}
+                    title={bankCountryMeta[code].label}
+                    description={code}
+                  />
+                ))}
+              </div>
+              {fieldState.error && (
+                <p className="text-xs text-destructive">Choose a country</p>
+              )}
+            </div>
+          )}
+        />
+      </FormGroup>
+    </SettingsFormDialog>
   )
 }
