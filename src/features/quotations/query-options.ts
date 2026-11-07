@@ -1,13 +1,19 @@
-import { EntityId } from "@/schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { QuotationListSearchParams, QuotationShipmentInput } from "./schemas"
 import {
-  getQuotationsFn,
   getQuotationDetailsFn,
   getQuotationShipmentsFn,
+  getQuotationsFn,
 } from "./services"
+import type {
+  QuotationListSearchParams,
+  QuotationShipmentInput,
+} from "./schemas"
+import type { EntityId } from "@/schemas"
 
-export type QuotationFilterParams= Omit<QuotationListSearchParams, 'page'| 'sort'>
+export type QuotationFilterParams = Omit<
+  QuotationListSearchParams,
+  "page" | "sort"
+>
 
 export const quotationQueryKeys = {
   all: () => ["quotations"],
@@ -34,10 +40,10 @@ export const quotationShipmentsQueryOptions = (
   search: QuotationShipmentInput
 ) =>
   queryOptions({
-    queryKey: quotationQueryKeys.shipments(search.quotation_id),
+    // Include the filters so e.g. "captured details only" and "all" lists don't share a cache entry
+    queryKey: [...quotationQueryKeys.shipments(search.quotation_id), search],
     queryFn: () => getQuotationShipmentsFn({ data: { ...search } }),
   })
-
 
 export const quotationFilterQueryOptions = (params: QuotationFilterParams) => ({
   queryKey: [...quotationQueryKeys.list(), params],

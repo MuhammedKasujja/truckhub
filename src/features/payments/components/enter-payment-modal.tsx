@@ -2,17 +2,13 @@ import React, { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Decimal from "decimal.js"
-import {
-  AlertTriangle,
-  Banknote,
-  CreditCard,
-  Landmark,
-  Loader2,
-  Smartphone,
-  Wallet,
-} from "lucide-react"
+import { AlertTriangle, Loader2, Wallet } from "lucide-react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { useCreatePayment } from "../hooks/use-payments"
+import {
+  PAYMENT_METHOD_ICONS,
+  PAYMENT_METHOD_REF_LABELS,
+} from "./payment-method"
 import type { PaymentEditSchemaType } from "@/features/payments/schemas"
 import type { PaymentModeList } from "@/config/constants"
 import type { EntityId } from "@/schemas"
@@ -57,37 +53,21 @@ type PaymentFormProps = {
   onOpenChange: (open: boolean) => void
 }
 
-const PAYMENT_METHODS: {
-  value: PaymentMethod
-  icon: React.ComponentType<{ className?: string }>
-  refLabel: string
-  refPlaceholder: string
-}[] = [
-  {
-    value: "cash",
-    icon: Banknote,
-    refLabel: "Receipt number",
-    refPlaceholder: "e.g. RCT-0042",
-  },
-  {
-    value: "mobile_money",
-    icon: Smartphone,
-    refLabel: "Transaction ID",
-    refPlaceholder: "Mobile money transaction ID",
-  },
-  {
-    value: "bank_transfer",
-    icon: Landmark,
-    refLabel: "Bank reference",
-    refPlaceholder: "Transfer or deposit reference",
-  },
-  {
-    value: "credit_card",
-    icon: CreditCard,
-    refLabel: "Authorization code",
-    refPlaceholder: "Card authorization code",
-  },
-]
+const PLACEHOLDERS: Record<PaymentMethod, string> = {
+  cash: "e.g. RCT-0042",
+  mobile_money: "Mobile money transaction ID",
+  bank_transfer: "Transfer or deposit reference",
+  credit_card: "Card authorization code",
+}
+
+const PAYMENT_METHODS = (
+  Object.keys(PAYMENT_METHOD_ICONS) as PaymentMethod[]
+).map((value) => ({
+  value,
+  icon: PAYMENT_METHOD_ICONS[value],
+  refLabel: PAYMENT_METHOD_REF_LABELS[value],
+  refPlaceholder: PLACEHOLDERS[value],
+}))
 
 const toDecimal = (value: string | number | null | undefined) => {
   try {

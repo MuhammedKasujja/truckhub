@@ -1,8 +1,9 @@
-import { ArrowRight, Package, Truck } from "lucide-react"
-import { LineItemResponse, Route } from "../../schemas"
+import { MapPin, Package, Route as RouteIcon, Truck } from "lucide-react"
+import type { MouseEventHandler } from "react"
+import type React from "react"
+import type { LineItemResponse, Route } from "../../schemas"
 import { formatMoney } from "@/lib/format"
-import { Badge } from "@/components/ui/badge"
-import { MouseEventHandler } from "react"
+import { cn } from "@/lib/utils"
 
 type Props = {
   item: LineItemResponse
@@ -11,101 +12,118 @@ type Props = {
   onClick?: MouseEventHandler<HTMLTableRowElement>
 }
 
+const SOURCE_META = {
+  service: { label: "Vehicle hire", icon: Truck },
+  route: { label: "Route haulage", icon: RouteIcon },
+  distance: { label: "Distance haulage", icon: Package },
+} as const
+
 export function LineItemRow({ item, idx, actions, onClick }: Props) {
-  const isService = item.source === "service"
+  const meta = SOURCE_META[item.source]
+  const Icon = meta.icon
+  const discount = Number(item.discount ?? 0)
+
+  const chips: string[] = [
+    item.engine_mode === "wet" ? "Wet hire" : "Dry hire",
+    item.with_driver ? "With driver" : "Self drive",
+  ]
+  if (item.is_round_trip) chips.push("Round trip")
+  if (item.source === "service") {
+    if (item.vehicle_year) chips.push(`Year ${item.vehicle_year}`)
+  } else {
+    if (item.source === "distance") chips.push(`${item.distance_km} km`)
+    chips.push(`${item.tonnage} t`)
+    chips.push(item.with_loaders ? "With loaders" : "No loaders")
+  }
+
   return (
     <tr
-      className="border-b border-border align-top last:border-0 hover:bg-muted/50"
+      className={cn(
+        "border-b align-top transition-colors last:border-0 hover:bg-muted/40",
+        onClick && "cursor-pointer"
+      )}
       onClick={onClick}
     >
-      <td className="py-3 pr-3 font-mono text-xs text-muted-foreground">
+      <td className="py-4 pr-3 text-xs text-muted-foreground tabular-nums">
         {String(idx + 1).padStart(2, "0")}
       </td>
-      <td className="py-3 pr-4">
-        <div className="mb-1.5 flex items-center gap-2">
-          {isService ? (
-            <Truck className="h-3.5 w-3.5 shrink-0 text-primary" />
-          ) : (
-            <Package className="h-3.5 w-3.5 shrink-0 text-primary" />
-          )}
-          <span className="text-sm font-semibold text-foreground">
-            {item.display_name ? item.display_name : "Vehicle hire"}
+      <td className="py-4 pr-4">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border bg-muted/50 text-muted-foreground">
+            <Icon className="size-4" />
           </span>
-        </div>
-        <div className="mb-1.5 flex flex-wrap gap-1.5">
-          {isService ? (
-            <>
-              <Badge
-                variant="outline"
-                className="font-mono text-[10px] font-normal"
-              >
-                {item.engine_mode === "wet" ? "Wet Hire" : "Dry Hire"}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="font-mono text-[10px] font-normal"
-              >
-                {item.with_driver ? "With driver" : "Self drive"}
-              </Badge>
-              {item.vehicle_year && (
-                <Badge
-                  variant="outline"
-                  className="font-mono text-[10px] font-normal"
+          <div className="min-w-0 space-y-2">
+            <div>
+              <p className="font-medium text-foreground">
+                {item.display_name || meta.label}
+              </p>
+              <p className="text-xs text-muted-foreground">{meta.label}</p>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {chips.map((chip, i) => (
+                <span
+                  key={`${chip}-${i}`}
+                  className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                 >
-                  Year {item.vehicle_year}
-                </Badge>
-              )}
-            </>
-          ) : (
-            <>
-              <Badge
-                variant="outline"
-                className="font-mono text-[10px] font-normal"
-              >
-                {item.source === "distance" && `${item.display_name} km  -  ${item.tonnage} Tons`}
-                {item.source === "route" && `Route Service -  ${item.tonnage} Tons`}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="font-mono text-[10px] font-normal"
-              >
-                {item.with_loaders ? "with loaders" : "No loaders"}
-              </Badge>
-            </>
-          )}
+                  {chip}
+                </span>
+              ))}
+            </div>
+            <RouteStops route={item.route} />
+          </div>
         </div>
-        <RouteChip leg={item.route} />
       </td>
-      <td className="px-3 py-3 text-right font-mono text-xs whitespace-nowrap text-muted-foreground">
+      <td className="px-3 py-4 text-right text-sm whitespace-nowrap text-muted-foreground tabular-nums">
         {formatMoney(item.unit_price)}
       </td>
-      <td className="px-3 py-3 text-right font-mono text-xs text-muted-foreground">
+      <td className="px-3 py-4 text-right text-sm text-muted-foreground tabular-nums">
         ×{item.quantity}
       </td>
-      <td className="py-3 pl-3 text-right font-mono text-sm font-semibold whitespace-nowrap text-foreground">
-        {formatMoney(item.line_total)}
+      <td className="py-4 pl-3 text-right whitespace-nowrap">
+        <p className="font-semibold text-foreground tabular-nums">
+          {formatMoney(item.line_total)}
+        </p>
+        {discount > 0 && (
+          <p className="text-xs text-muted-foreground tabular-nums">
+            −{formatMoney(discount)} discount
+          </p>
+        )}
       </td>
       {actions && (
-        <td className="py-3 pl-3 text-right font-mono text-sm font-semibold whitespace-nowrap text-foreground">
-          {actions}
-        </td>
+        <td className="py-4 pl-3 text-right whitespace-nowrap">{actions}</td>
       )}
     </tr>
   )
 }
 
-function RouteChip({ leg }: { leg: Route }) {
+function RouteStops({ route }: { route: Route | undefined }) {
+  if (!route?.origin) return null
+  const stops = [route.origin, ...route.checkpoints, route.destination].filter(
+    Boolean
+  )
+
   return (
-    <span className="inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap text-muted-foreground">
-      {leg?.origin}
-      {leg?.checkpoints.map((c, i) => (
-        <p className="flex items-center" key={`${c}_${i}`}>
-          <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
-          <span className="pl-1">{c}</span>
-        </p>
-      ))}
-      <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
-      {leg?.destination}
-    </span>
+    <ol className="flex flex-wrap items-center gap-y-1 text-xs text-muted-foreground">
+      {stops.map((stop, i) => {
+        const isLast = i === stops.length - 1
+        return (
+          <li key={`${stop}-${i}`} className="flex items-center">
+            {isLast ? (
+              <MapPin className="mr-1 size-3" />
+            ) : (
+              <span className="mr-1.5 size-1.5 rounded-full bg-muted-foreground/60" />
+            )}
+            <span
+              className={cn(
+                (i === 0 || isLast) && "font-medium text-foreground"
+              )}
+            >
+              {stop}
+            </span>
+            {!isLast && <span className="mx-2 h-px w-4 bg-border" />}
+          </li>
+        )
+      })}
+    </ol>
   )
 }
