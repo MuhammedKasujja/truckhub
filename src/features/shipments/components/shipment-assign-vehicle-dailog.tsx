@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Check, Truck } from "lucide-react"
+import { Check, SlidersHorizontal, Truck } from "lucide-react"
 import { assignShipmentVehicleSchema } from "../schemas"
 import { useAssignShipmentVehicle } from "../hooks/use-shipment-actions"
-import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import {
+  FormSection,
+  ShipmentActionDialog,
+  closeOnSuccess,
+} from "./shipment-action-dialog"
 import type {
   AssignShipmentVehicleInput,
   ShipmentVehicleFilters,
@@ -94,12 +98,15 @@ export function ShipmentAssignVehicleDialog({
     setFilters((prev) => ({ ...prev, [key]: prev[key] ? undefined : value }))
   }
 
+  const activeCount = Object.values(filters).filter(Boolean).length
+
   return (
     <ShipmentActionDialog
       open={open}
       onOpenChange={onOpenChange}
       shipment={shipment}
       icon={Truck}
+      hue="blue"
       title="Assign vehicle"
       description="Pick an available vehicle for this trip."
       formId="assign-vehicle-form"
@@ -107,21 +114,31 @@ export function ShipmentAssignVehicleDialog({
       isSubmitting={isPending}
     >
       {item?.item_type === "small" && item.service_id && item.display_name && (
-        <div className="text-sm">
-          <p className="text-xs text-muted-foreground">Service</p>
-          <p className="font-medium">{item.display_name}</p>
+        <div className="flex items-center gap-2 rounded-xl border bg-card px-4 py-3 text-sm shadow-xs">
+          <span className="text-muted-foreground">Service</span>
+          <span className="ml-auto font-medium">{item.display_name}</span>
         </div>
       )}
 
       {requirements.length > 0 && (
-        <div className="space-y-2">
-          <div>
-            <p className="text-sm font-medium">Match requirements</p>
-            <p className="text-xs text-muted-foreground">
-              Turn on a requirement to only list vehicles that meet it.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+        <FormSection
+          icon={SlidersHorizontal}
+          hue="amber"
+          title="Match requirements"
+          description="Turn one on to only list vehicles that meet it."
+          action={
+            activeCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setFilters({})}
+                className="text-xs text-primary hover:underline"
+              >
+                Clear ({activeCount})
+              </button>
+            )
+          }
+        >
+          <div className="grid grid-cols-2 gap-2">
             {requirements.map((req) => {
               const active = !!filters[req.key]
               return (
@@ -131,37 +148,63 @@ export function ShipmentAssignVehicleDialog({
                   aria-pressed={active}
                   onClick={() => toggle(req.key, req.value)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors hover:bg-muted",
+                    "flex items-center justify-between gap-2 rounded-lg border bg-background px-3 py-2 text-left transition-colors hover:bg-muted/60",
                     active &&
-                      "border-primary bg-primary/10 text-primary hover:bg-primary/15"
+                      "border-primary bg-primary/5 ring-1 ring-primary hover:bg-primary/10"
                   )}
                 >
-                  {active && <Check className="size-3.5" />}
-                  <span className="text-muted-foreground">{req.label}</span>
-                  <span className="font-medium">{req.display ?? "—"}</span>
+                  <span className="min-w-0">
+                    <span className="block text-[11px] text-muted-foreground">
+                      {req.label}
+                    </span>
+                    <span className="block truncate text-sm font-medium">
+                      {req.display ?? "—"}
+                    </span>
+                  </span>
+                  <span
+                    className={cn(
+                      "flex size-5 shrink-0 items-center justify-center rounded-full border",
+                      active
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "text-transparent"
+                    )}
+                  >
+                    <Check className="size-3" />
+                  </span>
                 </button>
               )
             })}
           </div>
-        </div>
+        </FormSection>
       )}
 
-      <form
-        id="assign-vehicle-form"
-        onSubmit={form.handleSubmit((values) =>
-          closeOnSuccess(
-            () => assignShipmentVehicle(values),
-            () => onOpenChange(false)
-          )
-        )}
+      <FormSection
+        icon={Truck}
+        hue="blue"
+        title="Vehicle"
+        description={
+          activeCount > 0
+            ? `Showing available vehicles matching ${activeCount} requirement${activeCount === 1 ? "" : "s"}`
+            : "Showing all available vehicles"
+        }
       >
-        <VehiclePickerField
-          label="Vehicle"
-          name="vehicleId"
-          control={form.control}
-          filters={{ status: "available", ...filters }}
-        />
-      </form>
+        <form
+          id="assign-vehicle-form"
+          onSubmit={form.handleSubmit((values) =>
+            closeOnSuccess(
+              () => assignShipmentVehicle(values),
+              () => onOpenChange(false)
+            )
+          )}
+        >
+          <VehiclePickerField
+            label="Vehicle"
+            name="vehicleId"
+            control={form.control}
+            filters={{ status: "available", ...filters }}
+          />
+        </form>
+      </FormSection>
     </ShipmentActionDialog>
   )
 }

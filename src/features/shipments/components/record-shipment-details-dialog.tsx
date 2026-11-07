@@ -2,13 +2,18 @@ import { useEffect } from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { IconReceiptTax } from "@tabler/icons-react"
-import { Fuel, Gauge, Plus, X } from "lucide-react"
+import { Fuel, Gauge, NotebookPen, Plus, X } from "lucide-react"
 import { recordShipmentDetailsSchema } from "../schemas"
 import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
-import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import {
+  FormSection,
+  OdometerReading,
+  ResultBanner,
+  ShipmentActionDialog,
+  closeOnSuccess,
+} from "./shipment-action-dialog"
 import type { RecordShipmentDetailsInput } from "../schemas"
 import type { Shipment } from "../types"
-import type React from "react"
 import { TextField, TextareaField } from "@/components/ui/form-fields"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -137,12 +142,15 @@ export function RecordShipmentDetailsDialog({
 
   const distance = useWatch({ control: form.control, name: "distanceKm" })
 
+  const vehicleRate = safeDecimal(consumptionRate)
+
   return (
     <ShipmentActionDialog
       open={open && !!shipment}
       onOpenChange={onOpenChange}
       shipment={shipment}
       icon={IconReceiptTax}
+      hue="emerald"
       title="Capture trip details"
       description="Odometer and fuel figures used to bill this trip."
       formId="shipment-details"
@@ -152,7 +160,7 @@ export function RecordShipmentDetailsDialog({
     >
       <form
         id="shipment-details"
-        className="space-y-6"
+        className="space-y-4"
         onSubmit={form.handleSubmit((values) =>
           closeOnSuccess(
             () =>
@@ -167,72 +175,52 @@ export function RecordShipmentDetailsDialog({
         )}
       >
         {/* Odometer */}
-        <section className="space-y-3">
-          <SectionTitle icon={Gauge}>Odometer</SectionTitle>
-          <div className="grid grid-cols-2 gap-3">
-            <TextField
-              readOnly
-              required={false}
-              label="Start (km)"
-              name="startMileage"
-              control={form.control}
-            />
-            <TextField
-              label="End (km)"
-              name="endMileage"
-              control={form.control}
-            />
-          </div>
-          <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 text-sm">
-            <span className="text-muted-foreground">Distance travelled</span>
-            <span className="font-medium tabular-nums">
-              {distance ? `${distance} km` : "—"}
+        <FormSection icon={Gauge} hue="violet" title="Odometer">
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <OdometerReading label="Start (km)" value={startMileage} />
+            </div>
+            <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-violet-700 tabular-nums dark:text-violet-300">
+              {distance ? `${distance} km` : "— km"}
             </span>
+            <div className="flex-1">
+              <OdometerReading
+                label="End (km)"
+                value={endMileage}
+                muted={!endMileage}
+              />
+            </div>
           </div>
-        </section>
+          <TextField
+            label="Odometer at end (km)"
+            name="endMileage"
+            control={form.control}
+          />
+        </FormSection>
 
         {/* Fuel */}
-        <section className="space-y-3">
-          <SectionTitle icon={Fuel}>Fuel</SectionTitle>
-          <div className="grid grid-cols-2 gap-3">
-            <TextField
-              readOnly
-              required={false}
-              label="Vehicle economy (km/L)"
-              name="vehicleConsumptionRate"
-              control={form.control}
-            />
-            <TextField
-              readOnly
-              required={false}
-              label="Litres used"
-              name="fuelUsedLitres"
-              control={form.control}
-            />
-          </div>
-
-          <div className="space-y-2 rounded-lg border border-dashed p-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Fuel price per litre</p>
-                <p className="text-xs text-muted-foreground">
-                  Add one price per fill-up; the average is billed.
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => rateFields.append({ value: undefined })}
-              >
-                <Plus className="size-3.5" />
-                Add
-              </Button>
-            </div>
+        <FormSection
+          icon={Fuel}
+          hue="amber"
+          title="Fuel prices"
+          description="One price per fill-up; the average is billed."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => rateFields.append({ value: undefined })}
+            >
+              <Plus className="size-3.5" />
+              Add
+            </Button>
+          }
+        >
+          <div className="space-y-2">
             {rateFields.fields.map((row, index) => (
               <div key={row.id} className="flex items-center gap-2">
-                <span className="w-6 text-right text-xs text-muted-foreground tabular-nums">
-                  {index + 1}.
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-[11px] font-semibold text-amber-700 tabular-nums dark:text-amber-300">
+                  {index + 1}
                 </span>
                 <Controller
                   control={form.control}
@@ -273,49 +261,51 @@ export function RecordShipmentDetailsDialog({
               </div>
             ))}
           </div>
-        </section>
+        </FormSection>
 
         {/* Result */}
-        <dl className="space-y-2 rounded-lg bg-muted/40 p-3 text-sm">
-          <div className="flex justify-between">
-            <dt className="text-muted-foreground">Average price</dt>
-            <dd className="tabular-nums">{formatMoney(avgRate ?? 0)} / L</dd>
+        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+          <dl className="grid grid-cols-3 divide-x text-center">
+            <ResultStat
+              label="Economy"
+              value={vehicleRate.gt(0) ? `${vehicleRate.toString()} km/L` : "—"}
+            />
+            <ResultStat label="Litres used" value={`${litres ?? "0"} L`} />
+            <ResultStat
+              label="Avg. price"
+              value={`${formatMoney(avgRate ?? 0)} / L`}
+            />
+          </dl>
+          <div className="border-t p-3">
+            <ResultBanner
+              hue="emerald"
+              label="Fuel charge"
+              hint="Litres used × average price"
+              value={formatMoney(fuelCharge)}
+            />
           </div>
-          <div className="flex justify-between">
-            <dt className="text-muted-foreground">Litres used</dt>
-            <dd className="tabular-nums">{litres ?? "0"} L</dd>
-          </div>
-          <div className="flex items-center justify-between border-t pt-2">
-            <dt className="font-medium">Fuel charge</dt>
-            <dd className="text-base font-semibold text-primary tabular-nums">
-              {formatMoney(fuelCharge)}
-            </dd>
-          </div>
-        </dl>
+        </div>
 
-        <TextareaField
-          label="Notes"
-          name="notes"
-          control={form.control}
-          required={false}
-          placeholder="Anything worth noting about this trip (optional)"
-        />
+        <FormSection icon={NotebookPen} hue="slate" title="Notes">
+          <TextareaField
+            name="notes"
+            control={form.control}
+            required={false}
+            placeholder="Anything worth noting about this trip (optional)"
+          />
+        </FormSection>
       </form>
     </ShipmentActionDialog>
   )
 }
 
-function SectionTitle({
-  icon: Icon,
-  children,
-}: {
-  icon: React.ComponentType<{ className?: string }>
-  children: React.ReactNode
-}) {
+function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <h3 className="flex items-center gap-2 text-sm font-medium">
-      <Icon className="size-4 text-muted-foreground" />
-      {children}
-    </h3>
+    <div className="px-2 py-3">
+      <dt className="text-[11px] text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 truncate text-sm font-medium tabular-nums">
+        {value}
+      </dd>
+    </div>
   )
 }

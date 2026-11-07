@@ -9,17 +9,25 @@ import {
   CalendarClock,
   Check,
   ChevronDown,
+  ClipboardList,
+  Clock,
+  FileCheck2,
   Flag,
+  Fuel,
   Gauge,
   History,
   Mail,
+  MapPin,
+  Navigation,
   Phone,
   Plus,
   Receipt,
   Route as RouteIcon,
   Truck,
+  UserCheck,
   UserRound,
   UserRoundPlus,
+  Wallet,
 } from "lucide-react"
 import {
   elapsedLabel,
@@ -34,9 +42,13 @@ import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
 import { ChangeShipmentVehicleDialog } from "./change-shipment-vehicle-dialog"
-import { ShimpmentRouteDetails } from "./shipment-route-details"
 import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
-import { ShipmentStatusIndicator } from "./shipment-status-indicator"
+import { HUE } from "./shipment-hues"
+import {
+  SHIPMENT_STATUS_TONE,
+  ShipmentStatusIndicator,
+} from "./shipment-status-indicator"
+import type { Hue } from "./shipment-hues"
 import type { ShipmentStatus } from "../enums"
 import type { Shipment } from "../types"
 import { Button } from "@/components/ui/button"
@@ -54,6 +66,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PlateNumber } from "@/features/vehicles/components/vehicle-visuals"
 import {
   formatDate,
   formatDateTime,
@@ -79,6 +92,17 @@ type ActionKey =
 
 type IconType = React.ComponentType<{ className?: string }>
 
+const TONE_HUE = {
+  info: "blue",
+  success: "emerald",
+  warning: "amber",
+  error: "red",
+  default: "slate",
+} as const satisfies Record<string, Hue>
+
+const statusHue = (status: ShipmentStatus): Hue =>
+  TONE_HUE[SHIPMENT_STATUS_TONE[status]]
+
 export function ShipmentDetailsDialog({
   open,
   onOpenChange,
@@ -95,11 +119,11 @@ export function ShipmentDetailsDialog({
           {shipment ? (
             <>
               <DetailsHeader shipment={shipment} onAction={setOpenModal} />
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto bg-muted/20">
                 <StatusProgress status={shipment.status} />
                 <div className="grid gap-5 p-5 lg:grid-cols-3">
                   <div className="space-y-5 lg:col-span-2">
-                    <TripSection shipment={shipment} />
+                    <JourneySection shipment={shipment} />
                     <OdometerSection shipment={shipment} />
                     <BillingSection shipment={shipment} />
                   </div>
@@ -112,7 +136,7 @@ export function ShipmentDetailsDialog({
                       shipment={shipment}
                       onAction={setOpenModal}
                     />
-                    <Section icon={History} title="Activity">
+                    <Section icon={History} hue="slate" title="Activity">
                       <ShipmentHistoryTimeline
                         history={shipment.history ?? []}
                       />
@@ -124,9 +148,12 @@ export function ShipmentDetailsDialog({
           ) : (
             <div className="space-y-4 p-6">
               <DialogTitle className="sr-only">Loading shipment</DialogTitle>
-              <Skeleton className="h-10 w-64" />
-              <Skeleton className="h-40 w-full" />
-              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-28 w-full rounded-xl" />
+              <Skeleton className="h-12 w-full" />
+              <div className="grid gap-5 lg:grid-cols-3">
+                <Skeleton className="h-64 lg:col-span-2" />
+                <Skeleton className="h-64" />
+              </div>
             </div>
           )}
         </DialogContent>
@@ -216,66 +243,162 @@ function DetailsHeader({
   const primary = actions.at(0)
   const secondary = actions.slice(1)
   const { dispatchBlocked } = shipmentActions(shipment)
+  const hue = HUE[statusHue(shipment.status)]
+
+  const started = shipment.actual_start ?? shipment.started_at
+  const billing = shipmentBilling(shipment)
+  const quotedKm = (shipment.item as { distance_km?: number | null })
+    .distance_km
+  const distance = shipment.consumption?.distance_km
 
   return (
-    <DialogHeader className="flex-col gap-4 border-b p-5 pr-12 text-left sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex min-w-0 items-start gap-3">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Truck className="size-6" />
-        </div>
-        <div className="min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <DialogTitle className="text-xl font-bold tracking-tight">
-              {shipment.number ?? "Unnumbered shipment"}
-            </DialogTitle>
-            <ShipmentStatusIndicator status={shipment.status} />
-          </div>
-          <DialogDescription>
-            {shipment.item.display_name ?? "Shipment"} · Scheduled{" "}
-            {formatDate(shipment.item.scheduled_start)}
-            {shipment.item.scheduled_end && (
-              <> – {formatDate(shipment.item.scheduled_end)}</>
-            )}
-          </DialogDescription>
-          {dispatchBlocked && (
-            <p className="flex items-center gap-1.5 text-xs text-amber-700 dark:text-amber-400">
-              <AlertTriangle className="size-3.5" />
-              Assign a vehicle and a driver before dispatching
-            </p>
-          )}
-        </div>
-      </div>
+    <div className="relative shrink-0 overflow-hidden border-b">
+      {/* status-tinted glow */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 bg-gradient-to-br via-transparent to-transparent",
+          hue.glow
+        )}
+      />
 
-      {primary && (
-        <div className="flex shrink-0 gap-2">
-          <Button onClick={() => onAction(primary.key)}>
-            <primary.icon className="size-4" />
-            {primary.label}
-          </Button>
-          {secondary.length > 0 && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  More
-                  <ChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {secondary.map((action) => (
-                  <DropdownMenuItem
-                    key={action.key}
-                    onClick={() => onAction(action.key)}
-                  >
-                    <action.icon className="size-4" />
-                    {action.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+      <DialogHeader className="relative flex-col gap-4 p-5 pr-12 text-left sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-4">
+          <div
+            className={cn(
+              "flex size-14 shrink-0 items-center justify-center rounded-2xl shadow-xs ring-1 ring-foreground/5",
+              hue.tile
+            )}
+          >
+            <Truck className="size-7" />
+          </div>
+          <div className="min-w-0 space-y-1.5">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              Shipment
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <DialogTitle className="text-2xl font-bold tracking-tight">
+                {shipment.number ?? "Unnumbered shipment"}
+              </DialogTitle>
+              <ShipmentStatusIndicator status={shipment.status} />
+            </div>
+            <DialogDescription className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="font-medium text-foreground">
+                {shipment.item.display_name ?? "Shipment"}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <CalendarClock className="size-3.5" />
+                {formatDate(shipment.item.scheduled_start)} –{" "}
+                {formatDate(shipment.item.scheduled_end)}
+              </span>
+            </DialogDescription>
+            {dispatchBlocked && (
+              <p className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2 py-1 text-xs text-amber-700 dark:text-amber-400">
+                <AlertTriangle className="size-3.5" />
+                Assign a vehicle and a driver before dispatching
+              </p>
+            )}
+          </div>
         </div>
-      )}
-    </DialogHeader>
+
+        {primary && (
+          <div className="flex shrink-0 gap-2">
+            <Button onClick={() => onAction(primary.key)} className="shadow-sm">
+              <primary.icon className="size-4" />
+              {primary.label}
+            </Button>
+            {secondary.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="bg-background/70">
+                    More
+                    <ChevronDown className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {secondary.map((action) => (
+                    <DropdownMenuItem
+                      key={action.key}
+                      onClick={() => onAction(action.key)}
+                    >
+                      <action.icon className="size-4" />
+                      {action.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        )}
+      </DialogHeader>
+
+      {/* Key numbers */}
+      <div className="relative grid grid-cols-2 divide-x divide-y border-t bg-background/60 backdrop-blur md:grid-cols-4 md:divide-y-0">
+        <HeroStat
+          icon={RouteIcon}
+          hue="blue"
+          label={distance ? "Distance driven" : "Distance quoted"}
+          value={
+            distance
+              ? `${formatNumber(distance)} km`
+              : quotedKm
+                ? `${quotedKm} km`
+                : "—"
+          }
+        />
+        <HeroStat
+          icon={Clock}
+          hue="violet"
+          label={shipment.actual_end ? "Trip duration" : "Time on road"}
+          value={elapsedLabel(started, shipment.actual_end) ?? "Not started"}
+        />
+        <HeroStat
+          icon={Fuel}
+          hue="amber"
+          label="Fuel charge"
+          value={
+            billing.fuel.gt(0)
+              ? formatMoney(billing.fuel.toString())
+              : "Not captured"
+          }
+        />
+        <HeroStat
+          icon={Wallet}
+          hue="emerald"
+          label="Total before tax"
+          value={formatMoney(billing.total.toString())}
+        />
+      </div>
+    </div>
+  )
+}
+
+function HeroStat({
+  icon: Icon,
+  hue,
+  label,
+  value,
+}: {
+  icon: IconType
+  hue: Hue
+  label: string
+  value: string
+}) {
+  return (
+    <div className="flex items-center gap-3 px-5 py-3.5">
+      <span
+        className={cn(
+          "flex size-9 shrink-0 items-center justify-center rounded-lg",
+          HUE[hue].tile
+        )}
+      >
+        <Icon className="size-4.5" />
+      </span>
+      <div className="min-w-0">
+        <p className="truncate text-xs text-muted-foreground">{label}</p>
+        <p className="truncate text-base font-semibold tabular-nums">{value}</p>
+      </div>
+    </div>
   )
 }
 
@@ -283,15 +406,15 @@ function DetailsHeader({
 /*                               Status progress                              */
 /* -------------------------------------------------------------------------- */
 
-const STEPS = [
-  "Requested",
-  "Assigned",
-  "Dispatched",
-  "In transit",
-  "Completed",
-  "Captured",
-  "Invoiced",
-] as const
+const STEPS: { label: string; icon: IconType }[] = [
+  { label: "Requested", icon: ClipboardList },
+  { label: "Assigned", icon: UserCheck },
+  { label: "Dispatched", icon: IconSend },
+  { label: "In transit", icon: Navigation },
+  { label: "Completed", icon: Flag },
+  { label: "Captured", icon: IconReceiptTax },
+  { label: "Invoiced", icon: FileCheck2 },
+]
 
 const STEP_INDEX: Record<ShipmentStatus, number> = {
   unassigned: 0,
@@ -310,7 +433,7 @@ const STEP_INDEX: Record<ShipmentStatus, number> = {
 function StatusProgress({ status }: { status: ShipmentStatus }) {
   if (status === "cancelled") {
     return (
-      <div className="flex items-center gap-2 border-b bg-muted/40 px-5 py-3 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 border-b bg-muted/50 px-5 py-3 text-sm text-muted-foreground">
         <Ban className="size-4" />
         This shipment was cancelled.
       </div>
@@ -321,45 +444,55 @@ function StatusProgress({ status }: { status: ShipmentStatus }) {
   const isTrouble = status === "delayed" || status === "idel"
 
   return (
-    <ol className="flex overflow-x-auto border-b bg-muted/30 px-5 py-3">
-      {STEPS.map((label, i) => {
+    <ol className="flex overflow-x-auto border-b bg-background px-5 py-4">
+      {STEPS.map(({ label, icon: Icon }, i) => {
         const done = i < current
         const active = i === current
         return (
           <li
             key={label}
-            className="flex min-w-[96px] flex-1 items-center gap-2"
+            className="flex min-w-[104px] flex-1 items-center"
             aria-current={active ? "step" : undefined}
           >
-            <span
-              className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold",
-                done && "border-primary bg-primary text-primary-foreground",
-                active &&
-                  (isTrouble
-                    ? "border-amber-500 bg-amber-500 text-white"
-                    : "border-primary bg-primary/15 text-primary"),
-                !done && !active && "text-muted-foreground"
-              )}
-            >
-              {done ? <Check className="size-3.5" /> : i + 1}
-            </span>
-            <span
-              className={cn(
-                "truncate text-xs",
-                active ? "font-medium" : "text-muted-foreground"
-              )}
-            >
-              {active && isTrouble
-                ? status === "delayed"
-                  ? "Delayed"
-                  : "Idle"
-                : label}
-            </span>
+            <div className="flex flex-col items-center gap-1.5">
+              <span
+                className={cn(
+                  "flex size-9 items-center justify-center rounded-full border-2 transition-colors",
+                  done && "border-primary bg-primary text-primary-foreground",
+                  active &&
+                    (isTrouble
+                      ? "border-amber-500 bg-amber-500 text-white ring-4 ring-amber-500/20"
+                      : "border-primary bg-primary/10 text-primary ring-4 ring-primary/15"),
+                  !done && !active && "border-border text-muted-foreground"
+                )}
+              >
+                {done ? (
+                  <Check className="size-4" />
+                ) : (
+                  <Icon className="size-4" />
+                )}
+              </span>
+              <span
+                className={cn(
+                  "text-[11px] whitespace-nowrap",
+                  active
+                    ? "font-semibold"
+                    : done
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                )}
+              >
+                {active && isTrouble
+                  ? status === "delayed"
+                    ? "Delayed"
+                    : "Idle"
+                  : label}
+              </span>
+            </div>
             {i < STEPS.length - 1 && (
               <span
                 className={cn(
-                  "mx-1 h-px min-w-3 flex-1",
+                  "mx-1 mb-5 h-0.5 flex-1 rounded-full",
                   done ? "bg-primary" : "bg-border"
                 )}
               />
@@ -375,12 +508,28 @@ function StatusProgress({ status }: { status: ShipmentStatus }) {
 /*                                Main sections                               */
 /* -------------------------------------------------------------------------- */
 
-function TripSection({ shipment }: { shipment: Shipment }) {
+// How far along the route the truck marker sits, by status
+const JOURNEY_PROGRESS: Record<ShipmentStatus, number> = {
+  unassigned: 0,
+  vehicle_assigned: 0,
+  assigned: 0,
+  dispatched: 8,
+  in_progress: 50,
+  delayed: 50,
+  idel: 50,
+  completed: 100,
+  captured_details: 100,
+  invoiced: 100,
+  cancelled: 0,
+}
+
+function JourneySection({ shipment }: { shipment: Shipment }) {
   const { item } = shipment
+  const route = tripRoute(shipment)
   const started = shipment.actual_start ?? shipment.started_at
-  const duration = elapsedLabel(started, shipment.actual_end)
+  const progress = JOURNEY_PROGRESS[shipment.status]
+  const isTrouble = shipment.status === "delayed" || shipment.status === "idel"
   const tonnage = (item as { tonnage?: string | number | null }).tonnage
-  const distanceKm = (item as { distance_km?: number | null }).distance_km
 
   const chips = [
     item.is_round_trip ? "Round trip" : "One way",
@@ -389,59 +538,143 @@ function TripSection({ shipment }: { shipment: Shipment }) {
     item.with_driver ? "With driver" : "Without driver",
     item.with_loaders ? "With loaders" : null,
     tonnage ? `${tonnage} t` : null,
-    distanceKm ? `${distanceKm} km quoted` : null,
   ].filter(Boolean) as string[]
 
   return (
-    <Section icon={RouteIcon} title="Trip">
-      <div className="flex flex-wrap gap-1.5">
+    <Section icon={RouteIcon} hue="blue" title="Journey">
+      {route ? (
+        <div className="rounded-xl border bg-gradient-to-b from-muted/40 to-background p-4">
+          {/* Origin → destination track */}
+          <div className="flex items-start justify-between gap-4">
+            <Endpoint
+              align="left"
+              label="From"
+              place={route.origin}
+              time={started ? formatDateTime(started) : undefined}
+              scheduled={formatDateTime(item.scheduled_start)}
+            />
+            <Endpoint
+              align="right"
+              label="To"
+              place={route.destination}
+              time={
+                shipment.actual_end
+                  ? formatDateTime(shipment.actual_end)
+                  : undefined
+              }
+              scheduled={formatDateTime(item.scheduled_end)}
+            />
+          </div>
+
+          <div className="relative mx-2 mt-5 mb-2 h-8">
+            {/* track */}
+            <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-[repeating-linear-gradient(90deg,var(--color-border)_0_8px,transparent_8px_14px)]" />
+            <div
+              className={cn(
+                "absolute top-1/2 left-0 h-1 -translate-y-1/2 rounded-full",
+                isTrouble ? "bg-amber-500" : "bg-primary"
+              )}
+              style={{ width: `${progress}%` }}
+            />
+            {/* endpoints */}
+            <span className="absolute top-1/2 left-0 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-emerald-500 shadow" />
+            <MapPin className="absolute top-1/2 right-0 size-5 translate-x-1/2 -translate-y-[85%] fill-destructive/20 text-destructive" />
+            {/* checkpoints */}
+            {route.checkpoints.map((stop, i) => (
+              <span
+                key={`${stop}-${i}`}
+                title={stop}
+                className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-muted-foreground"
+                style={{
+                  left: `${((i + 1) / (route.checkpoints.length + 1)) * 100}%`,
+                }}
+              />
+            ))}
+            {/* truck */}
+            <span
+              className={cn(
+                "absolute top-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-background text-white shadow-md transition-[left]",
+                isTrouble ? "bg-amber-500" : "bg-primary"
+              )}
+              style={{ left: `${progress}%` }}
+            >
+              <Truck className="size-4" />
+            </span>
+          </div>
+
+          {route.checkpoints.length > 0 && (
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Via</span>
+              {route.checkpoints.map((stop, i) => (
+                <span
+                  key={`${stop}-${i}`}
+                  className="rounded-full border bg-background px-2 py-0.5"
+                >
+                  {stop}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+          No route on this shipment.
+        </p>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-1.5">
         {chips.map((chip) => (
           <span
             key={chip}
-            className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground capitalize"
+            className="rounded-full border bg-background px-2.5 py-0.5 text-xs capitalize"
           >
             {chip}
           </span>
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="space-y-3">
-          <TimeBlock
-            icon={CalendarClock}
-            label="Scheduled"
-            from={formatDateTime(item.scheduled_start)}
-            to={formatDateTime(item.scheduled_end)}
-          />
-          <TimeBlock
-            icon={Flag}
-            label="Actual"
-            from={started ? formatDateTime(started) : "Not started"}
-            to={
-              started
-                ? shipment.actual_end
-                  ? formatDateTime(shipment.actual_end)
-                  : "On going"
-                : undefined
-            }
-            hint={
-              duration
-                ? `${duration}${shipment.actual_end ? "" : " so far"}`
-                : undefined
-            }
-          />
-          {shipment.contact_name && (
-            <div className="text-sm">
-              <p className="text-xs text-muted-foreground">On-site contact</p>
-              <p className="font-medium">{shipment.contact_name}</p>
-            </div>
-          )}
+      {shipment.contact_name && (
+        <div className="mt-4 flex items-center gap-2 text-sm">
+          <UserRound className="size-4 text-muted-foreground" />
+          <span className="text-muted-foreground">On-site contact</span>
+          <span className="font-medium">{shipment.contact_name}</span>
         </div>
-        <div className="rounded-lg border p-4">
-          <ShimpmentRouteDetails route={tripRoute(shipment)} />
-        </div>
-      </div>
+      )}
     </Section>
+  )
+}
+
+function Endpoint({
+  align,
+  label,
+  place,
+  time,
+  scheduled,
+}: {
+  align: "left" | "right"
+  label: string
+  place: string
+  time?: string
+  scheduled: string
+}) {
+  return (
+    <div
+      className={cn("max-w-[48%] min-w-0", align === "right" && "text-right")}
+    >
+      <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </p>
+      <p className="truncate text-base font-semibold" title={place}>
+        {place || "—"}
+      </p>
+      <p className="text-xs text-muted-foreground">
+        {time ? (
+          <span className="text-foreground">{time}</span>
+        ) : (
+          <>Planned {scheduled || "—"}</>
+        )}
+      </p>
+    </div>
   )
 }
 
@@ -450,31 +683,36 @@ function OdometerSection({ shipment }: { shipment: Shipment }) {
   if (!c) return null
 
   return (
-    <Section icon={Gauge} title="Odometer & fuel">
+    <Section icon={Gauge} hue="violet" title="Odometer & fuel">
       <div className="flex items-center gap-3">
         <Reading label="Start" value={c.start_mileage} />
-        <div className="h-px flex-1 bg-border" />
-        <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary tabular-nums">
-          {formatNumber(c.distance_km, { fallback: "—" })} km
-        </span>
-        <div className="h-px flex-1 bg-border" />
+        <div className="flex flex-1 flex-col items-center gap-1">
+          <span className="rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-700 tabular-nums dark:text-violet-300">
+            {formatNumber(c.distance_km, { fallback: "—" })} km
+          </span>
+          <div className="h-0.5 w-full rounded-full bg-gradient-to-r from-violet-500/10 via-violet-500/50 to-violet-500/10" />
+        </div>
         <Reading label="End" value={c.end_mileage} />
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <MiniStat
+          icon={Gauge}
           label="Economy"
           value={`${formatNumber(shipment.vehicle?.fuel_consumption_rate, { fallback: "—" })} km/L`}
         />
         <MiniStat
+          icon={Fuel}
           label="Fuel used"
           value={`${formatNumber(c.fuel_used_litres, { fallback: "—" })} L`}
         />
         <MiniStat
+          icon={Receipt}
           label="Avg. price"
           value={c.fuel_rate ? `${formatMoney(c.fuel_rate)} / L` : "—"}
         />
         <MiniStat
+          icon={Wallet}
           label="Fuel charge"
           value={formatMoney(c.total_fuel_charge ?? 0)}
           strong
@@ -487,34 +725,41 @@ function OdometerSection({ shipment }: { shipment: Shipment }) {
 function BillingSection({ shipment }: { shipment: Shipment }) {
   const b = shipmentBilling(shipment)
   return (
-    <Section icon={Receipt} title="Billing preview">
-      <dl className="space-y-2 text-sm">
-        <BillLine
-          label={`Unit price × ${b.days} day${b.days === 1 ? "" : "s"}`}
-          hint={formatMoney(b.unitPrice.toString())}
-          value={formatMoney(b.base.toString())}
-        />
-        <BillLine
-          label="Fuel charge"
-          value={b.fuel.gt(0) ? formatMoney(b.fuel.toString()) : "Not captured"}
-          muted={!b.fuel.gt(0)}
-        />
-        {b.discount.gt(0) && (
+    <Section icon={Receipt} hue="emerald" title="Billing preview">
+      <div className="overflow-hidden rounded-xl border bg-background">
+        <dl className="space-y-3 p-4 text-sm">
           <BillLine
-            label="Discount"
-            value={`− ${formatMoney(b.discount.toString())}`}
+            label={`Unit price × ${b.days} day${b.days === 1 ? "" : "s"}`}
+            hint={formatMoney(b.unitPrice.toString())}
+            value={formatMoney(b.base.toString())}
           />
-        )}
-        <div className="flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2.5">
-          <dt className="font-medium text-primary">Total before tax</dt>
-          <dd className="text-lg font-bold text-primary tabular-nums">
+          <BillLine
+            label="Fuel charge"
+            value={
+              b.fuel.gt(0) ? formatMoney(b.fuel.toString()) : "Not captured"
+            }
+            muted={!b.fuel.gt(0)}
+          />
+          {b.discount.gt(0) && (
+            <BillLine
+              label="Discount"
+              value={`− ${formatMoney(b.discount.toString())}`}
+              className="text-emerald-700 dark:text-emerald-400"
+            />
+          )}
+        </dl>
+        <div className="flex items-center justify-between border-t border-dashed bg-emerald-500/5 px-4 py-3">
+          <div>
+            <p className="text-sm font-medium">Total before tax</p>
+            <p className="text-xs text-muted-foreground">
+              Tax and loading fees are added on the invoice
+            </p>
+          </div>
+          <p className="text-xl font-bold text-emerald-700 tabular-nums dark:text-emerald-400">
             {formatMoney(b.total.toString())}
-          </dd>
+          </p>
         </div>
-      </dl>
-      <p className="mt-2 text-xs text-muted-foreground">
-        Tax and loading fees are added on the invoice.
-      </p>
+      </div>
     </Section>
   )
 }
@@ -534,28 +779,36 @@ function VehicleSection({
   const a = shipmentActions(shipment)
 
   return (
-    <Section icon={Truck} title="Vehicle">
+    <Section icon={Truck} hue="blue" title="Vehicle">
       {vehicle ? (
         <div className="space-y-3">
           <Link
             to="/vehicles/$vehicleId/view"
             params={{ vehicleId: vehicle.id }}
-            className="group -m-2 flex items-center gap-3 rounded-lg p-2 hover:bg-muted"
+            className="group block overflow-hidden rounded-xl border bg-gradient-to-br from-blue-500/10 via-background to-background p-4 transition-colors hover:border-primary/40"
           >
-            <span className="rounded-md border-2 border-foreground/80 bg-amber-300 px-2 py-0.5 font-mono text-sm font-bold text-black">
-              {vehicle.plate_number}
-            </span>
-            <span className="min-w-0 flex-1 text-sm">
-              <span className="block truncate font-medium">
-                {vehicle.number}
-              </span>
-              <span className="block text-xs text-muted-foreground">
-                {vehicle.vehicle_year} ·{" "}
-                {formatNumber(vehicle.fuel_consumption_rate, { fallback: "—" })}{" "}
-                km/L
-              </span>
-            </span>
-            <ArrowUpRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="flex items-start justify-between gap-2">
+              <PlateNumber value={vehicle.plate_number} size="lg" />
+              <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </div>
+            <p className="mt-3 font-medium">{vehicle.number}</p>
+            <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-md bg-background/80 px-2 py-1.5 ring-1 ring-border">
+                <p className="text-muted-foreground">Year</p>
+                <p className="font-medium tabular-nums">
+                  {vehicle.vehicle_year || "—"}
+                </p>
+              </div>
+              <div className="rounded-md bg-background/80 px-2 py-1.5 ring-1 ring-border">
+                <p className="text-muted-foreground">Economy</p>
+                <p className="font-medium tabular-nums">
+                  {formatNumber(vehicle.fuel_consumption_rate, {
+                    fallback: "—",
+                  })}{" "}
+                  km/L
+                </p>
+              </div>
+            </div>
           </Link>
           {a.changeVehicle && (
             <Button
@@ -571,6 +824,7 @@ function VehicleSection({
         </div>
       ) : (
         <EmptySlot
+          icon={Truck}
           text="No vehicle assigned"
           actionLabel={a.assignVehicle ? "Assign vehicle" : undefined}
           onAction={() => onAction("assign-vehicle")}
@@ -591,18 +845,18 @@ function DriverSection({
   const a = shipmentActions(shipment)
 
   return (
-    <Section icon={UserRound} title="Driver">
+    <Section icon={UserRound} hue="violet" title="Driver">
       {driver ? (
         <div className="space-y-3">
           <Link
             to="/drivers/$driverId/view"
             params={{ driverId: driver.id }}
-            className="group -m-2 flex items-center gap-3 rounded-lg p-2 hover:bg-muted"
+            className="group flex items-center gap-3 rounded-xl border bg-gradient-to-br from-violet-500/10 via-background to-background p-3 transition-colors hover:border-primary/40"
           >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary uppercase">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-sm font-bold text-violet-700 uppercase ring-2 ring-background dark:text-violet-300">
               {generateAvatorFallback(driver.fullname)}
             </span>
-            <span className="min-w-0 flex-1 text-sm">
+            <span className="min-w-0 flex-1">
               <span className="block truncate font-medium">
                 {driver.fullname}
               </span>
@@ -610,27 +864,35 @@ function DriverSection({
                 {driver.number}
               </span>
             </span>
-            <ArrowUpRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+            <ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
-          <div className="space-y-1">
+          <div className="grid grid-cols-2 gap-2">
             {driver.phone && (
-              <ContactLink
-                icon={Phone}
-                href={`tel:${driver.phone.replace(/\s/g, "")}`}
-                value={driver.phone}
-              />
+              <Button variant="outline" size="sm" asChild>
+                <a href={`tel:${driver.phone.replace(/\s/g, "")}`}>
+                  <Phone className="size-3.5" />
+                  Call
+                </a>
+              </Button>
             )}
             {driver.email && (
-              <ContactLink
-                icon={Mail}
-                href={`mailto:${driver.email}`}
-                value={driver.email}
-              />
+              <Button variant="outline" size="sm" asChild>
+                <a href={`mailto:${driver.email}`}>
+                  <Mail className="size-3.5" />
+                  Email
+                </a>
+              </Button>
             )}
           </div>
+          {driver.phone && (
+            <p className="text-center text-xs text-muted-foreground tabular-nums">
+              {driver.phone}
+            </p>
+          )}
         </div>
       ) : (
         <EmptySlot
+          icon={UserRound}
           text="No driver assigned"
           actionLabel={a.assignDriver ? "Assign driver" : undefined}
           onAction={() => onAction("assign-driver")}
@@ -646,49 +908,30 @@ function DriverSection({
 
 function Section({
   icon: Icon,
+  hue,
   title,
   children,
 }: {
   icon: IconType
+  hue: Hue
   title: string
   children: React.ReactNode
 }) {
   return (
-    <section className="rounded-xl border bg-card p-4">
-      <h3 className="mb-3 flex items-center gap-2 text-sm font-medium">
-        <Icon className="size-4 text-muted-foreground" />
+    <section className="rounded-2xl border bg-card p-4 shadow-xs">
+      <h3 className="mb-4 flex items-center gap-2.5 text-sm font-semibold">
+        <span
+          className={cn(
+            "flex size-7 items-center justify-center rounded-lg",
+            HUE[hue].tile
+          )}
+        >
+          <Icon className="size-4" />
+        </span>
         {title}
       </h3>
       {children}
     </section>
-  )
-}
-
-function TimeBlock({
-  icon: Icon,
-  label,
-  from,
-  to,
-  hint,
-}: {
-  icon: IconType
-  label: string
-  from: string
-  to?: string
-  hint?: string
-}) {
-  return (
-    <div className="rounded-lg bg-muted/40 p-3 text-sm">
-      <p className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Icon className="size-3.5" />
-        {label}
-        {hint && <span className="ml-auto tabular-nums">{hint}</span>}
-      </p>
-      <p>{from || "—"}</p>
-      {to !== undefined && (
-        <p className="text-muted-foreground">→ {to || "—"}</p>
-      )}
-    </div>
   )
 }
 
@@ -701,30 +944,40 @@ function Reading({
 }) {
   return (
     <div className="text-center">
-      <p className="rounded-md border bg-background px-3 py-1.5 font-mono text-lg font-semibold tabular-nums">
-        {formatNumber(value, { fallback: "—" })}
+      <p className="rounded-lg bg-foreground px-3 py-2 font-mono text-lg font-semibold tracking-widest text-background tabular-nums shadow-inner">
+        {formatNumber(value, { fallback: "——" })}
       </p>
-      <p className="mt-1 text-[11px] text-muted-foreground">{label} (km)</p>
+      <p className="mt-1.5 text-[11px] text-muted-foreground">{label} (km)</p>
     </div>
   )
 }
 
 function MiniStat({
+  icon: Icon,
   label,
   value,
   strong = false,
 }: {
+  icon: IconType
   label: string
   value: string
   strong?: boolean
 }) {
   return (
-    <div className="rounded-lg bg-muted/40 px-3 py-2">
-      <p className="text-xs text-muted-foreground">{label}</p>
+    <div
+      className={cn(
+        "rounded-xl border bg-background px-3 py-2.5",
+        strong && "border-violet-500/30 bg-violet-500/5"
+      )}
+    >
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icon className="size-3.5" />
+        {label}
+      </p>
       <p
         className={cn(
-          "truncate text-sm tabular-nums",
-          strong && "font-semibold text-primary"
+          "mt-0.5 truncate text-sm font-medium tabular-nums",
+          strong && "font-semibold text-violet-700 dark:text-violet-300"
         )}
       >
         {value}
@@ -738,59 +991,51 @@ function BillLine({
   value,
   hint,
   muted = false,
+  className,
 }: {
   label: string
   value: string
   hint?: string
   muted?: boolean
+  className?: string
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <dt className="text-muted-foreground">
+    <div className={cn("flex items-center justify-between gap-4", className)}>
+      <dt className={cn(!className && "text-muted-foreground")}>
         {label}
-        {hint && <span className="ml-1.5 text-xs">({hint})</span>}
+        {hint && <span className="ml-1.5 text-xs opacity-80">({hint})</span>}
       </dt>
-      <dd className={cn("tabular-nums", muted && "text-muted-foreground")}>
+      <dd
+        className={cn(
+          "font-medium tabular-nums",
+          muted && "font-normal text-muted-foreground"
+        )}
+      >
         {value}
       </dd>
     </div>
   )
 }
 
-function ContactLink({
-  icon: Icon,
-  href,
-  value,
-}: {
-  icon: IconType
-  href: string
-  value: string
-}) {
-  return (
-    <a
-      href={href}
-      className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
-    >
-      <Icon className="size-4 shrink-0 text-muted-foreground" />
-      <span className="truncate">{value}</span>
-    </a>
-  )
-}
-
 function EmptySlot({
+  icon: Icon,
   text,
   actionLabel,
   onAction,
 }: {
+  icon: IconType
   text: string
   actionLabel?: string
   onAction: () => void
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+    <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed bg-muted/30 p-5 text-center text-sm text-muted-foreground">
+      <span className="flex size-10 items-center justify-center rounded-full bg-background ring-1 ring-border">
+        <Icon className="size-5" />
+      </span>
       {text}
       {actionLabel && (
-        <Button variant="outline" size="sm" onClick={onAction}>
+        <Button size="sm" onClick={onAction}>
           <Plus className="size-3.5" />
           {actionLabel}
         </Button>

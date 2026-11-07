@@ -1,11 +1,20 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ArrowLeftRight } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowLeftRight,
+  MessageSquareText,
+  Truck,
+} from "lucide-react"
 import { reassignmentReasonsList } from "../enums"
 import { changeShipmentVehicleSchema } from "../schemas"
 import { useChangeShipmentVehicle } from "../hooks/use-shipment-actions"
-import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import {
+  FormSection,
+  ShipmentActionDialog,
+  closeOnSuccess,
+} from "./shipment-action-dialog"
 import type { Shipment } from "../types"
 import type { ChangeShipmentVehicleInput } from "../schemas"
 import {
@@ -14,6 +23,7 @@ import {
   TextareaField,
 } from "@/components/ui/form-fields"
 import { VehiclePickerField } from "@/features/vehicles/components"
+import { PlateNumber } from "@/features/vehicles/components/vehicle-visuals"
 
 type Props = {
   shipment?: Shipment
@@ -61,6 +71,7 @@ export function ChangeShipmentVehicleDialog({
       onOpenChange={onOpenChange}
       shipment={shipment}
       icon={ArrowLeftRight}
+      hue="amber"
       title="Change vehicle"
       description="Swap in a replacement vehicle and record why."
       formId="change-vehicle-form"
@@ -78,26 +89,51 @@ export function ChangeShipmentVehicleDialog({
         )}
       >
         <HiddenField control={form.control} name="unitId" />
-        <VehiclePickerField
-          label="Replacement vehicle"
-          name="newVehicleId"
-          control={form.control}
-          filters={{ status: "available" }}
-        />
-        <SelectField
-          label="Reason"
-          name="reason"
-          control={form.control}
-          options={reasonOptions}
-          placeholder="Select a reason"
-        />
-        <TextareaField
-          label="Note"
-          name="note"
-          control={form.control}
-          required={false}
-          placeholder="Add context for this change (optional)"
-        />
+
+        <FormSection icon={Truck} hue="amber" title="Swap">
+          <div className="flex items-center justify-between rounded-lg border border-dashed bg-muted/40 px-3 py-2.5">
+            <div>
+              <p className="text-xs text-muted-foreground">Current vehicle</p>
+              <p className="text-sm font-medium">
+                {shipment?.vehicle?.number ?? "—"}
+              </p>
+            </div>
+            {shipment?.vehicle && (
+              <PlateNumber
+                value={shipment.vehicle.plate_number}
+                className="opacity-70"
+              />
+            )}
+          </div>
+          <div className="-my-2 flex justify-center">
+            <span className="flex size-7 items-center justify-center rounded-full border bg-background text-amber-600 shadow-xs dark:text-amber-400">
+              <ArrowDown className="size-4" />
+            </span>
+          </div>
+          <VehiclePickerField
+            label="Replacement vehicle"
+            name="newVehicleId"
+            control={form.control}
+            filters={{ status: "available" }}
+          />
+        </FormSection>
+
+        <FormSection icon={MessageSquareText} hue="slate" title="Reason">
+          <SelectField
+            label="Why is the vehicle changing?"
+            name="reason"
+            control={form.control}
+            options={reasonOptions}
+            placeholder="Select a reason"
+          />
+          <TextareaField
+            label="Note"
+            name="note"
+            control={form.control}
+            required={false}
+            placeholder="Add context for this change (optional)"
+          />
+        </FormSection>
       </form>
     </ShipmentActionDialog>
   )

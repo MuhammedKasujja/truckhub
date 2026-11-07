@@ -1,15 +1,21 @@
 import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AlertTriangle, Flag } from "lucide-react"
+import { AlertTriangle, Clock, Flag, Gauge } from "lucide-react"
 import { endShipmentSchema } from "../schemas"
 import { useEndShipment } from "../hooks/use-shipment-actions"
 import { elapsedLabel, toDecimal } from "../format"
-import { ShipmentActionDialog, closeOnSuccess } from "./shipment-action-dialog"
+import {
+  FormSection,
+  OdometerReading,
+  ResultBanner,
+  ShipmentActionDialog,
+  closeOnSuccess,
+} from "./shipment-action-dialog"
 import type { EndShipmentInput } from "../schemas"
 import type { Shipment } from "../types"
 import { DateTimePickerField, NumberField } from "@/components/ui/form-fields"
-import { formatDateTime, formatNumber } from "@/lib/format"
+import { formatDateTime } from "@/lib/format"
 
 type Props = {
   shipment?: Shipment
@@ -46,72 +52,74 @@ export function EndShipmentDialog({ shipment, onOpenChange, open }: Props) {
       onOpenChange={onOpenChange}
       shipment={shipment}
       icon={Flag}
-      tone="success"
+      hue="emerald"
       title="Finish trip"
       description="Record the odometer and when the trip ended."
       formId="end-trip-form"
       submitLabel="Finish trip"
       isSubmitting={isPending}
     >
-      <dl className="grid grid-cols-2 gap-3 text-sm">
-        <div className="rounded-lg bg-muted/50 p-3">
-          <dt className="text-xs text-muted-foreground">Started</dt>
-          <dd className="mt-0.5">{formatDateTime(started) || "—"}</dd>
+      <FormSection icon={Gauge} hue="violet" title="Odometer">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <OdometerReading label="Start (km)" value={startMileage} />
+          </div>
+          <span className="h-0.5 w-6 rounded-full bg-border" />
+          <div className="flex-1">
+            <OdometerReading
+              label="End (km)"
+              value={endMileage}
+              muted={!endMileage}
+            />
+          </div>
         </div>
-        <div className="rounded-lg bg-muted/50 p-3">
-          <dt className="text-xs text-muted-foreground">Odometer at start</dt>
-          <dd className="mt-0.5 tabular-nums">
-            {formatNumber(startMileage, { fallback: "—" })} km
-          </dd>
-        </div>
-      </dl>
 
-      <form
-        id="end-trip-form"
-        className="space-y-4"
-        onSubmit={form.handleSubmit((values) =>
-          closeOnSuccess(
-            () => endShipment(values),
-            () => onOpenChange(false)
-          )
-        )}
-      >
-        <NumberField
-          label="Odometer at end (km)"
-          control={form.control}
-          name="endMileage"
-        />
-        <DateTimePickerField
-          label="Trip ended at"
-          control={form.control}
-          name="endedAt"
-        />
-      </form>
-
-      {distance && (
-        <div
-          className={
-            distance.lt(0)
-              ? "flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-              : "flex items-center justify-between rounded-lg border bg-muted/30 p-3 text-sm"
-          }
-        >
-          {distance.lt(0) ? (
-            <>
-              <AlertTriangle className="size-4" />
-              End reading is lower than the start reading
-            </>
-          ) : (
-            <>
-              <span className="text-muted-foreground">Trip summary</span>
-              <span className="tabular-nums">
-                {distance.toString()} km
-                {started && <> · {elapsedLabel(started, endedAt)}</>}
-              </span>
-            </>
+        <form
+          id="end-trip-form"
+          className="space-y-4"
+          onSubmit={form.handleSubmit((values) =>
+            closeOnSuccess(
+              () => endShipment(values),
+              () => onOpenChange(false)
+            )
           )}
-        </div>
-      )}
+        >
+          <NumberField
+            label="Odometer at end (km)"
+            control={form.control}
+            name="endMileage"
+          />
+          <DateTimePickerField
+            label="Trip ended at"
+            control={form.control}
+            name="endedAt"
+          />
+        </form>
+      </FormSection>
+
+      <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
+        <Clock className="size-3.5" />
+        Started {formatDateTime(started) || "—"}
+      </div>
+
+      {distance &&
+        (distance.lt(0) ? (
+          <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+            <AlertTriangle className="size-4 shrink-0" />
+            End reading is lower than the start reading
+          </div>
+        ) : (
+          <ResultBanner
+            hue="emerald"
+            label="Trip summary"
+            hint={
+              started
+                ? `${elapsedLabel(started, endedAt)} on the road`
+                : undefined
+            }
+            value={`${distance.toString()} km`}
+          />
+        ))}
     </ShipmentActionDialog>
   )
 }
