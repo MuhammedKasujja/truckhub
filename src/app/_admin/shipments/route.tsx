@@ -13,10 +13,6 @@ import {
   Navigation,
   UserCheck,
 } from "lucide-react"
-import { Route as ActiveShipmentsRoute } from "@/app/_admin/shipments/active"
-import { Route as ConfirmedShipmentsRoute } from "@/app/_admin/shipments/confirmed"
-import { Route as RequestedShipmentsRoute } from "@/app/_admin/shipments/requests"
-import { Route as CompletedShipmentsRoute } from "@/app/_admin/shipments/completed"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageBackButton } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
@@ -24,28 +20,30 @@ import { requirePermission } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 
+// Literal paths: a route's `.to` isn't set until the router builds the
+// route tree, so reading it at module level can give undefined.
 const shipmentTabs = [
   {
     name: "requests",
-    route: RequestedShipmentsRoute.to,
+    route: "/shipments/requests",
     icon: ClipboardList,
     hint: "Waiting for a vehicle and driver",
   },
   {
     name: "confirmed",
-    route: ConfirmedShipmentsRoute.to,
+    route: "/shipments/confirmed",
     icon: UserCheck,
     hint: "Assigned and ready to dispatch",
   },
   {
     name: "inTransit",
-    route: ActiveShipmentsRoute.to,
+    route: "/shipments/active",
     icon: Navigation,
     hint: "Dispatched, on the road or delayed",
   },
   {
     name: "completed",
-    route: CompletedShipmentsRoute.to,
+    route: "/shipments/completed",
     icon: CheckCircle2,
     hint: "Finished, captured or invoiced",
   },

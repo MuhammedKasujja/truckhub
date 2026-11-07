@@ -12,6 +12,7 @@ import {
 
 import type { GlobalKeys} from "@/i18n";
 import type { UserPermission } from "@/features/auth/permissions"
+import type { FileRouteTypes } from "@/routeTree.gen"
 import type { IconComponent } from "@/components/icons";
 import {
   Sidebar,
@@ -44,25 +45,17 @@ import { usePermissions } from "@/features/auth/hooks/use-permissions"
 import { logoutFn } from "@/features/auth/services"
 import { useAuth } from "@/components/providers/auth-context"
 import { getModuleIcon } from "@/components/icons"
-import { Route as DashboardRoute } from "@/app/_admin/dashboard"
-import { Route as ShipmentRoute } from "@/app/_admin/shipments/requests"
-import { Route as LiveMapRoute } from "@/app/_admin/live-map"
-import { Route as MaintenanceRoute } from "@/app/_admin/maintenance"
-import { Route as PaymentsRoute } from "@/app/_admin/payments"
-import { Route as ServicesRoute } from "@/app/_admin/services"
-import { Route as ClientsRoute } from "@/app/_admin/clients"
-import { Route as DriversRoute } from "@/app/_admin/drivers"
-import { Route as VehiclesRoute } from "@/app/_admin/vehicles"
-import { Route as ReportsRoute } from "@/app/_admin/reports"
-import { Route as SettingsDefaultRoute } from "@/app/_admin/settings/company-details"
-import { Route as QuotationsRoute } from "@/app/_admin/quotations"
-import { Route as InvoicesRoute } from "@/app/_admin/invoices"
 
 const APP_VERSION = "1.0.1"
 
 type SidebarItem = {
   title: GlobalKeys
-  url: string
+  /**
+   * Literal paths, checked against the generated route tree. Don't use a
+   * route's `.to` here: it is only set once the router builds the tree,
+   * after this module has run, so it can still be undefined.
+   */
+  url: FileRouteTypes["to"]
   /** Path prefix that marks this item active. Defaults to `url`. */
   match?: string
   icon?: IconComponent
@@ -76,7 +69,7 @@ type SidebarSection = {
 
 const settingsModule: SidebarItem = {
   title: "routes.settings",
-  url: SettingsDefaultRoute.to,
+  url: "/settings/company-details",
   match: "/settings",
   icon: getModuleIcon("Settings"),
   permission: "config:module",
@@ -88,26 +81,26 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       {
         title: "routes.dashboard",
-        url: DashboardRoute.to,
+        url: "/dashboard",
         icon: getModuleIcon("Dashboard"),
         permission: "dashboard:view",
       },
       {
         title: "routes.dispatch",
-        url: LiveMapRoute.to,
+        url: "/live-map",
         icon: getModuleIcon("Dispatches"),
         permission: "dashboard:view",
       },
       {
         title: "routes.shipments",
-        url: ShipmentRoute.to,
+        url: "/shipments/requests",
         match: "/shipments",
         icon: getModuleIcon("Shipments"),
         permission: "dashboard:view",
       },
       {
         title: "routes.quotations",
-        url: QuotationsRoute.to,
+        url: "/quotations",
         icon: getModuleIcon("Quotations"),
         permission: "quotations:module",
       },
@@ -118,19 +111,19 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       {
         title: "routes.drivers",
-        url: DriversRoute.to,
+        url: "/drivers",
         icon: getModuleIcon("Drivers"),
         permission: "drivers:module",
       },
       {
         title: "routes.vehicles",
-        url: VehiclesRoute.to,
+        url: "/vehicles",
         icon: getModuleIcon("Vehicles"),
         permission: "vehicles:module",
       },
       {
         title: "routes.maintenance",
-        url: MaintenanceRoute.to,
+        url: "/maintenance",
         icon: getModuleIcon("Maintenance"),
         permission: "maintenance:module",
       },
@@ -141,13 +134,13 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       {
         title: "routes.clients",
-        url: ClientsRoute.to,
+        url: "/clients",
         icon: getModuleIcon("Clients"),
         permission: "clients:module",
       },
       {
         title: "routes.services",
-        url: ServicesRoute.to,
+        url: "/services",
         icon: getModuleIcon("Services"),
         permission: "services:module",
       },
@@ -158,19 +151,19 @@ export const sidebarSections: SidebarSection[] = [
     items: [
       {
         title: "routes.payments",
-        url: PaymentsRoute.to,
+        url: "/payments",
         icon: getModuleIcon("Payments"),
         permission: "payments:module",
       },
       {
         title: "routes.invoices",
-        url: InvoicesRoute.to,
+        url: "/invoices",
         icon: getModuleIcon("Invoices"),
         permission: "invoices:module",
       },
       {
         title: "routes.reports",
-        url: ReportsRoute.to,
+        url: "/reports",
         icon: getModuleIcon("Reports"),
         permission: "reports:module",
       },
@@ -389,7 +382,7 @@ function NavUser() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to={SettingsDefaultRoute.to}>
+                <Link to={"/settings/company-details"}>
                   <SettingsIcon />
                   {tr("routes.settings")}
                 </Link>

@@ -1,33 +1,32 @@
 import {
-  createFileRoute,
   Outlet,
+  createFileRoute,
   useLocation,
   useRouter,
 } from "@tanstack/react-router"
-import { Route as OverviewRoute } from "@/app/_admin/billing/overview"
-import { Route as QuotationsRoute } from "@/app/_admin/billing/quotations"
-import { Route as InvoicesRoute } from "@/app/_admin/invoices"
+import { BookOpenTextIcon, CalendarRangeIcon, FileTextIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
-import { BookOpenTextIcon, CalendarRangeIcon, FileTextIcon } from "lucide-react"
 
+// Literal paths: a route's `.to` isn't set until the router builds the
+// route tree, so reading it at module level can give undefined.
 const biilingTabs = [
   {
     icon: CalendarRangeIcon,
     name: "overview",
-    route: OverviewRoute.to,
+    route: "/billing/overview",
   },
   {
     name: "quotations",
     icon: BookOpenTextIcon,
-    route: QuotationsRoute.to,
+    route: "/billing/quotations",
   },
   {
     name: "invoices",
     icon: FileTextIcon,
-    route: InvoicesRoute.to,
+    route: "/invoices",
   },
 ] as const
 
@@ -41,8 +40,7 @@ function RouteComponent() {
   const router = useRouter()
   const tr = useTranslation()
 
-  const activeTab = location.pathname ?? biilingTabs[0].route
-  console.log("location", location, "activeTab", activeTab)
+  const activeTab = location.pathname
   return (
     <>
       <PageHeader>
