@@ -1,33 +1,13 @@
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
-import { Can } from "@/components/has-permission"
-import { ActionIcon, ModuleIcon } from "@/components/icons"
-import {
-  PageAction,
-  PageBackButton,
-  PageHeader,
-  PageTitle,
-} from "@/components/page-header"
-import { Button } from "@/components/ui/button"
-import { ButtonGroup } from "@/components/ui/button-group"
-import {
-  ClientPricingConfigDialog,
-  ClientServicesDialog,
-  CustomerDetailsWrapper,
-} from "@/features/clients/components"
-import { useClientProfileSuspenseQuery } from "@/features/clients/hooks/use-client"
+import { CustomerDetailsWrapper } from "@/features/clients/components"
 import {
   clientInvoicesQueryOptions,
   clientPaymentsQueryOptions,
   clientProfileQueryOptions,
   clientQuotationsQueryOptions,
 } from "@/features/clients/query-options"
-import { EnterPaymentModal } from "@/features/payments/components"
-import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
-import { IconShieldStar } from "@tabler/icons-react"
-import { createFileRoute, Link } from "@tanstack/react-router"
-import { CreditCardIcon } from "lucide-react"
-import { useState } from "react"
+import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/clients/$clientId/view")({
   component: RouteComponent,
@@ -44,101 +24,5 @@ export const Route = createFileRoute("/_admin/clients/$clientId/view")({
 
 function RouteComponent() {
   const { clientId } = Route.useParams()
-  const { data } = useClientProfileSuspenseQuery(clientId)
-  const [openModal, setOpenModal] = useState(false)
-  const [openServicesModal, setServicesModal] = useState(false)
-  const [openPricingModal, setPricingModal] = useState(false)
-
-  const tr = useTranslation()
-  return (
-    <div>
-      <PageHeader>
-        <PageTitle className="capitalize">
-          {data?.name}{" "}
-          {data?.client_type === "premium" && (
-            <IconShieldStar stroke={2} className="size-5 text-amber-400" />
-          )}
-        </PageTitle>
-        <PageAction className="flex gap-2">
-          <PageBackButton />
-          <ButtonGroup>
-            <Can permission={"clients:edit"}>
-              <Button asChild variant={"secondary"}>
-                <Link to={"/clients/$clientId/edit"} params={{ clientId }}>
-                  <ActionIcon action={"edit"} />
-                  Edit
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"quotations:create"}>
-              <Button asChild variant={"secondary"}>
-                <Link to={"/quotations/new"} search={{ clientId }}>
-                  <ActionIcon action="create" />
-                  New Quotation
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"invoices:create"}>
-              <Button asChild variant={"secondary"}>
-                <Link to={"/invoices/create"} search={{ clientId }}>
-                  <ActionIcon action="create" />
-                  New Invoice
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"payments:create"}>
-              <Button variant={"secondary"} onClick={() => setOpenModal(true)}>
-                <ActionIcon action="create" />
-                {tr("payments.form.enterPayment")}
-              </Button>
-              <EnterPaymentModal
-                open={openModal}
-                onOpenChange={() => setOpenModal(false)}
-                initialData={{
-                  type: "invoice",
-                  clientId: clientId,
-                }}
-              />
-            </Can>
-            {data?.has_pricing && (
-              <Button asChild variant={"secondary"}>
-                <Link to="/clients/data/$clientId" params={{ clientId }}>
-                  <CreditCardIcon />
-                  Pricing
-                </Link>
-              </Button>
-            )}
-            <Button asChild variant={"secondary"}>
-              <Link to="/clients/$clientId/pdf" params={{ clientId }}>
-                <ActionIcon action={"view-pdf"} />
-                View Pdf
-              </Link>
-            </Button>
-            <Button
-              variant={"secondary"}
-              onClick={() => setServicesModal(true)}
-            >
-              <ModuleIcon module="Services" />
-              Services
-            </Button>
-            <Button variant={"secondary"} onClick={() => setPricingModal(true)}>
-              <ModuleIcon module="Settings" />
-              Pricing
-            </Button>
-          </ButtonGroup>
-        </PageAction>
-      </PageHeader>
-      <CustomerDetailsWrapper clientId={clientId} />
-      <ClientPricingConfigDialog
-        clientId={clientId}
-        open={openPricingModal}
-        onOpenChange={setPricingModal}
-      />
-      <ClientServicesDialog
-        clientId={clientId}
-        open={openServicesModal}
-        onOpenChange={setServicesModal}
-      />
-    </div>
-  )
+  return <CustomerDetailsWrapper clientId={clientId} />
 }
