@@ -1,13 +1,6 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { EntityId } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import {
   createServiceQuotationLineItemSchema,
   Route,
@@ -21,10 +14,13 @@ import {
   YearPickerField,
 } from "@/components/ui/form-fields"
 import { generateServiceEmptyLineItem } from "@/features/quotations/utils"
-import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
-import { useEffect, useState } from "react"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useEffect, useMemo, useState } from "react"
+import { Check, SearchIcon, Settings2, Truck } from "lucide-react"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import { formatMoney } from "@/lib/format"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
@@ -32,16 +28,16 @@ import { useQuotationServiceProducts } from "@/features/quotations/hooks/use-quo
 import { Service } from "@/features/services/types"
 import { useTranslation } from "@/i18n"
 import { cn } from "cn"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Status } from "@/components/ui/status"
 import { RouteSummary } from "./routes-dialog"
 import { toast } from "sonner"
+import {
+  ConfigSection,
+  LineItemDialog,
+  LineTotals,
+  PickHint,
+  RoundTripField,
+} from "./line-item-dialog"
 
 type ServiceSelectDialogProps = {
   clientId: EntityId
@@ -78,6 +74,7 @@ export function ServicesDialog({
   const subtotal = form.watch("subtotal")
   const serviceId = form.watch("service_id")
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [query, setQuery] = useState("")
 
   useEffect(() => {
     const price = new Decimal(unitPrice ?? 0)
@@ -115,198 +112,181 @@ export function ServicesDialog({
     }
   }, [lineItem, open])
 
-  async function handleConfirmService() {
-    const selectedService = services?.find(
-      (s) => form.getValues("service_id") === s.id
-    )
-
-    if (!selectedService) {
-      toast.error("Please select a vehicle first")
-      return
-    }
-
+  function handleSubmit() {
     form.handleSubmit(
       (data) => {
-        const title = `${selectedService?.display_name}`
-        onLineItemAdded({ ...data, display_name: title })
+        const selectedService = services?.find(
+          (s) => form.getValues("service_id") === s.id
+        )
+        if (!selectedService) {
+          toast.error("Please select a vehicle first")
+          return
+        }
+        onLineItemAdded({
+          ...data,
+          display_name: `${selectedService.display_name}`,
+        })
         onOpenChange(false)
       },
       (error) => {
         console.log("error", error)
       }
-    )
+    )()
   }
 
+  const selectedService = services?.find((s) => s.id === serviceId)
+  const filteredServices = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return services ?? []
+    return (services ?? []).filter((s) =>
+      [s.display_name, s.description].some((v) => v?.toLowerCase().includes(q))
+    )
+  }, [services, query])
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[95vh] min-h-[95vh] overflow-hidden p-0 md:min-w-[95vw]">
-        <form className="flex w-full flex-col">
-          <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
-              Service Pricing
-            </DialogTitle>
-            <DialogDescription className="flex items-center justify-between gap-4">
-              <span className="text-sm text-muted-foreground">
-                {formatMoney(form.watch("line_total"))}
-              </span>
-              <div className="flex gap-4">
-                <Controller
-                  name={`is_round_trip`}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field
-                      data-invalid={fieldState.invalid}
-                      orientation={"horizontal"}
-                      className="gap-2"
-                    >
-                      <Checkbox
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        checked={field.value ?? false}
-                        onCheckedChange={(state: boolean) =>
-                          field.onChange(state)
-                        }
-                      />
-                      <FieldLabel htmlFor={field.name} className="text-sm">
-                        Round Trip
-                      </FieldLabel>
-                      {fieldState.invalid && (
-                        <FieldError
-                          className="text-xs"
-                          errors={[fieldState.error]}
-                        />
-                      )}
-                    </Field>
-                  )}
-                />
-                <Button
-                  type="button"
-                  className="shrink-0"
-                  onClick={form.handleSubmit(
-                    (data) => {
-                      const selectedService = services?.find(
-                        (s) => form.getValues("service_id") === s.id
-                      )
-
-                      const title = `${selectedService?.display_name}`
-                      onLineItemAdded({ ...data, display_name: title })
-                      onOpenChange(false)
-                    },
-                    (error) => {
-                      console.log("error", error)
-                    }
-                  )}
-                >
-                  Add to quote
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid flex-1 grid-cols-6 overflow-hidden">
-            <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-              <ServiceList
-                services={services ?? []}
-                selectionMode="single"
-                selectedIds={selectedIds}
-                onSelectedIdsChange={(ids) => {
-                  setSelectedIds(ids)
-                  form.setValue("service_id", ids.length > 0 ? ids[0] : "")
-                }}
-              />
-            </div>
-            <div className="col-span-2 flex flex-col overflow-hidden">
-              <div className="flex-1 space-y-4 overflow-y-auto p-6">
-                <Card>
-                  <CardContent className="space-y-2.5">
-                    <Field
-                      orientation={"horizontal"}
-                      className="grid gap-4 md:grid-cols-2"
-                    >
-                      <YearPickerField
-                        required={false}
-                        label={"Year Make"}
-                        name={"vehicle_year"}
-                        control={form.control}
-                      />
-                      <NumberField
-                        required={false}
-                        label={"Consumption (km/l)"}
-                        name={"estimated_consumption_rate_km"}
-                        control={form.control}
-                      />
-                    </Field>
-                    <Field orientation={"horizontal"} className="items-end">
-                      <SelectField
-                        label={"Engine"}
-                        control={form.control}
-                        name={"engine_mode"}
-                        placeholder="Select engine"
-                        options={ENGINE_MODES.map((opt) => ({
-                          label: `${opt}`,
-                          value: `${opt}`,
-                        }))}
-                      />
-                      <SwitchField
-                        label={"Driver"}
-                        name={"with_driver"}
-                        control={form.control}
-                      />
-                    </Field>
-                  </CardContent>
-                </Card>
-                <RouteSummary
-                  route={route}
-                  onEdit={(route) => {
-                    form.setValue("route", route)
-                    setRoute(route)
-                  }}
-                />
-              </div>
-              <div className="space-y-4 border-t p-5">
-                <Field
-                  orientation={"horizontal"}
-                  className="grid gap-4 md:grid-cols-2"
-                >
-                  <NumberField
-                    label={"Quantity"}
-                    name={"quantity"}
-                    control={form.control}
-                  />
-
-                  <MoneyField
-                    required={false}
-                    label={"Discount"}
-                    name={"discount"}
-                    control={form.control}
-                  />
-                </Field>
-                <MoneyField
-                  label={"Unit Price"}
-                  name={"unit_price"}
-                  control={form.control}
-                />
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-muted-foreground">Subtotal</div>
-                  <div className="text-sm">{formatMoney(subtotal)}</div>
-                </div>
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-muted-foreground">Discount</div>
-                  <div className="text-sm">
-                    {discount ? `-${formatMoney(discount)}` : "__"}
-                  </div>
-                </div>
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="font-semibold">Line total</div>
-                  <div className="text-xl font-bold text-primary">
-                    {formatMoney(lineTotal)}
-                  </div>
-                </div>
-              </div>
-            </div>
+    <LineItemDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={Truck}
+      title="Vehicle hire"
+      description={
+        selectedService
+          ? selectedService.display_name
+          : "Pick a vehicle, set the hire terms and price."
+      }
+      isEditing={!!lineItem}
+      lineTotal={lineTotal}
+      onSubmit={handleSubmit}
+      pickerTitle="Vehicles"
+      pickerDescription={`${services?.length ?? 0} available for this client`}
+      pickerAction={
+        <InputGroup className="w-64">
+          <InputGroupInput
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search vehicles..."
+          />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+        </InputGroup>
+      }
+      picker={
+        <ServiceList
+          services={filteredServices}
+          selectionMode="single"
+          selectedIds={selectedIds}
+          onSelectedIdsChange={(ids) => {
+            setSelectedIds(ids)
+            form.setValue("service_id", ids.length > 0 ? ids[0] : "")
+          }}
+        />
+      }
+      totals={
+        <LineTotals
+          subtotal={subtotal}
+          discount={discount}
+          lineTotal={lineTotal}
+          isRoundTrip={isRoundTrip}
+        >
+          <div className="grid grid-cols-2 gap-3">
+            <MoneyField
+              label={"Unit price"}
+              name={"unit_price"}
+              control={form.control}
+            />
+            <MoneyField
+              required={false}
+              label={"Discount"}
+              name={"discount"}
+              control={form.control}
+            />
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </LineTotals>
+      }
+    >
+      {selectedService ? (
+        <SelectedServiceCard service={selectedService} />
+      ) : (
+        <PickHint
+          icon={Truck}
+          title="No vehicle selected"
+          description="Choose one from the list to price this line."
+        />
+      )}
+      <ConfigSection icon={Settings2} title="Hire terms">
+        <div className="grid grid-cols-2 gap-3">
+          <NumberField
+            label={"Quantity"}
+            name={"quantity"}
+            control={form.control}
+          />
+          <YearPickerField
+            required={false}
+            label={"Year make"}
+            name={"vehicle_year"}
+            control={form.control}
+          />
+          <SelectField
+            label={"Engine"}
+            control={form.control}
+            name={"engine_mode"}
+            placeholder="Select engine"
+            options={ENGINE_MODES.map((opt) => ({
+              label: `${opt}`,
+              value: `${opt}`,
+            }))}
+          />
+          <NumberField
+            required={false}
+            label={"Consumption (km/l)"}
+            name={"estimated_consumption_rate_km"}
+            control={form.control}
+          />
+        </div>
+        <SwitchField
+          label={"With driver"}
+          description="Include a driver with the vehicle"
+          name={"with_driver"}
+          control={form.control}
+        />
+      </ConfigSection>
+      <RoundTripField control={form.control} name="is_round_trip" />
+      <RouteSummary
+        route={route}
+        onEdit={(route) => {
+          form.setValue("route", route)
+          setRoute(route)
+        }}
+      />
+    </LineItemDialog>
+  )
+}
+
+function SelectedServiceCard({ service }: { service: Service }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-xs">
+      <div className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-muted">
+        {service.image_url ? (
+          <img
+            src={service.image_url}
+            alt=""
+            className="h-full w-full object-contain"
+          />
+        ) : (
+          <Truck className="size-6 text-muted-foreground" />
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+          Selected vehicle
+        </p>
+        <p className="truncate font-semibold">{service.display_name}</p>
+        <p className="text-sm text-muted-foreground tabular-nums">
+          {formatMoney(service.base_fare)}
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -346,68 +326,81 @@ function ServiceList({
     onSelectedIdsChange?.(nextIds)
   }
 
-  return (
-    <div className="@container">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-        {services.map((service) => {
-          const isSelected = selectedIds.includes(service.id)
+  if (services.length === 0) {
+    return (
+      <PickHint
+        icon={SearchIcon}
+        title="No vehicles found"
+        description="Try a different search."
+      />
+    )
+  }
 
-          return (
-            <Card
-              key={service.id}
-              role={selectable ? "button" : undefined}
-              tabIndex={selectable ? 0 : undefined}
-              aria-pressed={selectable ? isSelected : undefined}
-              onClick={selectable ? () => handleSelected(service) : undefined}
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+      {services.map((service) => {
+        const isSelected = selectedIds.includes(service.id)
+
+        return (
+          <button
+            key={service.id}
+            type="button"
+            disabled={!selectable}
+            aria-pressed={selectable ? isSelected : undefined}
+            onClick={() => handleSelected(service)}
+            className={cn(
+              "group relative flex flex-col overflow-hidden rounded-xl border bg-card text-left shadow-xs transition-all outline-none",
+              "hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50",
+              isSelected && "border-primary ring-2 ring-primary/30"
+            )}
+          >
+            <span
               className={cn(
-                "rounded-2xl shadow-sm transition hover:bg-primary/5 hover:shadow-md",
-                selectable && "cursor-pointer",
-                isSelected && "bg-primary/5 ring-3 ring-primary"
+                "absolute top-2.5 right-2.5 z-10 flex size-6 items-center justify-center rounded-full border bg-background/90 text-transparent shadow-xs backdrop-blur transition-colors",
+                isSelected &&
+                  "border-primary bg-primary text-primary-foreground"
               )}
             >
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
-                    {service.display_name}
-                  </CardTitle>
-
-                  {/* <Badge variant="default">{service.category}</Badge> */}
+              <Check className="size-3.5" />
+            </span>
+            <div className="flex h-36 items-center justify-center bg-muted/60 p-3">
+              {service.image_url ? (
+                <img
+                  src={service.image_url}
+                  alt=""
+                  className="h-full w-full object-contain transition-transform group-hover:scale-[1.03]"
+                />
+              ) : (
+                <Truck className="size-10 text-muted-foreground/50" />
+              )}
+            </div>
+            <div className="flex flex-1 flex-col gap-3 p-4">
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{service.display_name}</p>
+                {service.description && (
+                  <p className="line-clamp-2 text-xs text-muted-foreground">
+                    {service.description}
+                  </p>
+                )}
+              </div>
+              <div className="mt-auto flex items-end justify-between gap-2 border-t pt-3">
+                <div>
+                  <p className="text-lg leading-tight font-bold tabular-nums">
+                    {formatMoney(service.base_fare)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {tr("services.last_price")}{" "}
+                    <span className="tabular-nums">
+                      {formatMoney(service.min_fare)}
+                    </span>
+                  </p>
                 </div>
-
-                <CardDescription>{service.description}</CardDescription>
-              </CardHeader>
-
-              <CardContent className="space-y-2 text-sm">
-                <div className="h-40 rounded-sm bg-accent">
-                  <img
-                    src={service.image_url}
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex items-baseline-last justify-between gap-2">
-                    <div className="space-y-1.5">
-                      <div className="text-start text-xl font-semibold">
-                        {formatMoney(service.base_fare)}
-                      </div>
-                      <div className="flex w-full gap-1 text-sm text-muted-foreground">
-                        <div className="text-sm">
-                          {tr("services.last_price")}
-                        </div>
-                        <div>{formatMoney(service.min_fare)}</div>
-                      </div>
-                    </div>
-                    {!service.is_truck && (
-                      <Status>{service.seats} seats</Status>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
+                {!service.is_truck && <Status>{service.seats} seats</Status>}
+              </div>
+            </div>
+          </button>
+        )
+      })}
     </div>
   )
 }

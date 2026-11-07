@@ -1,11 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { formatMoney, formatNumber } from "@/lib/format"
+import { formatNumber } from "@/lib/format"
 import { EntityId } from "@/schemas"
 import { useEffect, useState } from "react"
 import {
@@ -14,13 +7,12 @@ import {
   Route,
 } from "@/features/quotations/schemas"
 import { Button } from "@/components/ui/button"
-import { PackageOpen } from "lucide-react"
+import { Ruler, Weight } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import z from "zod"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { generateDistanceEmptyLineItem } from "../../utils"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   NumberField,
   MoneyField,
@@ -31,9 +23,15 @@ import { useDistanceTonnagePricing } from "@/features/settings/pricing/hooks/use
 import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
-import { Card, CardContent } from "@/components/ui/card"
 import { DistanceRatePricingTable } from "./distance-rates-pricing-table"
 import { RouteSummary } from "./routes-dialog"
+import {
+  ConfigSection,
+  LineItemDialog,
+  LineTotals,
+  PickHint,
+  RoundTripField,
+} from "./line-item-dialog"
 
 const formSchema = z.object({
   ...createDistanceTonnageLineItemSchema.shape,
@@ -119,214 +117,159 @@ export function DistancePricingSelectDialog({
     // setRouteError(false)
   }, [open, lineItem])
 
+  function handleSubmit() {
+    form.handleSubmit((data) => {
+      const title = `${data.distance_km} km`
+      onLineItemAdded({ ...data, display_name: title })
+      onOpenChange(false)
+    })()
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[95vh] min-h-[95vh] overflow-hidden p-0 md:min-w-[95vw]">
-        <form className="flex w-full flex-col">
-          <DialogHeader className="border-b bg-background/95 px-6 py-4 backdrop-blur supports-backdrop-filter:bg-background/80">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
-              Distance Pricing
-            </DialogTitle>
-
-            <DialogDescription className="flex items-center justify-between gap-4">
-              <span className="text-sm text-muted-foreground">
-                Distance {distanceKm} km/l
-              </span>
-              <div className="flex gap-4">
-                <Controller
-                  name={`is_round_trip`}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field
-                      data-invalid={fieldState.invalid}
-                      orientation={"horizontal"}
-                      className="gap-2"
-                    >
-                      <Checkbox
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        checked={field.value ?? false}
-                        onCheckedChange={(state: boolean) =>
-                          field.onChange(state)
-                        }
-                      />
-                      <FieldLabel htmlFor={field.name} className="text-sm">
-                        Round Trip
-                      </FieldLabel>
-                      {fieldState.invalid && (
-                        <FieldError
-                          className="text-xs"
-                          errors={[fieldState.error]}
-                        />
-                      )}
-                    </Field>
-                  )}
-                />
-                <Button
-                  type="button"
-                  className="shrink-0"
-                  onClick={form.handleSubmit((data) => {
-                    const title = `${data.distance_km} km`
-                    onLineItemAdded({ ...data, display_name: title })
-                    onOpenChange(false)
-                  })}
-                >
-                  Add to quote
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid flex-1 overflow-hidden md:grid-cols-6">
-            {/* LEFT SIDE */}
-            <div className="col-span-4 flex-1 space-y-4 overflow-y-auto border-r p-6">
-              {isLoading && (
-                <div className="flex flex-1 items-center justify-center py-12 text-sm text-muted-foreground">
-                  Loading routes...
-                </div>
-              )}
-
-              <DistanceRatePricingTable
-                data={data}
-                selectedId={selectedDistanceRange?.id}
-                onSelect={handleSelect}
-                distanceKm={distanceKm}
-                loadTons={tonnage}
-              />
-            </div>
-
-            {/* RIGHT SIDE (SORTABLE) */}
-            <div className="col-span-2 flex flex-col overflow-hidden">
-              <div className="flex-1 space-y-4 overflow-y-auto p-6">
-                <div className="rounded-lg border border-dashed p-4">
-                  {selectedDistanceRange ? (
-                    <div className="flex flex-col items-start gap-2">
-                      <div className="flex w-full justify-between text-muted-foreground">
-                        <div className="text-muted-foreground">
-                          Selected rate
-                        </div>
-                        <Button
-                          type="button"
-                          variant={"ghost"}
-                          size={"sm"}
-                          onClick={() => setSelectedDistanceRange(undefined)}
-                        >
-                          Clear
-                        </Button>
-                      </div>
-
-                      <div className="text-lg font-semibold">
-                        {selectedDistanceRange.distance_min_km} -{" "}
-                        {selectedDistanceRange.distance_max_km} km{" "}
-                        {formatNumber(selectedDistanceRange.tonnage_min)} -{" "}
-                        {formatNumber(selectedDistanceRange.tonnage_max)} tons
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-0.5">
-                      <PackageOpen className="h-6 w-6" />
-                      <p className="text-sm">
-                        Pick a price on the left to add a route here.
-                      </p>
-                    </div>
-                  )}
-                </div>
-                <Card>
-                  <CardContent className="space-y-4">
-                    <Field orientation={"horizontal"}>
-                      <NumberField
-                        required={false}
-                        label="Distance"
-                        control={form.control}
-                        name={"distance_km"}
-                      />
-                      <NumberField
-                        required={false}
-                        label="Tonnage"
-                        control={form.control}
-                        name={"tonnage"}
-                      />
-                    </Field>
-                    <Field orientation={"horizontal"}>
-                      <SelectField
-                        label={"Engine"}
-                        control={form.control}
-                        name={"engine_mode"}
-                        required={false}
-                        placeholder="Select engine"
-                        options={ENGINE_MODES.map((opt) => ({
-                          label: `${opt}`,
-                          value: `${opt}`,
-                        }))}
-                      />
-                      <NumberField
-                        label="Consumption (km/l)"
-                        control={form.control}
-                        name="estimated_consumption_rate_km"
-                      />
-                    </Field>
-                    <Field orientation={"horizontal"}>
-                      <SwitchField
-                        label={"Driver"}
-                        name={"with_driver"}
-                        control={form.control}
-                      />
-                      <SwitchField
-                        label={"Loaders"}
-                        name={"with_loaders"}
-                        control={form.control}
-                      />
-                    </Field>
-                  </CardContent>
-                </Card>
-                <RouteSummary
-                  route={route}
-                  onEdit={(r) => {
-                    form.setValue("route", r)
-                    setRoute(r)
-                  }}
-                />
-              </div>
-              <div className="space-y-4 border-t p-5 dark:bg-accent">
-                <Field orientation={"horizontal"}>
-                  <NumberField
-                    label="Quantity"
-                    control={form.control}
-                    name="quantity"
-                  />
-                  <MoneyField
-                    required={false}
-                    label="Discount"
-                    control={form.control}
-                    name="discount"
-                  />
-                </Field>
-                <NumberField
-                  label="Unit Price"
-                  control={form.control}
-                  name="unit_price"
-                />
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-muted-foreground">Subtotal</div>
-                  <div className="text-sm">{formatMoney(subtotal)}</div>
-                </div>
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-muted-foreground">Discount</div>
-                  <div className="text-sm">
-                    {discount ? -`${formatMoney(discount)}` : "__"}
-                  </div>
-                </div>
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="font-semibold">Line total</div>
-                  <div className="text-xl font-bold text-primary">
-                    {formatMoney(lineTotal)}
-                  </div>
-                </div>
-              </div>
-            </div>
+    <LineItemDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={Ruler}
+      title="Distance haulage"
+      description={
+        distanceKm
+          ? `${formatNumber(distanceKm)} km${tonnage ? ` · ${formatNumber(tonnage)} t` : ""}`
+          : "Price by distance band and load."
+      }
+      isEditing={!!lineItem}
+      lineTotal={lineTotal}
+      onSubmit={handleSubmit}
+      pickerTitle="Distance rate card"
+      pickerDescription="Pick a band to prefill distance, tonnage and price. Rows and columns matching your figures are highlighted."
+      picker={
+        isLoading ? (
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-11 w-full rounded-lg" />
+            ))}
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        ) : (
+          <DistanceRatePricingTable
+            data={data}
+            selectedId={selectedDistanceRange?.id}
+            onSelect={handleSelect}
+            distanceKm={distanceKm}
+            loadTons={tonnage}
+          />
+        )
+      }
+      totals={
+        <LineTotals
+          subtotal={subtotal}
+          discount={discount}
+          lineTotal={lineTotal}
+          isRoundTrip={isRoundTrip}
+        >
+          <div className="grid grid-cols-2 gap-3">
+            <MoneyField
+              label="Unit price"
+              control={form.control}
+              name="unit_price"
+            />
+            <MoneyField
+              required={false}
+              label="Discount"
+              control={form.control}
+              name="discount"
+            />
+          </div>
+        </LineTotals>
+      }
+    >
+      {selectedDistanceRange ? (
+        <div className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3.5">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Ruler className="size-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              Selected rate
+            </p>
+            <p className="truncate text-sm font-semibold tabular-nums">
+              {selectedDistanceRange.distance_min_km}–
+              {selectedDistanceRange.distance_max_km} km ·{" "}
+              {formatNumber(selectedDistanceRange.tonnage_min)}–
+              {formatNumber(selectedDistanceRange.tonnage_max)} t
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant={"ghost"}
+            size={"sm"}
+            onClick={() => setSelectedDistanceRange(undefined)}
+          >
+            Clear
+          </Button>
+        </div>
+      ) : (
+        <PickHint
+          icon={Ruler}
+          title="No rate selected"
+          description="Pick a band in the rate card, or type the figures below."
+        />
+      )}
+      <ConfigSection icon={Weight} title="Trip & load">
+        <div className="grid grid-cols-2 gap-3">
+          <NumberField
+            required={false}
+            label="Distance (km)"
+            control={form.control}
+            name={"distance_km"}
+          />
+          <NumberField
+            required={false}
+            label="Tonnage"
+            control={form.control}
+            name={"tonnage"}
+          />
+          <SelectField
+            label={"Engine"}
+            control={form.control}
+            name={"engine_mode"}
+            required={false}
+            placeholder="Select engine"
+            options={ENGINE_MODES.map((opt) => ({
+              label: `${opt}`,
+              value: `${opt}`,
+            }))}
+          />
+          <NumberField
+            label="Consumption (km/l)"
+            control={form.control}
+            name="estimated_consumption_rate_km"
+          />
+          <NumberField
+            label="Quantity"
+            control={form.control}
+            name="quantity"
+          />
+        </div>
+        <div className="grid gap-2">
+          <SwitchField
+            label={"With driver"}
+            name={"with_driver"}
+            control={form.control}
+          />
+          <SwitchField
+            label={"With loaders"}
+            name={"with_loaders"}
+            control={form.control}
+          />
+        </div>
+      </ConfigSection>
+      <RoundTripField control={form.control} name="is_round_trip" />
+      <RouteSummary
+        route={route}
+        onEdit={(r) => {
+          form.setValue("route", r)
+          setRoute(r)
+        }}
+      />
+    </LineItemDialog>
   )
 }

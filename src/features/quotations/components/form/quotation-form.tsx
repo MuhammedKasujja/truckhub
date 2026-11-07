@@ -1,11 +1,3 @@
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { FieldGroup } from "@/components/ui/field"
 import {
   DiscountField,
@@ -17,21 +9,30 @@ import {
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
-import { MapPin, Plus } from "lucide-react"
+import {
+  Building2,
+  CalendarRange,
+  ListChecks,
+  Mail,
+  Phone,
+  Plus,
+  Route as RouteIcon,
+  Ruler,
+  Truck,
+} from "lucide-react"
+import { cn } from "@/lib/utils"
 import {
   ClientPickerField,
   ClientContactsList,
 } from "@/features/clients/components"
 import { useSearch } from "@tanstack/react-router"
-import { Separator } from "@/components/ui/separator"
 import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
 import { clientProfileQueryOptions } from "@/features/clients/query-options"
 import { EntityId } from "@/schemas"
 import { useQuery } from "@tanstack/react-query"
-import { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Badge } from "@/components/ui/badge"
 import { useDefaultTaxRate } from "@/features/settings/tax-rates/hooks/use-tax-rates"
 import { UserPickerField } from "@/features/users/components"
 import {
@@ -45,17 +46,11 @@ import {
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
 import { TaxRate } from "@/features/settings/tax-rates/types"
-import { formatMoney } from "@/lib/format"
+import { formatMoney, generateAvatorFallback } from "@/lib/format"
 import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 import Decimal from "@/lib/decimal-config"
 import { LineItemRow } from "../details/line-item-row"
 import { ActionIcon } from "@/components/icons"
-import {
-  Frame,
-  FrameDescription,
-  FrameHeader,
-  FramePanel,
-} from "@/components/ui/frame"
 // import { QrCode, QrCodeFrame } from "@/components/ui/qr-code"
 
 type QuotationFormProps = {
@@ -195,11 +190,6 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       ? lineItems.findIndex((i) => i.tempId === lineItem.tempId)
       : -1
 
-    console.log(
-      lineItem.tempId,
-      lineItems.map((i) => i.tempId)
-    )
-
     if (index > -1) {
       lineItemsFields.update(index, lineItem)
     } else {
@@ -207,88 +197,277 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     }
   }
 
+  const canAddItems = !!selectedClient
+  const addItemButtons = (Object.keys(ITEM_SOURCES) as ModalType[]).map(
+    (source) => ({ source, ...ITEM_SOURCES[source] })
+  )
+
   return (
     <>
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error(errors)
         })}
-        className="space-y-4"
+        className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]"
         id="form-quotation"
       >
-        <div className="grid grid-flow-row gap-5 md:grid-cols-3">
-          <Card>
-            <CardContent className="space-y-4">
-              {!selectedClient && (
-                <ClientPickerField
-                  // required
-                  // label="Client"
-                  // placeholder="Select client"
-                  control={form.control}
-                  name="client_id"
-                  onChange={handleClientSelected}
-                />
-              )}
-              {selectedClient && (
-                <CardHeader className="gap-2 p-0">
-                  <CardTitle className="text-lg">
-                    {selectedClient.name} - {selectedClient.short_name}
-                  </CardTitle>
-                  <CardDescription className="space-y-3">
-                    <div>{selectedClient.phone}</div>
-                    <div>{selectedClient.email}</div>
-                  </CardDescription>
-                  <CardAction onClick={() => handleClientSelected()}>
-                    <ActionIcon action="edit" />
-                  </CardAction>
-                </CardHeader>
-              )}
-              {clientContacts.length > 0 && (
-                <ClientContactsList
-                  contacts={clientContacts}
-                  selectedIds={selectedContactIds}
-                  onSelected={(contactIds) =>
-                    setValue("contacts", contactIds, { shouldDirty: true })
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <FieldGroup className="grid grid-flow-row gap-4">
+        <div className="min-w-0 space-y-5">
+          {/* Client */}
+          <FormCard
+            icon={Building2}
+            title="Client"
+            description="Who the quotation is for and who receives it"
+            action={
+              selectedClient && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleClientSelected()}
+                >
+                  <ActionIcon action="edit" />
+                  Change
+                </Button>
+              )
+            }
+          >
+            {!selectedClient && (
+              <ClientPickerField
+                control={form.control}
+                name="client_id"
+                onChange={handleClientSelected}
+              />
+            )}
+            {selectedClient && (
+              <div className="flex items-center gap-3.5 rounded-xl bg-muted/50 p-3.5">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-foreground text-sm font-bold text-background uppercase">
+                  {generateAvatorFallback(selectedClient.name)}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">
+                    {selectedClient.name}
+                    {selectedClient.short_name && (
+                      <span className="ml-2 rounded-md border bg-background px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                        {selectedClient.short_name}
+                      </span>
+                    )}
+                  </p>
+                  <div className="mt-0.5 flex flex-wrap gap-x-4 gap-y-0.5 text-sm text-muted-foreground">
+                    {selectedClient.phone && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Phone className="size-3.5" />
+                        {selectedClient.phone}
+                      </span>
+                    )}
+                    {selectedClient.email && (
+                      <span className="inline-flex min-w-0 items-center gap-1.5">
+                        <Mail className="size-3.5 shrink-0" />
+                        <span className="truncate">{selectedClient.email}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {clientContacts.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                  Send to · {selectedContactIds.length} of{" "}
+                  {clientContacts.length}
+                </p>
+                <div className="grid gap-2 md:grid-cols-2 [&>[data-slot=item]]:rounded-lg [&>[data-slot=item]]:border [&>[data-slot=item]]:bg-card">
+                  <ClientContactsList
+                    contacts={clientContacts}
+                    selectedIds={selectedContactIds}
+                    onSelected={(contactIds) =>
+                      setValue("contacts", contactIds, { shouldDirty: true })
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </FormCard>
+
+          {/* Line items */}
+          <FormCard
+            icon={ListChecks}
+            title="Line items"
+            description={
+              canAddItems
+                ? `${lineItems.length} ${lineItems.length === 1 ? "item" : "items"} on this quote`
+                : "Select a client first to add items"
+            }
+            action={
+              lineItems.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {addItemButtons.map(({ source, short, icon: Icon }) => (
+                    <Button
+                      key={source}
+                      disabled={!canAddItems}
+                      type="button"
+                      variant={"outline"}
+                      size="sm"
+                      onClick={() => handleSourceChange(source)}
+                    >
+                      <Icon />
+                      {short}
+                    </Button>
+                  ))}
+                </div>
+              )
+            }
+          >
+            {lineItems.length === 0 ? (
+              <div className="grid gap-3 sm:grid-cols-3">
+                {addItemButtons.map(({ source, label, hint, icon: Icon }) => (
+                  <button
+                    key={source}
+                    type="button"
+                    disabled={!canAddItems}
+                    onClick={() => handleSourceChange(source)}
+                    className={cn(
+                      "group flex flex-col items-start gap-3 rounded-xl border border-dashed p-4 text-left transition-all",
+                      "enabled:hover:border-solid enabled:hover:border-primary/40 enabled:hover:bg-primary/5 enabled:hover:shadow-sm",
+                      "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
+                  >
+                    <span className="flex size-10 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors group-enabled:group-hover:bg-primary group-enabled:group-hover:text-primary-foreground">
+                      <Icon className="size-5" />
+                    </span>
+                    <span>
+                      <span className="flex items-center gap-1.5 font-semibold">
+                        <Plus className="size-3.5" />
+                        {label}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        {hint}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="-mx-5 overflow-x-auto">
+                <table className="w-full min-w-[640px]">
+                  <thead>
+                    <tr className="border-y bg-muted/40 text-left text-[11px] tracking-wide text-muted-foreground uppercase">
+                      <th className="py-2 pr-3 pl-5 font-medium">#</th>
+                      <th className="py-2 pr-4 font-medium">Item</th>
+                      <th className="px-3 py-2 text-right font-medium">
+                        Unit price
+                      </th>
+                      <th className="px-3 py-2 text-right font-medium">Qty</th>
+                      <th className="py-2 pl-3 text-right font-medium">
+                        Line total
+                      </th>
+                      <th className="py-2 pr-5">
+                        <span className="sr-only">Actions</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="[&_td:first-child]:pl-5 [&_td:last-child]:pr-5">
+                    {lineItemsFields.fields.map((item, index) => (
+                      <LineItemRow
+                        item={item}
+                        idx={index}
+                        key={item.tempId}
+                        actions={
+                          <div className="flex justify-end gap-0.5">
+                            <Button
+                              type="button"
+                              size={"icon-sm"}
+                              variant={"ghost"}
+                              aria-label="Edit item"
+                              onClick={() =>
+                                handleSourceChange(item.source, item)
+                              }
+                            >
+                              <ActionIcon action="edit" />
+                            </Button>
+                            <Button
+                              type="button"
+                              size={"icon-sm"}
+                              variant={"ghost"}
+                              aria-label="Remove item"
+                              className="hover:text-destructive"
+                              onClick={() => lineItemsFields.remove(index)}
+                            >
+                              <ActionIcon action="delete" />
+                            </Button>
+                          </div>
+                        }
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </FormCard>
+        </div>
+
+        <div className="space-y-5 lg:sticky lg:top-4">
+          {/* Summary */}
+          <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
+            <div className="flex items-center justify-between border-b px-5 py-3.5">
+              <h3 className="text-sm font-semibold">Summary</h3>
+              <span className="text-xs text-muted-foreground">
+                {lineItems.length} {lineItems.length === 1 ? "item" : "items"}
+              </span>
+            </div>
+            <dl className="space-y-2.5 px-5 py-4 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">Subtotal</dt>
+                <dd className="tabular-nums">{formatMoney(subtotal)}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">
+                  Tax
+                  {taxRate && (
+                    <span className="ml-1.5 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium">
+                      {taxRate.name} {taxRate.rate}%
+                    </span>
+                  )}
+                </dt>
+                <dd className="tabular-nums">{formatMoney(taxAmount)}</dd>
+              </div>
+            </dl>
+            <div className="border-t bg-muted/40 px-5 py-4">
+              <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Grand total
+              </p>
+              <p className="text-3xl font-bold tracking-tight tabular-nums">
+                {formatMoney(grandTotal)}
+              </p>
+            </div>
+          </section>
+
+          {/* Details */}
+          <FormCard icon={CalendarRange} title="Details">
+            <FieldGroup className="gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <DatePickerField
-                  label={"Start Date"}
+                  label={"Start date"}
                   name={"start_date"}
                   control={control}
                 />
                 <DatePickerField
-                  label={"End Date"}
+                  label={"End date"}
                   name={"end_date"}
                   control={control}
                 />
-                {/* <MoneyField
-                label={"Partial Amount"}
-                name={"partial"}
+              </div>
+              <UserPickerField
+                label={"Assigned user"}
+                name={"assigned_user_id"}
                 control={control}
                 required={false}
-              /> */}
-                <UserPickerField
-                  label={"Assigned User"}
-                  name={"assigned_user_id"}
-                  control={control}
-                  required={false}
-                />
-              </FieldGroup>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <FieldGroup className="grid grid-flow-row gap-4">
+              />
+              <div className="grid grid-cols-2 gap-3">
                 <TextField
                   required={false}
                   readOnly
-                  label={"Quotation No."}
+                  label={"Quotation no."}
+                  placeholder="Auto"
                   name={"number"}
                   control={control}
                 />
@@ -298,154 +477,15 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   control={control}
                   required={false}
                 />
-                <TextareaField
-                  label={"Purpose"}
-                  name={"purpose"}
-                  control={control}
-                  required={false}
-                />
-              </FieldGroup>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card>
-          <CardHeader className="flex-row items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <MapPin className="h-4 w-4" />
               </div>
-              <div>
-                <CardTitle className="text-base">Services</CardTitle>
-                <CardDescription>
-                  <Badge variant="secondary" className="font-normal">
-                    {lineItemsFields.fields.length}{" "}
-                    {lineItemsFields.fields.length === 1
-                      ? "service"
-                      : "services"}
-                  </Badge>
-                </CardDescription>
-              </div>
-            </div>
-            <CardAction className="flex gap-4">
-              <Button
-                disabled={!selectedClient}
-                type="button"
-                variant={"outline"}
-                onClick={() => handleSourceChange("service")}
-              >
-                <Plus />
-                Cars
-              </Button>
-              <Button
-                disabled={!selectedClient}
-                type="button"
-                variant={"outline"}
-                onClick={() => handleSourceChange("route")}
-              >
-                <Plus />
-                Routes
-              </Button>
-              <Button
-                disabled={!selectedClient}
-                type="button"
-                variant={"outline"}
-                onClick={() => handleSourceChange("distance")}
-              >
-                <Plus />
-                Distance
-              </Button>
-            </CardAction>
-          </CardHeader>
-        </Card>
-
-        <Separator />
-        {/* <QrCode value="813db729-e67d-4b9a-86ac-85373edead63" className="[--qr-code-size:8rem]">
-        <QrCodeFrame className="rounded-md border" />
-      </QrCode> */}
-
-        <div className="grid gap-4 md:grid-cols-6">
-          <Card className="md:col-span-4">
-            <CardHeader className="pb-2">
-              <CardTitle className="font-mono text-sm tracking-wide text-muted-foreground uppercase">
-                Line items — {lineItems.length}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border text-left text-[10px] tracking-wide text-muted-foreground uppercase">
-                    <th className="pr-3 pb-2 font-medium">#</th>
-                    <th className="pr-4 pb-2 font-medium">Item</th>
-                    <th className="px-3 pb-2 text-right font-medium">
-                      Unit price
-                    </th>
-                    <th className="px-3 pb-2 text-right font-medium">Qty</th>
-                    <th className="pb-2 pl-3 text-right font-medium">
-                      Line total
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lineItemsFields.fields.map((item, index) => (
-                    <LineItemRow
-                      // onClick={()=>handleSourceChange(item.source, item)}
-                      item={item}
-                      idx={index}
-                      key={item.tempId}
-                      actions={
-                        <div>
-                          <Button
-                            type="button"
-                            size={"xs"}
-                            variant={"ghost"}
-                            onClick={() =>
-                              handleSourceChange(item.source, item)
-                            }
-                          >
-                            <ActionIcon action="edit" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size={"xs"}
-                            variant={"ghost"}
-                            onClick={() => lineItemsFields.remove(index)}
-                          >
-                            <ActionIcon action="delete" />
-                          </Button>
-                        </div>
-                      }
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-          <div className="space-y-4 md:col-span-2">
-            <Frame>
-              <FrameHeader>
-                <FrameDescription>Summary</FrameDescription>
-              </FrameHeader>
-              <FramePanel className="space-y-4">
-                <div className="flex justify-between">
-                  <div className="text-sm text-muted-foreground">Subtotal</div>
-                  <div>{formatMoney(subtotal)}</div>
-                </div>
-                <div className="flex justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    Tax ({taxRate?.name} {taxRate?.rate}%)
-                  </div>
-                  <div>{formatMoney(taxAmount)}</div>
-                </div>
-                <Separator />
-                <div className="flex justify-between py-1">
-                  <div className="text-muted-foreground">Grand total</div>
-                  <div className="font-bold">{formatMoney(grandTotal)}</div>
-                </div>
-              </FramePanel>
-            </Frame>
-          </div>
+              <TextareaField
+                label={"Purpose"}
+                name={"purpose"}
+                control={control}
+                required={false}
+              />
+            </FieldGroup>
+          </FormCard>
         </div>
       </form>
       <RoutePricingSelectDialog
@@ -471,5 +511,69 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
         onLineItemAdded={handleUpdateLineItems}
       />
     </>
+  )
+}
+
+const ITEM_SOURCES: Record<
+  ModalType,
+  {
+    label: string
+    short: string
+    hint: string
+    icon: React.ComponentType<{ className?: string }>
+  }
+> = {
+  service: {
+    label: "Vehicle hire",
+    short: "Vehicle",
+    hint: "Hire a car or truck at its listed fare",
+    icon: Truck,
+  },
+  route: {
+    label: "Route haulage",
+    short: "Route",
+    hint: "Price a known route by tonnage",
+    icon: RouteIcon,
+  },
+  distance: {
+    label: "Distance haulage",
+    short: "Distance",
+    hint: "Price any trip by km and load",
+    icon: Ruler,
+  },
+}
+
+/** A titled card section of the quotation form. */
+function FormCard({
+  icon: Icon,
+  title,
+  description,
+  action,
+  children,
+}: {
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+  description?: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <section className="rounded-xl border bg-card p-5 shadow-xs">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <Icon className="size-4.5" />
+          </span>
+          <div>
+            <h2 className="leading-tight font-semibold">{title}</h2>
+            {description && (
+              <p className="text-sm text-muted-foreground">{description}</p>
+            )}
+          </div>
+        </div>
+        {action}
+      </div>
+      <div className="space-y-4">{children}</div>
+    </section>
   )
 }
