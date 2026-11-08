@@ -156,9 +156,9 @@ function ShipmentContextCard({ shipment }: { shipment: Shipment }) {
           {shipment.driver ? (
             <>
               <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-[10px] font-bold text-violet-700 uppercase dark:text-violet-300">
-                {generateAvatorFallback(shipment.driver.fullname)}
+                {generateAvatorFallback(shipment.driver.full_name)}
               </span>
-              <span className="truncate">{shipment.driver.fullname}</span>
+              <span className="truncate">{shipment.driver.full_name}</span>
             </>
           ) : (
             <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">

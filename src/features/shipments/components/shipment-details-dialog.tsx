@@ -854,11 +854,11 @@ function DriverSection({
             className="group flex items-center gap-3 rounded-xl border bg-gradient-to-br from-violet-500/10 via-background to-background p-3 transition-colors hover:border-primary/40"
           >
             <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-violet-500/15 text-sm font-bold text-violet-700 uppercase ring-2 ring-background dark:text-violet-300">
-              {generateAvatorFallback(driver.fullname)}
+              {generateAvatorFallback(driver.full_name)}
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium">
-                {driver.fullname}
+                {driver.full_name}
               </span>
               <span className="block text-xs text-muted-foreground">
                 {driver.number}

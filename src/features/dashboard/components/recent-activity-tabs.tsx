@@ -53,7 +53,7 @@ function RecentShipments({ shipments }: { shipments: Shipment[] }) {
             <TableRow key={`shipment-${s.id.toString()}`}>
               <TableCell className="font-medium">{s.number ?? "—"}</TableCell>
               <TableCell>{s.vehicle?.plate_number ?? "—"}</TableCell>
-              <TableCell>{s.driver?.fullname ?? "—"}</TableCell>
+              <TableCell>{s.driver?.full_name ?? "—"}</TableCell>
               <TableCell>
                 <ShipmentStatusIndicator status={s.status} />
               </TableCell>

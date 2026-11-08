@@ -57,7 +57,7 @@ export function DispatchShipmentDialog({
     },
     {
       label: "Driver assigned",
-      detail: shipment?.driver?.fullname,
+      detail: shipment?.driver?.full_name,
       ok: !!shipment?.driver,
     },
   ]

@@ -111,6 +111,7 @@ const en = {
     form: {
       name: "Name",
       first_name: "First name",
+      fullName: "Full name",
       last_name: "Last name",
       submit: "Submit",
       reset: "Reset",

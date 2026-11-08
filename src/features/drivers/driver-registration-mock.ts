@@ -50,7 +50,10 @@ const SAMPLE: DriverRegistrationRecord = {
   license_classes: ["truck", "pickup_van", "car"],
   license_expiry: "2028-04-15",
   health: {
-    vision: { answer: true, details: "Wears prescription glasses for driving." },
+    vision: {
+      answer: true,
+      details: "Wears prescription glasses for driving.",
+    },
     serious_illness: { answer: false, details: null },
     neuro_musculoskeletal: { answer: false, details: null },
     sudden_collapse: { answer: false, details: null },
@@ -79,9 +82,7 @@ const SAMPLE: DriverRegistrationRecord = {
 export function getMockDriverRegistration(
   driver: Driver
 ): DriverRegistrationRecord {
-  const fullName =
-    driver.fullname ||
-    [driver.first_name, driver.last_name].filter(Boolean).join(" ")
+  const fullName = driver.full_name ?? ""
   return {
     ...SAMPLE,
     full_name: fullName || SAMPLE.full_name,

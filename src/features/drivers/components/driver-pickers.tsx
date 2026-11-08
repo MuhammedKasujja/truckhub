@@ -29,18 +29,18 @@ export function DriverPicker({
       onChange={(driver) => {
         onSelected?.(driver)
       }}
-      filterFn={(u, q) => u.fullname.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(u, q) => u.full_name.toLowerCase().includes(q.toLowerCase())}
       label="Driver"
       getOptionValue={(u) => u.id}
       renderOption={(u) => (
         <div>
-          <div>{u.fullname}</div>
+          <div>{u.full_name}</div>
           <div className="text-muted-foreground">{u.phone}</div>
         </div>
       )}
       renderValue={(u) => (
         <div>
-          <div>{u.fullname}</div>
+          <div>{u.full_name}</div>
         </div>
       )}
     />
@@ -68,12 +68,12 @@ export function DriverPickerField<TFieldValues extends FieldValues>({
       label={label}
       remote={remote}
       onSearch={(q) => setQuery(q)}
-      filterFn={(u, q) => u.fullname.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(u, q) => u.full_name.toLowerCase().includes(q.toLowerCase())}
       getOptionValue={(u) => u.id}
-      renderValue={(u)=> <div>{u.fullname}</div>}
+      renderValue={(u)=> <div>{u.full_name}</div>}
       renderOption={(u) => (
         <div className="space-y-0.5">
-          <div>{u.fullname}</div>
+          <div>{u.full_name}</div>
           <div className="text-muted-foreground">{u.phone}</div>
         </div>
       )}

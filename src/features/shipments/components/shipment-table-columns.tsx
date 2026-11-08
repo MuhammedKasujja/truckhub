@@ -146,7 +146,7 @@ export function getShipmentTableColumns({
               params={{ driverId: driver.id }}
               className="hover:underline"
             >
-              {driver.fullname}
+              {driver.full_name}
             </Link>
             {driver.phone && (
               <a

@@ -22,7 +22,7 @@ export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
               to={`/drivers/$driverId/view`}
               params={{ driverId: row.original.id }}
             >
-              {row.original.fullname}
+              {row.original.full_name}
             </Link>
           </Button>
         )

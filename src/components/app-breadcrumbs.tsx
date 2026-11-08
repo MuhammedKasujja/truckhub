@@ -53,6 +53,7 @@ const LABEL_FIELDS = [
   "plate_number",
   "display_name",
   "fullname",
+  "full_name",
   "name",
 ] as const
 

@@ -27,9 +27,7 @@ export const Route = createFileRoute("/_admin/drivers/$driverId/edit")({
 /** Prefills the fields the driver API stores; the rest start empty. */
 function toFormValues(driver: Driver): Partial<DriverFormValues> {
   return {
-    fullName:
-      driver.fullname ||
-      [driver.first_name, driver.last_name].filter(Boolean).join(" "),
+    fullName: driver.full_name ?? "",
     phone: driver.phone ?? "",
     email: driver.email ?? "",
     licenseNumber: driver.licence_number ?? "",

@@ -56,7 +56,7 @@ export type Shipment = {
   driver?: {
     id: EntityId
     number: string
-    fullname: string
+    full_name: string
     phone: string
     email: string
   }

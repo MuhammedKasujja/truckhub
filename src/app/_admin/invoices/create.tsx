@@ -552,7 +552,7 @@ function ShipmentRow({
             <p className="text-xs text-muted-foreground">
               {shp.contact_name && <>Contact: {shp.contact_name}</>}
               {shp.contact_name && shp.driver && " · "}
-              {shp.driver && <>Driver: {shp.driver.fullname}</>}
+              {shp.driver && <>Driver: {shp.driver.full_name}</>}
             </p>
           )}
         </div>

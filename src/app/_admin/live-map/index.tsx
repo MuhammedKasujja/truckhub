@@ -117,7 +117,7 @@ function RouteComponent() {
           const route = tripRoute(s)
           return [
             s.number,
-            s.driver?.fullname,
+            s.driver?.full_name,
             s.vehicle?.plate_number,
             s.vehicle?.number,
             s.contact_name,
@@ -439,7 +439,7 @@ function TripRow({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1">
             <UserRound className="size-3.5" />
-            {shp.driver?.fullname ?? "No driver"}
+            {shp.driver?.full_name ?? "No driver"}
           </span>
           {shp.vehicle && (
             <span className="inline-flex items-center gap-1">
@@ -487,11 +487,11 @@ function SelectedTripPanel({
       {/* Driver & vehicle */}
       <div className="mt-3 flex items-center gap-3 rounded-lg bg-muted/50 p-2.5">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary uppercase">
-          {shp.driver ? generateAvatorFallback(shp.driver.fullname) : "?"}
+          {shp.driver ? generateAvatorFallback(shp.driver.full_name) : "?"}
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">
-            {shp.driver?.fullname ?? "No driver assigned"}
+            {shp.driver?.full_name ?? "No driver assigned"}
           </p>
           <p className="truncate text-xs text-muted-foreground">
             {shp.vehicle
@@ -503,7 +503,7 @@ function SelectedTripPanel({
           <Button size="icon" variant="outline" className="size-8" asChild>
             <a
               href={`tel:${shp.driver.phone.replace(/\s/g, "")}`}
-              aria-label={`Call ${shp.driver.fullname}`}
+              aria-label={`Call ${shp.driver.full_name}`}
             >
               <Phone className="size-3.5" />
             </a>

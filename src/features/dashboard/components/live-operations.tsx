@@ -64,7 +64,7 @@ export function LiveOperations({ shipments }: { shipments: Shipment[] }) {
                   </p>
                   <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
                     <UserIcon className="size-3" />
-                    {shipment.driver?.fullname ?? "No driver"}
+                    {shipment.driver?.full_name ?? "No driver"}
                   </p>
                 </div>
                 <ShipmentStatusIndicator status={shipment.status} />
