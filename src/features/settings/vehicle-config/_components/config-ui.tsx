@@ -2,10 +2,11 @@ import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { MoreHorizontal, PencilIcon, SearchIcon, XIcon } from "lucide-react"
+import type { UserPermission } from "@/features/auth/permissions"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/confirm-dialog"
-import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
+import { usePermissions } from "@/features/auth/hooks/use-permissions"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -146,16 +147,28 @@ export function MediaImage({
   )
 }
 
-/** Edit / delete "…" menu for a config card, gated by permission. */
+/**
+ * Edit / delete "…" menu for a config card, gated by permission. Renders
+ * nothing when the user can do neither.
+ */
 export function ConfigCardMenu({
   label,
   onEdit,
   onDelete,
+  editPermission = "config:vehicle_config:edit",
+  deletePermission = "config:vehicle_config:delete",
 }: {
   label: string
   onEdit: () => void
   onDelete: () => void
+  editPermission?: UserPermission
+  deletePermission?: UserPermission
 }) {
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(editPermission)
+  const canDelete = hasPermission(deletePermission)
+  if (!canEdit && !canDelete) return null
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -164,19 +177,19 @@ export function ConfigCardMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <Can permission="config:vehicle_config:edit">
+        {canEdit && (
           <DropdownMenuItem onSelect={onEdit}>
             <PencilIcon />
             Edit
           </DropdownMenuItem>
-        </Can>
-        <Can permission="config:vehicle_config:delete">
-          <DropdownMenuSeparator />
+        )}
+        {canEdit && canDelete && <DropdownMenuSeparator />}
+        {canDelete && (
           <DropdownMenuItem variant="destructive" onSelect={onDelete}>
             <ActionIcon action="delete" />
             Delete
           </DropdownMenuItem>
-        </Can>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
