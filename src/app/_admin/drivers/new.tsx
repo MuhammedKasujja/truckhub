@@ -5,10 +5,9 @@ import {
   PageTitle,
 } from "@/components/page-header"
 import { DriverRegistrationForm } from "@/features/drivers/components/driver-registration-form"
-// import { DriverForm } from "@/features/drivers/components/driver-form"
-// import { useCreateDriver } from "@/features/drivers/hooks/user-driver"
 import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { requirePermission } from "@/lib/auth"
+import { useCreateDriver } from "@/features/drivers/hooks/user-driver"
 
 export const Route = createFileRoute("/_admin/drivers/new")({
   component: RouteComponent,
@@ -17,7 +16,7 @@ export const Route = createFileRoute("/_admin/drivers/new")({
 
 function RouteComponent() {
   const back = useBackNavigation()
-  // const { mutate } = useCreateDriver()
+  const mutation = useCreateDriver()
   return (
     <div>
       <PageHeader>
@@ -27,15 +26,11 @@ function RouteComponent() {
           selection.
         </PageDescription>
       </PageHeader>
-      {/* <DriverForm
-        mode="create"
-        onSubmit={(data) => {
-          mutate(data)
-        }}
-      /> */}
-      {/* TODO: send `payload` (toDriverCreatePayload) once POST /drivers
-          accepts it; the existing create endpoint takes the older shape. */}
-      <DriverRegistrationForm onSubmit={() => {}} onCancel={back} />
+      <DriverRegistrationForm
+        isSubmitting={mutation.isPending}
+        onSubmit={({ payload }) => mutation.mutate(payload)}
+        onCancel={back}
+      />
     </div>
   )
 }

@@ -1,8 +1,8 @@
 import { toast } from "sonner"
 import { EntityId } from "@/schemas"
-import { objectToFormData } from "@/lib/form-utils"
 import { driverProfileQueryOptions } from "../queries"
 import { createDriverFn, updateDriverFn } from "../services"
+import { toDriverRequestFormData } from "../driver-form-data"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { DriverCreateSchemaType, DriverUpdateSchemaType } from "../schemas"
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
@@ -30,7 +30,7 @@ export function useCreateDriver() {
   const invalidator = useQueryInvalidator()
   const mutation = useMutation({
     mutationFn: (input: DriverCreateSchemaType) => {
-      return createDriverFn({ data: objectToFormData(input) })
+      return createDriverFn({ data: toDriverRequestFormData(input) })
     },
     onSuccess: () => {
       toast.success("Driver created successfully")
@@ -47,7 +47,7 @@ export function useEditDriver() {
   const invalidator = useQueryInvalidator()
   const mutation = useMutation({
     mutationFn: (input: DriverUpdateSchemaType) => {
-      return updateDriverFn({ data: objectToFormData(input) })
+      return updateDriverFn({ data: toDriverRequestFormData(input) })
     },
     onSuccess: (_, input) => {
       toast.success("Driver updated successfully")

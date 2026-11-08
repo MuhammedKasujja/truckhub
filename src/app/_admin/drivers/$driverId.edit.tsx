@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import type { DriverFormValues } from "@/features/drivers/components/driver-registration-form"
+import type { DriverFormValues } from "@/features/drivers/schemas"
 import type { Driver } from "@/features/drivers/types"
 import {
   PageDescription,
@@ -31,14 +31,9 @@ function toFormValues(driver: Driver): Partial<DriverFormValues> {
       driver.fullname ||
       [driver.first_name, driver.last_name].filter(Boolean).join(" "),
     phone: driver.phone ?? "",
+    email: driver.email ?? "",
     licenseNumber: driver.licence_number ?? "",
   }
-}
-
-/** Splits "First Middle Last" into the API's first / last name. */
-function splitName(fullName: string) {
-  const [first = "", ...rest] = fullName.trim().split(/\s+/)
-  return { first_name: first, last_name: rest.join(" ") }
 }
 
 function RouteComponent() {
@@ -59,17 +54,10 @@ function RouteComponent() {
       <DriverRegistrationForm
         mode="edit"
         initialValues={toFormValues(data)}
+        avatarSrc={data.photo_url}
         isSubmitting={isPending}
         onCancel={back}
-        // The driver API only stores name, phone and licence number so far.
-        onSubmit={({ payload }) =>
-          mutate({
-            id: driverId,
-            ...splitName(payload.fullName),
-            phone: payload.phone,
-            licence_number: payload.licenseNumber,
-          })
-        }
+        onSubmit={({ payload }) => mutate({ id: driverId, ...payload })}
       />
     </div>
   )

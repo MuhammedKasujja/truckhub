@@ -8,45 +8,47 @@
  * real record to <DriverDetails registration={...} /> once it does.
  */
 import type { Driver } from "./types"
-import type { DriverCreatePayload } from "./components/driver-registration-form"
+import type { DriverCreateSchemaType } from "./schemas"
 
 export type DriverDocument = {
   name: string
   /** Bytes. */
   size: number
-  uploadedAt: string
+  uploaded_at: string
   url?: string
 }
 
 /** What registration captured, as the details screen shows it. */
-export type DriverRegistrationRecord = DriverCreatePayload & {
-  yardName: string
-  email?: string
-  licenseCopy?: DriverDocument
-  signedQuestionnaire?: DriverDocument
-  registeredBy: string
-  registeredAt: string
+export type DriverRegistrationRecord = Omit<
+  DriverCreateSchemaType,
+  "avatar" | "license_copy" | "signed_questionnaire"
+> & {
+  yard_name: string
+  license_copy?: DriverDocument
+  signed_questionnaire?: DriverDocument
+  registered_by: string
+  registered_at: string
 }
 
 const SAMPLE: DriverRegistrationRecord = {
-  fullName: "John M. Okello",
+  full_name: "John M. Okello",
   phone: "+256 776 123 456",
   email: "john.okello@truckhub.com",
-  nationalId: "CM90012345ABCD",
-  dateOfBirth: "1990-03-12",
-  yardId: 1,
-  yardName: "Seeta-Mukono",
-  vehicleTypes: [
-    { vehicleType: "truck", yearsExperience: 6 },
-    { vehicleType: "pickup_van", yearsExperience: 4 },
-    { vehicleType: "minibus", yearsExperience: 2 },
+  national_id: "CM90012345ABCD",
+  date_of_birth: "1990-03-12",
+  yard_id: 1,
+  yard_name: "Seeta-Mukono",
+  vehicle_types: [
+    { vehicle_type: "truck", years_experience: 6 },
+    { vehicle_type: "pickup_van", years_experience: 4 },
+    { vehicle_type: "minibus", years_experience: 2 },
   ],
   education: "o_level_driving_course",
-  isSmoker: false,
-  isDrugUser: false,
-  licenseNumber: "UGA/DL/1234567",
-  licenseClasses: ["truck", "pickup_van", "car"],
-  licenseExpiry: "2028-04-15",
+  is_smoker: false,
+  is_drug_user: false,
+  license_number: "UGA/DL/1234567",
+  license_classes: ["truck", "pickup_van", "car"],
+  license_expiry: "2028-04-15",
   health: {
     vision: { answer: true, details: "Wears prescription glasses for driving." },
     serious_illness: { answer: false, details: null },
@@ -59,18 +61,18 @@ const SAMPLE: DriverRegistrationRecord = {
     },
     stress_sleep: { answer: false, details: null },
   },
-  drugAlcoholTest: "passed",
-  skillsTest: "passed",
-  practicalTest: "pending",
-  driverConfirmed: true,
-  licenseCopy: {
+  drug_alcohol_test: "passed",
+  skills_test: "passed",
+  practical_test: "pending",
+  driver_confirmed: true,
+  license_copy: {
     name: "licence-UGA-DL-1234567.pdf",
     size: 842_000,
-    uploadedAt: "2026-10-02T09:14:00Z",
+    uploaded_at: "2026-10-02T09:14:00Z",
   },
-  signedQuestionnaire: undefined,
-  registeredBy: "Muhammed K.",
-  registeredAt: "2026-10-02T09:20:00Z",
+  signed_questionnaire: undefined,
+  registered_by: "Muhammed K.",
+  registered_at: "2026-10-02T09:20:00Z",
 }
 
 /** Sample record, using the driver's real details wherever the API has them. */
@@ -82,9 +84,9 @@ export function getMockDriverRegistration(
     [driver.first_name, driver.last_name].filter(Boolean).join(" ")
   return {
     ...SAMPLE,
-    fullName: fullName || SAMPLE.fullName,
+    full_name: fullName || SAMPLE.full_name,
     phone: driver.phone || SAMPLE.phone,
     email: driver.email || SAMPLE.email,
-    licenseNumber: driver.licence_number || SAMPLE.licenseNumber,
+    license_number: driver.licence_number || SAMPLE.license_number,
   }
 }

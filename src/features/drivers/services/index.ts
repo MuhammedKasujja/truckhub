@@ -15,7 +15,7 @@ import {
   getDriverDetailsById,
 } from "./server"
 import { ApiError } from "@/types"
-import { formInput } from "@/lib/form-utils"
+import { driverRequestInput } from "../driver-form-data"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getDriversFn = createServerFn()
@@ -59,13 +59,13 @@ export const deleteDriverFn = createServerFn()
   })
 
 export const updateDriverFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(DriverUpdateSchema))
+  .inputValidator(driverRequestInput(DriverUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateDriver(data))
   })
 
 export const createDriverFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(DriverCreateSchema))
+  .inputValidator(driverRequestInput(DriverCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createDriver(data))
   })
