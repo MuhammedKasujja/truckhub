@@ -64,7 +64,7 @@ import { cn } from "@/lib/utils"
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ACCEPTED_FILES = ["image/jpeg", "image/png", "application/pdf"]
 
-const HEALTH_QUESTIONS = [
+export const HEALTH_QUESTIONS = [
   {
     name: "vision",
     label:
@@ -114,7 +114,7 @@ function uncoveredVehicleTypes(
 
 const yesNo = z.enum(["yes", "no"], { message: "Please answer this question" })
 
-const ageOn = (dob: string, on = new Date()) => {
+export const ageOn = (dob: string, on = new Date()) => {
   const d = new Date(dob)
   let age = on.getFullYear() - d.getFullYear()
   const m = on.getMonth() - d.getMonth()
@@ -932,7 +932,7 @@ function HealthQuestion({
   )
 }
 
-const VEHICLE_ICONS: Record<VehicleType, IconType> = {
+export const VEHICLE_ICONS: Record<VehicleType, IconType> = {
   motorcycle: Bike,
   car: Car,
   pickup_van: Van,
