@@ -105,7 +105,7 @@ export function DriverDetails({
   const maxYears = Math.max(...record.vehicle_types.map((v) => v.years_experience), 0)
 
   return (
-    <div className="flex w-full max-w-7xl flex-col gap-6 pb-10">
+    <div className="flex w-full flex-col gap-6 pb-10">
       {/* Header */}
       <div className="flex flex-col gap-4">
         <Link
@@ -731,7 +731,7 @@ function DocumentRow({ label, doc }: { label: string; doc?: DriverDocument }) {
 
 export function DriverDetailsSkeleton() {
   return (
-    <div className="flex w-full max-w-7xl flex-col gap-6" aria-busy="true" aria-label="Loading driver">
+    <div className="flex w-full flex-col gap-6" aria-busy="true" aria-label="Loading driver">
       <Skeleton className="h-32 rounded-xl" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (

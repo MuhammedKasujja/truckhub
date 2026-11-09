@@ -89,7 +89,7 @@ export function usePaymentReverse() {
       toast.success("Payment reversed successfully")
     },
     onError: (err) => {
-      toast.success(err.message)
+      toast.error(err.message)
     },
   })
   return { ...muttation }

@@ -25,7 +25,7 @@ export function PaymentTableActions({
   return (
     <div className="flex gap-2">
       <PaymentViewModal
-        key={payment.id}
+        key={`view-${payment.id}`}
         payment={payment}
         open={rowAction.variant === "view"}
         onOpenChange={handleClose}
@@ -38,7 +38,7 @@ export function PaymentTableActions({
       {isNotInEnum(payment.status, ["reversed"]) && (
         <Can permission="payments:reverse">
           <ReversePaymentModal
-            key={payment.id}
+            key={`reverse-${payment.id}`}
             payment={payment}
             open={rowAction.variant === "reverse"}
             onOpenChange={handleClose}
