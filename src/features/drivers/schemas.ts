@@ -12,6 +12,7 @@ import type { VehicleType } from "./components/driver-options"
 import type { DriverPolicy } from "./components/driver-policy"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 import { DEFAULT_DRIVER_POLICY } from "./components/driver-policy"
+import { LIST_VIEWS } from "@/components/view-toggle"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 /* ------------------------------------------------------------------ */
@@ -98,6 +99,8 @@ export const DriverSearchParamsCache = z.object({
   ]),
   // advanced filter
   filters: getFiltersStateSchema<DriverRow>().optional(),
+  /** List layout; UI only, never sent to the API. Cards when absent. */
+  view: z.enum(LIST_VIEWS).optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

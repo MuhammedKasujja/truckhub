@@ -1,102 +1,85 @@
-import { ActionButton } from "@/components/ui/action-button"
-import { Button } from "@/components/ui/button"
-import { formatDateTime } from "@/lib/format"
-import { deleteDriverFn } from "@/features/drivers/services"
-import { DriverSummary } from "@/features/drivers/types"
-import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
-import { toast } from "sonner"
-import { Can } from "@/components/has-permission"
-import { TFunction } from "@/i18n"
-import { ActionIcon } from "@/components/icons"
+import { DriverActionsMenu } from "./driver-actions-menu"
+import { DriverAvatar, DriverRating, DriverVehicle } from "./driver-card"
+import type { ColumnDef } from "@tanstack/react-table"
+import type { DriverSummary } from "@/features/drivers/types"
+import type { TFunction } from "@/i18n"
+import { formatDate } from "@/lib/format"
 
-export function getDriverTableColumns(tr: TFunction): ColumnDef<DriverSummary>[] {
+export function getDriverTableColumns(
+  tr: TFunction
+): ColumnDef<DriverSummary>[] {
   return [
     {
-      accessorKey: "name",
+      id: "full_name",
+      accessorKey: "full_name",
       header: tr("common.form.name"),
-      cell: ({ row }) => {
-        return (
-          <Button variant={"link"} asChild>
+      meta: { label: tr("common.form.name") },
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <DriverAvatar driver={row.original} />
+          <div className="min-w-0">
             <Link
-              to={`/drivers/$driverId/view`}
+              to="/drivers/$driverId/view"
               params={{ driverId: row.original.id }}
+              className="block truncate font-medium hover:underline"
             >
               {row.original.full_name}
             </Link>
-          </Button>
-        )
-      },
+            {row.original.number && (
+              <p className="text-xs text-muted-foreground">
+                {row.original.number}
+              </p>
+            )}
+          </div>
+        </div>
+      ),
     },
     {
       accessorKey: "email",
       header: tr("common.form.email"),
-      cell: ({ row }) => {
-        return <p>{row.original.email}</p>
-      },
+      meta: { label: tr("common.form.email") },
     },
     {
       accessorKey: "phone",
       header: tr("common.form.phone"),
-      cell: ({ row }) => {
-        return <p>{row.original.phone}</p>
-      },
+      meta: { label: tr("common.form.phone") },
+      cell: ({ row }) =>
+        row.original.phone ?? <span className="text-muted-foreground">—</span>,
+    },
+    {
+      id: "vehicle",
+      header: "Vehicle",
+      meta: { label: "Vehicle" },
+      enableSorting: false,
+      cell: ({ row }) => <DriverVehicle driver={row.original} />,
+    },
+    {
+      accessorKey: "rating",
+      header: "Rating",
+      meta: { label: "Rating" },
+      cell: ({ row }) =>
+        row.original.rating ? (
+          <DriverRating rating={row.original.rating} />
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
     },
     {
       accessorKey: "created_at",
       header: tr("common.form.date"),
-      cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
-      },
+      meta: { label: tr("common.form.date") },
+      cell: ({ row }) => formatDate(row.original.created_at),
     },
     {
       id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Can permission={"drivers:view"}>
-              <Button variant={"outline"} size={"icon"}>
-                <Link
-                  to={`/drivers/$driverId/view`}
-                  params={{ driverId: row.original.id }}
-                >
-                  <ActionIcon action="view" />
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"drivers:edit"}>
-              <Button variant={"outline"} size={"icon"} asChild>
-                <Link
-                  to={`/drivers/$driverId/edit`}
-                  params={{ driverId: row.original.id }}
-                >
-                  <ActionIcon action="edit" />
-                </Link>
-              </Button>
-            </Can>
-            <Can permission={"drivers:delete"}>
-              <ActionButton
-                variant={"destructive"}
-                size={"icon"}
-                requireAreYouSure
-                action={async () => {
-                  const { isSuccess, error, message } = await deleteDriverFn({
-                    data: { id: row.original.id },
-                  })
-                  if (isSuccess) {
-                    toast.success(message)
-                    return { error: false }
-                  } else {
-                    return { error: true, message: error?.message }
-                  }
-                }}
-              >
-                <ActionIcon action="delete" />
-              </ActionButton>
-            </Can>
-          </div>
-        )
-      },
+      enableHiding: false,
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <DriverActionsMenu driver={row.original} />
+        </div>
+      ),
     },
   ]
 }

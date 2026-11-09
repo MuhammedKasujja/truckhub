@@ -18,10 +18,14 @@ export const driverQueryKeys = {
   search: (query?: string) => [...driverQueryKeys.all(), "search-list", query],
 } as const
 
-export function createDriverListQueryOptions(input: DriverListSearchParams) {
+export function createDriverListQueryOptions({
+  // The layout doesn't change the data, so it stays out of the key and the request.
+  view: _view,
+  ...params
+}: DriverListSearchParams) {
   return queryOptions({
-    queryKey: [...driverQueryKeys.list(), input],
-    queryFn: () => getDriversFn({ data: input }),
+    queryKey: [...driverQueryKeys.list(), params],
+    queryFn: () => getDriversFn({ data: params }),
   })
 }
 

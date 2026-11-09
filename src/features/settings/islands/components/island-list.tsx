@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import { useNavigate, useSearch } from "@tanstack/react-router"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { LayoutGrid, Plus, Table2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { IconSandbox } from "@tabler/icons-react"
 import { islandsQueryOptions } from "../query-options"
 import { deleteIslandByIdFn } from "../services"
@@ -9,6 +9,7 @@ import { IslandForm } from "./island-form"
 import type { Island } from "../types"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
+import { ViewToggle, type ListView } from "@/components/view-toggle"
 import {
   Table,
   TableBody,
@@ -34,18 +35,12 @@ import { formatPlural } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 type Dialog = { kind: "form" | "delete"; island?: Island }
-type View = "cards" | "table"
 
 /** Edit and delete handlers for one island. */
 type IslandActions = {
   onEdit: (island: Island) => void
   onDelete: (island: Island) => void
 }
-
-const VIEWS = [
-  { value: "cards", label: "Cards", icon: LayoutGrid },
-  { value: "table", label: "Table", icon: Table2 },
-] as const
 
 const ISLAND_WORDS = { singular: "island", plural: "islands" }
 const LOCATION_WORDS = { singular: "location", plural: "locations" }
@@ -75,7 +70,7 @@ export function IslandList() {
 
   const { view = "cards" } = useSearch({ from: "/_admin/settings/islands/" })
   const navigate = useNavigate({ from: "/settings/islands/" })
-  const setView = (next: View) =>
+  const setView = (next: ListView) =>
     navigate({
       // Cards is the default, so it stays out of the URL.
       search: (prev) => ({ ...prev, view: next === "cards" ? undefined : next }),
@@ -182,39 +177,6 @@ export function IslandList() {
         onDeleted={() => queryInvalidator.islands.list()}
       />
     </SettingsPage>
-  )
-}
-
-function ViewToggle({
-  value,
-  onChange,
-}: {
-  value: View
-  onChange: (view: View) => void
-}) {
-  return (
-    <div
-      role="group"
-      aria-label="View"
-      className="inline-flex gap-0.5 rounded-lg border bg-background p-0.5"
-    >
-      {VIEWS.map(({ value: option, label, icon: Icon }) => (
-        <button
-          key={option}
-          type="button"
-          aria-pressed={value === option}
-          onClick={() => onChange(option)}
-          className={cn(
-            "flex h-7 items-center gap-1.5 rounded-md px-2.5 text-sm text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
-            value === option &&
-              "bg-primary font-medium text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-          )}
-        >
-          <Icon className="size-4" />
-          {label}
-        </button>
-      ))}
-    </div>
   )
 }
 

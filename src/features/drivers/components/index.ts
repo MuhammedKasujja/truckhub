@@ -1,2 +1,2 @@
 export { DriverPicker, DriverPickerField } from "./driver-pickers"
-export { DriverTable, DriverTableSkeleton } from "./driver-table"
+export { DriverList, DriverListSkeleton } from "./driver-list"
