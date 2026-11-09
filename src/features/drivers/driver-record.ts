@@ -56,15 +56,15 @@ export function currentDocument(
   driver: Driver,
   type: DriverDocumentType
 ): Document | undefined {
+  if (!driver.documents) return undefined
+
   if (type === "license_copy" && driver.license.copy_document_id != null) {
-    const copy = (driver.documents ?? []).find(
+    const copy = driver.documents.find(
       (d) => d.id === driver.license.copy_document_id
     )
     if (copy) return copy
   }
-  return (driver.documents ?? []).find(
-    (d) => d.document_type === type && d.is_current
-  )
+  return driver.documents.find((d) => d.document_type === type && d.is_current)
 }
 
 /** "2026-03-12T00:00:00Z" -> "2026-03-12", for date inputs. */

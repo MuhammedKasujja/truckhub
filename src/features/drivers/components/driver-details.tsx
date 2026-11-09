@@ -157,8 +157,8 @@ export function DriverDetails({
           value={`${age} years`}
           note={
             ageOk
-              ? `Within ${policy.minAge}–${policy.maxAge}`
-              : `Outside ${policy.minAge}–${policy.maxAge}`
+              ? `Within ${policy.minAge} – ${policy.maxAge}`
+              : `Outside ${policy.minAge} – ${policy.maxAge}`
           }
           tone={ageOk ? "default" : "bad"}
         />
