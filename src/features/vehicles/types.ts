@@ -11,13 +11,14 @@ export type Gearbox = (typeof vehicleTransmissionList)[number]
 
 export type VehicleDriver = {
   id: EntityId
-  name: string
+  full_name: string
   email: string
   phone: string
   number: string
+  photo_url: string | null
 }
 
-export interface VehicleBase {
+export interface VehicleSummary {
   id: EntityId
   display_name: string
   number: string
@@ -43,7 +44,7 @@ export interface VehicleBase {
   total_axles?: number
 }
 
-export interface Vehicle extends VehicleBase {
+export interface Vehicle extends VehicleSummary {
   driver: VehicleDriver | null
   category: {
     id: EntityId
@@ -68,7 +69,6 @@ export interface Vehicle extends VehicleBase {
   }[]
 }
 
-
 export type VehicleStatistics = {
   total: number
   available: number
@@ -79,5 +79,5 @@ export type VehicleStatistics = {
 
 export interface VehicleTableRowAction extends DataTableRowAction<
   Vehicle,
-  "update" | "view"| "maintanence"
+  "update" | "view" | "maintanence"
 > {}

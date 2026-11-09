@@ -3,7 +3,7 @@ import { useTranslation } from "@/i18n"
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { cn } from "@/lib/utils"
 
-type StatusTone = "success" | "info" | "warning" | "error" | "default"
+export type StatusTone = "success" | "info" | "warning" | "error" | "default"
 
 export const SHIPMENT_STATUS_TONE: Record<ShipmentStatus, StatusTone> = {
   unassigned: "warning",

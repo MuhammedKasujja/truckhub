@@ -1,5 +1,5 @@
 import { EntityId } from "@/schemas"
-import { VehicleBase } from "@/features/vehicles/types"
+import { VehicleSummary } from "@/features/vehicles/types"
 
 export type Driver = {
   id: EntityId
@@ -7,11 +7,13 @@ export type Driver = {
   full_name: string
   user_name: string | undefined
   phone: string | undefined
+  national_id: string
+  date_of_birth: string
   email: string
   rating: number
   created_at: Date
   updated_at: Date
-  vehicle: VehicleBase | null
+  vehicle: VehicleSummary | null
   photo_url: string | undefined
   licence_number: string | undefined
 }
