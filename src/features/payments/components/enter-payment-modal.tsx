@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Decimal from "decimal.js"
@@ -11,7 +11,6 @@ import {
 } from "./payment-method"
 import type { PaymentEditSchemaType } from "@/features/payments/schemas"
 import type { PaymentModeList } from "@/config/constants"
-import type { EntityId } from "@/schemas"
 import type z from "zod"
 import { paymentInputSchema } from "@/features/payments/schemas"
 import { Button } from "@/components/ui/button"

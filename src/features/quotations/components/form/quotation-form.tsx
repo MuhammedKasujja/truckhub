@@ -218,7 +218,8 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             title="Client"
             description="Who the quotation is for and who receives it"
             action={
-              selectedClient && (
+              selectedClient &&
+              !isEdit && (
                 <Button
                   type="button"
                   variant="outline"

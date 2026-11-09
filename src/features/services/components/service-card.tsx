@@ -170,7 +170,7 @@ export function ServiceCard({ service, showActions = true }: ServiceCardProps) {
                     <MoreHorizontal />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="min-w-40">
                   <DropdownMenuItem
                     variant="destructive"
                     onSelect={() => setConfirmDelete(true)}

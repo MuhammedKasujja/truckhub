@@ -315,7 +315,7 @@ function DetailsHeader({
                     <ChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="min-w-48">
                   {secondary.map((action) => (
                     <DropdownMenuItem
                       key={action.key}

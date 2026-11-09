@@ -140,7 +140,7 @@ function QuotationActions({ quotation }: { quotation: Quotation }) {
             <ChevronDown className="size-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="min-w-48">
           <Can permission="quotations:edit">
             <DropdownMenuItem asChild>
               <Link to="/quotations/$quotationId/edit" params={{ quotationId }}>

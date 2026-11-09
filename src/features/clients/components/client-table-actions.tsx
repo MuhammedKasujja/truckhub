@@ -43,7 +43,7 @@ export function ClientTableActions({
             <MoreHorizontal/>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           <DropdownMenuGroup>
             <Can permission={"clients:edit"}>
               <DropdownMenuItem asChild>
