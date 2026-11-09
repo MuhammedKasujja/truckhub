@@ -144,12 +144,12 @@ export function VehicleCard({ vehicle: v }: { vehicle: Vehicle }) {
           <div className="flex items-center gap-3">
             <Avatar className="size-8">
               <AvatarFallback className="text-xs">
-                {generateAvatorFallback(v.driver.name)}
+                {generateAvatorFallback(v.driver.full_name)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium capitalize">
-                {v.driver.name}
+                {v.driver.full_name}
               </p>
               <p className="text-xs text-muted-foreground">Driver</p>
             </div>

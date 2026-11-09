@@ -303,10 +303,10 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Avatar className="size-11">
-              <AvatarFallback>{generateAvatorFallback(d.name)}</AvatarFallback>
+              <AvatarFallback>{generateAvatorFallback(d.full_name)}</AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="truncate font-medium capitalize">{d.name}</p>
+              <p className="truncate font-medium capitalize">{d.full_name}</p>
               <p className="text-xs text-muted-foreground">{d.number}</p>
             </div>
           </div>
@@ -334,7 +334,7 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
         </CardTitle>
         <CardDescription>
           {vehicle.driver
-            ? `Replace ${vehicle.driver.name} on this vehicle`
+            ? `Replace ${vehicle.driver.full_name} on this vehicle`
             : "This vehicle has no driver yet"}
         </CardDescription>
       </CardHeader>

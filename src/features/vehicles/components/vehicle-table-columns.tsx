@@ -114,7 +114,7 @@ export function getVehicleTableColumns({
                 to={`/drivers/$driverId/view`}
                 params={{ driverId: driver.id }}
               >
-                {driver.name}
+                {driver.full_name}
               </Link>
             </Button>
           </Can>

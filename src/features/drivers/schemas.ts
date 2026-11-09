@@ -1,17 +1,17 @@
 import z from "zod"
 import {
-  EDUCATION_LEVELS,
+  labelFor,
   TEST_STATUSES,
   VEHICLE_TYPES,
-  labelFor,
+  EDUCATION_LEVELS,
 } from "./components/driver-options"
-import { DEFAULT_DRIVER_POLICY } from "./components/driver-policy"
+import { IDSchema, ImageSchema } from "@/schemas"
+import type { DriverRow } from "@/features/drivers/types"
+import { DefaultSearchParamsSchema } from "@/common/schemas"
 import type { VehicleType } from "./components/driver-options"
 import type { DriverPolicy } from "./components/driver-policy"
-import type { Driver } from "@/features/drivers/types"
-import { IDSchema, ImageSchema } from "@/schemas"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
-import { DefaultSearchParamsSchema } from "@/common/schemas"
+import { DEFAULT_DRIVER_POLICY } from "./components/driver-policy"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 /* ------------------------------------------------------------------ */
@@ -93,11 +93,11 @@ export type DriverCreateSchemaType = z.infer<typeof DriverCreateSchema>
 export type DriverUpdateSchemaType = z.infer<typeof DriverUpdateSchema>
 
 export const DriverSearchParamsCache = z.object({
-  sort: getSortingStateSchema<Driver>().default([
+  sort: getSortingStateSchema<DriverRow>().default([
     { id: "created_at", desc: true },
   ]),
   // advanced filter
-  filters: getFiltersStateSchema<Driver>().optional(),
+  filters: getFiltersStateSchema<DriverRow>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 

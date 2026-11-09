@@ -42,7 +42,7 @@ import {
   vehicleAssignDriverFn,
   vehicleUnAssignDriverFn,
 } from "@/features/vehicles/services"
-import { formatDate, formatDateTime } from "@/lib/format"
+import { daysUntil, formatDate, formatDateTime } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 type IconType = React.ComponentType<{ className?: string }>
@@ -66,8 +66,6 @@ const TEST_LABELS = {
 /** Health condition code as the payload stores it, e.g. "serious_illness". */
 const toSnake = (s: string) => s.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)
 
-const daysUntil = (date: string) =>
-  Math.ceil((new Date(date).getTime() - Date.now()) / 86_400_000)
 
 function initials(name: string) {
   return name

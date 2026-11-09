@@ -82,12 +82,11 @@ const SAMPLE: DriverRegistrationRecord = {
 export function getMockDriverRegistration(
   driver: Driver
 ): DriverRegistrationRecord {
-  const fullName = driver.full_name ?? ""
   return {
     ...SAMPLE,
-    full_name: fullName || SAMPLE.full_name,
-    phone: driver.phone || SAMPLE.phone,
-    email: driver.email || SAMPLE.email,
-    license_number: driver.licence_number || SAMPLE.license_number,
+    ...driver,
+    driver_confirmed: driver.health_screening.driver_confirmed,
+    license_number: driver.license.license_number,
+    registered_at: driver.created_at,
   }
 }

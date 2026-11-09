@@ -1,5 +1,5 @@
 import * as apiClient from "@/lib/api-client"
-import { Driver } from "@/features/drivers/types"
+import { Driver, DriverRow } from "@/features/drivers/types"
 import {
   DriverCreateSchemaType,
   DriverListSearchParams,
@@ -13,7 +13,7 @@ import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 export async function getDrivers(input: DriverListSearchParams) {
   const params = generateApiSearchParams(input)
 
-  const response = await apiClient.getPaginatedFn<Driver[]>(
+  const response = await apiClient.getPaginatedFn<DriverRow[]>(
     `/v1/drivers/?${params}`
   )
 

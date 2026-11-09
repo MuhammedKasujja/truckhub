@@ -88,9 +88,10 @@ export const formatDateTime = (
   }
 }
 
-export function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`
-  return `${(meters / 1000).toFixed(1)} km`
+export function formatDistance(meters: string | number): string {
+  const distance = Number(meters)
+  if (distance < 1000) return `${Math.round(distance)} m`
+  return `${(distance / 1000).toFixed(1)} km`
 }
 
 export function formatDuration(seconds: number): string {

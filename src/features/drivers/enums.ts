@@ -23,3 +23,13 @@ export const LICENSE_CHANGE_REASONS = [
 export type LicenseChangeReason =
   | "initial"
   | (typeof LICENSE_CHANGE_REASONS)[number]
+
+export type TestType = "drug_alcohol" | "driving_skills" | "practical_driving"
+export type HealthCondition =
+  | "vision"
+  | "serious_illness"
+  | "neuro_musculoskeletal"
+  | "sudden_collapse"
+  | "anxiety_depression"
+  | "medication"
+  | "stress_sleep"
