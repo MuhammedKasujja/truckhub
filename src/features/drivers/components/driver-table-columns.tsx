@@ -2,7 +2,7 @@ import { ActionButton } from "@/components/ui/action-button"
 import { Button } from "@/components/ui/button"
 import { formatDateTime } from "@/lib/format"
 import { deleteDriverFn } from "@/features/drivers/services"
-import { Driver } from "@/features/drivers/types"
+import { DriverSummary } from "@/features/drivers/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
@@ -10,7 +10,7 @@ import { Can } from "@/components/has-permission"
 import { TFunction } from "@/i18n"
 import { ActionIcon } from "@/components/icons"
 
-export function getDriverTableColumns(tr: TFunction): ColumnDef<Driver>[] {
+export function getDriverTableColumns(tr: TFunction): ColumnDef<DriverSummary>[] {
   return [
     {
       accessorKey: "name",

@@ -1,4 +1,4 @@
-import { Driver } from "../types"
+import { DriverSummary } from "../types"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { createDriverSearchQueryOptions } from "../queries"
@@ -14,14 +14,14 @@ export function DriverPicker({
   value,
   id,
   onSelected,
-}: EntityPickerProps<Driver>) {
+}: EntityPickerProps<DriverSummary>) {
   const [query, setQuery] = useState("")
   const { data, isLoading } = useQuery({
     ...createDriverSearchQueryOptions(query),
     // enabled: query.trim().length > 2,
   })
   return (
-    <AutoComplete<Driver>
+    <AutoComplete<DriverSummary>
       id={id}
       options={data ?? []}
       loading={isLoading}
@@ -55,7 +55,7 @@ export function DriverPickerField<TFieldValues extends FieldValues>({
   remote = false,
   control,
   ...props
-}: FormAutoCompleteProps<TFieldValues, Driver>) {
+}: FormAutoCompleteProps<TFieldValues, DriverSummary>) {
   const [query, setQuery] = useState("")
   const { data, isLoading } = useQuery(createDriverSearchQueryOptions(query))
   return (

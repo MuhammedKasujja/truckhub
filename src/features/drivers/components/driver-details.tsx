@@ -15,23 +15,25 @@ import {
   GraduationCap,
   HeartPulse,
   IdCard,
-  Info,
   Link2Off,
-  MapPin,
   PencilIcon,
   ShieldCheck,
   UserRound,
 } from "lucide-react"
 import { driverQueryKeys } from "../queries"
-import { getMockDriverRegistration } from "../driver-registration-mock"
-import { HEALTH_QUESTIONS, ageOn } from "../schemas"
+import { ageOn } from "../schemas"
+import {
+  DRIVER_TESTS,
+  currentDocument,
+  driverHealthAnswers,
+  driverTest,
+} from "../driver-record"
 import { VEHICLE_ICONS } from "./driver-registration-form"
 import { VEHICLE_TYPES, labelFor } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
-import type { DriverDocument, DriverRegistrationRecord } from "../driver-registration-mock"
 import type { TestStatus, VehicleType } from "./driver-options"
 import type { DriverPolicy } from "./driver-policy"
-import type { Driver } from "../types"
+import type { Driver, Document } from "../types"
 import type { Vehicle } from "@/features/vehicles/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -49,23 +51,8 @@ type IconType = React.ComponentType<{ className?: string }>
 
 type DriverDetailsProps = {
   driver: Driver
-  /**
-   * What registration captured. Defaults to sample data until the driver
-   * API returns it (see driver-registration-mock.ts).
-   */
-  registration?: DriverRegistrationRecord
   policy?: DriverPolicy
 }
-
-const TEST_LABELS = {
-  drug_alcohol_test: "Drug and alcohol test",
-  skills_test: "Driving skills test",
-  practical_test: "Practical driving test",
-} as const
-
-/** Health condition code as the payload stores it, e.g. "serious_illness". */
-const toSnake = (s: string) => s.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`)
-
 
 function initials(name: string) {
   return name
@@ -77,8 +64,7 @@ function initials(name: string) {
 }
 
 /** Overall selection outcome from the three tests. */
-function selectionStatus(r: DriverRegistrationRecord) {
-  const results = [r.drug_alcohol_test, r.skills_test, r.practical_test]
+function selectionStatus(results: TestStatus[]) {
   if (results.includes("failed")) return "failed" as const
   if (results.every((t) => t === "passed")) return "cleared" as const
   return "in_selection" as const
@@ -86,21 +72,25 @@ function selectionStatus(r: DriverRegistrationRecord) {
 
 export function DriverDetails({
   driver,
-  registration,
   policy = DEFAULT_DRIVER_POLICY,
 }: DriverDetailsProps) {
-  const isSample = !registration
-  const record = registration ?? getMockDriverRegistration(driver)
-
-  const age = ageOn(record.date_of_birth)
+  const { license } = driver
+  const age = ageOn(driver.date_of_birth)
   const ageOk = age >= policy.minAge && age <= policy.maxAge
-  const licenceDays = daysUntil(record.license_expiry)
-  const tests = [record.drug_alcohol_test, record.skills_test, record.practical_test]
-  const passed = tests.filter((t) => t === "passed").length
-  const status = selectionStatus(record)
-  const assigned = record.vehicle_types.map((v) => v.vehicle_type)
-  const uncovered = assigned.filter((t) => !record.license_classes.includes(t))
-  const maxYears = Math.max(...record.vehicle_types.map((v) => v.years_experience), 0)
+  const licenceDays = daysUntil(license.expiry_date)
+  const tests = DRIVER_TESTS.map((t) => ({
+    ...t,
+    ...driverTest(driver, t.type),
+  }))
+  const results = tests.map((t) => t.status)
+  const passed = results.filter((t) => t === "passed").length
+  const status = selectionStatus(results)
+  const assigned = driver.vehicle_types.map((v) => v.vehicle_type)
+  const uncovered = driver.license_coverage_gaps
+  const maxYears = Math.max(
+    ...driver.vehicle_types.map((v) => v.years_experience),
+    0
+  )
 
   return (
     <div className="flex w-full flex-col gap-6 pb-10">
@@ -118,18 +108,18 @@ export function DriverDetails({
           {driver.photo_url ? (
             <img
               src={driver.photo_url}
-              alt={record.full_name}
+              alt={driver.full_name}
               className="size-20 shrink-0 rounded-full object-cover ring-4 ring-background"
             />
           ) : (
             <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground">
-              {initials(record.full_name)}
+              {initials(driver.full_name)}
             </span>
           )}
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="truncate text-2xl font-bold tracking-tight">
-                {record.full_name}
+                {driver.full_name}
               </h1>
               <SelectionBadge status={status} />
             </div>
@@ -138,35 +128,25 @@ export function DriverDetails({
                 <span className="font-mono text-xs leading-5 font-medium text-foreground">
                   {driver.number}
                 </span>
-              )}
-              <span className="flex items-center gap-1.5">
-                <MapPin className="size-3.5" />
-                {record.yard_name}
-              </span>
+              )}{" "}
               <span className="flex items-center gap-1.5">
                 <CalendarDays className="size-3.5" />
-                Registered {formatDate(record.registered_at)}
+                Registered {formatDate(driver.created_at)}
               </span>
             </div>
           </div>
           <Can permission="drivers:edit">
             <Button asChild>
-              <Link to="/drivers/$driverId/edit" params={{ driverId: driver.id }}>
+              <Link
+                to="/drivers/$driverId/edit"
+                params={{ driverId: driver.id }}
+              >
                 <PencilIcon />
                 Edit
               </Link>
             </Button>
           </Can>
         </section>
-
-        {isSample && (
-          <p className="flex items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground">
-            <Info className="size-3.5 shrink-0" />
-            Name, phone, email and licence number are real. The other
-            registration details are sample data until the driver API returns
-            them.
-          </p>
-        )}
       </div>
 
       {/* Key facts */}
@@ -185,7 +165,7 @@ export function DriverDetails({
         <StatTile
           icon={Car}
           label="Vehicle types"
-          value={String(record.vehicle_types.length)}
+          value={String(driver.vehicle_types.length)}
           note={`Up to ${maxYears} years' experience`}
         />
         <StatTile
@@ -194,21 +174,23 @@ export function DriverDetails({
           value={licenceDays < 0 ? "Expired" : `${licenceDays} days`}
           note={
             licenceDays < 0
-              ? `Expired ${formatDate(record.license_expiry)}`
-              : `Valid until ${formatDate(record.license_expiry)}`
+              ? `Expired ${formatDate(license.expiry_date)}`
+              : `Valid until ${formatDate(license.expiry_date)}`
           }
-          tone={licenceDays < 0 ? "bad" : licenceDays <= 60 ? "warn" : "default"}
+          tone={
+            licenceDays < 0 ? "bad" : licenceDays <= 60 ? "warn" : "default"
+          }
         />
         <StatTile
           icon={FlaskConical}
           label="Selection tests"
-          value={`${passed} / ${tests.length}`}
+          value={`${passed} / ${results.length}`}
           note={
             status === "cleared"
               ? "All passed"
               : status === "failed"
                 ? "A test was failed"
-                : `${tests.length - passed} still to pass`
+                : `${results.length - passed} still to pass`
           }
           tone={status === "failed" ? "bad" : "default"}
         />
@@ -223,49 +205,61 @@ export function DriverDetails({
             description={`Vehicle types the driver can be assigned · minimum ${policy.minExperienceYears} years on each`}
           >
             <ul className="divide-y">
-              {record.vehicle_types.map(({ vehicle_type: vehicleType, years_experience: yearsExperience }) => {
-                const Icon = VEHICLE_ICONS[vehicleType]
-                const covered = record.license_classes.includes(vehicleType)
-                return (
-                  <li key={vehicleType} className="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Icon className="size-5" />
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-1.5">
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-sm font-medium">
-                          {labelFor("vehicleType", vehicleType)}
-                        </span>
-                        <span className="text-sm font-semibold tabular-nums">
-                          {yearsExperience}{" "}
-                          <span className="font-normal text-muted-foreground">
-                            {yearsExperience === 1 ? "year" : "years"}
+              {driver.vehicle_types.map(
+                ({
+                  vehicle_type: vehicleType,
+                  years_experience: yearsExperience,
+                }) => {
+                  const Icon = VEHICLE_ICONS[vehicleType]
+                  const covered = !uncovered.includes(vehicleType)
+                  return (
+                    <li
+                      key={vehicleType}
+                      className="flex items-center gap-4 py-3 first:pt-0 last:pb-0"
+                    >
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Icon className="size-5" />
+                      </span>
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="text-sm font-medium">
+                            {labelFor("vehicleType", vehicleType)}
                           </span>
-                        </span>
+                          <span className="text-sm font-semibold tabular-nums">
+                            {yearsExperience}{" "}
+                            <span className="font-normal text-muted-foreground">
+                              {yearsExperience === 1 ? "year" : "years"}
+                            </span>
+                          </span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                          <div
+                            className="h-full rounded-full bg-primary"
+                            style={{
+                              width: `${Math.min(yearsExperience / Math.max(maxYears, 1), 1) * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <p
+                          className={cn(
+                            "flex items-center gap-1 text-xs text-muted-foreground",
+                            !covered && "text-destructive"
+                          )}
+                        >
+                          {covered ? (
+                            <CircleCheck className="size-3" />
+                          ) : (
+                            <CircleAlert className="size-3" />
+                          )}
+                          {covered
+                            ? "Covered by licence"
+                            : "Not covered by licence"}
+                        </p>
                       </div>
-                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-primary"
-                          style={{ width: `${Math.min(yearsExperience / Math.max(maxYears, 1), 1) * 100}%` }}
-                        />
-                      </div>
-                      <p
-                        className={cn(
-                          "flex items-center gap-1 text-xs text-muted-foreground",
-                          !covered && "text-destructive"
-                        )}
-                      >
-                        {covered ? (
-                          <CircleCheck className="size-3" />
-                        ) : (
-                          <CircleAlert className="size-3" />
-                        )}
-                        {covered ? "Covered by licence" : "Not covered by licence"}
-                      </p>
-                    </div>
-                  </li>
-                )
-              })}
+                    </li>
+                  )
+                }
+              )}
             </ul>
           </Section>
 
@@ -278,7 +272,8 @@ export function DriverDetails({
               <span
                 className={cn(
                   "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
-                  uncovered.length > 0 && "border-destructive/40 text-destructive"
+                  uncovered.length > 0 &&
+                    "border-destructive/40 text-destructive"
                 )}
               >
                 {uncovered.length === 0 ? (
@@ -295,11 +290,11 @@ export function DriverDetails({
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Fact label="Licence number">
-                  <span className="font-mono">{record.license_number}</span>
+                  <span className="font-mono">{license.license_number}</span>
                 </Fact>
                 <Fact label="Expires">
                   <span className={cn(licenceDays < 0 && "text-destructive")}>
-                    {formatDate(record.license_expiry)}
+                    {formatDate(license.expiry_date)}
                   </span>
                 </Fact>
               </div>
@@ -308,7 +303,7 @@ export function DriverDetails({
                   <LicenceClassTile
                     key={type}
                     type={type}
-                    held={record.license_classes.includes(type)}
+                    held={license.license_classes.includes(type)}
                     needed={assigned.includes(type)}
                   />
                 ))}
@@ -317,7 +312,7 @@ export function DriverDetails({
           </Section>
 
           {/* Health */}
-          <HealthSection record={record} />
+          <HealthSection driver={driver} />
 
           {/* Tests */}
           <Section
@@ -326,10 +321,22 @@ export function DriverDetails({
             description="Results recorded during selection"
           >
             <ul className="divide-y">
-              {(Object.keys(TEST_LABELS) as (keyof typeof TEST_LABELS)[]).map((key) => (
-                <li key={key} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-                  <span className="text-sm">{TEST_LABELS[key]}</span>
-                  <TestStatusPill status={record[key]} />
+              {tests.map((t) => (
+                <li
+                  key={t.type}
+                  className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <div className="min-w-0 space-y-0.5">
+                    <p className="text-sm">{t.label}</p>
+                    {(t.tested_on || t.notes) && (
+                      <p className="text-xs text-muted-foreground">
+                        {[t.tested_on && formatDate(t.tested_on), t.notes]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                  <TestStatusPill status={t.status} />
                 </li>
               ))}
             </ul>
@@ -339,30 +346,51 @@ export function DriverDetails({
         <div className="flex min-w-0 flex-col gap-6">
           <Section icon={UserRound} title="Driver information">
             <dl className="divide-y text-sm">
-              <InfoRow label="Full name" value={record.full_name} />
-              <InfoRow label="National ID" value={<span className="font-mono text-xs">{record.national_id}</span>} />
+              <InfoRow label="Full name" value={driver.full_name} />
+              <InfoRow
+                label="National ID"
+                value={
+                  <span className="font-mono text-xs">
+                    {driver.national_id}
+                  </span>
+                }
+              />
               <InfoRow
                 label="Date of birth"
-                value={`${formatDate(record.date_of_birth)} (${age} years)`}
+                value={`${formatDate(driver.date_of_birth)} (${age} years)`}
               />
               <InfoRow
                 label="Phone"
-                value={<a href={`tel:${record.phone}`} className="hover:underline">{record.phone}</a>}
+                value={
+                  <a href={`tel:${driver.phone}`} className="hover:underline">
+                    {driver.phone}
+                  </a>
+                }
               />
               <InfoRow
                 label="Email"
                 value={
-                  record.email ? (
-                    <a href={`mailto:${record.email}`} className="hover:underline">{record.email}</a>
+                  driver.email ? (
+                    <a
+                      href={`mailto:${driver.email}`}
+                      className="hover:underline"
+                    >
+                      {driver.email}
+                    </a>
                   ) : (
                     <span className="text-muted-foreground">Not set</span>
                   )
                 }
               />
-              <InfoRow label="Yard" value={record.yard_name} />
-              <InfoRow label="Education" value={labelFor("education", record.education)} />
-              <InfoRow label="Smokes" value={record.is_smoker ? "Yes" : "No"} />
-              <InfoRow label="Uses drugs" value={record.is_drug_user ? "Yes" : "No"} />
+              <InfoRow
+                label="Education"
+                value={labelFor("education", driver.education)}
+              />
+              <InfoRow label="Smokes" value={driver.is_smoker ? "Yes" : "No"} />
+              <InfoRow
+                label="Uses drugs"
+                value={driver.is_drug_user ? "Yes" : "No"}
+              />
             </dl>
           </Section>
 
@@ -370,8 +398,14 @@ export function DriverDetails({
 
           <Section icon={FileText} title="Documents">
             <ul className="space-y-2">
-              <DocumentRow label="Licence photocopy" doc={record.license_copy} />
-              <DocumentRow label="Signed questionnaire" doc={record.signed_questionnaire} />
+              <DocumentRow
+                label="Licence photocopy"
+                doc={currentDocument(driver, "license_copy")}
+              />
+              <DocumentRow
+                label="Signed questionnaire"
+                doc={currentDocument(driver, "signed_questionnaire")}
+              />
             </ul>
           </Section>
 
@@ -380,7 +414,7 @@ export function DriverDetails({
               <InfoRow
                 label="Driver confirmed"
                 value={
-                  record.driver_confirmed ? (
+                  driver.health_screening.driver_confirmed ? (
                     <span className="inline-flex items-center gap-1 text-success-foreground">
                       <CircleCheck className="size-3.5" />
                       Confirmed
@@ -390,8 +424,10 @@ export function DriverDetails({
                   )
                 }
               />
-              <InfoRow label="Registered by" value={record.registered_by} />
-              <InfoRow label="Registered on" value={formatDateTime(record.registered_at)} />
+              <InfoRow
+                label="Registered on"
+                value={formatDateTime(driver.created_at)}
+              />
             </dl>
           </Section>
         </div>
@@ -404,11 +440,8 @@ export function DriverDetails({
 /* Sections                                                            */
 /* ------------------------------------------------------------------ */
 
-function HealthSection({ record }: { record: DriverRegistrationRecord }) {
-  const answers = HEALTH_QUESTIONS.map((q) => ({
-    ...q,
-    ...(record.health[toSnake(q.name)] ?? { answer: false, details: null }),
-  }))
+function HealthSection({ driver }: { driver: Driver }) {
+  const answers = driverHealthAnswers(driver)
   const disclosed = answers.filter((a) => a.answer)
   return (
     <Section
@@ -428,7 +461,9 @@ function HealthSection({ record }: { record: DriverRegistrationRecord }) {
         {answers.map((a) => (
           <li key={a.name} className="flex gap-3 py-3 first:pt-0 last:pb-0">
             <div className="min-w-0 flex-1 space-y-1">
-              <p className={cn("text-sm", !a.answer && "text-muted-foreground")}>
+              <p
+                className={cn("text-sm", !a.answer && "text-muted-foreground")}
+              >
                 {a.label}
               </p>
               {a.answer && a.details && (
@@ -440,7 +475,9 @@ function HealthSection({ record }: { record: DriverRegistrationRecord }) {
             <span
               className={cn(
                 "h-fit shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold",
-                a.answer ? "bg-warning/15 text-warning-foreground" : "bg-muted text-muted-foreground"
+                a.answer
+                  ? "bg-warning/15 text-warning-foreground"
+                  : "bg-muted text-muted-foreground"
               )}
             >
               {a.answer ? "Yes" : "No"}
@@ -459,7 +496,9 @@ function CurrentVehicleSection({ driver }: { driver: Driver }) {
   const vehicle = driver.vehicle
 
   const refresh = () =>
-    queryClient.invalidateQueries({ queryKey: driverQueryKeys.detail(driver.id) })
+    queryClient.invalidateQueries({
+      queryKey: driverQueryKeys.detail(driver.id),
+    })
 
   async function assign() {
     if (!selected) return toast.error("Select a vehicle first")
@@ -509,11 +548,19 @@ function CurrentVehicleSection({ driver }: { driver: Driver }) {
             <Fact label="Year">{vehicle.year}</Fact>
             <Fact label="Gearbox">{vehicle.gearbox}</Fact>
             <Fact label="Fuel">
-              {vehicle.fuel_consumption_rate ? `${vehicle.fuel_consumption_rate} km/l` : "Not set"}
+              {vehicle.fuel_consumption_rate
+                ? `${vehicle.fuel_consumption_rate} km/l`
+                : "Not set"}
             </Fact>
           </div>
           <Can permission="vehicles:unassign">
-            <Button variant="outline" size="sm" className="w-full" disabled={busy} onClick={unassign}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              disabled={busy}
+              onClick={unassign}
+            >
               <Link2Off />
               Unassign vehicle
             </Button>
@@ -525,7 +572,12 @@ function CurrentVehicleSection({ driver }: { driver: Driver }) {
             No vehicle assigned. Pick one the driver's licence covers.
           </p>
           <VehiclePicker value={selected} onChange={(v) => setSelected(v)} />
-          <Button size="sm" className="w-full" disabled={!selected || busy} onClick={assign}>
+          <Button
+            size="sm"
+            className="w-full"
+            disabled={!selected || busy}
+            onClick={assign}
+          >
             Assign vehicle
           </Button>
         </div>
@@ -561,7 +613,9 @@ function Section({
           <div className="min-w-0">
             <h2 className="text-sm leading-8 font-semibold">{title}</h2>
             {description && (
-              <p className="-mt-1 text-xs text-muted-foreground">{description}</p>
+              <p className="-mt-1 text-xs text-muted-foreground">
+                {description}
+              </p>
             )}
           </div>
         </div>
@@ -607,7 +661,13 @@ function StatTile({
   )
 }
 
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+function Fact({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
   return (
     <div className="min-w-0">
       <p className="text-xs text-muted-foreground">{label}</p>
@@ -625,7 +685,11 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-function SelectionBadge({ status }: { status: ReturnType<typeof selectionStatus> }) {
+function SelectionBadge({
+  status,
+}: {
+  status: ReturnType<typeof selectionStatus>
+}) {
   if (status === "cleared") {
     return (
       <Badge className="bg-success/15 text-success-foreground">
@@ -683,21 +747,31 @@ function LicenceClassTile({
       className={cn(
         "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm text-muted-foreground",
         held && "border-primary/40 bg-primary/5 text-foreground",
-        needed && !held && "border-dashed border-destructive/50 text-destructive"
+        needed &&
+          !held &&
+          "border-dashed border-destructive/50 text-destructive"
       )}
     >
       <Icon className={cn("size-4 shrink-0", held && "text-primary")} />
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-medium">{labelFor("vehicleType", type)}</span>
+        <span className="block truncate font-medium">
+          {labelFor("vehicleType", type)}
+        </span>
         <span className="block text-[11px]">
-          {held ? (needed ? "Held · drives this" : "Held") : needed ? "Needed" : "Not held"}
+          {held
+            ? needed
+              ? "Held · drives this"
+              : "Held"
+            : needed
+              ? "Needed"
+              : "Not held"}
         </span>
       </span>
     </div>
   )
 }
 
-function DocumentRow({ label, doc }: { label: string; doc?: DriverDocument }) {
+function DocumentRow({ label, doc }: { label: string; doc?: Document }) {
   return (
     <li className="flex items-center gap-3 rounded-lg border p-3">
       <span
@@ -729,7 +803,11 @@ function DocumentRow({ label, doc }: { label: string; doc?: DriverDocument }) {
 
 export function DriverDetailsSkeleton() {
   return (
-    <div className="flex w-full flex-col gap-6" aria-busy="true" aria-label="Loading driver">
+    <div
+      className="flex w-full flex-col gap-6"
+      aria-busy="true"
+      aria-label="Loading driver"
+    >
       <Skeleton className="h-32 rounded-xl" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (

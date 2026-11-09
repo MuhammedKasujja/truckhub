@@ -120,11 +120,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
           ) : (
             <Stat icon={Users} label="Seats" value={vehicle.seats ?? "-"} />
           )}
-          <Stat
-            icon={Cog}
-            label="Cylinders"
-            value={vehicle.cylinders ?? "-"}
-          />
+          <Stat icon={Cog} label="Cylinders" value={vehicle.cylinders ?? "-"} />
         </div>
       </Card>
 
@@ -143,7 +139,9 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                 <DetailItem label="Vehicle number" value={vehicle.number} />
                 <DetailItem
                   label="Plate number"
-                  value={<span className="font-mono">{vehicle.plate_number}</span>}
+                  value={
+                    <span className="font-mono">{vehicle.plate_number}</span>
+                  }
                 />
                 {isTruck && (
                   <DetailItem
@@ -159,7 +157,10 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                     }
                   />
                 )}
-                <DetailItem label="Make" value={vehicle.car_model.car_brand.name} />
+                <DetailItem
+                  label="Make"
+                  value={vehicle.car_model.car_brand.name}
+                />
                 <DetailItem label="Model" value={vehicle.car_model.name} />
                 <DetailItem label="Type" value={vehicle.category.name} />
                 <DetailItem label="Year" value={vehicle.year} />
@@ -174,7 +175,10 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
                   label="Transmission"
                   value={humanize(vehicle.gearbox)}
                 />
-                <DetailItem label="Drive train" value={vehicle.drive_train.name} />
+                <DetailItem
+                  label="Drive train"
+                  value={vehicle.drive_train.name}
+                />
                 <DetailItem label="Axles" value={vehicle.total_axles ?? "-"} />
               </SpecGroup>
 
@@ -233,12 +237,20 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             </CardHeader>
             <CardContent>
               <dl className="space-y-3 text-sm">
-                <RecordRow label="Created" value={dateTime(vehicle.created_at)} />
-                <RecordRow label="Last updated" value={dateTime(vehicle.updated_at)} />
+                <RecordRow
+                  label="Created"
+                  value={dateTime(vehicle.created_at)}
+                />
+                <RecordRow
+                  label="Last updated"
+                  value={dateTime(vehicle.updated_at)}
+                />
                 <RecordRow
                   label="Vehicle ID"
                   value={
-                    <span className="font-mono text-xs break-all">{vehicle.id}</span>
+                    <span className="font-mono text-xs break-all">
+                      {vehicle.id}
+                    </span>
                   }
                 />
               </dl>
@@ -303,7 +315,9 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <Avatar className="size-11">
-              <AvatarFallback>{generateAvatorFallback(d.full_name)}</AvatarFallback>
+              <AvatarFallback>
+                {generateAvatorFallback(d.full_name)}
+              </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
               <p className="truncate font-medium capitalize">{d.full_name}</p>
@@ -317,7 +331,11 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
               value={d.phone}
             />
             {d.email && (
-              <ContactLink icon={Mail} href={`mailto:${d.email}`} value={d.email} />
+              <ContactLink
+                icon={Mail}
+                href={`mailto:${d.email}`}
+                value={d.email}
+              />
             )}
           </div>
         </CardContent>
@@ -342,7 +360,8 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
         <DriverPicker
           value={driver?.id}
           onSelected={(selected) => {
-            if (selected) setDriver({ ...selected, name: selected.fullname })
+            if (selected)
+              setDriver({ ...selected, full_name: selected.full_name })
             else setDriver(null)
           }}
         />
@@ -442,7 +461,13 @@ function DetailItem({
   )
 }
 
-function RecordRow({ label, value }: { label: string; value: React.ReactNode }) {
+function RecordRow({
+  label,
+  value,
+}: {
+  label: string
+  value: React.ReactNode
+}) {
   return (
     <div className="flex items-start justify-between gap-4">
       <dt className="shrink-0 text-muted-foreground">{label}</dt>

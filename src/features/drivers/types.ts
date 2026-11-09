@@ -1,7 +1,6 @@
 import { EntityId } from "@/schemas"
 import { VehicleType } from "./components/driver-options"
 import { VehicleSummary } from "@/features/vehicles/types"
-import { DriverDocument } from "./driver-registration-mock"
 import {
   TestType,
   TestStatus,
@@ -24,6 +23,8 @@ export type DriverRow = {
   vehicle: VehicleSummary | null
   photo_url: string | undefined
 }
+
+export type DriverSummary = DriverRow
 
 export interface Driver {
   id: EntityId
@@ -59,11 +60,24 @@ export interface Driver {
     tested_on: string | null
     notes: string | null
   }[]
-  documents: DriverDocument[] // every version; filter on isCurrent
+  documents: Document[] // every version; filter on is_current
+}
+
+export type DriverDocumentType = "license_copy" | "signed_questionnaire"
+
+export interface Document {
+  id: EntityId
+  document_type: DriverDocumentType
+  name: string
+  /** Bytes. */
+  size: number
+  url: string | null
+  uploaded_at: string
+  is_current: boolean
 }
 
 export interface LicenseRead {
-  id: number
+  id: EntityId
   license_number: string
   license_classes: VehicleType[]
   expiry_date: string
@@ -72,5 +86,5 @@ export interface LicenseRead {
   ended_on: string | null
   change_reason: LicenseChangeReason
   notes: string | null
-  copy_document_id: number | null // id of the photocopy in documents
+  copy_document_id: EntityId | null // id of the photocopy in documents
 }
