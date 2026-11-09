@@ -38,6 +38,7 @@ import { UserPickerField } from "@/features/users/components"
 import {
   CreateQuotationRequest,
   createQuotationSchema,
+  editQuotationFormSchema,
   DistanceLineItemRequest,
   LineItemRequest,
   ServiceLineItemRequest,
@@ -77,7 +78,9 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
       : "/_admin/quotations/new/",
   })
   const form = useForm<CreateQuotationRequest>({
-    resolver: zodResolver(createQuotationSchema),
+    resolver: zodResolver(
+      isEdit ? editQuotationFormSchema : createQuotationSchema
+    ),
     defaultValues: initialData ?? {
       client_id: search.clientId,
       contacts: [],
@@ -483,7 +486,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                 label={"Purpose"}
                 name={"purpose"}
                 control={control}
-                required={false}
+                required={isEdit}
               />
             </FieldGroup>
           </FormCard>

@@ -147,9 +147,13 @@ export const routePricingsSchema = z.object({
   pricings: z.array(tonnagePricingSchema),
 })
 
+export const editQuotationFormSchema = createQuotationSchema.extend({
+  purpose: z.string("Purpose is required").trim().min(1, "Purpose is required"),
+})
+
 export const updateQuotationSchema = z.object({
   quotationId: IDSchema,
-  ...createQuotationSchema.shape,
+  ...editQuotationFormSchema.shape,
 })
 
 export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>
