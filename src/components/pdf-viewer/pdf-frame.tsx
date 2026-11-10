@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 
 /** Fills the space under the page header; the PDF scrolls inside it. */
-export const PDF_FRAME_HEIGHT = "h-[calc(100dvh-13rem)] min-h-120"
+export const PDF_FRAME_HEIGHT = "h-[calc(100dvh-12rem)] min-h-120"
 
 /**
  * The outer card of the viewer: a toolbar row on top and a muted canvas under

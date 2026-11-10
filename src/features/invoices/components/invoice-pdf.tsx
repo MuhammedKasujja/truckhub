@@ -6,9 +6,10 @@ import { logger } from "@/lib/logger"
 
 type InvoicePdfProps = {
   invoiceId: EntityId
+  invoiceNumber: string
 }
 
-export function InvoicePdf({ invoiceId }: InvoicePdfProps) {
+export function InvoicePdf({ invoiceId, invoiceNumber }: InvoicePdfProps) {
   const [pdfData, setPageData] = useState<Uint8Array>()
   useEffect(() => {
     setPageData(undefined)
@@ -26,5 +27,5 @@ export function InvoicePdf({ invoiceId }: InvoicePdfProps) {
 
     loadPdf()
   }, [])
-  return <PdfViewer file={pdfData} fileName={`invoice-${invoiceId}.pdf`} />
+  return <PdfViewer file={pdfData} fileName={`invoice-${invoiceNumber}.pdf`} />
 }
