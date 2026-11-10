@@ -6,13 +6,13 @@ import {
   EDUCATION_LEVELS,
 } from "./components/driver-options"
 import { IDSchema, ImageSchema } from "@/schemas"
+import { LIST_VIEWS } from "@/components/view-toggle"
 import type { DriverRow } from "@/features/drivers/types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import type { VehicleType } from "./components/driver-options"
 import type { DriverPolicy } from "./components/driver-policy"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 import { DEFAULT_DRIVER_POLICY } from "./components/driver-policy"
-import { LIST_VIEWS } from "@/components/view-toggle"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 /* ------------------------------------------------------------------ */

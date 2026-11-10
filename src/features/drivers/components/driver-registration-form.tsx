@@ -1585,7 +1585,7 @@ export function DriverRegistrationForm({
                   />
                 </span>
               </div>
-              <YardField control={control} yards={yards} />
+              {/* <YardField control={control} yards={yards} /> */}
             </div>
           </FormSection>
 
@@ -1645,7 +1645,7 @@ export function DriverRegistrationForm({
               )
             }
           >
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 mb-3">
               <TextField
                 control={control}
                 name="licenseNumber"
@@ -1664,7 +1664,8 @@ export function DriverRegistrationForm({
                   needed={neededCategories}
                 />
               </div>
-              <FileField
+            </div>
+             <FileField
                 control={control}
                 name="licenseCopy"
                 label="Licence photocopy"
@@ -1674,7 +1675,6 @@ export function DriverRegistrationForm({
                     : "Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
                 }
               />
-            </div>
           </FormSection>
 
           <FormSection
