@@ -1,12 +1,12 @@
-import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { RouteCreateSchema, RouteUpdateSchema } from "../schemas"
 import {
   createRoute,
   deleteRoute,
-  updateRoute,
   getBookingRoutes,
+  updateRoute,
 } from "./server"
+import { EntityIdSchema } from "@/schemas"
 
 export const getBookingRoutesFn = createServerFn().handler(async () => {
   return getBookingRoutes()

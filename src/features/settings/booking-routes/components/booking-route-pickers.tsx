@@ -1,13 +1,14 @@
-import { EntityPickerProps } from "@/common/types"
-import {
-  FormAutoComplete,
-  FormAutoCompleteProps,
-} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
-import { FieldValues } from "react-hook-form"
-import { AutoComplete } from "@/components/ui/autocomplete-modified"
-import { BookingRoute } from "../schemas"
-import { EntityId } from "@/schemas"
 import { useBookingRoutes } from "../hooks/use-booking-routes"
+import type { FieldValues } from "react-hook-form"
+import type { BookingRoute } from "../schemas"
+import type { EntityId } from "@/schemas"
+import type { EntityPickerProps } from "@/common/types"
+import type {
+  FormAutoCompleteProps} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete";
+import {
+  FormAutoComplete
+} from "@/components/ui/form-fields/auto-complete-field/form-auto-complete"
+import { AutoComplete } from "@/components/ui/autocomplete-modified"
 
 export function BookingRoutePicker({
   value,

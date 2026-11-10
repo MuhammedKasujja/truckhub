@@ -187,11 +187,18 @@ export class QueryInvalidator {
     },
 
     routes: {
-      all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
+      all: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.all(),
+        }),
       list: () =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.list(),
+        }),
       details: (id: EntityId) =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.detail(id.toString()),
+        }),
     },
     taxRates: {
       all: () =>
