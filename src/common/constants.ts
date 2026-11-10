@@ -43,6 +43,40 @@ export const REPORT_TEMPLATES = [
 
 export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]
 
+export const REPORT_TEMPLATE_GROUPS = [
+  "Sales",
+  "Operations",
+  "Fleet",
+  "Pricing",
+] as const
+
+export type ReportTemplateGroup = (typeof REPORT_TEMPLATE_GROUPS)[number]
+
+/**
+ * How each template is shown in the template picker. Every key in
+ * REPORT_TEMPLATES needs an entry here.
+ */
+export const REPORT_TEMPLATE_META: Record<
+  ReportTemplate,
+  { label: string; group: ReportTemplateGroup }
+> = {
+  invoice: { label: "Invoice", group: "Sales" },
+  quotation: { label: "Quotation", group: "Sales" },
+  payment: { label: "Payment receipt", group: "Sales" },
+  client_statement: { label: "Client statement", group: "Sales" },
+  booking: { label: "Booking", group: "Operations" },
+  ride: { label: "Ride", group: "Operations" },
+  log_sheet: { label: "Log sheet", group: "Operations" },
+  driver: { label: "Driver", group: "Fleet" },
+  vehicle: { label: "Vehicle", group: "Fleet" },
+  fuel_calculator: { label: "Fuel calculator", group: "Fleet" },
+  route_pricing: { label: "Route pricing", group: "Pricing" },
+  loading_offloading_fees: {
+    label: "Loading & offloading fees",
+    group: "Pricing",
+  },
+}
+
 /**
  * Allowed Entity Counter Padding
  *

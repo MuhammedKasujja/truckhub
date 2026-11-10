@@ -1,60 +1,55 @@
-import { REPORT_TEMPLATES, ReportTemplate } from "@/common/constants"
+import { useQuery } from "@tanstack/react-query"
+import { getRouteApi } from "@tanstack/react-router"
+import { FileTextIcon } from "lucide-react"
+import { reportTemplatePdfQueryOptions } from "../query-options"
+import { TemplatePicker } from "./template-picker"
+import type { ReportTemplate } from "@/common/constants"
 import { PdfViewer } from "@/components/pdf-viewer"
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { useEffect, useState } from "react"
-import { generateReportTemplatePdfFn } from "../services"
-import { logger } from "@/lib/logger"
+  SettingsPage,
+  SettingsPageHeader,
+} from "@/features/settings/_components/settings-ui"
+
+const DEFAULT_TEMPLATE: ReportTemplate = "invoice"
+
+const route = getRouteApi("/_admin/settings/pdf-templates/")
 
 export function ReportPdfTemplatesWrapper() {
-  const [template, setTemplate] = useState<ReportTemplate>("invoice")
-  const [pdfData, setPageData] = useState<Uint8Array>()
+  const navigate = route.useNavigate()
+  const template = route.useSearch({
+    select: (search) => search.template ?? DEFAULT_TEMPLATE,
+  })
 
-  // const { data: response } = useQuery(reportTemplatePdfQueryOptions(template))
+  const { data, error, isFetching, refetch } = useQuery(
+    reportTemplatePdfQueryOptions(template)
+  )
 
-  useEffect(() => {
-    setPageData(undefined)
-    const loadPdf = async () => {
-      try {
-        const response = await generateReportTemplatePdfFn({
-          data: { template },
-        })
-        const buffer = await response.arrayBuffer()
-        setPageData(new Uint8Array(buffer))
-      } catch (error) {
-        logger.error("Failed to load PDF")
-      }
-    }
-
-    loadPdf()
-  }, [template])
+  function selectTemplate(next: ReportTemplate) {
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        template: next === DEFAULT_TEMPLATE ? undefined : next,
+      }),
+    })
+  }
 
   return (
-    <div className="space-y-5">
-      <Select
-        value={template}
-        onValueChange={(val) => setTemplate(val as ReportTemplate)}
-      >
-        <SelectTrigger className="w-52">
-          <SelectValue placeholder="Select Role" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            {REPORT_TEMPLATES.map((temp) => (
-              <SelectItem key={temp} value={temp}>
-                {temp}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <PdfViewer pdfUrl={pdfData} />
-    </div>
+    <SettingsPage>
+      <SettingsPageHeader
+        icon={FileTextIcon}
+        title="PDF templates"
+        description="Preview the documents the system generates, filled with sample data."
+      />
+      <PdfViewer
+        file={data}
+        fileName={`${template}-sample.pdf`}
+        isLoading={isFetching}
+        error={error}
+        onRefresh={() => void refetch()}
+        toolbarStart={
+          <TemplatePicker value={template} onChange={selectTemplate} />
+        }
+      />
+    </SettingsPage>
   )
 }

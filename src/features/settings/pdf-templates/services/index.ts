@@ -1,6 +1,6 @@
+import { createServerFn } from "@tanstack/react-start"
 import { ReportTemplateSchema } from "../schemas"
 import { generateReportTemplatePdf } from "./server"
-import { createServerFn } from "@tanstack/react-start"
 
 export const generateReportTemplatePdfFn = createServerFn({ method: "GET" })
   .inputValidator(ReportTemplateSchema)
@@ -12,7 +12,7 @@ export const generateReportTemplatePdfFn = createServerFn({ method: "GET" })
         status: 200,
         headers: {
           "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename=${data.template}-demo"}.pdf"`,
+          "Content-Disposition": `inline; filename="${data.template}-sample.pdf"`,
         },
       })
     } catch (error: any) {

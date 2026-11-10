@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react"
+import { getInvoicePdfFn } from "../services"
+import type { EntityId } from "@/schemas"
 import { PdfViewer } from "@/components/pdf-viewer"
 import { logger } from "@/lib/logger"
-import { EntityId } from "@/schemas"
-import { useState, useEffect } from "react"
-import { getInvoicePdfFn } from "../services"
 
 type InvoicePdfProps = {
   invoiceId: EntityId
@@ -26,5 +26,5 @@ export function InvoicePdf({ invoiceId }: InvoicePdfProps) {
 
     loadPdf()
   }, [])
-  return <PdfViewer pdfUrl={pdfData} />
+  return <PdfViewer file={pdfData} fileName={`invoice-${invoiceId}.pdf`} />
 }

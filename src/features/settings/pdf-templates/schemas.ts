@@ -4,3 +4,7 @@ import { REPORT_TEMPLATES } from "@/common/constants"
 export const ReportTemplateSchema = z.object({
   template: z.enum(REPORT_TEMPLATES),
 })
+
+export const pdfTemplatesSearchSchema = z.object({
+  template: z.enum(REPORT_TEMPLATES).optional().catch(undefined),
+})

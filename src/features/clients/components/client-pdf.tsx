@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react"
+import type { EntityId } from "@/schemas"
 import { PdfViewer } from "@/components/pdf-viewer"
 import { generateReportTemplatePdfFn } from "@/features/settings/pdf-templates/services"
 import { logger } from "@/lib/logger"
-import { EntityId } from "@/schemas"
-import { useState, useEffect } from "react"
 
 type ClientPdfProps = {
   clientId: EntityId
@@ -26,5 +26,5 @@ export function ClientPdf({ clientId }: ClientPdfProps) {
 
     loadPdf()
   }, [])
-  return <PdfViewer pdfUrl={pdfData} />
+  return <PdfViewer file={pdfData} fileName={`client-statement-${clientId}.pdf`} />
 }

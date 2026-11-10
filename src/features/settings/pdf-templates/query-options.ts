@@ -1,6 +1,6 @@
-import { ReportTemplate } from "@/common/constants"
 import { queryOptions } from "@tanstack/react-query"
 import { generateReportTemplatePdfFn } from "./services"
+import type { ReportTemplate } from "@/common/constants"
 
 export const reportTemplatePdfQueryKeys = {
   all: () => ["report-templates-pdf"] as const,
@@ -8,19 +8,18 @@ export const reportTemplatePdfQueryKeys = {
     [...reportTemplatePdfQueryKeys.all(), template] as const,
 } as const
 
+/**
+ * The sample PDF for a template, as bytes. The response body is read here so
+ * the cache holds plain data rather than a Response, which can be read once.
+ */
 export const reportTemplatePdfQueryOptions = (template: ReportTemplate) =>
   queryOptions({
     queryKey: reportTemplatePdfQueryKeys.template(template),
     queryFn: async () => {
-      return await generateReportTemplatePdfFn({ data: { template } })
-      // const response = await generateReportTemplatePdfFn({ data: { template } })
-
-      // // return await response.arrayBuffer()
-      // const buffer= await response.clone().blob()
-      // return new Uint8Array(buffer)
-
+      const response = await generateReportTemplatePdfFn({ data: { template } })
+      return new Uint8Array(await response.arrayBuffer())
     },
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     retry: 1,
   })
