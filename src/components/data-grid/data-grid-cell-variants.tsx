@@ -44,7 +44,11 @@ import {
   parseLocalDate,
 } from "@/lib/data-grid";
 import { cn } from "@/lib/utils";
-import type { DataGridCellProps, FileCellData } from "@/types/data-grid";
+import type {
+  CellSelectOption,
+  DataGridCellProps,
+  FileCellData,
+} from "@/types/data-grid";
 
 export function ShortTextCell<TData>({
   cell,
@@ -934,6 +938,24 @@ export function SelectCell<TData>({
   );
 
   const displayLabel = optionByValue.get(value)?.label ?? value;
+  const selectOpts = cellOpts?.variant === "select" ? cellOpts : undefined;
+  const searchable = !!selectOpts?.searchable;
+  const unique = !!selectOpts?.unique;
+
+  // Values picked by *other* rows (all rows, not just filtered ones), so a
+  // `unique` column can't pick the same option twice. Only computed while
+  // the editor is open.
+  const usedValues = React.useMemo(() => {
+    const used = new Set<string>();
+    if (!isEditing || !unique) return used;
+    const { table } = cell.getContext();
+    for (const row of table.getCoreRowModel().rows) {
+      if (row.id === cell.row.id) continue;
+      const rowValue = row.getValue(columnId);
+      if (typeof rowValue === "string" && rowValue) used.add(rowValue);
+    }
+    return used;
+  }, [isEditing, unique, cell, columnId]);
 
   return (
     <DataGridCellWrapper<TData>
@@ -951,7 +973,19 @@ export function SelectCell<TData>({
       readOnly={readOnly}
       onKeyDown={onWrapperKeyDown}
     >
-      {isEditing ? (
+      {isEditing && searchable ? (
+        <SelectCellCombobox
+          value={value}
+          options={options}
+          usedValues={usedValues}
+          containerRef={containerRef}
+          searchPlaceholder={selectOpts?.searchPlaceholder}
+          emptyText={selectOpts?.emptyText}
+          onSelect={onValueChange}
+          onOpenChange={onOpenChange}
+        />
+      ) : null}
+      {isEditing && !searchable ? (
         <Select
           value={value}
           onValueChange={onValueChange}
@@ -982,7 +1016,11 @@ export function SelectCell<TData>({
             className="min-w-[calc(var(--radix-select-trigger-width)+16px)]"
           >
             {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                disabled={usedValues.has(option.value)}
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -998,6 +1036,111 @@ export function SelectCell<TData>({
         </Badge>
       ) : null}
     </DataGridCellWrapper>
+  );
+}
+
+/** Search-as-you-type editor for `select` cells with `searchable: true`. */
+function SelectCellCombobox({
+  value,
+  options,
+  usedValues,
+  containerRef,
+  searchPlaceholder = "Search…",
+  emptyText = "No matches found.",
+  onSelect,
+  onOpenChange,
+}: {
+  value: string;
+  options: CellSelectOption[];
+  /** Options already picked by other rows; shown greyed out and disabled. */
+  usedValues: Set<string>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  searchPlaceholder?: string;
+  emptyText?: string;
+  onSelect: (value: string) => void;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  // Open over the cell, like the multi-select editor
+  const sideOffset = -(containerRef.current?.clientHeight ?? 0);
+
+  const onOpenAutoFocus: NonNullable<
+    React.ComponentProps<typeof PopoverContent>["onOpenAutoFocus"]
+  > = React.useCallback((event) => {
+    event.preventDefault();
+    inputRef.current?.focus();
+  }, []);
+
+  return (
+    <Popover open onOpenChange={onOpenChange}>
+      <PopoverAnchor asChild>
+        <div className="absolute inset-0" />
+      </PopoverAnchor>
+      <PopoverContent
+        data-grid-cell-editor=""
+        align="start"
+        sideOffset={sideOffset}
+        className="w-80 overflow-hidden p-0"
+        onOpenAutoFocus={onOpenAutoFocus}
+        // The popover is portaled outside the Sheet/Dialog that hosts the
+        // grid, and their scroll lock cancels wheel/touch scrolling outside
+        // them. Keep these events from bubbling up to that document listener.
+        onWheel={(event) => event.stopPropagation()}
+        onTouchMove={(event) => event.stopPropagation()}
+      >
+        {/* Start on the current value so Enter keeps it */}
+        <Command defaultValue={value || undefined}>
+          <CommandInput
+            ref={inputRef}
+            placeholder={searchPlaceholder}
+            onKeyDown={(event) => {
+              // Let the popover close itself; don't leak to the grid
+              if (event.key === "Escape") event.stopPropagation();
+            }}
+          />
+          <CommandList className="max-h-72 overscroll-contain">
+            <CommandEmpty>{emptyText}</CommandEmpty>
+            <CommandGroup>
+              {options.map((option) => {
+                const isSelected = option.value === value;
+                const isUsed = usedValues.has(option.value);
+                return (
+                  <CommandItem
+                    key={option.value}
+                    // Unique id for cmdk; search runs on label + keywords
+                    value={option.value}
+                    keywords={[option.label, ...(option.keywords ?? [])]}
+                    disabled={isUsed}
+                    onSelect={() => onSelect(option.value)}
+                    className="items-start gap-2 py-2"
+                  >
+                    <Check
+                      className={cn(
+                        "mt-0.5 size-4 shrink-0 text-primary",
+                        !isSelected && "invisible",
+                      )}
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate">{option.label}</span>
+                      {option.description && (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {option.description}
+                        </span>
+                      )}
+                    </span>
+                    {isUsed && (
+                      <span className="mt-0.5 shrink-0 text-[11px] text-muted-foreground">
+                        Already added
+                      </span>
+                    )}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 

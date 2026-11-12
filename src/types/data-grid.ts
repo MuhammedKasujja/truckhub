@@ -9,6 +9,10 @@ export interface CellSelectOption {
   value: string
   icon?: React.FC<React.SVGProps<SVGSVGElement>>
   count?: number
+  /** Secondary line shown under the label in a searchable select. */
+  description?: string
+  /** Extra terms a searchable select matches on, besides the label. */
+  keywords?: string[]
 }
 
 export type CellOpts<TData extends RowData, TValue> =
@@ -27,6 +31,12 @@ export type CellOpts<TData extends RowData, TValue> =
   | {
       variant: "select"
       options: CellSelectOption[]
+      /** Edit with a search-as-you-type combobox instead of a plain dropdown. */
+      searchable?: boolean
+      searchPlaceholder?: string
+      emptyText?: string
+      /** Each option may be picked by one row only; ones used elsewhere are disabled. */
+      unique?: boolean
     }
   | {
       variant: "multi-select"

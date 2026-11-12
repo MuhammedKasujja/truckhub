@@ -1,21 +1,28 @@
 "use client"
 
-import { useCallback, useMemo, useRef } from "react"
-import type { ColumnDef } from "@tanstack/react-table"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { MapPin, Ruler, Search, X } from "lucide-react"
+import { bandsAreValid } from "./tonnage-band-builder"
+import type { ColumnDef, FilterFn } from "@tanstack/react-table"
+import type { TonnageBand } from "./tonnage-band-builder"
+import type { BookingRoute } from "../../../booking-routes/schemas"
+import type { UndoRedoCellUpdate } from "@/hooks/use-data-grid-undo-redo"
+import { Button } from "@/components/ui/button"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
 import { DataGridKeyboardShortcuts } from "@/components/data-grid/data-grid-keyboard-shortcuts"
 import { getDataGridSelectColumn } from "@/components/data-grid/data-grid-select-column"
 import { useDataGrid } from "@/hooks/use-data-grid"
-import {
-  useDataGridUndoRedo,
-  type UndoRedoCellUpdate,
-} from "@/hooks/use-data-grid-undo-redo"
+import { useDataGridUndoRedo } from "@/hooks/use-data-grid-undo-redo"
 import { getFilterFn } from "@/lib/data-grid-filters"
-
-import type { TonnageBand } from "./tonnage-band-builder"
-import { bandsAreValid } from "./tonnage-band-builder"
-import { BookingRoute } from "../../../booking-routes/schemas"
+import { formatNumber } from "@/lib/format"
+import { formatHoursRange } from "@/features/settings/booking-routes/components/route-format"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -49,12 +56,25 @@ interface RoutePricingDataGridProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
+/** Column header for a band, e.g. "0–4T" / "4.5–9T". Display only. */
 export function bandLabel(band: TonnageBand): string {
-  return `${band.min_tons}–${band.max_tons}T`
+  // formatNumber returns "" for 0, so fall back to "0" for a 0–n band
+  const min = formatNumber(band.min_tons, { fallback: "0" })
+  const max = formatNumber(band.max_tons, { fallback: "0" })
+  return `${min}–${max}T`
 }
 
+/** "410.00" → "410" (km); 0 stays "0". */
+function formatDistance(km: number | string | null | undefined) {
+  return formatNumber(km, { fallback: "0" })
+}
+
+/**
+ * Row field holding a band's price. Built from the raw bounds, not
+ * bandLabel, so display formatting can never rename the stored keys.
+ */
 export function priceKey(band: TonnageBand): `price__${string}` {
-  return `price__${bandLabel(band)}`
+  return `price__${band.min_tons}–${band.max_tons}T`
 }
 
 export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
@@ -88,13 +108,44 @@ export function rebuildRows(
       origin: row.origin,
       destination: row.destination,
       distance_km: row.distance_km,
-      period: "",
+      period: row.period,
     }
     bands.forEach((b) => {
       rebuilt[priceKey(b)] = row[priceKey(b)] ?? null
     })
     return rebuilt
   })
+}
+
+// ---------------------------------------------------------------------------
+// Toolbar filters
+// ---------------------------------------------------------------------------
+
+type DistanceRange = [min: number | null, max: number | null]
+
+// Rows without a route yet always pass the toolbar filters, so a freshly
+// added row doesn't vanish before the user can pick its route.
+const locationFilterFn: FilterFn<RoutePricingRow> = (row, _columnId, query) => {
+  const { route_name, origin, destination } = row.original
+  if (!route_name) return true
+  const q = String(query).trim().toLowerCase()
+  return [origin, destination].some((place) => place.toLowerCase().includes(q))
+}
+
+const distanceFilterFn: FilterFn<RoutePricingRow> = (row, _columnId, value) => {
+  const { route_name, distance_km } = row.original
+  if (!route_name) return true
+  const [min, max] = value as DistanceRange
+  const km = Number(distance_km)
+  if (distance_km === null || distance_km === "" || !Number.isFinite(km))
+    return false
+  return (min === null || km >= min) && (max === null || km <= max)
+}
+
+function toKm(value: string) {
+  if (value.trim() === "") return null
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
 }
 
 // ---------------------------------------------------------------------------
@@ -107,16 +158,23 @@ function buildColumns(
 ): ColumnDef<RoutePricingRow>[] {
   const filterFn = getFilterFn<RoutePricingRow>()
   const routeOptions = routes.map((route) => ({
-    label: route.destination,
+    label: `${route.origin} → ${route.destination}`,
     value: route.id.toString(),
+    description: `${formatDistance(route.distance_km)} km · ${formatHoursRange(route.min_hrs, route.max_hrs)}`,
+    // Typing "410" or "410 km" finds a route by distance too
+    keywords: [
+      route.origin,
+      route.destination,
+      `${formatDistance(route.distance_km)} km`,
+    ],
   }))
   const metaCols: ColumnDef<RoutePricingRow>[] = [
     getDataGridSelectColumn<RoutePricingRow>(),
     {
       id: "route_name",
       accessorKey: "route_name",
-      header: "Route name",
-      minSize: 160,
+      header: "Route",
+      minSize: 220,
       filterFn,
       // enableSorting: true,
       enablePinning: false,
@@ -126,6 +184,11 @@ function buildColumns(
         cell: {
           variant: "select",
           options: routeOptions,
+          searchable: true,
+          // A route can only be priced once per batch
+          unique: true,
+          searchPlaceholder: "Search origin, destination or km…",
+          emptyText: "No routes found.",
         },
       },
     },
@@ -147,7 +210,8 @@ function buildColumns(
       accessorKey: "destination",
       header: "Destination",
       minSize: 120,
-      filterFn,
+      // Driven by the toolbar's location search (matches origin too)
+      filterFn: locationFilterFn,
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
@@ -160,7 +224,8 @@ function buildColumns(
       accessorKey: "distance_km",
       header: "Distance (km)",
       minSize: 120,
-      filterFn,
+      // Driven by the toolbar's distance range
+      filterFn: distanceFilterFn,
       enableSorting: false,
       enablePinning: false,
       enableHiding: false,
@@ -267,30 +332,22 @@ export function RoutePricingDataGrid({
 
   const handleDataChange = useCallback(
     (newRows: RoutePricingRow[]) => {
-      // track row index being edited in order to use 0(1) instead of 0(n) where n = num(rows)
-      let editingIndex: number | undefined = undefined
       // Auto-fill origin, destination, distance_km when route_name changes.
       // We compare old vs new route_name for each row — if it changed and
       // the new value matches a known route, overwrite the derived fields.
       const enriched = newRows.map((newRow, i) => {
         const oldRow = rows[i]
-        editingIndex = i
         if (!oldRow) return newRow
         if (newRow.route_name !== oldRow.route_name && newRow.route_name) {
           const match = routeByName.get(newRow.route_name)
-          console.log({
-            "newRow.route_name": newRow.route_name,
-            "oldRow.route_name": oldRow.route_name,
-            match: match,
-            editingIndex,
-          })
           if (match) {
             return {
               ...newRow,
               origin: match.origin,
               destination: match.destination,
-              distance_km: match.distance_km,
-              period: `${match.min_hrs}-${match.max_hrs}`,
+              // Display values only — neither is part of the submitted payload
+              distance_km: formatDistance(match.distance_km),
+              period: formatHoursRange(match.min_hrs, match.max_hrs),
             }
           }
         }
@@ -299,10 +356,6 @@ export function RoutePricingDataGrid({
 
       // Diff old vs new to build the undo/redo cell update list
       const cellUpdates: UndoRedoCellUpdate[] = []
-      //  uncomment to use 0(1)
-      // if (editingIndex) {
-      //   const oldRow = rows[editingIndex]
-      //   const newRow = enriched[editingIndex]
       for (let i = 0; i < rows.length; i++) {
         const oldRow = rows[i]
         const newRow = enriched[i]
@@ -311,18 +364,10 @@ export function RoutePricingDataGrid({
           if (key === "id") continue
           const oldVal = oldRow[key]
           const newVal = newRow[key]
-
-          console.log({
-            // "index": i,
-            key,
-            oldVal,
-            newVal,
-            editingIndex,
-          })
           if (!Object.is(oldVal, newVal)) {
             cellUpdates.push({
               rowId: oldRow.id,
-              columnId: key as string,
+              columnId: key,
               previousValue: oldVal,
               newValue: newVal,
             })
@@ -336,11 +381,15 @@ export function RoutePricingDataGrid({
   )
 
   // ── Row add / delete ───────────────────────────────────────────────────────
+  // The grid's row indexes are positions in the *filtered* view. A new row
+  // has no route, so it always passes the filters and lands at the end of it.
+  const visibleRowCountRef = useRef(rows.length)
+
   const handleRowAdd = useCallback(() => {
     const newRow = emptyRow(bands)
     onChange([...rows, newRow])
     trackRowsAdd([newRow])
-    return { rowIndex: rows.length, columnId: "route_name" }
+    return { rowIndex: visibleRowCountRef.current, columnId: "route_name" }
   }, [bands, rows, onChange, trackRowsAdd])
 
   const handleRowsDelete = useCallback(
@@ -379,6 +428,43 @@ export function RoutePricingDataGrid({
     },
   })
 
+  // ── Toolbar filters ────────────────────────────────────────────────────────
+  const [locationQuery, setLocationQuery] = useState("")
+  const [distanceMin, setDistanceMin] = useState("")
+  const [distanceMax, setDistanceMax] = useState("")
+
+  useEffect(() => {
+    table
+      .getColumn("destination")
+      ?.setFilterValue(locationQuery.trim() || undefined)
+  }, [table, locationQuery])
+
+  useEffect(() => {
+    const range: DistanceRange = [toKm(distanceMin), toKm(distanceMax)]
+    table
+      .getColumn("distance_km")
+      ?.setFilterValue(
+        range[0] === null && range[1] === null ? undefined : range
+      )
+  }, [table, distanceMin, distanceMax])
+
+  const visibleRowCount = table.getRowModel().rows.length
+  visibleRowCountRef.current = visibleRowCount
+  const pickedRouteCount = rows.filter((r) => r.route_name).length
+  const visiblePickedCount = table
+    .getRowModel()
+    .rows.filter((r) => r.original.route_name).length
+  const isFiltering =
+    locationQuery.trim() !== "" ||
+    toKm(distanceMin) !== null ||
+    toKm(distanceMax) !== null
+
+  function clearFilters() {
+    setLocationQuery("")
+    setDistanceMin("")
+    setDistanceMax("")
+  }
+
   // ── Patch columnSizeVars for dynamically added columns ────────────────────
   // useDataGrid computes columnSizeVars from table.getState().columnSizing,
   // which only contains columns that have been explicitly resized or were
@@ -408,13 +494,107 @@ export function RoutePricingDataGrid({
   if (!shouldShowGrid) {
     return (
       <div className="flex items-center justify-center rounded-lg border border-dashed p-12 text-sm text-muted-foreground">
-        Define at least 1 valid tonnage range above to activate the pricing table
+        Define at least 1 valid tonnage range above to activate the pricing
+        table
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Location / distance filters — they only hide rows; every route
+           is still submitted. */}
+      <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/40 p-2">
+        <InputGroup className="w-full bg-background sm:w-64">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
+            value={locationQuery}
+            onChange={(e) => setLocationQuery(e.target.value)}
+            placeholder="Search origin or destination…"
+            aria-label="Search routes by origin or destination"
+          />
+          {locationQuery && (
+            <InputGroupAddon align="inline-end">
+              <button
+                type="button"
+                onClick={() => setLocationQuery("")}
+                aria-label="Clear location search"
+                className="rounded-sm text-muted-foreground hover:text-foreground"
+              >
+                <X className="size-3.5" />
+              </button>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+
+        <InputGroup className="w-full bg-background sm:w-auto">
+          <InputGroupAddon>
+            <Ruler />
+            <InputGroupText className="text-xs">Distance</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput
+            type="number"
+            inputMode="decimal"
+            min={0}
+            value={distanceMin}
+            onChange={(e) => setDistanceMin(e.target.value)}
+            placeholder="Min"
+            aria-label="Minimum distance in km"
+            className="w-16 text-center tabular-nums"
+          />
+          <span aria-hidden className="text-muted-foreground">
+            –
+          </span>
+          <InputGroupInput
+            type="number"
+            inputMode="decimal"
+            min={0}
+            value={distanceMax}
+            onChange={(e) => setDistanceMax(e.target.value)}
+            placeholder="Max"
+            aria-label="Maximum distance in km"
+            className="w-16 text-center tabular-nums"
+          />
+          <InputGroupAddon align="inline-end">
+            <InputGroupText className="text-xs">km</InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
+
+        {isFiltering && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+          >
+            <X />
+            Clear
+          </Button>
+        )}
+
+        <span className="ml-auto inline-flex items-center gap-1.5 px-1 text-xs text-muted-foreground tabular-nums">
+          <MapPin className="size-3.5" />
+          {isFiltering
+            ? `${visiblePickedCount} of ${pickedRouteCount} routes shown`
+            : `${pickedRouteCount} ${pickedRouteCount === 1 ? "route" : "routes"}`}
+        </span>
+      </div>
+
+      {isFiltering && visibleRowCount === 0 && (
+        <p className="rounded-md border border-dashed px-4 py-3 text-center text-xs text-muted-foreground">
+          No routes match these filters.{" "}
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="font-medium text-primary hover:underline"
+          >
+            Clear filters
+          </button>
+        </p>
+      )}
+
       {/* Keyboard shortcuts reference */}
       <DataGridKeyboardShortcuts
         enableSearch
