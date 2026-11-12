@@ -1,4 +1,9 @@
-import { changeClientTypeFn, createClientFn, deleteClientFn, updateClientFn } from "../services"
+import {
+  changeClientTypeFn,
+  createClientFn,
+  deleteClientFn,
+  updateClientFn,
+} from "../services"
 import { EntityId } from "@/schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 import { ClientCreateInput, ClientUpdateInput } from "../schemas"
@@ -93,12 +98,15 @@ const useChangeClientTypeBase = createEntityActionHook(
 )
 
 export function useChangeClientType() {
-  const { isPending, execute, isSuccess, error } = useChangeClientTypeBase()
+  const { isPending, mutate, ...rest } = useChangeClientTypeBase()
 
-  function changeClientType(clientId: EntityId) {
-    return execute({ data: { id: clientId } })
+  function changeClientType(
+    clientId: EntityId,
+    opts?: Parameters<typeof mutate>[1]
+  ) {
+    return mutate({ data: { id: clientId } }, opts)
   }
-  return { isLoading: isPending, changeClientType, isSuccess, error }
+  return { isLoading: isPending, changeClientType, ...rest }
 }
 
 export function useClientProfileQuery(clientId: EntityId) {
@@ -131,7 +139,6 @@ const useDeleteClientBase = createEntityActionHook(
     invalidator.clients.profile(input.data.id).invalidate()
   }
 )
-
 
 export function useDeleteClient() {
   const { isPending, execute, isSuccess, error } = useDeleteClientBase()

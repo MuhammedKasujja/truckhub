@@ -85,7 +85,6 @@ import {
 import { ClientServicesDialog } from "./client-services-dialog"
 import { ClientPricingConfigDialog } from "./pricing/client-pricing-config-dialog"
 import type { Client, ClientContact } from "../types"
-import { toast } from "sonner"
 
 type ClientDetailsWrapperProps = {
   clientId: EntityId
@@ -342,11 +341,7 @@ function ClientActions({
   const [openServices, setOpenServices] = useState(false)
   const [openPricing, setOpenPricing] = useState(false)
   const clientId = client.id
-  const { changeClientType, isSuccess } = useChangeClientType()
-
-  if (isSuccess) {
-    toast.success("Client type change successfully")
-  }
+  const { changeClientType } = useChangeClientType()
 
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 self-start">
@@ -410,7 +405,15 @@ function ClientActions({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <Can permission={"clients:change_type"}>
-            <DropdownMenuItem onClick={() => changeClientType(client.id)}>
+            <DropdownMenuItem
+              onClick={() =>
+                changeClientType(client.id, {
+                  onSuccess: () =>{
+                    // toast.success("Client type change successfully")
+                  },
+                })
+              }
+            >
               <TypeIcon />
               Change to{" "}
               {client.client_type === "standard" ? "premium" : "standard"}
