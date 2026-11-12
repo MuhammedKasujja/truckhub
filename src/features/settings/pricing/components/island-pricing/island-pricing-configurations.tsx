@@ -1,6 +1,17 @@
-import { IslandsListPricingRequest, PricingSearchParams } from "../../schemas"
-import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { Activity, useState } from "react"
+import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
+import { createCompanyIslandPricingQueryOptions } from "../../query-options"
+import { PricingVersionSelect } from "../pricing-version-select"
+import { useCreateIslandPricing } from "../../hooks/use-island-pricing"
+import { EditIslandsPricingForm } from "./edit-islands-pricing-form"
+import { IslandPricingTable } from "./island-pricing-table"
+import type {
+  IslandsListPricingRequest,
+  PricingSearchParams,
+} from "../../schemas"
+import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -9,27 +20,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
-import { createCompanyIslandPricingQueryOptions } from "../../query-options"
-import { useQuery } from "@tanstack/react-query"
-import { Activity, useState } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { ActionIcon } from "@/components/icons"
-import { FieldLabel } from "@/components/ui/field"
-import { Badge } from "@/components/ui/badge"
 import { useActivateIslandPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
-import { EditIslandsPricingForm } from "./edit-islands-pricing-form"
-import { IslandPricingTable } from "./island-pricing-table"
-import { useCreateIslandPricing } from "../../hooks/use-island-pricing"
-import { Can } from "@/components/has-permission"
+import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
 export function CompanyIslandsPricingConfigurationDialog() {
+  const { hasPermission } = usePermissions()
   const { data } = useCompanyPricingDates()
   const { activateIslandPricing, isPending } = useActivateIslandPricing()
   const { createIslandPricing } = useCreateIslandPricing()
@@ -69,51 +65,19 @@ export function CompanyIslandsPricingConfigurationDialog() {
         <div className="no-scrollbar overflow-y-auto px-4 pb-5">
           <div className="space-y-4">
             <Activity mode={view == "list" ? "visible" : "hidden"}>
-              <div className="flex items-baseline-last justify-between">
-                <div className="grid grid-flow-col items-baseline-last gap-1.5">
-                  <div className="space-y-2">
-                    <FieldLabel htmlFor="date">
-                      Select pricing date{" "}
-                      {referenceDate &&
-                        data?.island.active_date === referenceDate && (
-                          <Badge>Current</Badge>
-                        )}
-                    </FieldLabel>
-                    <Select
-                      value={referenceDate}
-                      onValueChange={(date) => {
-                        setSearch({ ...search, referenceDate: date })
-                      }}
-                    >
-                      <SelectTrigger className="min-w-48" id="date">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data?.island.dates.map((date) => (
-                          <SelectItem key={date} value={date}>
-                            {date}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Can permission="config:pricing:activate">
-                    {referenceDate &&
-                      data?.island.active_date !== referenceDate && (
-                        <Button
-                          type="button"
-                          disabled={isPending}
-                          onClick={() => {
-                            activateIslandPricing({
-                              effectiveDate: referenceDate,
-                            })
-                          }}
-                        >
-                          Set Active
-                        </Button>
-                      )}
-                  </Can>
-                </div>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <PricingVersionSelect
+                  versions={data?.island}
+                  selectedDate={referenceDate}
+                  onSelectDate={(date) =>
+                    setSearch({ ...search, referenceDate: date })
+                  }
+                  canActivate={hasPermission("config:pricing:activate")}
+                  isActivating={isPending}
+                  onActivate={(effectiveDate) =>
+                    activateIslandPricing({ effectiveDate })
+                  }
+                />
                 <Button
                   variant={"secondary"}
                   type="button"

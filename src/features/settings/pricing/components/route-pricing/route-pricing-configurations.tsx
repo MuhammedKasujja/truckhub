@@ -1,8 +1,14 @@
-import { BatchPricingPayload, PricingSearchParams } from "../../schemas"
-import { useCreateCompanyRoutePricing } from "../../hooks/use-company-routes-pricings"
-import { RoutePricingDataGridForm } from "./pricing-grid-form"
-import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { Activity, useState } from "react"
+import { useCreateCompanyRoutePricing } from "../../hooks/use-company-routes-pricings"
+import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
+import { companyRoutePricingQueryOptions } from "../../query-options"
+import { PricingVersionSelect } from "../pricing-version-select"
+import { RoutePricingDataGridForm } from "./pricing-grid-form"
+import { RouteTonnagePricingGrid } from "./route-tonnage-pricing"
+import type { BatchPricingPayload, PricingSearchParams } from "../../schemas"
+import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -11,25 +17,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
-import { companyRoutePricingQueryOptions } from "../../query-options"
-import { useQuery } from "@tanstack/react-query"
-import { Activity, useState } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { RouteTonnagePricingGrid } from "./route-tonnage-pricing"
 import { ActionIcon } from "@/components/icons"
-import { FieldLabel } from "@/components/ui/field"
-import { Badge } from "@/components/ui/badge"
 import { useActivateRoutePricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
-import { Can } from "@/components/has-permission"
+import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
 export function CompanyRoutePricingConfigurationDialog() {
+  const { hasPermission } = usePermissions()
   const { data } = useCompanyPricingDates()
   const { activateRoutePricing, isPending } = useActivateRoutePricing()
   const { createRoutePricing } = useCreateCompanyRoutePricing()
@@ -67,51 +60,19 @@ export function CompanyRoutePricingConfigurationDialog() {
         <div className="no-scrollbar overflow-y-auto px-4 pb-5">
           <div className="space-y-4">
             <Activity mode={view == "list" ? "visible" : "hidden"}>
-              <div className="flex items-baseline-last justify-between">
-                <div className="grid grid-flow-col items-baseline-last gap-1.5">
-                  <div className="space-y-2">
-                    <FieldLabel htmlFor="date">
-                      Select pricing date{" "}
-                      {referenceDate &&
-                        data?.route_tonnage.active_date === referenceDate && (
-                        <Badge>Current</Badge>
-                      )}
-                    </FieldLabel>
-                    <Select
-                      value={referenceDate}
-                      onValueChange={(date) => {
-                        setSearch({ ...search, referenceDate: date })
-                      }}
-                    >
-                      <SelectTrigger className="min-w-48" id="date">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data?.route_tonnage.dates.map((date) => (
-                          <SelectItem key={date} value={date}>
-                            {date}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Can permission="config:pricing:activate">
-                    {referenceDate &&
-                      data?.route_tonnage.active_date !== referenceDate && (
-                        <Button
-                          type="button"
-                          disabled={isPending}
-                          onClick={() => {
-                            activateRoutePricing({
-                              effectiveDate: referenceDate,
-                            })
-                          }}
-                        >
-                          Set Active
-                        </Button>
-                      )}
-                  </Can>
-                </div>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <PricingVersionSelect
+                  versions={data?.route_tonnage}
+                  selectedDate={referenceDate}
+                  onSelectDate={(date) =>
+                    setSearch({ ...search, referenceDate: date })
+                  }
+                  canActivate={hasPermission("config:pricing:activate")}
+                  isActivating={isPending}
+                  onActivate={(effectiveDate) =>
+                    activateRoutePricing({ effectiveDate })
+                  }
+                />
                 <Button
                   variant={"secondary"}
                   type="button"

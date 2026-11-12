@@ -1,6 +1,8 @@
-import { useId, useState } from "react"
-import { CalendarClock, CircleCheck, Plus } from "lucide-react"
-import { formatPricingDate, sortTiers, toFormTier } from "./loading-fees-format"
+import { useState } from "react"
+import { Plus } from "lucide-react"
+import { formatPricingDate } from "../../utils/pricing-dates"
+import { PricingVersionSelect } from "../pricing-version-select"
+import { sortTiers, toFormTier } from "./loading-fees-format"
 import { LoadingOffloadingPricingForm } from "./loading-offloading-pricing-form"
 import { LoadingOffloadingPricingTable } from "./loading-offloading-pricing-table"
 import type {
@@ -9,14 +11,6 @@ import type {
 } from "../../types"
 import type { LoadingOffloadingPricingRequest } from "../../schemas"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 type LoadingFeesManagerProps = {
   /** Saved versions and which one is active. */
@@ -50,12 +44,9 @@ export function LoadingFeesManager({
   isCreating,
   onCreate,
 }: LoadingFeesManagerProps) {
-  const selectId = useId()
   const [isEditing, setIsEditing] = useState(false)
 
   const dates = versions?.dates ?? []
-  const activeDate = versions?.active_date
-  const isActive = !!selectedDate && selectedDate === activeDate
   const tiers = pricing?.pricings ?? []
 
   async function handleCreate(values: LoadingOffloadingPricingRequest) {
@@ -97,47 +88,14 @@ export function LoadingFeesManager({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-wrap items-end gap-2">
-          <div className="space-y-1.5">
-            <Label htmlFor={selectId} className="text-xs text-muted-foreground">
-              Pricing version
-            </Label>
-            <Select
-              value={selectedDate ?? ""}
-              onValueChange={onSelectDate}
-              disabled={dates.length === 0}
-            >
-              <SelectTrigger id={selectId} className="min-w-60">
-                <CalendarClock className="text-muted-foreground" />
-                <SelectValue placeholder="No versions yet" />
-              </SelectTrigger>
-              <SelectContent>
-                {dates.map((date) => (
-                  <SelectItem key={date} value={date}>
-                    {formatPricingDate(date)}
-                    {date === activeDate && (
-                      <span className="ml-1 text-xs font-medium text-primary">
-                        · Active
-                      </span>
-                    )}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {selectedDate && !isActive && canActivate && (
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isActivating}
-              onClick={() => onActivate(selectedDate)}
-            >
-              <CircleCheck />
-              {isActivating ? "Activating…" : "Set active"}
-            </Button>
-          )}
-        </div>
+        <PricingVersionSelect
+          versions={versions}
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate}
+          canActivate={canActivate}
+          isActivating={isActivating}
+          onActivate={onActivate}
+        />
 
         {tiers.length > 0 && newPricingButton}
       </div>

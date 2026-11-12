@@ -1,26 +1,18 @@
-import {
-  RoutePricingDataGridForm,
-  RouteTonnagePricingGrid,
-} from "@/features/settings/pricing/components"
-import { BatchPricingPayload } from "@/features/settings/pricing/schemas"
 import { Activity, useState } from "react"
-import { ActionIcon } from "@/components/icons"
-import { Button } from "@/components/ui/button"
-import { FieldLabel } from "@/components/ui/field"
-import { Badge } from "@/components/ui/badge"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useActivateClientRoutePricing } from "../../hooks/use-client-pricings"
 import { useClientPricingDates } from "../../hooks/use-client"
 import {
   useClientRoutingPricing,
   useCreateClientRoutePricing,
 } from "../../hooks/use-client-route-pricing"
+import type { BatchPricingPayload } from "@/features/settings/pricing/schemas"
+import {
+  PricingVersionSelect,
+  RoutePricingDataGridForm,
+  RouteTonnagePricingGrid,
+} from "@/features/settings/pricing/components"
+import { ActionIcon } from "@/components/icons"
+import { Button } from "@/components/ui/button"
 
 type ClientPricingProps = {
   clientId: string
@@ -55,40 +47,16 @@ export function ClientRouteTonnagePricingModal({
   return (
     <>
       <Activity mode={view == "list" ? "visible" : "hidden"}>
-        <div className="flex items-baseline-last justify-between pb-4">
-          <div className="grid grid-flow-col items-baseline-last gap-1.5">
-            <div className="space-y-2">
-              <FieldLabel htmlFor="date">
-                Select pricing date {isActive && <Badge>Current</Badge>}
-              </FieldLabel>
-              <Select value={referenceDate} onValueChange={setSelectedDate}>
-                <SelectTrigger className="min-w-48" id="date">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pricingConfig?.routes.dates.map((date) => (
-                    <SelectItem key={date} value={date}>
-                      {date}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {referenceDate && !isActive && (
-              <Button
-                type="button"
-                disabled={isPending}
-                onClick={() =>
-                  activateRoutePricing({
-                    clientId,
-                    effectiveDate: referenceDate,
-                  })
-                }
-              >
-                Set Active
-              </Button>
-            )}
-          </div>
+        <div className="flex flex-wrap items-end justify-between gap-3 pt-5 pb-4">
+          <PricingVersionSelect
+            versions={pricingConfig?.routes}
+            selectedDate={referenceDate}
+            onSelectDate={setSelectedDate}
+            isActivating={isPending}
+            onActivate={(effectiveDate) =>
+              activateRoutePricing({ clientId, effectiveDate })
+            }
+          />
           <Button
             variant={"secondary"}
             type="button"
