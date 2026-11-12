@@ -1,165 +1,112 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import z from "zod"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card"
-import { Field, FieldGroup } from "@/components/ui/field"
-import {
-  DateTimePickerField,
-  HiddenField,
-  SelectField,
-  TextareaField,
-} from "@/components/ui/form-fields"
-import { SubmitButton } from "@/components/ui/submit-button"
-import { VehiclePickerField } from "@/features/vehicles/components"
-import { maintenanceCreateSchema, maintenanceUpdateSchema } from "../schemas"
+import { Controller, useWatch } from "react-hook-form"
 import { maintanenceTypes } from "../enums"
+import { TYPE_DESCRIPTIONS, TYPE_ICONS } from "./maintenance-meta"
+import type { Control, FieldValues, Path } from "react-hook-form"
+import type { MaintenanceType } from "../enums"
+import type { MaintenanceCreateInput } from "../schemas"
+import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import { DateTimePickerField, TextareaField } from "@/components/ui/form-fields"
+import { RequiredLabelIcon } from "@/components/required-label-icon"
+import { OptionTile } from "@/features/settings/_components/settings-ui"
+import { useTranslation } from "@/i18n"
 
-type MaintenanceTaskFormProps = {
-  defaultValues?: Partial<z.infer<typeof maintenanceCreateSchema>>
-  isPending?: boolean
-  onSubmit: (
-    values: z.infer<typeof maintenanceCreateSchema>
-  ) => void | Promise<void>
-}
-
-const maintenanceTypeOptions = maintanenceTypes.map((type) => ({
-  value: type,
-  label: type.charAt(0).toUpperCase() + type.slice(1),
-}))
-
-export function MaintenanceTaskForm({
-  defaultValues,
-  isPending = false,
-  onSubmit,
-}: MaintenanceTaskFormProps) {
-  type Values = z.infer<typeof maintenanceCreateSchema>
-
-  const form = useForm<Values>({
-    resolver: zodResolver(maintenanceCreateSchema),
-    defaultValues: {
-      ...defaultValues,
-      start: defaultValues?.start ?? new Date(),
-    },
-  })
-
-  async function handleSubmit(values: Values) {
-    await onSubmit(maintenanceCreateSchema.parse(values))
-  }
-
+/** Routine / Repair / Inspection as selectable tiles. */
+export function MaintenanceTypeField<T extends FieldValues>({
+  control,
+  name,
+}: {
+  control: Control<T>
+  name: Path<T>
+}) {
+  const tr = useTranslation()
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>Schedule a maintenance task</CardDescription>
-      </CardHeader>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <CardContent className="pb-6">
-          <FieldGroup>
-            <VehiclePickerField
-              label="Vehicle"
-              name="vehicle_id"
-              control={form.control}
-            />
-            <SelectField
-              label="Maintenance type"
-              name="type"
-              control={form.control}
-              options={maintenanceTypeOptions}
-              placeholder="Select a maintenance type"
-            />
-            <TextareaField
-              label="Reason"
-              name="reason"
-              control={form.control}
-              placeholder="Describe the work required"
-            />
-            <Field orientation="horizontal" className="gap-4">
-              <DateTimePickerField
-                label="Scheduled start"
-                name="start"
-                control={form.control}
-                selected={form.watch("start")}
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <FieldLabel>
+            Type
+            <RequiredLabelIcon />
+          </FieldLabel>
+          <div
+            role="radiogroup"
+            aria-label="Maintenance type"
+            className="grid gap-2 sm:grid-cols-3"
+          >
+            {maintanenceTypes.map((type: MaintenanceType) => (
+              <OptionTile
+                key={type}
+                selected={field.value === type}
+                onSelect={() => field.onChange(type)}
+                icon={TYPE_ICONS[type]}
+                title={tr(`maintenance.types.${type}`)}
+                description={TYPE_DESCRIPTIONS[type]}
               />
-              <DateTimePickerField
-                label="Scheduled end"
-                name="end"
-                control={form.control}
-                required={false}
-                selected={form.watch("end") ?? undefined}
-              />
-            </Field>
-            <DateTimePickerField
-              label="Expected completion"
-              name="expected_end"
-              control={form.control}
-              required={false}
-              selected={form.watch("expected_end") ?? undefined}
-            />
-          </FieldGroup>
-        </CardContent>
-        <CardFooter>
-          <SubmitButton
-            text="Create task"
-            isSubmitting={form.formState.isSubmitting || isPending}
-          />
-        </CardFooter>
-      </form>
-    </Card>
+            ))}
+          </div>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
+    />
   )
 }
 
-type MaintenanceTaskEditFormProps = {
-  defaultValues: z.infer<typeof maintenanceUpdateSchema>
-  onSubmit: (
-    values: z.infer<typeof maintenanceUpdateSchema>
-  ) => void | Promise<void>
+export function MaintenanceReasonField<T extends FieldValues>({
+  control,
+  name,
+}: {
+  control: Control<T>
+  name: Path<T>
+}) {
+  return (
+    <TextareaField
+      label="What needs doing"
+      name={name}
+      control={control}
+      placeholder="e.g. Replace front brake pads and check the discs"
+      rows={3}
+    />
+  )
 }
 
-export function MaintenanceTaskEditForm({
-  defaultValues,
-  onSubmit,
-}: MaintenanceTaskEditFormProps) {
-  type Values = z.infer<typeof maintenanceUpdateSchema>
-
-  const form = useForm<Values>({
-    resolver: zodResolver(maintenanceUpdateSchema),
-    defaultValues,
+/** Start, end and expected completion for a new task. */
+export function MaintenanceScheduleFields({
+  control,
+}: {
+  control: Control<MaintenanceCreateInput>
+}) {
+  const [start, end, expectedEnd] = useWatch({
+    control,
+    name: ["start", "end", "expected_end"],
   })
 
-  async function handleSubmit(values: Values) {
-    await onSubmit(maintenanceUpdateSchema.parse(values))
-  }
-
   return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} id="task-update">
-      <FieldGroup>
-        <HiddenField control={form.control} name="maintanence_id" />
-        <SelectField
-          label="Maintenance type"
-          name="type"
-          control={form.control}
-          options={maintenanceTypeOptions}
-          placeholder="Select a maintenance type"
-        />
-        <TextareaField
-          label="Reason"
-          name="reason"
-          control={form.control}
-          placeholder="Describe the work required"
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <DateTimePickerField
+          label="Starts"
+          name="start"
+          control={control}
+          selected={start}
         />
         <DateTimePickerField
-          label="Expected completion"
-          name="expected_end"
-          control={form.control}
+          label="Ends"
+          name="end"
+          control={control}
           required={false}
-          selected={form.watch("expected_end") ?? undefined}
+          selected={end ?? undefined}
+          description="Leave empty if you don't know yet."
         />
-      </FieldGroup>
-    </form>
+      </div>
+      <DateTimePickerField
+        label="Expected completion"
+        name="expected_end"
+        control={control}
+        required={false}
+        selected={expectedEnd ?? undefined}
+        description="Tasks still open after this date are marked overdue."
+      />
+    </div>
   )
 }

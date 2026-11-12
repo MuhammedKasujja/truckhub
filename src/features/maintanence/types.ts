@@ -1,5 +1,5 @@
-import { EntityId } from "@/schemas"
-import { MaintenanceStatus, MaintenanceType } from "./enums"
+import type { MaintenanceStatus, MaintenanceType } from "./enums"
+import type { EntityId } from "@/schemas"
 
 export type MaintenanceRecord = {
   id: EntityId
