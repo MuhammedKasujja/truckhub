@@ -90,7 +90,7 @@ export function TaxRateForm({
       trigger={
         openProp === undefined
           ? (trigger ?? (
-              <Button size="sm">
+              <Button>
                 <ActionIcon action="create" />
                 Add tax rate
               </Button>

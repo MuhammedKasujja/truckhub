@@ -40,7 +40,7 @@ import {
 } from "@/features/settings/vehicle-config/_components/config-ui"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { formatNumber, formatPlural } from "@/lib/format"
+import { formatPlural } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 type Dialog = { kind: "form" | "delete"; route?: BookingRoute }
@@ -107,7 +107,7 @@ export function BookingRoutesTable() {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 10 } },
+    initialState: { pagination: { pageSize: 50 } },
   })
 
   const query = search.trim()

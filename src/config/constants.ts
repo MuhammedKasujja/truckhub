@@ -32,7 +32,7 @@ export const PaymentStatuses = [
 
 export const AuditLogSource = ["system", "user"] as const
 
-export const ClientTypeList = ["normal", "premium"] as const
+export const ClientTypeList = ["standard", "premium"] as const
 
 export const ClientTypeListOptions = [undefined, ...ClientTypeList].map(
   (p) => ({ label: p ? p : "Select client", value: p })

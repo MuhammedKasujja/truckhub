@@ -386,7 +386,7 @@ function ClientActions({
           <DropdownMenuItem asChild>
             <Link to="/clients/$clientId/pdf" params={{ clientId }}>
               <ActionIcon action="view-pdf" />
-              View PDF
+              View Statement
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
