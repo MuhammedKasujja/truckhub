@@ -1,6 +1,5 @@
-import { EntityId } from "@/schemas"
-import { ClientType } from "@/config/constants"
-import { DataTableRowAction } from "@/types/data-table"
+import type { EntityId } from "@/schemas"
+import type { ClientType } from "@/config/constants"
 
 export type ClientContact = {
   id: EntityId
@@ -35,8 +34,3 @@ export type Client = {
 }
 
 export type Customer = Client
-
-export interface ClientsTableRowAction extends DataTableRowAction<
-  Client,
-  "update" | "delete" | "view"
-> {}

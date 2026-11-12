@@ -1,5 +1,6 @@
 export * from "./client-form"
-export * from "./customer-table"
+export * from "./client-list"
+export { ClientActionsMenu } from "./client-actions-menu"
 export * from "./customer-details-wrapper"
 export * from "./pricing/client-route-pricing-modal"
 export { ClientContactsList } from "./client-contacts-list"
