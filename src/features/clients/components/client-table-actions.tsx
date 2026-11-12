@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, TypeIcon } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -11,8 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { ClientsTableRowAction } from "../types"
-import { useChangeClientType } from "../hooks/use-client"
-import { toast } from "sonner"
 import { ActionIcon } from "@/components/icons"
 
 type Row = Pick<ClientsTableRowAction, "row">
@@ -29,11 +27,7 @@ export function ClientTableActions({
   setRowAction,
 }: ClientTableActionsProps) {
   const client = row?.row.original
-  const { changeClientType, isSuccess } = useChangeClientType()
-
-  if (isSuccess) {
-    toast.success("Client type change successfully")
-  }
+  
   return (
     <>
       <DropdownMenu>
@@ -43,7 +37,7 @@ export function ClientTableActions({
             <MoreHorizontal/>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="min-w-40">
           <DropdownMenuGroup>
             <Can permission={"clients:edit"}>
               <DropdownMenuItem asChild>
@@ -71,7 +65,7 @@ export function ClientTableActions({
               <DropdownMenuItem asChild>
                 <Link to={"/quotations/new"} search={{ clientId: client.id }}>
                   <ActionIcon action="create" />
-                  Quotation
+                  New Quotation
                 </Link>
               </DropdownMenuItem>
             </Can>
@@ -79,14 +73,8 @@ export function ClientTableActions({
               <DropdownMenuItem asChild>
                 <Link to={"/invoices/create"} search={{ clientId: client.id }}>
                   <ActionIcon action="create" />
-                  Invoice
+                  New Invoice
                 </Link>
-              </DropdownMenuItem>
-            </Can>
-            <Can permission={"clients:change_type"}>
-              <DropdownMenuItem onClick={() => changeClientType(client.id)}>
-                <TypeIcon />
-                {client.client_type}
               </DropdownMenuItem>
             </Can>
             <Can permission={"clients:delete"}>

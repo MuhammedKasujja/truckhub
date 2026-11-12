@@ -13,6 +13,7 @@ import {
   Phone,
   PiggyBank,
   Receipt,
+  TypeIcon,
   UserRound,
   Users,
   Wallet,
@@ -77,16 +78,26 @@ import {
   clientPaymentsQueryOptions,
   clientQuotationsQueryOptions,
 } from "../query-options"
-import { useClientProfileSuspenseQuery } from "../hooks/use-client"
+import {
+  useChangeClientType,
+  useClientProfileSuspenseQuery,
+} from "../hooks/use-client"
 import { ClientServicesDialog } from "./client-services-dialog"
 import { ClientPricingConfigDialog } from "./pricing/client-pricing-config-dialog"
 import type { Client, ClientContact } from "../types"
+import { toast } from "sonner"
 
 type ClientDetailsWrapperProps = {
   clientId: EntityId
 }
 
-const CLOSED_INVOICE_STATUSES = ["draft", "paid", "cancelled", "void", "refunded"]
+const CLOSED_INVOICE_STATUSES = [
+  "draft",
+  "paid",
+  "cancelled",
+  "void",
+  "refunded",
+]
 
 export function CustomerDetailsWrapper({
   clientId,
@@ -115,7 +126,9 @@ export function CustomerDetailsWrapper({
       !CLOSED_INVOICE_STATUSES.includes(inv.status) &&
       Number(inv.balance_due) > 0
   )
-  const overdueCount = invoices.filter((inv) => inv.status === "over_due").length
+  const overdueCount = invoices.filter(
+    (inv) => inv.status === "over_due"
+  ).length
   const summary = client.financial_summary
   const amountDue = Number(summary?.amount_due ?? 0)
 
@@ -197,9 +210,7 @@ export function CustomerDetailsWrapper({
           <Stat
             icon={PiggyBank}
             label="Paid to date"
-            value={formatMoney(
-              summary?.total_paid ?? client.paid_to_date ?? 0
-            )}
+            value={formatMoney(summary?.total_paid ?? client.paid_to_date ?? 0)}
             hint={`${payments.length} payment${payments.length === 1 ? "" : "s"}`}
           />
           <Stat
@@ -247,7 +258,10 @@ export function CustomerDetailsWrapper({
                   <InvoicesTable invoices={invoices} clientId={client.id} />
                 </TabsContent>
                 <TabsContent value="quotations">
-                  <QuotationsTable quotations={quotations} clientId={client.id} />
+                  <QuotationsTable
+                    quotations={quotations}
+                    clientId={client.id}
+                  />
                 </TabsContent>
                 <TabsContent value="payments">
                   <PaymentsTable
@@ -328,6 +342,11 @@ function ClientActions({
   const [openServices, setOpenServices] = useState(false)
   const [openPricing, setOpenPricing] = useState(false)
   const clientId = client.id
+  const { changeClientType, isSuccess } = useChangeClientType()
+
+  if (isSuccess) {
+    toast.success("Client type change successfully")
+  }
 
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 self-start">
@@ -390,6 +409,14 @@ function ClientActions({
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <Can permission={"clients:change_type"}>
+            <DropdownMenuItem onClick={() => changeClientType(client.id)}>
+              <TypeIcon />
+              Change to{" "}
+              {client.client_type === "standard" ? "premium" : "standard"}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </Can>
           <DropdownMenuItem onSelect={() => setOpenServices(true)}>
             <ModuleIcon module="Services" />
             Manage services
