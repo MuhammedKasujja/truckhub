@@ -2,21 +2,11 @@ import { useMemo } from "react"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format as formatDateFns } from "date-fns"
-import {
-  CalendarDays,
-  Globe2,
-  Hash,
-  Loader2,
-  MapPin,
-  RotateCcw,
-  Save,
-} from "lucide-react"
+import { CalendarDays, Globe2, Hash, MapPin } from "lucide-react"
 import { useEditSettings } from "../hooks/use-settings"
-import { OptionTile, SettingsSection } from "./settings-ui"
+import { OptionTile, SettingsSaveBar, SettingsSection } from "./settings-ui"
 import type z from "zod"
-import type {
-  EditSettingsSchemaType} from "@/features/settings/schemas";
-import { Button } from "@/components/ui/button"
+import type { EditSettingsSchemaType } from "@/features/settings/schemas"
 import {
   NumberField,
   SelectField,
@@ -24,10 +14,7 @@ import {
 } from "@/components/ui/form-fields"
 import { DATE_FORMATS, MONTH_OPTIONS } from "@/common/constants"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
-import {
-  EditSettingsSchema
-} from "@/features/settings/schemas"
-import { cn } from "@/lib/utils"
+import { EditSettingsSchema } from "@/features/settings/schemas"
 
 type EditSettingsFormProps = {
   settings?: EditSettingsSchemaType
@@ -190,41 +177,13 @@ export function EditSettingsForm({ settings }: EditSettingsFormProps) {
         </div>
       </fieldset>
 
-      {/* Save bar: shown while there are unsaved changes */}
       {canEdit && (
-        <div
-          className={cn(
-            "sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-xl border bg-background/95 px-4 py-3 shadow-lg backdrop-blur transition-all",
-            isDirty
-              ? "translate-y-0 opacity-100"
-              : "pointer-events-none translate-y-2 opacity-0"
-          )}
-          aria-hidden={!isDirty}
-        >
-          <p className="text-sm">
-            <span className="font-medium">Unsaved changes</span>
-            <span className="hidden text-muted-foreground sm:inline">
-              {" "}
-              · These apply to everyone in the company
-            </span>
-          </p>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={isPending}
-              onClick={() => form.reset()}
-            >
-              <RotateCcw />
-              Discard
-            </Button>
-            <Button type="submit" size="sm" disabled={isPending}>
-              {isPending ? <Loader2 className="animate-spin" /> : <Save />}
-              Save changes
-            </Button>
-          </div>
-        </div>
+        <SettingsSaveBar
+          visible={isDirty}
+          isSubmitting={isPending}
+          onDiscard={() => form.reset()}
+          note="These apply to everyone in the company"
+        />
       )}
     </form>
   )

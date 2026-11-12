@@ -1,5 +1,5 @@
 import React from "react"
-import { Check, Loader2 } from "lucide-react"
+import { Check, Loader2, RotateCcw, Save } from "lucide-react"
 import {
   Dialog,
   DialogClose,
@@ -157,7 +157,9 @@ export function DetailItem({
 }
 
 export function MissingValue({ children = "Not set" }: { children?: string }) {
-  return <span className="font-normal text-muted-foreground/70">{children}</span>
+  return (
+    <span className="font-normal text-muted-foreground/70">{children}</span>
+  )
 }
 
 /** Compact empty state for use inside a section. */
@@ -207,6 +209,64 @@ export function SettingsPageSkeleton({ sections = 2 }: { sections?: number }) {
         <div key={i} className="h-48 animate-pulse rounded-xl bg-muted/60" />
       ))}
     </SettingsPage>
+  )
+}
+
+/**
+ * Sticky bar at the bottom of an inline settings form. It slides in while
+ * there are unsaved changes and offers Discard / Save.
+ */
+export function SettingsSaveBar({
+  visible,
+  isSubmitting,
+  onDiscard,
+  note,
+  submitText = "Save changes",
+}: {
+  visible: boolean
+  isSubmitting?: boolean
+  onDiscard: () => void
+  /** Extra context after "Unsaved changes", hidden on small screens. */
+  note?: React.ReactNode
+  submitText?: string
+}) {
+  return (
+    <div
+      className={cn(
+        "sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-xl border bg-background/95 px-4 py-3 shadow-lg backdrop-blur transition-all",
+        visible
+          ? "translate-y-0 opacity-100"
+          : "pointer-events-none translate-y-2 opacity-0"
+      )}
+      aria-hidden={!visible}
+      inert={!visible}
+    >
+      <p className="text-sm">
+        <span className="font-medium">Unsaved changes</span>
+        {note && (
+          <span className="hidden text-muted-foreground sm:inline">
+            {" "}
+            · {note}
+          </span>
+        )}
+      </p>
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={isSubmitting}
+          onClick={onDiscard}
+        >
+          <RotateCcw />
+          Discard
+        </Button>
+        <Button type="submit" size="sm" disabled={isSubmitting}>
+          {isSubmitting ? <Loader2 className="animate-spin" /> : <Save />}
+          {isSubmitting ? "Saving…" : submitText}
+        </Button>
+      </div>
+    </div>
   )
 }
 
@@ -315,11 +375,7 @@ export function SettingsFormDialog({
               className="shadow-sm"
               disabled={isSubmitting || submitDisabled}
             >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Check />
-              )}
+              {isSubmitting ? <Loader2 className="animate-spin" /> : <Check />}
               {isSubmitting ? "Saving…" : submitText}
             </Button>
           </DialogFooter>
@@ -380,7 +436,8 @@ export function OptionTile({
       onClick={onSelect}
       className={cn(
         "relative flex w-full items-start gap-2.5 rounded-lg border bg-background p-3 text-left transition-colors outline-none hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/50",
-        selected && "border-primary bg-primary/5 ring-1 ring-primary hover:bg-primary/5",
+        selected &&
+          "border-primary bg-primary/5 ring-1 ring-primary hover:bg-primary/5",
         className
       )}
     >

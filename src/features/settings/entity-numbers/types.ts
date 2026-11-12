@@ -1,4 +1,4 @@
-import { EntityWithPatterns } from "@/common/constants"
+import type { EntityWithPatterns } from "@/common/constants"
 
 export type EntityNumberPattern = {
   id: number
