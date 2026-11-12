@@ -208,19 +208,39 @@ export type LoadingOffloadingPricingRequest = z.infer<
 >
 
 export const islandPricingSchema = z.object({
-  island_id: IDSchema,
-  locations: z.array(z.object({ value: z.string().default("").optional() })),
-  // priceRate: z.number().positive("Required"),
-  priceRate: MoneySchema.min(1, "Required"),
-  newPriceRate: z.number().positive().optional().nullable(),
+  island_id: z.string("Select an island").min(1, "Select an island"),
+  price: MoneySchema.min(1, "Required"),
 })
 
 export type IslandPricingRequest = z.infer<typeof islandPricingSchema>
 
-export const IslandsListPricingSchema = z.object({
-  pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
-  validFromDate: z.string("Date is required"),
-})
+export const IslandsListPricingSchema = z
+  .object({
+    pricings: z.array(islandPricingSchema).min(1, "Add at least one island"),
+    effective_date: z.string("Required").min(1, "Required"),
+  })
+  .superRefine(
+    (data, ctx) => {
+      // An island can only have one price per version
+      const seen = new Set<string>()
+      data.pricings.forEach((row, index) => {
+        if (!row.island_id) return
+        if (seen.has(row.island_id)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Island is already priced",
+            path: ["pricings", index, "island_id"],
+          })
+        }
+        seen.add(row.island_id)
+      })
+    },
+    // Run even while other fields (e.g. prices) are still empty
+    {
+      when: (payload) =>
+        Array.isArray((payload.value as { pricings?: unknown }).pricings),
+    }
+  )
 
 export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>
 

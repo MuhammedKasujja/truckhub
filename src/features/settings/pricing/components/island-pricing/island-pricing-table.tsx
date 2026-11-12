@@ -1,84 +1,110 @@
-import { IslandPricingItem } from "../../types"
-import { ColumnDef } from "@tanstack/react-table"
-import { useDataTable } from "@/hooks/use-data-table"
-import { DataTable } from "@/components/data-table"
+import { useMemo } from "react"
+import { IconSandbox } from "@tabler/icons-react"
+import type { IslandPricingItem } from "../../types"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+import { SectionEmpty } from "@/features/settings/_components/settings-ui"
+import { LocationRows } from "@/features/settings/islands/components/island-locations"
 import { formatMoney } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
-interface IslandsPricingTableProp {
+type IslandPricingTableProps = {
   pricings?: IslandPricingItem[]
+  isLoading?: boolean
+  /** Shown in the empty state, e.g. a "New pricing" button. */
+  emptyAction?: React.ReactNode
+  emptyDescription?: string
+  className?: string
 }
 
-const columns: ColumnDef<IslandPricingItem>[] = [
-  {
-    id: "name",
-    accessorKey: "name",
-    header: "Island Name",
-    minSize: 100,
-    enablePinning: false,
-    enableHiding: false,
-    cell: ({ row }) => {
-      const name = row.original.name
-      return (
-        <div className="items-start justify-items-start font-semibold">
-          {name}
-        </div>
-      )
-    },
-  },
-  {
-    id: "locations",
-    accessorKey: "locations",
-    header: "Locations",
-    minSize: 160,
-    enablePinning: false,
-    enableHiding: false,
-    cell: ({ row }) => {
-      const locations = row.original.locations
-      return (
-        <div className="text-muted-foreground">
-          {locations.map((loc) => (
-            <div key={loc}>{loc}</div>
-          ))}
-        </div>
-      )
-    },
-  },
-  {
-    id: "price",
-    accessorKey: "general_price",
-    header: "Price",
-    minSize: 160,
-    enablePinning: false,
-    enableHiding: false,
-    cell: ({ row }) => {
-      const price = row.original.general_price
-      return <div className="font-semibold">{formatMoney(price)}</div>
-    },
-  },
-]
+/** Read-only island prices, laid out like the islands table. */
+export function IslandPricingTable({
+  pricings,
+  isLoading,
+  emptyAction,
+  emptyDescription = "Set a price for each island to charge island deliveries.",
+  className,
+}: IslandPricingTableProps) {
+  const rows = useMemo(
+    () => [...(pricings ?? [])].sort((a, b) => a.name.localeCompare(b.name)),
+    [pricings]
+  )
 
-export function IslandPricingTable({ pricings }: IslandsPricingTableProp) {
-  const { table } = useDataTable({
-    data: pricings ?? [],
-    columns,
-    // getRowId: (row) => row.id,
-    enableSearch: true,
-    enablePaste: true,
-    defaultColumn: {
-      size: 130,
-      minSize: 110,
-      maxSize: 400,
-    },
-    initialState: {
-      columnPinning: {
-        left: ["name"],
-      },
-      columnVisibility: {
-        select: false,
-        origin: false,
-      },
-    },
-  })
+  if (!isLoading && rows.length === 0) {
+    return (
+      <SectionEmpty
+        icon={IconSandbox}
+        title="No island prices yet"
+        description={emptyDescription}
+        action={emptyAction}
+        className={cn("bg-card py-14", className)}
+      />
+    )
+  }
 
-  return <DataTable table={table} showPagination={false} />
+  return (
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border bg-card shadow-xs",
+        className
+      )}
+    >
+      <Table className="[&_td]:border-r [&_td]:px-3 [&_td:last-child]:border-r-0 [&_th]:border-r [&_th]:px-3 [&_th:last-child]:border-r-0">
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-48">Island</TableHead>
+            {/* <TableHead className="w-24 text-right">Count</TableHead> */}
+            <TableHead className="min-w-64">Locations</TableHead>
+            <TableHead className="w-40 text-right">Price</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading
+            ? Array.from({ length: 4 }).map((_row, i) => (
+                <TableRow
+                  key={i}
+                  className="even:bg-muted/40 hover:bg-transparent [&>td]:py-3"
+                >
+                  <TableCell>
+                    <Skeleton className="h-4 w-28" />
+                  </TableCell>
+                  {/* <TableCell>
+                    <Skeleton className="ml-auto h-4 w-6" />
+                  </TableCell> */}
+                  <TableCell>
+                    <Skeleton className="h-4 w-48" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="ml-auto h-4 w-20" />
+                  </TableCell>
+                </TableRow>
+              ))
+            : rows.map((row) => (
+                <TableRow
+                  key={row.island_id}
+                  className="even:bg-muted/40 [&>td]:py-3 [&>td]:align-top"
+                >
+                  <TableCell className="font-medium">{row.name}</TableCell>
+                  {/* <TableCell className="text-right text-muted-foreground tabular-nums">
+                    {row.locations.length}
+                  </TableCell> */}
+                  <TableCell className="whitespace-normal">
+                    <LocationRows locations={row.locations} />
+                  </TableCell>
+                  <TableCell className="text-right font-semibold tabular-nums">
+                    {formatMoney(row.general_price)}
+                  </TableCell>
+                </TableRow>
+              ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
 }

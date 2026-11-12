@@ -1,16 +1,11 @@
-import { CreditCardIcon } from "lucide-react"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Activity, useState } from "react"
+import { History } from "lucide-react"
+import { IconSandbox } from "@tabler/icons-react"
 import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
-import { createCompanyIslandPricingQueryOptions } from "../../query-options"
-import { PricingVersionSelect } from "../pricing-version-select"
 import { useCreateIslandPricing } from "../../hooks/use-island-pricing"
-import { EditIslandsPricingForm } from "./edit-islands-pricing-form"
-import { IslandPricingTable } from "./island-pricing-table"
-import type {
-  IslandsListPricingRequest,
-  PricingSearchParams,
-} from "../../schemas"
+import { createCompanyIslandPricingQueryOptions } from "../../query-options"
+import { IslandPricingManager } from "./island-pricing-manager"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -20,98 +15,65 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { ActionIcon } from "@/components/icons"
 import { useActivateIslandPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
 export function CompanyIslandsPricingConfigurationDialog() {
   const { hasPermission } = usePermissions()
-  const { data } = useCompanyPricingDates()
-  const { activateIslandPricing, isPending } = useActivateIslandPricing()
-  const { createIslandPricing } = useCreateIslandPricing()
+  const { data: dates } = useCompanyPricingDates()
+  const { activateIslandPricing, isPending: isActivating } =
+    useActivateIslandPricing()
+  const { createIslandPricing, isPending: isCreating } =
+    useCreateIslandPricing()
+  const [selectedDate, setSelectedDate] = useState<string>()
 
-  const [search, setSearch] = useState<PricingSearchParams>({})
-  const [view, setView] = useState<"list" | "edit">("list")
-
+  const versions = dates?.island
   // Fall back to the active date so the sheet opens on the current pricing
-  const referenceDate = search.referenceDate ?? data?.island.active_date
+  const referenceDate = selectedDate ?? versions?.active_date
 
-  const { data: companyPricings } = useQuery(
+  const { data, isLoading } = useQuery(
     createCompanyIslandPricingQueryOptions({ referenceDate })
   )
-
-  async function handleSubmit(data: IslandsListPricingRequest) {
-    try {
-      await createIslandPricing(data)
-      setView("list")
-    } catch {
-      // Error toast is shown by the mutation hook
-    }
-  }
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant={"secondary"} type="button">
-          <CreditCardIcon />
-          View Configurations
+        <Button variant="outline" type="button">
+          <History />
+          Manage versions
         </Button>
       </SheetTrigger>
-      <SheetContent className="min-w-[80vw] sm:max-w-none">
-        <SheetHeader className="border-b">
-          <SheetTitle>Configure Islands pricing</SheetTitle>
-          <SheetDescription></SheetDescription>
-        </SheetHeader>
-        <div className="no-scrollbar overflow-y-auto px-4 pb-5">
-          <div className="space-y-4">
-            <Activity mode={view == "list" ? "visible" : "hidden"}>
-              <div className="flex flex-wrap items-end justify-between gap-3">
-                <PricingVersionSelect
-                  versions={data?.island}
-                  selectedDate={referenceDate}
-                  onSelectDate={(date) =>
-                    setSearch({ ...search, referenceDate: date })
-                  }
-                  canActivate={hasPermission("config:pricing:activate")}
-                  isActivating={isPending}
-                  onActivate={(effectiveDate) =>
-                    activateIslandPricing({ effectiveDate })
-                  }
-                />
-                <Button
-                  variant={"secondary"}
-                  type="button"
-                  onClick={() => setView("edit")}
-                >
-                  <ActionIcon action="create" />
-                  New Configuration
-                </Button>
-              </div>
-              <IslandPricingTable
-                pricings={companyPricings?.pricings}
-                // effectiveDate={
-                //   companyPricings?.validFromDate ?? new Date().toDateString()
-                // }
-                // title={
-                //   data?.route_tonnage.active_date === referenceDate
-                //     ? "Current Company Pricing"
-                //     : "Company Pricing"
-                // }
-              />
-            </Activity>
-            <Activity mode={view == "edit" ? "visible" : "hidden"}>
-              <EditIslandsPricingForm
-                initialData={{
-                  pricings: [],
-                  validFromDate:
-                    companyPricings?.validFromDate ??
-                    new Date().toLocaleDateString("en-CA"),
-                }}
-                onSubmit={(data) => handleSubmit(data)}
-                onCancel={() => setView("list")}
-              />
-            </Activity>
+      <SheetContent className="min-w-[80vw] gap-0 sm:max-w-none">
+        <SheetHeader className="flex-row items-center gap-3.5 border-b px-5 py-4 pr-12">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+            <IconSandbox className="size-5" />
           </div>
+          <div className="min-w-0 space-y-0.5">
+            <SheetTitle className="text-base font-bold tracking-tight">
+              Island pricing
+            </SheetTitle>
+            <SheetDescription>
+              A price per island. Browse saved versions, set one active, or
+              create a new one.
+            </SheetDescription>
+          </div>
+        </SheetHeader>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-5 pb-5">
+          <IslandPricingManager
+            versions={versions}
+            selectedDate={referenceDate}
+            onSelectDate={setSelectedDate}
+            pricings={data?.pricings}
+            effectiveDate={data?.validFromDate}
+            isLoading={isLoading}
+            canActivate={hasPermission("config:pricing:activate")}
+            isActivating={isActivating}
+            onActivate={(effectiveDate) =>
+              activateIslandPricing({ effectiveDate })
+            }
+            isCreating={isCreating}
+            onCreate={createIslandPricing}
+          />
         </div>
       </SheetContent>
     </Sheet>

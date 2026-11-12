@@ -18,7 +18,6 @@ import {
   getCompanyActiveDistancePricing,
 } from "./server"
 import {
-  IslandPricingRequest,
   ActivatePricingSchema,
   IslandsListPricingSchema,
   PricingSearchParamsCache,
@@ -98,12 +97,12 @@ export const createBatchIslandPricingsFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const pricings = data.pricings.map((p) => ({
       island_id: p.island_id,
-      price: p.priceRate,
+      price: p.price,
     }))
     return apiResponseTransform(
       createBatchIslandPricing({
         pricings,
-        valid_from: data.validFromDate,
+        valid_from: data.effective_date,
       })
     )
   })

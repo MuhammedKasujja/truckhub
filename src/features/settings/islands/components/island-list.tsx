@@ -6,6 +6,7 @@ import { IconSandbox } from "@tabler/icons-react"
 import { islandsQueryOptions } from "../query-options"
 import { deleteIslandByIdFn } from "../services"
 import { IslandForm } from "./island-form"
+import { LocationChips, LocationRows, includesText } from "./island-locations"
 import type { Island } from "../types"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
@@ -32,7 +33,6 @@ import {
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { formatPlural } from "@/lib/format"
-import { cn } from "@/lib/utils"
 
 type Dialog = { kind: "form" | "delete"; island?: Island }
 
@@ -44,12 +44,6 @@ type IslandActions = {
 
 const ISLAND_WORDS = { singular: "island", plural: "islands" }
 const LOCATION_WORDS = { singular: "location", plural: "locations" }
-
-/** Locations shown on a card before "+N more". */
-const PREVIEW_LOCATIONS = 6
-
-const includes = (text: string, query: string) =>
-  text.toLowerCase().includes(query)
 
 function IslandsHeader({ actions }: { actions?: React.ReactNode }) {
   return (
@@ -73,7 +67,10 @@ export function IslandList() {
   const setView = (next: ListView) =>
     navigate({
       // Cards is the default, so it stays out of the URL.
-      search: (prev) => ({ ...prev, view: next === "cards" ? undefined : next }),
+      search: (prev) => ({
+        ...prev,
+        view: next === "cards" ? undefined : next,
+      }),
       replace: true,
     })
 
@@ -93,8 +90,8 @@ export function IslandList() {
         .filter(
           (island) =>
             !query ||
-            includes(island.name, query) ||
-            island.locations.some((location) => includes(location, query))
+            includesText(island.name, query) ||
+            island.locations.some((location) => includesText(location, query))
         )
         .sort((a, b) => a.name.localeCompare(b.name)),
     [islands, query]
@@ -268,97 +265,6 @@ function IslandTable({
           ))}
         </TableBody>
       </Table>
-    </div>
-  )
-}
-
-/** The preview of an island's locations, which expands to show the rest. */
-function useLocationPreview(locations: string[], query: string) {
-  const [expanded, setExpanded] = useState(false)
-
-  // Locations matching the search come first so they aren't hidden behind "+N more".
-  const isMatch = (location: string) => !!query && includes(location, query)
-  const sorted = [...locations].sort(
-    (a, b) => Number(isMatch(b)) - Number(isMatch(a))
-  )
-
-  return {
-    isMatch,
-    shown: expanded ? sorted : sorted.slice(0, PREVIEW_LOCATIONS),
-    toggle: sorted.length > PREVIEW_LOCATIONS && (
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((value) => !value)}
-        className="rounded-md px-2 py-0.5 text-xs font-medium text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
-      >
-        {expanded ? "Show less" : `+${sorted.length - PREVIEW_LOCATIONS} more`}
-      </button>
-    ),
-  }
-}
-
-const NoLocations = () => (
-  <p className="text-xs text-muted-foreground">No locations yet</p>
-)
-
-function LocationChips({
-  locations,
-  query,
-}: {
-  locations: string[]
-  query: string
-}) {
-  const { isMatch, shown, toggle } = useLocationPreview(locations, query)
-  if (locations.length === 0) return <NoLocations />
-
-  return (
-    <ul className="flex flex-wrap gap-1.5">
-      {shown.map((location, index) => (
-        <li
-          key={`${location}-${index}`}
-          className={cn(
-            "max-w-full truncate rounded-md border bg-muted/40 px-2 py-0.5 text-xs",
-            isMatch(location) &&
-              "border-primary/40 bg-primary/10 font-medium text-primary"
-          )}
-        >
-          {location}
-        </li>
-      ))}
-      {toggle && <li>{toggle}</li>}
-    </ul>
-  )
-}
-
-/** Locations as striped rows, for the table view. */
-function LocationRows({
-  locations,
-  query,
-}: {
-  locations: string[]
-  query: string
-}) {
-  const { isMatch, shown, toggle } = useLocationPreview(locations, query)
-  if (locations.length === 0) return <NoLocations />
-
-  return (
-    <div className="space-y-1">
-      <ul className="space-y-1">
-        {shown.map((location, index) => (
-          <li
-            key={`${location}-${index}`}
-            className={cn(
-              "rounded-md border bg-background px-2.5 py-1 text-xs break-words even:bg-muted/60",
-              isMatch(location) &&
-                "border-primary/40 bg-primary/10 font-medium text-primary even:bg-primary/10"
-            )}
-          >
-            {location}
-          </li>
-        ))}
-      </ul>
-      {toggle}
     </div>
   )
 }
