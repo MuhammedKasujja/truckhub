@@ -1,9 +1,8 @@
-import { toast } from "sonner"
 import {
   LoadingOffloadingPricingRequest,
   PricingSearchParams,
 } from "../../schemas"
-import { createBatchLoadingPricingFn } from "../../services"
+import { useCreateCompanyLoadingPricing } from "../../hooks/use-loading-offloading-pricing"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
 import {
@@ -36,21 +35,27 @@ import { Can } from "@/components/has-permission"
 export function CompanyLoadingPricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
   const { activateLoadingPricing, isPending } = useActivateLoadingPricing()
-  const [search, setSearch] = useState<PricingSearchParams>()
+  const { createLoadingPricing, isPending: isCreating } =
+    useCreateCompanyLoadingPricing()
+  const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
-  const { data: companyPricings } = useQuery(
-    createCompanyLoadingFreesQueryOptions(search)
-  )
+  // Fall back to the active date so the sheet opens on the current pricing
   const referenceDate =
-    search?.referenceDate ?? companyPricings?.data?.effective_date
+    search.referenceDate ?? data?.loading_offloading.active_date
 
-  async function handleSubmit(data: LoadingOffloadingPricingRequest) {
-    const { message, error } = await createBatchLoadingPricingFn({ data })
-    if (error) {
-      toast.error(error.message)
-    } else {
-      toast.success(message)
+  const { data: companyPricings } = useQuery(
+    createCompanyLoadingFreesQueryOptions({ referenceDate })
+  )
+  const isActive =
+    !!referenceDate && data?.loading_offloading.active_date === referenceDate
+
+  async function handleSubmit(values: LoadingOffloadingPricingRequest) {
+    try {
+      await createLoadingPricing(values)
+      setView("list")
+    } catch {
+      // Error toast is shown by the mutation hook
     }
   }
 
@@ -77,8 +82,7 @@ export function CompanyLoadingPricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.loading_offloading.active_date ===
-                        referenceDate && <Badge>Current</Badge>}
+                      {isActive && <Badge>Current</Badge>}
                     </FieldLabel>
                     <Select
                       value={referenceDate}
@@ -99,15 +103,14 @@ export function CompanyLoadingPricingConfigurationDialog() {
                     </Select>
                   </div>
                   <Can permission="config:pricing:activate">
-                    {data?.loading_offloading.active_date !== referenceDate && (
+                    {referenceDate && !isActive && (
                       <Button
                         type="button"
                         disabled={isPending}
                         onClick={() => {
-                          if (search?.referenceDate)
-                            activateLoadingPricing({
-                              effectiveDate: search?.referenceDate,
-                            })
+                          activateLoadingPricing({
+                            effectiveDate: referenceDate,
+                          })
                         }}
                       >
                         Set Active
@@ -127,23 +130,20 @@ export function CompanyLoadingPricingConfigurationDialog() {
               <LoadingOffloadingPricingTable
                 key={companyPricings?.data?.effective_date}
                 pricings={{
-                  pricings: companyPricings?.data?.pricings,
+                  pricings: companyPricings?.data?.pricings ?? [],
                   effective_date:
                     companyPricings?.data?.effective_date ??
                     new Date().toDateString(),
                 }}
-                title={
-                  data?.route_tonnage.active_date === referenceDate
-                    ? "Current Company Pricing"
-                    : "Company Pricing"
-                }
               />
             </Activity>
             <Activity mode={view == "edit" ? "visible" : "hidden"}>
               <LoadingOffloadingPricingForm
+                isSubmitting={isCreating}
                 initialData={{
                   pricings: [],
-                  effective_date: new Date().toDateString(),
+                  // YYYY-MM-DD, the same format DatePickerField writes
+                  effective_date: new Date().toLocaleDateString("en-CA"),
                 }}
                 onSubmit={handleSubmit}
                 onCancel={() => setView("list")}

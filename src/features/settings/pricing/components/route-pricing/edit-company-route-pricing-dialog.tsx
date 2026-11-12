@@ -1,6 +1,5 @@
-import { toast } from "sonner"
 import { BatchPricingPayload } from "../../schemas"
-import { createBatchRoutePricingFn } from "../../services"
+import { useCreateCompanyRoutePricing } from "../../hooks/use-company-routes-pricings"
 import { RoutePricingDataGridForm } from "./pricing-grid-form"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
@@ -14,18 +13,10 @@ import {
 } from "@/components/ui/sheet"
 
 export function EditCompanyRoutePricingDialog() {
+  const { createRoutePricing } = useCreateCompanyRoutePricing()
+
   async function handleSubmit(data: BatchPricingPayload) {
-    const { message, error, isSuccess } = await createBatchRoutePricingFn({
-      data,
-    })
-
-    if (error) {
-      toast.error(error.message)
-    }
-
-    if (isSuccess) {
-      toast.success(message)
-    }
+    await createRoutePricing(data)
   }
 
   return (

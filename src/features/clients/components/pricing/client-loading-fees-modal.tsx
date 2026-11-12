@@ -5,7 +5,7 @@ import {
   useCreateClientLoadingFees,
 } from "@/features/clients/hooks/use-client-loading-fees"
 import { EntityId } from "@/schemas"
-import { Activity, useEffect, useState } from "react"
+import { Activity, useState } from "react"
 import { FieldLabel } from "@/components/ui/field"
 import {
   Select,
@@ -18,7 +18,6 @@ import { ActionIcon } from "@/components/icons"
 import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-offloading-pricing-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ClientPricingSearchParam } from "@/features/clients/schemas"
 import { useClientPricingDates } from "@/features/clients/hooks/use-client"
 import { useActivateClientLoadingPricing } from "@/features/clients/hooks/use-client-pricings"
 
@@ -28,25 +27,27 @@ type ClientPricingProps = {
 
 export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
   const [view, setView] = useState<"list" | "edit">("list")
-  const [search, setSearch] = useState<ClientPricingSearchParam>({ clientId })
-
-  const { data } = useClientLoadingOffloadingFees({ ...search })
-  const { createClientLoadingFees, isPending } = useCreateClientLoadingFees()
-
-  async function handleSubmit(values: LoadingOffloadingPricingRequest) {
-    createClientLoadingFees({ ...values, client_id: clientId })
-  }
+  const [selectedDate, setSelectedDate] = useState<string>()
 
   const { data: pricingConfig } = useClientPricingDates(clientId)
+  // Fall back to the active date so the tab opens on the current pricing
+  const referenceDate = selectedDate ?? pricingConfig?.loading.active_date
+  const isActive =
+    !!referenceDate && pricingConfig?.loading.active_date === referenceDate
 
-  useEffect(() => {
-    setSearch({
-      ...search,
-      referenceDate: pricingConfig?.loading.active_date,
-    })
-  }, [pricingConfig])
+  const { data } = useClientLoadingOffloadingFees({ clientId, referenceDate })
+  const { createClientLoadingFees, isPending: isCreating } =
+    useCreateClientLoadingFees()
+  const { activatePricing, isPending } = useActivateClientLoadingPricing()
 
-  const { activatePricing } = useActivateClientLoadingPricing()
+  async function handleSubmit(values: LoadingOffloadingPricingRequest) {
+    try {
+      await createClientLoadingFees({ ...values, client_id: clientId })
+      setView("list")
+    } catch {
+      // Error toast is shown by the mutation hook
+    }
+  }
 
   return (
     <>
@@ -55,16 +56,9 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
           <div className="grid grid-flow-col items-baseline-last gap-1.5">
             <div className="space-y-2">
               <FieldLabel htmlFor="date">
-                Select pricing date{" "}
-                {search.referenceDate &&pricingConfig?.loading.active_date ===
-                  search.referenceDate && <Badge>Current</Badge>}
+                Select pricing date {isActive && <Badge>Current</Badge>}
               </FieldLabel>
-              <Select
-                value={search.referenceDate}
-                onValueChange={(date) => {
-                  setSearch({ ...search, referenceDate: date })
-                }}
-              >
+              <Select value={referenceDate} onValueChange={setSelectedDate}>
                 <SelectTrigger className="min-w-48" id="date">
                   <SelectValue />
                 </SelectTrigger>
@@ -77,18 +71,13 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
                 </SelectContent>
               </Select>
             </div>
-            {pricingConfig?.loading.active_date !== search.referenceDate && (
+            {referenceDate && !isActive && (
               <Button
                 type="button"
                 disabled={isPending}
-                onClick={() => {
-                  if (search?.referenceDate) {
-                    activatePricing({
-                      clientId,
-                      effectiveDate: search?.referenceDate,
-                    })
-                  }
-                }}
+                onClick={() =>
+                  activatePricing({ clientId, effectiveDate: referenceDate })
+                }
               >
                 Set Active
               </Button>
@@ -113,7 +102,7 @@ export function ClientLoadingFeesModal({ clientId }: ClientPricingProps) {
       </Activity>
       <Activity mode={view == "edit" ? "visible" : "hidden"}>
         <LoadingOffloadingPricingForm
-          isSubmitting={isPending}
+          isSubmitting={isCreating}
           onSubmit={handleSubmit}
           onCancel={() => setView("list")}
         />

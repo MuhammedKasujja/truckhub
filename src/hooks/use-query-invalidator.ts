@@ -359,12 +359,6 @@ export class QueryInvalidator {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.clients.detail(id),
         }),
-      routePricing: {
-        invalidate: (clientId: EntityId) =>
-          this.queryClient.invalidateQueries({
-            queryKey: queryKeys.clients.routePricing({ clientId }),
-          }),
-      },
     }),
   }
 

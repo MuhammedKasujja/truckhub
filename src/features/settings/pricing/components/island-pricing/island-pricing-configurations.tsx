@@ -12,7 +12,7 @@ import {
 import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
 import { createCompanyIslandPricingQueryOptions } from "../../query-options"
 import { useQuery } from "@tanstack/react-query"
-import { Activity, useEffect, useState } from "react"
+import { Activity, useState } from "react"
 import {
   Select,
   SelectContent,
@@ -37,21 +37,20 @@ export function CompanyIslandsPricingConfigurationDialog() {
   const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
+  // Fall back to the active date so the sheet opens on the current pricing
+  const referenceDate = search.referenceDate ?? data?.island.active_date
+
   const { data: companyPricings } = useQuery(
-    createCompanyIslandPricingQueryOptions(search)
+    createCompanyIslandPricingQueryOptions({ referenceDate })
   )
 
-  useEffect(() => {
-    if (companyPricings) {
-      setSearch((pre) => ({
-        ...pre,
-        referenceDate: companyPricings.validFromDate,
-      }))
-    }
-  }, [companyPricings])
-
   async function handleSubmit(data: IslandsListPricingRequest) {
-    createIslandPricing(data)
+    try {
+      await createIslandPricing(data)
+      setView("list")
+    } catch {
+      // Error toast is shown by the mutation hook
+    }
   }
 
   return (
@@ -75,12 +74,13 @@ export function CompanyIslandsPricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.island.active_date === search.referenceDate && (
-                        <Badge>Current</Badge>
-                      )}
+                      {referenceDate &&
+                        data?.island.active_date === referenceDate && (
+                          <Badge>Current</Badge>
+                        )}
                     </FieldLabel>
                     <Select
-                      value={search.referenceDate}
+                      value={referenceDate}
                       onValueChange={(date) => {
                         setSearch({ ...search, referenceDate: date })
                       }}
@@ -98,16 +98,15 @@ export function CompanyIslandsPricingConfigurationDialog() {
                     </Select>
                   </div>
                   <Can permission="config:pricing:activate">
-                    {search.referenceDate &&
-                      data?.island.active_date !== search.referenceDate && (
+                    {referenceDate &&
+                      data?.island.active_date !== referenceDate && (
                         <Button
                           type="button"
                           disabled={isPending}
                           onClick={() => {
-                            if (search?.referenceDate)
-                              activateIslandPricing({
-                                effectiveDate: search?.referenceDate,
-                              })
+                            activateIslandPricing({
+                              effectiveDate: referenceDate,
+                            })
                           }}
                         >
                           Set Active

@@ -37,11 +37,13 @@ export function CompanyDistancePricingConfigurationDialog() {
   const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
-  const { data: companyPricings } = useQuery(
-    distancePricingQueryOptions(search)
-  )
+  // Fall back to the active date so the sheet opens on the current pricing
+  const referenceDate =
+    search.referenceDate ?? data?.distance_tonnage.active_date
 
-  const referenceDate = search?.referenceDate ?? companyPricings?.effective_date
+  const { data: companyPricings } = useQuery(
+    distancePricingQueryOptions({ referenceDate })
+  )
 
   return (
     <Sheet>
@@ -67,9 +69,9 @@ export function CompanyDistancePricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.distance_tonnage.active_date === referenceDate && (
-                        <Badge>Current</Badge>
-                      )}
+                      {referenceDate &&
+                        data?.distance_tonnage.active_date ===
+                          referenceDate && <Badge>Current</Badge>}
                     </FieldLabel>
                     <Select
                       value={referenceDate}
@@ -96,10 +98,9 @@ export function CompanyDistancePricingConfigurationDialog() {
                           type="button"
                           disabled={isPending}
                           onClick={() => {
-                            if (search?.referenceDate)
-                              activateDistancePricing({
-                                effectiveDate: search?.referenceDate,
-                              })
+                            activateDistancePricing({
+                              effectiveDate: referenceDate,
+                            })
                           }}
                         >
                           Set Active
@@ -129,10 +130,15 @@ export function CompanyDistancePricingConfigurationDialog() {
                 initialDate={new Date()}
                 onCancel={() => setView("list")}
                 onSave={async (pricings, _, effectiveDate) => {
-                  await createDistanceTonnage({
-                    pricings,
-                    effectiveDate: effectiveDate,
-                  })
+                  try {
+                    await createDistanceTonnage({
+                      pricings,
+                      effectiveDate: effectiveDate,
+                    })
+                    setView("list")
+                  } catch {
+                    // Error toast is shown by the mutation hook
+                  }
                 }}
               />
             </Activity>

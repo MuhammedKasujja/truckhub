@@ -30,19 +30,19 @@ import {
 import { EntityIdSchema } from "@/schemas"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
-export const updateBatchRouteTonnagePricingFn = createServerFn()
+export const updateBatchRouteTonnagePricingFn = createServerFn({ method: "POST" })
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
     return updateBatchRouteTonnagePricing(data)
   })
 
-export const createBatchRoutePricingFn = createServerFn()
+export const createBatchRoutePricingFn = createServerFn({ method: "POST" })
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
-    return createBatchRouteTonnagePricing(data)
+    return apiResponseTransform(createBatchRouteTonnagePricing(data))
   })
 
-export const createBatchDistancePricingFn = createServerFn()
+export const createBatchDistancePricingFn = createServerFn({ method: "POST" })
   .inputValidator(ListDistancePricingSchema)
   .handler(async ({ data }) => {
     return await apiResponseTransform(createBatchDistancePricing(data))
@@ -75,10 +75,10 @@ export const getActiveRouteTonnagePricingFn = createServerFn().handler(
   }
 )
 
-export const createBatchLoadingPricingFn = createServerFn()
+export const createBatchLoadingPricingFn = createServerFn({ method: "POST" })
   .inputValidator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
-    return createBatchLoadingPricing(data)
+    return apiResponseTransform(createBatchLoadingPricing(data))
   })
 
 export const getLoadingOffloadingFreesFn = createServerFn()
@@ -93,7 +93,7 @@ export const getActiveLoadingOffloadingFreesFn = createServerFn()
     return apiResponseTransform(getActiveLoadingOffloadingFrees(data))
   })
 
-export const createBatchIslandPricingsFn = createServerFn()
+export const createBatchIslandPricingsFn = createServerFn({ method: "POST" })
   .inputValidator(IslandsListPricingSchema)
   .handler(async ({ data }) => {
     const pricings = data.pricings.map((p) => ({
@@ -139,6 +139,6 @@ export const getClientPricingDatesFn = createServerFn()
     return response.data
   })
 
-export const activateCompanyPricingFn = createServerFn()
+export const activateCompanyPricingFn = createServerFn({ method: "POST" })
   .inputValidator(ActivatePricingSchema)
   .handler(({ data }) => apiResponseTransform(activateCompanyPricing(data)))

@@ -121,10 +121,10 @@ export const getClientInvoicesFn = createServerFn()
     return getClientInvoices(data.id)
   })
 
-export const createClientBatchRoutePricingFn = createServerFn()
+export const createClientBatchRoutePricingFn = createServerFn({ method: "POST" })
   .inputValidator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
-    return createClientBatchRoutePricing(data)
+    return apiResponseTransform(createClientBatchRoutePricing(data))
   })
 
 export const getClientRoutePricingFn = createServerFn()
@@ -155,7 +155,7 @@ export const getClientActiveLoadingOffloadingFreesFn = createServerFn()
     return getClientActiveLoadingOffloadingFrees(data.id)
   })
 
-export const createClientLoadingOffloadingPricingFn = createServerFn()
+export const createClientLoadingOffloadingPricingFn = createServerFn({ method: "POST" })
   .inputValidator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createClientLoadingOffloadingPricing(data))
@@ -180,6 +180,6 @@ export const createClientServiceFn = createServerFn({ method: "POST" })
     return apiResponseTransform(createClientService(data))
   })
 
-export const activateClientPricingFn = createServerFn()
+export const activateClientPricingFn = createServerFn({ method: "POST" })
   .inputValidator(ActivateClientPricingSchema)
   .handler(({ data }) => apiResponseTransform(activateClientPricing(data)))

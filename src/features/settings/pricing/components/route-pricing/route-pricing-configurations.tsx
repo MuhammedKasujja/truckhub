@@ -1,6 +1,5 @@
-import { toast } from "sonner"
 import { BatchPricingPayload, PricingSearchParams } from "../../schemas"
-import { createBatchRoutePricingFn } from "../../services"
+import { useCreateCompanyRoutePricing } from "../../hooks/use-company-routes-pricings"
 import { RoutePricingDataGridForm } from "./pricing-grid-form"
 import { Button } from "@/components/ui/button"
 import { CreditCardIcon } from "lucide-react"
@@ -33,26 +32,20 @@ import { Can } from "@/components/has-permission"
 export function CompanyRoutePricingConfigurationDialog() {
   const { data } = useCompanyPricingDates()
   const { activateRoutePricing, isPending } = useActivateRoutePricing()
-  const [search, setSearch] = useState<PricingSearchParams>()
+  const { createRoutePricing } = useCreateCompanyRoutePricing()
+  const [search, setSearch] = useState<PricingSearchParams>({})
   const [view, setView] = useState<"list" | "edit">("list")
 
+  // Fall back to the active date so the sheet opens on the current pricing
+  const referenceDate = search.referenceDate ?? data?.route_tonnage.active_date
+
   const { data: companyPricings } = useQuery(
-    companyRoutePricingQueryOptions(search)
+    companyRoutePricingQueryOptions({ referenceDate })
   )
-  const referenceDate = companyPricings?.effective_date
 
-  async function handleSubmit(data: BatchPricingPayload) {
-    const { message, error, isSuccess } = await createBatchRoutePricingFn({
-      data,
-    })
-
-    if (error) {
-      toast.error(error.message)
-    }
-
-    if (isSuccess) {
-      toast.success(message)
-    }
+  async function handleSubmit(values: BatchPricingPayload) {
+    await createRoutePricing(values)
+    setView("list")
   }
 
   return (
@@ -79,7 +72,8 @@ export function CompanyRoutePricingConfigurationDialog() {
                   <div className="space-y-2">
                     <FieldLabel htmlFor="date">
                       Select pricing date{" "}
-                      {data?.route_tonnage.active_date === referenceDate && (
+                      {referenceDate &&
+                        data?.route_tonnage.active_date === referenceDate && (
                         <Badge>Current</Badge>
                       )}
                     </FieldLabel>
@@ -108,10 +102,9 @@ export function CompanyRoutePricingConfigurationDialog() {
                           type="button"
                           disabled={isPending}
                           onClick={() => {
-                            if (search?.referenceDate)
-                              activateRoutePricing({
-                                effectiveDate: search?.referenceDate,
-                              })
+                            activateRoutePricing({
+                              effectiveDate: referenceDate,
+                            })
                           }}
                         >
                           Set Active
@@ -129,6 +122,7 @@ export function CompanyRoutePricingConfigurationDialog() {
                 </Button>
               </div>
               <RouteTonnagePricingGrid
+                key={companyPricings?.effective_date}
                 routes={companyPricings?.routes ?? []}
                 effectiveDate={
                   companyPricings?.effective_date ?? new Date().toDateString()
