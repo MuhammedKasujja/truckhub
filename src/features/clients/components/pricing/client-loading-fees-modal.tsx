@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ActionIcon } from "@/components/icons"
-import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components/loading-offloading-pricing/loading-offloading-pricing-table"
+import { LoadingOffloadingPricingTable } from "@/features/settings/pricing/components"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useClientPricingDates } from "@/features/clients/hooks/use-client"

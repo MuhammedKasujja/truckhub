@@ -1,5 +1,6 @@
 export * from "./route-pricing/pricing-grid-form"
 export * from "./loading-offloading-pricing/loading-offloading-pricing-form"
+export * from "./loading-offloading-pricing/loading-offloading-pricing-table"
 export * from "./island-pricing/edit-islands-pricing-form"
 export * from "./route-pricing/route-tonnage-pricing"
 export * from "./route-pricing/edit-company-route-pricing-dialog"
