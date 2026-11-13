@@ -41,7 +41,7 @@ export const PaymentSearchParamsCache = z.object({
   sort: getSortingStateSchema<Payment>().default([
     { id: "created_at", desc: true },
   ]),
-  date: z.number().optional().nullable(),
+  date: z.array(z.number().nullable()).max(2).optional().nullable(),
   // advanced filter
   filters: getFiltersStateSchema().optional(),
   ...DefaultSearchParamsSchema.shape,
