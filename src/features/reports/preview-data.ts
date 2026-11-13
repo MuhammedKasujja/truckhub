@@ -1,3 +1,4 @@
+import type { ResolvedReportPeriod } from "./schemas"
 /**
  * DEV-ONLY sample data for previewing report layouts before the backend ships
  * `GET /v1/reports/{entity}`.
@@ -6,17 +7,16 @@
  * Real API values always win; preview data only fills top-level fields that are missing.
  */
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns"
-import type { ResolvedReportPeriod } from "./schemas"
 import type {
+  ReportEntity,
+  ReportMetric,
   InvoiceReport,
   PaymentReport,
   PricingReport,
+  ShipmentReport,
   QuotationReport,
   ReportClientRef,
-  ReportEntity,
-  ReportMetric,
   ReportResponseMap,
-  ShipmentReport,
 } from "./types"
 
 export const isReportPreviewEnabled = (flag: boolean | undefined) =>
@@ -95,7 +95,7 @@ const categories = [
 ]
 
 const drivers = [
-  "Okello James",
+  "Kasujja James",
   "Nakato Grace",
   "Mugisha Brian",
   "Achieng Ruth",

@@ -49,7 +49,7 @@ import type {
   DriverFormValues,
 } from "../schemas"
 import { Button } from "@/components/ui/button"
-import { AvatarField } from "@/components/ui/form-fields"
+import { AvatarField, DatePickerField } from "@/components/ui/form-fields"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Field,
@@ -1544,7 +1544,7 @@ export function DriverRegistrationForm({
                 control={control}
                 name="fullName"
                 label="Full name"
-                placeholder="e.g. John Okello"
+                placeholder="e.g. Kato John"
                 autoComplete="name"
                 className="sm:col-span-2"
               />
@@ -1572,11 +1572,13 @@ export function DriverRegistrationForm({
                 className="[&_input]:uppercase"
               />
               <div className="relative">
-                <TextField
+                <DatePickerField
+                  startDate={new Date(1970)}
                   control={control}
                   name="dateOfBirth"
                   label="Date of birth"
-                  type="date"
+                  required={false}
+                  format="dd/MM/yyyy"
                 />
                 <span className="absolute top-0 right-0">
                   <AgeBadge
@@ -1645,18 +1647,21 @@ export function DriverRegistrationForm({
               )
             }
           >
-            <div className="grid gap-4 sm:grid-cols-2 mb-3">
+            <div className="mb-3 grid gap-4 sm:grid-cols-2">
               <TextField
                 control={control}
                 name="licenseNumber"
                 label="Licence number"
                 className="[&_input]:font-mono [&_input]:uppercase"
               />
-              <TextField
+              <DatePickerField
+                startDate={new Date(2000, 0)}
+                endDate={new Date(2030, 11)}
                 control={control}
                 name="licenseExpiry"
                 label="Expiry date"
-                type="date"
+                required={false}
+                format="dd/MM/yyyy"
               />
               <div className="sm:col-span-2">
                 <LicenceCategoriesField
@@ -1665,16 +1670,16 @@ export function DriverRegistrationForm({
                 />
               </div>
             </div>
-             <FileField
-                control={control}
-                name="licenseCopy"
-                label="Licence photocopy"
-                description={
-                  isEdit
-                    ? "Upload only to replace the copy on file."
-                    : "Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
-                }
-              />
+            <FileField
+              control={control}
+              name="licenseCopy"
+              label="Licence photocopy"
+              description={
+                isEdit
+                  ? "Upload only to replace the copy on file."
+                  : "Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
+              }
+            />
           </FormSection>
 
           <FormSection

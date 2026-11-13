@@ -41,7 +41,7 @@ function RouteComponent() {
     <SettingsPage>
       <SettingsPageHeader
         icon={UserIcon}
-        title="Your profile"
+        title="User profile"
         description="Your account details and sign-in security."
       />
 

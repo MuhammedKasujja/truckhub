@@ -27,6 +27,7 @@ type DatePickerFieldProps<F extends FieldValues> = {
   required?: boolean
   startDate?: Date
   endDate?: Date
+  format?: "dd/MM/yyyy" | "PPP"
 }
 
 export function DatePickerField<T extends FieldValues>({
@@ -38,12 +39,13 @@ export function DatePickerField<T extends FieldValues>({
   description,
   startDate,
   endDate,
+  format = "PPP",
 }: Readonly<DatePickerFieldProps<T>>) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const newStartDate = React.useMemo(() => {
     if (startDate) return startDate
-
+    console.log("Not applicable")
     const date = new Date()
     return new Date(date.getFullYear(), date.getMonth(), date.getDate())
   }, [startDate])
@@ -71,7 +73,7 @@ export function DatePickerField<T extends FieldValues>({
                 )}
               >
                 {field.value ? (
-                  `${formatFn(field.value, "PPP")}`
+                  `${formatFn(field.value, format)}`
                 ) : (
                   <span>{placeholder}</span>
                 )}

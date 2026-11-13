@@ -1,22 +1,22 @@
 import { useMemo } from "react"
 import {
   Bell,
-  Building2,
-  FileText,
-  Landmark,
-  ListOrdered,
-  SlidersHorizontal,
-  SquareSigma,
   Truck,
-  UserIcon,
   Users,
   Wallet,
+  FileText,
+  Landmark,
+  UserIcon,
+  Building2,
+  ListOrdered,
+  SquareSigma,
+  SlidersHorizontal,
 } from "lucide-react"
-import { IconRouteSquare, IconSandbox } from "@tabler/icons-react"
 import { useLocation } from "@tanstack/react-router"
 import type { FileRouteTypes } from "@/routeTree.gen"
-import type { UserPermission } from "@/features/auth/permissions"
 import { useAuth } from "@/components/providers/auth-context"
+import type { UserPermission } from "@/features/auth/permissions"
+import { IconRouteSquare, IconSandbox } from "@tabler/icons-react"
 
 type IconType = React.ComponentType<{ className?: string }>
 
@@ -138,10 +138,10 @@ export const settingsNav: SettingsNavGroup[] = [
     ],
   },
   {
-    label: "You",
+    label: "Profile",
     items: [
       {
-        label: "Your profile",
+        label: "User profile",
         icon: UserIcon,
         to: "/settings/user-profile",
         base: "/settings/user-profile",

@@ -1,3 +1,7 @@
+import type { ResolvedDashboardPeriod } from "./schemas"
+import type { Shipment } from "@/features/shipments/types"
+import type { DashboardKpi, DashboardStatistics } from "./types"
+import type { MaintenanceRecord } from "@/features/maintanence/types"
 /**
  * DEV-ONLY sample data for previewing the dashboard layout before the
  * backend ships the period-aware statistics fields.
@@ -6,10 +10,6 @@
  * Real API values always win; preview data only fills fields that are missing.
  */
 import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns"
-import type { ResolvedDashboardPeriod } from "./schemas"
-import type { DashboardKpi, DashboardStatistics } from "./types"
-import type { Shipment } from "@/features/shipments/types"
-import type { MaintenanceRecord } from "@/features/maintanence/types"
 
 export const isDashboardPreviewEnabled = (flag: boolean | undefined) =>
   import.meta.env.DEV && flag === true
@@ -53,7 +53,7 @@ const plates = [
   "UAZ 330T",
 ]
 const drivers = [
-  "Okello James",
+  "Kasujja James",
   "Nakato Grace",
   "Mugisha Brian",
   "Achieng Ruth",
