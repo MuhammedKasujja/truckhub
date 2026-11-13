@@ -27,7 +27,7 @@ function VehicleConfigurationsLayout() {
         tabs={[
           { label: tr("settings.carMakes"), icon: CarFront, to: "/settings/vehicle-config/car-brands" },
           { label: tr("settings.carModels"), icon: Car, to: "/settings/vehicle-config/car-models" },
-          { label: tr("settings.driveTrains"), icon: Cog, to: "/settings/vehicle-config/drive-trains" },
+          // { label: tr("settings.driveTrains"), icon: Cog, to: "/settings/vehicle-config/drive-trains" },
           { label: tr("settings.vehicleCategories"), icon: Layers, to: "/settings/vehicle-config/vehicle-types" },
           // Tonnages: /settings/vehicle-config/tonnages (hidden for now)
         ]}

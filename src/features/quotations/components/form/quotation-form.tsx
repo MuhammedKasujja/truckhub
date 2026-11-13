@@ -453,11 +453,13 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   label={"Start date"}
                   name={"start_date"}
                   control={control}
+                  format="dd/MM/yyyy"
                 />
                 <DatePickerField
                   label={"End date"}
                   name={"end_date"}
                   control={control}
+                  format="dd/MM/yyyy"
                 />
               </div>
               <UserPickerField
