@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { maintanenceStatuses } from "../enums"
 import { useMoveMaintenanceRecord } from "../hooks/use-maintenance"
@@ -52,9 +52,13 @@ export function MaintenanceBoard({
   const toColumns = () =>
     Object.fromEntries(statuses.map((s) => [s, records[s] ?? []]))
   const [columns, setColumns] = useState<RecordColumns>(toColumns)
-  useEffect(() => {
+  // Resync during render (not in an effect) so the Kanban value always has a
+  // key for every rendered column — e.g. "cancelled" right after it's toggled on.
+  const [source, setSource] = useState({ records, statuses })
+  if (source.records !== records || source.statuses !== statuses) {
+    setSource({ records, statuses })
     setColumns(toColumns())
-  }, [records, statuses])
+  }
 
   const [selectedId, setSelectedId] = useState<MaintenanceRecord["id"]>()
   const [snapshot, setSnapshot] = useState<MaintenanceRecord>()
