@@ -5,7 +5,7 @@ import type {
   DashboardSearchParamsInput,
   ResolvedDashboardPeriod,
 } from "../schemas"
-import type { DateRange } from "react-day-picker"
+import type { DateRange } from "@daypicker/react"
 import { CalendarDatePicker } from "@/components/calendar-date-picker"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 

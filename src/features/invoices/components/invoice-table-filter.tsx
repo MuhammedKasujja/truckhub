@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select"
 import { useState } from "react"
 import { useInvoiceStatistics } from "../hooks/use-invoice-statistics"
-import { DateRange } from "react-day-picker"
+import { DateRange } from "@daypicker/react"
 
 const DATE_FILTERS = [
   { value: "today", label: "Today" },
