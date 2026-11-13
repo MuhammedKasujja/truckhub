@@ -4,12 +4,12 @@
  */
 
 export const VEHICLE_TYPES = [
-  "motorcycle",
+  // "motorcycle",
   "car",
   "pickup_van",
   "minibus",
   "truck",
-  "bus",
+  // "bus",
 ] as const
 
 export const EDUCATION_LEVELS = [
@@ -29,12 +29,12 @@ export type TestStatus = (typeof TEST_STATUSES)[number]
 
 const LABELS = {
   vehicleType: {
-    motorcycle: "Motorcycle",
+    // motorcycle: "Motorcycle",
     car: "Car",
     pickup_van: "Pickup / Van",
     minibus: "Minibus",
     truck: "Truck",
-    bus: "Bus",
+    // bus: "Bus",
   },
   education: {
     primary: "Primary",

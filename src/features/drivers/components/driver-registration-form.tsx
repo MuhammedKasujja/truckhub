@@ -702,12 +702,12 @@ function HealthQuestion({
 }
 
 export const VEHICLE_ICONS: Record<VehicleType, IconType> = {
-  motorcycle: Bike,
+  // motorcycle: Bike,
   car: Car,
   pickup_van: Van,
   minibus: BusFront,
   truck: Truck,
-  bus: Bus,
+  // bus: Bus,
 }
 
 const emptyVehicle = {
