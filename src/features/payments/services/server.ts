@@ -1,3 +1,4 @@
+import { format } from "date-fns"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
 import { generateApiSearchParams } from "@/lib/search-params"
@@ -8,8 +9,20 @@ import {
   PaymentListSearchParams,
 } from "@/features/payments/schemas"
 
+const API_DATE_FORMAT = "yyyy-MM-dd"
+
+// The URL keeps the paid date range as ms timestamps (dateRange filter);
+// the API expects calendar dates. Local time keeps the picked day intact.
+const toApiDate = (ms?: number | null) =>
+  ms != null ? format(ms, API_DATE_FORMAT) : undefined
+
 export async function getPayments(input: PaymentListSearchParams) {
-  const params = generateApiSearchParams(input)
+  const { date, ...rest } = input
+  const params = generateApiSearchParams({
+    ...rest,
+    dateFrom: toApiDate(date?.[0]),
+    dateTo: toApiDate(date?.[1]),
+  })
   const response = await apiClient.getPaginatedFn<Payment[]>(
     `/v1/billing/payments?${params}`
   )

@@ -36,7 +36,7 @@ export type PaymentInput = z.infer<typeof paymentInputSchema>
 
 export const PaymentSearchParamsCache = z.object({
   status: z.array(z.enum(PaymentStatuses)).optional(),
-  payment_method: z.array(z.enum(PaymentModeList)).optional(),
+  method: z.array(z.enum(PaymentModeList)).optional(),
   // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
   sort: getSortingStateSchema<Payment>().default([
     { id: "created_at", desc: true },
