@@ -14,11 +14,19 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
     select: (state) => state.id === rootRouteId,
   })
 
-  console.error(error)
+  const isRealError = error instanceof Error
+  if (isRealError) {
+    console.error(error)
+  } else {
+    // Non-Error throwables (e.g. from beforeLoad) otherwise log as `{ routerCode }` only
+    console.error("Non-Error thrown:", safeStringify(error), error)
+  }
 
   return (
     <div className="min-w-0 flex-1 p-4 flex flex-col items-center justify-center gap-6">
-      <ErrorComponent error={error} />
+      <ErrorComponent
+        error={isRealError ? error : new Error("Something went wrong")}
+      />
       <div className="flex gap-2 items-center flex-wrap">
         <button
           onClick={() => {
@@ -50,4 +58,12 @@ export function DefaultCatchBoundary({ error }: ErrorComponentProps) {
       </div>
     </div>
   )
+}
+
+function safeStringify(value: unknown) {
+  try {
+    return JSON.stringify(value, Object.getOwnPropertyNames(value ?? {}))
+  } catch {
+    return String(value)
+  }
 }

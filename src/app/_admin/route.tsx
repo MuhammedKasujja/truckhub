@@ -1,4 +1,9 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router"
+import {
+  Outlet,
+  createFileRoute,
+  isRedirect,
+  redirect,
+} from "@tanstack/react-router"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/auth"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -17,13 +22,18 @@ export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   beforeLoad: async ({ location }) => {
-    const user = await getCurrentUser()
-    if (!user) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      })
+    const toLogin = () =>
+      redirect({ to: "/login", search: { redirect: location.href } })
+
+    let user: Awaited<ReturnType<typeof getCurrentUser>>
+    try {
+      user = await getCurrentUser()
+    } catch (error) {
+      if (isRedirect(error)) throw error
+      console.error("getCurrentUser failed", error)
+      throw toLogin()
     }
+    if (!user) throw toLogin()
     return { user }
   },
 })
