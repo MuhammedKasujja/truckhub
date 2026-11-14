@@ -128,13 +128,13 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           <SettingsSection icon={IdCard} title="Contact">
             <div className="grid gap-5">
               <DetailItem icon={MailIcon} label="Email">
-                <a href={`mailto:${user.email}`} className="hover:underline">
+                <a href={`mailto:${user.email}`} className="hover:underline" target="_blank">
                   {user.email}
                 </a>
               </DetailItem>
               <DetailItem icon={PhoneIcon} label="Phone">
                 {user.phone ? (
-                  <a href={`tel:${user.phone}`} className="hover:underline">
+                  <a href={`tel:${user.phone}`} className="hover:underline" target="_blank">
                     {user.phone}
                   </a>
                 ) : (

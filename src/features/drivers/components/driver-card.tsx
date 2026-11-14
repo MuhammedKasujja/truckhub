@@ -102,7 +102,7 @@ export function DriverCard({ driver }: { driver: DriverSummary }) {
       <dl className="flex flex-1 flex-col gap-2 border-t px-4 py-3 text-sm">
         <DetailRow icon={PhoneIcon} label="Phone">
           {driver.phone ? (
-            <a href={`tel:${driver.phone}`} className="hover:underline">
+            <a href={`tel:${driver.phone}`} className="hover:underline" target="_blank">
               {driver.phone}
             </a>
           ) : (
@@ -110,7 +110,7 @@ export function DriverCard({ driver }: { driver: DriverSummary }) {
           )}
         </DetailRow>
         <DetailRow icon={MailIcon} label="Email">
-          <a href={`mailto:${driver.email}`} className="hover:underline">
+          <a href={`mailto:${driver.email}`} className="hover:underline" target="_blank">
             {driver.email}
           </a>
         </DetailRow>

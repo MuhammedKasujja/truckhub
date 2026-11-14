@@ -152,6 +152,7 @@ export function getShipmentTableColumns({
               <a
                 href={`tel:${driver.phone.replace(/\s/g, "")}`}
                 className="block text-xs text-muted-foreground hover:text-foreground"
+                target="_blank"
               >
                 {driver.phone}
               </a>

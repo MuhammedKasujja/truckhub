@@ -489,6 +489,7 @@ function ContactLink({
     <a
       href={href}
       className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-background"
+      target="_blank"
     >
       <Icon className="size-4 shrink-0 text-muted-foreground" />
       <span className="truncate">{value}</span>

@@ -899,6 +899,7 @@ function InlineContact({
   return (
     <a
       href={href}
+      target="_blank"
       className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground hover:text-foreground"
     >
       <Icon className="size-3.5 shrink-0" />

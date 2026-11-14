@@ -869,7 +869,7 @@ function DriverSection({
           <div className="grid grid-cols-2 gap-2">
             {driver.phone && (
               <Button variant="outline" size="sm" asChild>
-                <a href={`tel:${driver.phone.replace(/\s/g, "")}`}>
+                <a href={`tel:${driver.phone.replace(/\s/g, "")}`} target="_blank">
                   <Phone className="size-3.5" />
                   Call
                 </a>
@@ -877,7 +877,7 @@ function DriverSection({
             )}
             {driver.email && (
               <Button variant="outline" size="sm" asChild>
-                <a href={`mailto:${driver.email}`}>
+                <a href={`mailto:${driver.email}`} target="_blank">
                   <Mail className="size-3.5" />
                   Email
                 </a>

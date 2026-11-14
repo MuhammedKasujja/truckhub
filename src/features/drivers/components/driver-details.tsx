@@ -362,7 +362,7 @@ export function DriverDetails({
               <InfoRow
                 label="Phone"
                 value={
-                  <a href={`tel:${driver.phone}`} className="hover:underline">
+                  <a href={`tel:${driver.phone}`} className="hover:underline" target="_blank">
                     {driver.phone}
                   </a>
                 }

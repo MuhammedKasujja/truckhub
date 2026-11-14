@@ -71,12 +71,17 @@ export function CompanyDetailsView({ company }: CompanyDetailsProps) {
           <DetailItem icon={PhoneIcon} label="Phone">
             {company.phone ? (
               <span className="flex flex-col">
-                <a href={`tel:${company.phone}`} className="hover:underline">
+                <a
+                  href={`tel:${company.phone}`}
+                  target="_blank"
+                  className="hover:underline"
+                >
                   {company.phone}
                 </a>
                 {company.phone_2 && (
                   <a
                     href={`tel:${company.phone_2}`}
+                    target="_blank"
                     className="font-normal text-muted-foreground hover:underline"
                   >
                     {company.phone_2}
@@ -90,12 +95,17 @@ export function CompanyDetailsView({ company }: CompanyDetailsProps) {
           <DetailItem icon={MailIcon} label="Email">
             {company.email ? (
               <span className="flex flex-col">
-                <a href={`mailto:${company.email}`} className="hover:underline">
+                <a
+                  href={`mailto:${company.email}`}
+                  target="_blank"
+                  className="hover:underline"
+                >
                   {company.email}
                 </a>
                 {company.email_2 && (
                   <a
                     href={`mailto:${company.email_2}`}
+                    target="_blank"
                     className="font-normal text-muted-foreground hover:underline"
                   >
                     {company.email_2}
