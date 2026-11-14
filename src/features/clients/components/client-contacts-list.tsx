@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useEffect, useState } from "react"
 import { EntityId } from "@/schemas"
 import { useTranslation } from "@/i18n"
+import { cn } from "@/lib/utils"
 // import { PlusIcon } from "lucide-react"
 
 // Stable reference, so the effect below doesn't rerun on every render
@@ -57,7 +58,15 @@ export function ClientContactsList({
   return (
     <>
       {contacts.map((contact) => (
-        <Item key={contact.id}>
+        <Item
+          key={contact.id}
+          variant={onSelected ? "outline" : "default"}
+          data-selected={selected.has(contact.id)}
+          className={cn(
+            onSelected &&
+              "bg-card data-[selected=true]:border-primary data-[selected=true]:bg-primary/5"
+          )}
+        >
           <ItemContent>
             <ItemTitle>
               {contact.name}
@@ -67,9 +76,7 @@ export function ClientContactsList({
             </ItemTitle>
             <ItemDescription>
               <span className="block">{contact.phone}</span>
-              {contact.email && (
-                <span className="block">{contact.email}</span>
-              )}
+              {contact.email && <span className="block">{contact.email}</span>}
             </ItemDescription>
           </ItemContent>
           <ItemActions>

@@ -83,7 +83,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     ),
     defaultValues: initialData ?? {
       client_id: search.clientId,
-      contacts: [],
+      contact_ids: [],
       line_items: [],
       tax_rates: [],
     },
@@ -100,7 +100,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
   const taxRates = form.watch("tax_rates")
 
-  const selectedContactIds = form.watch("contacts")
+  const selectedContactIds = form.watch("contact_ids")
 
   // A client picked from the list may not include contacts, so load the profile
   const clientProfile = useQuery({
@@ -126,7 +126,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     // picker also fires onChange when it preloads that client.
     if (clientId === initialData?.client_id) return
     setValue(
-      "contacts",
+      "contact_ids",
       clientContacts.filter((c) => c.is_primary).map((c) => c.id),
       { shouldDirty: true }
     )
@@ -279,12 +279,12 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
                   Send to · {selectedContactIds.length} of{" "}
                   {clientContacts.length}
                 </p>
-                <div className="grid gap-2 md:grid-cols-2 [&>[data-slot=item]]:rounded-lg [&>[data-slot=item]]:border [&>[data-slot=item]]:bg-card">
+                <div className="grid gap-2 md:grid-cols-2">
                   <ClientContactsList
                     contacts={clientContacts}
                     selectedIds={selectedContactIds}
                     onSelected={(contactIds) =>
-                      setValue("contacts", contactIds, { shouldDirty: true })
+                      setValue("contact_ids", contactIds, { shouldDirty: true })
                     }
                   />
                 </div>
