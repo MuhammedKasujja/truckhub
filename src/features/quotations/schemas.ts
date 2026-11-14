@@ -100,7 +100,7 @@ const createLineItemSchema = z.discriminatedUnion("source", [
 
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
-  contact_ids: z.array(IDSchema),
+  contact_id: IDSchema.nullable().optional(),
   assigned_user_id: IDSchema.optional().nullable(),
   expiry_date: z.string("Date is required").optional().nullable(),
   start_date: z.string("Date is required"),

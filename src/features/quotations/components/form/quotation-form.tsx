@@ -4,7 +4,6 @@ import {
   TextField,
   TextareaField,
   DatePickerField,
-  MoneyField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -26,7 +25,6 @@ import {
   ClientContactsList,
 } from "@/features/clients/components"
 import { useSearch } from "@tanstack/react-router"
-import { TaxRatePicker } from "@/features/settings/tax-rates/components"
 import { Client } from "@/features/clients/types"
 import { clientProfileQueryOptions } from "@/features/clients/query-options"
 import { EntityId } from "@/schemas"
@@ -46,7 +44,6 @@ import {
 } from "../../schemas"
 import { RoutePricingSelectDialog } from "./route-pricing-select-dialog"
 import { ServicesDialog } from "./services-dialog"
-import { TaxRate } from "@/features/settings/tax-rates/types"
 import { formatMoney, generateAvatorFallback } from "@/lib/format"
 import { DistancePricingSelectDialog } from "./distance-pricing-select-dialog"
 import Decimal from "@/lib/decimal-config"
@@ -83,7 +80,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     ),
     defaultValues: initialData ?? {
       client_id: search.clientId,
-      contact_ids: [],
+      contact_id: null,
       line_items: [],
       tax_rates: [],
     },
@@ -100,7 +97,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
 
   const taxRates = form.watch("tax_rates")
 
-  const selectedContactIds = form.watch("contact_ids")
+  const selectedContactId = form.watch("contact_id")
 
   // A client picked from the list may not include contacts, so load the profile
   const clientProfile = useQuery({
@@ -122,12 +119,12 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     }
     if (isClientProfileLoading || defaultedClientId.current === clientId) return
     defaultedClientId.current = clientId
-    // Editing the saved client keeps the contacts saved on the quotation. The
+    // Editing the saved client keeps the contact saved on the quotation. The
     // picker also fires onChange when it preloads that client.
     if (clientId === initialData?.client_id) return
     setValue(
-      "contact_ids",
-      clientContacts.filter((c) => c.is_primary).map((c) => c.id),
+      "contact_id",
+      clientContacts.find((c) => c.is_primary)?.id ?? null,
       { shouldDirty: true }
     )
   }, [selectedClient?.id, isClientProfileLoading])
@@ -276,15 +273,19 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
             {clientContacts.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                  Send to · {selectedContactIds.length} of{" "}
-                  {clientContacts.length}
+                  Send to
                 </p>
                 <div className="grid gap-2 md:grid-cols-2">
                   <ClientContactsList
                     contacts={clientContacts}
-                    selectedIds={selectedContactIds}
+                    selectedIds={selectedContactId ? [selectedContactId] : []}
                     onSelected={(contactIds) =>
-                      setValue("contact_ids", contactIds, { shouldDirty: true })
+                      setValue(
+                        "contact_id",
+                        contactIds.find((id) => id !== selectedContactId) ??
+                          null,
+                        { shouldDirty: true }
+                      )
                     }
                   />
                 </div>
