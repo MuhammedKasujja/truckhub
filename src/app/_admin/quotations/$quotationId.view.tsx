@@ -7,8 +7,11 @@ import {
   CalendarRange,
   FileText,
   ListOrdered,
+  Mail,
   Minus,
+  Phone,
   StickyNote,
+  UserRound,
 } from "lucide-react"
 import type { QuotationVersion } from "@/features/quotations/types"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
@@ -96,6 +99,36 @@ function RouteComponent() {
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     Issued {formatDate(quotation.created_at)}
                   </p>
+                  {quotation.contact && (
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                      <span className="inline-flex min-w-0 items-center gap-1.5 font-medium capitalize">
+                        <UserRound className="size-3.5 shrink-0 text-muted-foreground" />
+                        <span className="truncate">
+                          {quotation.contact.name}
+                        </span>
+                      </span>
+                      {quotation.contact.phone && (
+                        <a
+                          href={`tel:${quotation.contact.phone.replace(/\s/g, "")}`}
+                          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground hover:underline"
+                        >
+                          <Phone className="size-3.5 shrink-0" />
+                          {quotation.contact.phone}
+                        </a>
+                      )}
+                      {quotation.contact.email && (
+                        <a
+                          href={`mailto:${quotation.contact.email}`}
+                          className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground hover:text-foreground hover:underline"
+                        >
+                          <Mail className="size-3.5 shrink-0" />
+                          <span className="truncate">
+                            {quotation.contact.email}
+                          </span>
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <span className="rounded-full border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                   {isActive(v) ? "Active version" : "Earlier version"}

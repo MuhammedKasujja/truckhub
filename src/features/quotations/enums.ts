@@ -4,6 +4,7 @@ export const QuotationStatuses = [
   "accepted",
   "rejected",
   "invoiced",
+  "revised",
   "expired",
 ] as const
 

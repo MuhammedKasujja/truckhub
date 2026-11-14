@@ -12,6 +12,7 @@ export const QUOTATION_STATUS_META: Record<
   accepted: { label: "Accepted", tone: "success" },
   rejected: { label: "Rejected", tone: "error" },
   invoiced: { label: "Invoiced", tone: "success" },
+  revised: { label: "Revised", tone: "success" },
   expired: { label: "Expired", tone: "warning" },
 }
 
