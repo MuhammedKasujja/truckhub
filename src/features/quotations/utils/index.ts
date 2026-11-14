@@ -91,7 +91,7 @@ export function getEditableQuotation(quotation: Quotation) {
   const activeVersion = quotation.activeRevision
   return {
     client_id: quotation.client.id,
-    contact_id: quotation.contacts?.[0]?.id ?? null,
+    contact_id: quotation.contact?.id ?? null,
     line_items: validateLineItem(activeVersion.line_items),
     tax_rates: activeVersion.tax_rates.map((tax) => ({
       ...tax,
