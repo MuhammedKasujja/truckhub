@@ -1,3 +1,4 @@
+import { hrQueryKeys } from "@/features/hr/query-options"
 import { driverQueryKeys } from "@/features/drivers/queries"
 import { usersQueryKeys } from "@/features/users/query-options"
 import { clientQueryKeys } from "@/features/clients/query-options"
@@ -51,6 +52,7 @@ export const queryKeys = {
   },
 
   drivers: driverQueryKeys,
+  hr: hrQueryKeys,
   clients: clientQueryKeys,
   users: usersQueryKeys,
   vehicles: vehicleQueryKeys,

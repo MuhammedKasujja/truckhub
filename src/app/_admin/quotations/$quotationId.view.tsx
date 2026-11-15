@@ -155,7 +155,7 @@ function RouteComponent() {
                           className={cn(
                             "relative flex shrink-0 flex-col items-start rounded-lg border px-3 py-1.5 text-left transition-colors",
                             isSelected
-                              ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
+                              ? "border-primary bg-primary/10 shadow-xs ring-1.5 ring-primary"
                               : "hover:bg-muted/50"
                           )}
                         >

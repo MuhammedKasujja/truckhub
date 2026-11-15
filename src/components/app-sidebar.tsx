@@ -147,6 +147,24 @@ export const sidebarSections: SidebarSection[] = [
     ],
   },
   {
+    label: "sidebar.people",
+    items: [
+      {
+        title: "routes.hr",
+        url: "/hr/staff",
+        match: "/hr",
+        icon: getModuleIcon("Hr"),
+        permission: "hr:module",
+      },
+      {
+        title: "routes.my-hr",
+        url: "/my-hr",
+        icon: getModuleIcon("MyHr"),
+        permission: "me:view",
+      },
+    ],
+  },
+  {
     label: "sidebar.finance",
     items: [
       {

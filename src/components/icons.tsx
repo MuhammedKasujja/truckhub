@@ -27,6 +27,8 @@ import {
   EyeIcon,
   MapIcon,
   FileTerminalIcon,
+  IdCardIcon,
+  CircleUserRoundIcon,
 } from "lucide-react"
 import { ComponentType, SVGProps } from "react"
 
@@ -42,6 +44,8 @@ type Module =
   | "Users"
   | "Bookings"
   | "Maintenance"
+  | "Hr"
+  | "MyHr"
   | "Rides"
   | "Services"
   | "Payments"
@@ -85,6 +89,8 @@ export function getModuleIcon(module: Module): IconComponent {
     Quotations: ListCheckIcon,
     Invoices: FileTextIcon,
     Maintenance: CalendarCheck,
+    Hr: IdCardIcon,
+    MyHr: CircleUserRoundIcon,
   }
   return moduleIcons[module]
 }

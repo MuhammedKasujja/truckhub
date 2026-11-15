@@ -327,6 +327,12 @@ export class QueryInvalidator {
     },
   }
 
+  hr = {
+    /** HR data is closely linked (leave, balances, payslips), so refresh it together. */
+    refresh: () =>
+      this.queryClient.invalidateQueries({ queryKey: queryKeys.hr.all() }),
+  }
+
   drivers = {
     list: {
       invalidate: () =>

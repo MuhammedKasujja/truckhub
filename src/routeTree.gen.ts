@@ -17,6 +17,7 @@ import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
 import { Route as AuthLoginRouteImport } from './app/_auth/login'
 import { Route as AdminShipmentsRouteRouteImport } from './app/_admin/shipments/route'
 import { Route as AdminSettingsRouteRouteImport } from './app/_admin/settings/route'
+import { Route as AdminHrRouteRouteImport } from './app/_admin/hr/route'
 import { Route as AdminBillingRouteRouteImport } from './app/_admin/billing/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
 import { Route as AdminServicesIndexRouteImport } from './app/_admin/services/index'
@@ -25,6 +26,7 @@ import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/inde
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
+import { Route as AdminMyHrIndexRouteImport } from './app/_admin/my-hr/index'
 import { Route as AdminMaintenanceIndexRouteImport } from './app/_admin/maintenance/index'
 import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
 import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/index'
@@ -64,6 +66,11 @@ import { Route as AdminReportsPaymentsIndexRouteImport } from './app/_admin/repo
 import { Route as AdminReportsInvoicesIndexRouteImport } from './app/_admin/reports/invoices/index'
 import { Route as AdminReportsAuditsIndexRouteImport } from './app/_admin/reports/audits/index'
 import { Route as AdminQuotationsNewIndexRouteImport } from './app/_admin/quotations/new/index'
+import { Route as AdminHrStaffIndexRouteImport } from './app/_admin/hr/staff/index'
+import { Route as AdminHrSetupIndexRouteImport } from './app/_admin/hr/setup/index'
+import { Route as AdminHrPayrollIndexRouteImport } from './app/_admin/hr/payroll/index'
+import { Route as AdminHrLeaveIndexRouteImport } from './app/_admin/hr/leave/index'
+import { Route as AdminHrDepartmentsIndexRouteImport } from './app/_admin/hr/departments/index'
 import { Route as AdminClientsNewIndexRouteImport } from './app/_admin/clients/new/index'
 import { Route as AdminBookingsNewIndexRouteImport } from './app/_admin/bookings/new/index'
 import { Route as AdminBillingQuotationsIndexRouteImport } from './app/_admin/billing/quotations/index'
@@ -83,6 +90,8 @@ import { Route as AdminQuotationsQuotationIdPdfRouteImport } from './app/_admin/
 import { Route as AdminQuotationsQuotationIdEditRouteImport } from './app/_admin/quotations/$quotationId.edit'
 import { Route as AdminInvoicesInvoiceIdViewRouteImport } from './app/_admin/invoices/$invoiceId.view'
 import { Route as AdminInvoicesInvoiceIdPdfRouteImport } from './app/_admin/invoices/$invoiceId.pdf'
+import { Route as AdminHrStaffNewRouteImport } from './app/_admin/hr/staff/new'
+import { Route as AdminHrPayrollRunIdRouteImport } from './app/_admin/hr/payroll/$runId'
 import { Route as AdminDriversDriverIdViewRouteImport } from './app/_admin/drivers/$driverId.view'
 import { Route as AdminDriversDriverIdEditRouteImport } from './app/_admin/drivers/$driverId.edit'
 import { Route as AdminClientsDataClientIdRouteImport } from './app/_admin/clients/data/$clientId'
@@ -99,6 +108,8 @@ import { Route as AdminSettingsVehicleConfigCarBrandsIndexRouteImport } from './
 import { Route as AdminSettingsUserManagementUsersIndexRouteImport } from './app/_admin/settings/user-management/users/index'
 import { Route as AdminSettingsUserManagementRolesIndexRouteImport } from './app/_admin/settings/user-management/roles/index'
 import { Route as AdminSettingsUserManagementPermissionsIndexRouteImport } from './app/_admin/settings/user-management/permissions/index'
+import { Route as AdminHrStaffStaffIdViewRouteImport } from './app/_admin/hr/staff/$staffId.view'
+import { Route as AdminHrStaffStaffIdEditRouteImport } from './app/_admin/hr/staff/$staffId.edit'
 import { Route as AdminSettingsUserManagementUsersNewIndexRouteImport } from './app/_admin/settings/user-management/users/new/index'
 import { Route as AdminSettingsUserManagementUsersUserIdViewRouteImport } from './app/_admin/settings/user-management/users/$userId.view'
 import { Route as AdminSettingsUserManagementUsersUserIdEditRouteImport } from './app/_admin/settings/user-management/users/$userId.edit'
@@ -142,6 +153,11 @@ const AdminSettingsRouteRoute = AdminSettingsRouteRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminHrRouteRoute = AdminHrRouteRouteImport.update({
+  id: '/hr',
+  path: '/hr',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminBillingRouteRoute = AdminBillingRouteRouteImport.update({
   id: '/billing',
   path: '/billing',
@@ -180,6 +196,11 @@ const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
 const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   id: '/payments/',
   path: '/payments/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMyHrIndexRoute = AdminMyHrIndexRouteImport.update({
+  id: '/my-hr/',
+  path: '/my-hr/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminMaintenanceIndexRoute = AdminMaintenanceIndexRouteImport.update({
@@ -399,6 +420,31 @@ const AdminQuotationsNewIndexRoute = AdminQuotationsNewIndexRouteImport.update({
   path: '/quotations/new/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminHrStaffIndexRoute = AdminHrStaffIndexRouteImport.update({
+  id: '/staff/',
+  path: '/staff/',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrSetupIndexRoute = AdminHrSetupIndexRouteImport.update({
+  id: '/setup/',
+  path: '/setup/',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrPayrollIndexRoute = AdminHrPayrollIndexRouteImport.update({
+  id: '/payroll/',
+  path: '/payroll/',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrLeaveIndexRoute = AdminHrLeaveIndexRouteImport.update({
+  id: '/leave/',
+  path: '/leave/',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrDepartmentsIndexRoute = AdminHrDepartmentsIndexRouteImport.update({
+  id: '/departments/',
+  path: '/departments/',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
 const AdminClientsNewIndexRoute = AdminClientsNewIndexRouteImport.update({
   id: '/clients/new/',
   path: '/clients/new/',
@@ -509,6 +555,16 @@ const AdminInvoicesInvoiceIdPdfRoute =
     path: '/invoices/$invoiceId/pdf',
     getParentRoute: () => AdminRouteRoute,
   } as any)
+const AdminHrStaffNewRoute = AdminHrStaffNewRouteImport.update({
+  id: '/staff/new',
+  path: '/staff/new',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrPayrollRunIdRoute = AdminHrPayrollRunIdRouteImport.update({
+  id: '/payroll/$runId',
+  path: '/payroll/$runId',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
 const AdminDriversDriverIdViewRoute =
   AdminDriversDriverIdViewRouteImport.update({
     id: '/drivers/$driverId/view',
@@ -604,6 +660,16 @@ const AdminSettingsUserManagementPermissionsIndexRoute =
     path: '/permissions/',
     getParentRoute: () => AdminSettingsUserManagementRouteRoute,
   } as any)
+const AdminHrStaffStaffIdViewRoute = AdminHrStaffStaffIdViewRouteImport.update({
+  id: '/staff/$staffId/view',
+  path: '/staff/$staffId/view',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrStaffStaffIdEditRoute = AdminHrStaffStaffIdEditRouteImport.update({
+  id: '/staff/$staffId/edit',
+  path: '/staff/$staffId/edit',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
 const AdminSettingsUserManagementUsersNewIndexRoute =
   AdminSettingsUserManagementUsersNewIndexRouteImport.update({
     id: '/users/new/',
@@ -626,6 +692,7 @@ const AdminSettingsUserManagementUsersUserIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/billing': typeof AdminBillingRouteRouteWithChildren
+  '/hr': typeof AdminHrRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
   '/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
@@ -648,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/invoices/': typeof AdminInvoicesIndexRoute
   '/live-map/': typeof AdminLiveMapIndexRoute
   '/maintenance/': typeof AdminMaintenanceIndexRoute
+  '/my-hr/': typeof AdminMyHrIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
@@ -663,6 +731,8 @@ export interface FileRoutesByFullPath {
   '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/hr/payroll/$runId': typeof AdminHrPayrollRunIdRoute
+  '/hr/staff/new': typeof AdminHrStaffNewRoute
   '/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
   '/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
@@ -682,6 +752,11 @@ export interface FileRoutesByFullPath {
   '/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/clients/new/': typeof AdminClientsNewIndexRoute
+  '/hr/departments/': typeof AdminHrDepartmentsIndexRoute
+  '/hr/leave/': typeof AdminHrLeaveIndexRoute
+  '/hr/payroll/': typeof AdminHrPayrollIndexRoute
+  '/hr/setup/': typeof AdminHrSetupIndexRoute
+  '/hr/staff/': typeof AdminHrStaffIndexRoute
   '/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
@@ -705,6 +780,8 @@ export interface FileRoutesByFullPath {
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
+  '/hr/staff/$staffId/view': typeof AdminHrStaffStaffIdViewRoute
   '/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
   '/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -720,6 +797,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/billing': typeof AdminBillingRouteRouteWithChildren
+  '/hr': typeof AdminHrRouteRouteWithChildren
   '/settings': typeof AdminSettingsRouteRouteWithChildren
   '/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
@@ -742,6 +820,7 @@ export interface FileRoutesByTo {
   '/invoices': typeof AdminInvoicesIndexRoute
   '/live-map': typeof AdminLiveMapIndexRoute
   '/maintenance': typeof AdminMaintenanceIndexRoute
+  '/my-hr': typeof AdminMyHrIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
@@ -757,6 +836,8 @@ export interface FileRoutesByTo {
   '/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/hr/payroll/$runId': typeof AdminHrPayrollRunIdRoute
+  '/hr/staff/new': typeof AdminHrStaffNewRoute
   '/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
   '/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
@@ -776,6 +857,11 @@ export interface FileRoutesByTo {
   '/billing/quotations': typeof AdminBillingQuotationsIndexRoute
   '/bookings/new': typeof AdminBookingsNewIndexRoute
   '/clients/new': typeof AdminClientsNewIndexRoute
+  '/hr/departments': typeof AdminHrDepartmentsIndexRoute
+  '/hr/leave': typeof AdminHrLeaveIndexRoute
+  '/hr/payroll': typeof AdminHrPayrollIndexRoute
+  '/hr/setup': typeof AdminHrSetupIndexRoute
+  '/hr/staff': typeof AdminHrStaffIndexRoute
   '/quotations/new': typeof AdminQuotationsNewIndexRoute
   '/reports/audits': typeof AdminReportsAuditsIndexRoute
   '/reports/invoices': typeof AdminReportsInvoicesIndexRoute
@@ -799,6 +885,8 @@ export interface FileRoutesByTo {
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
   '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
+  '/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
+  '/hr/staff/$staffId/view': typeof AdminHrStaffStaffIdViewRoute
   '/settings/user-management/permissions': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/settings/user-management/roles': typeof AdminSettingsUserManagementRolesIndexRoute
   '/settings/user-management/users': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -816,6 +904,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_admin': typeof AdminRouteRouteWithChildren
   '/_admin/billing': typeof AdminBillingRouteRouteWithChildren
+  '/_admin/hr': typeof AdminHrRouteRouteWithChildren
   '/_admin/settings': typeof AdminSettingsRouteRouteWithChildren
   '/_admin/shipments': typeof AdminShipmentsRouteRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
@@ -838,6 +927,7 @@ export interface FileRoutesById {
   '/_admin/invoices/': typeof AdminInvoicesIndexRoute
   '/_admin/live-map/': typeof AdminLiveMapIndexRoute
   '/_admin/maintenance/': typeof AdminMaintenanceIndexRoute
+  '/_admin/my-hr/': typeof AdminMyHrIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
@@ -853,6 +943,8 @@ export interface FileRoutesById {
   '/_admin/clients/data/$clientId': typeof AdminClientsDataClientIdRoute
   '/_admin/drivers/$driverId/edit': typeof AdminDriversDriverIdEditRoute
   '/_admin/drivers/$driverId/view': typeof AdminDriversDriverIdViewRoute
+  '/_admin/hr/payroll/$runId': typeof AdminHrPayrollRunIdRoute
+  '/_admin/hr/staff/new': typeof AdminHrStaffNewRoute
   '/_admin/invoices/$invoiceId/pdf': typeof AdminInvoicesInvoiceIdPdfRoute
   '/_admin/invoices/$invoiceId/view': typeof AdminInvoicesInvoiceIdViewRoute
   '/_admin/quotations/$quotationId/edit': typeof AdminQuotationsQuotationIdEditRoute
@@ -872,6 +964,11 @@ export interface FileRoutesById {
   '/_admin/billing/quotations/': typeof AdminBillingQuotationsIndexRoute
   '/_admin/bookings/new/': typeof AdminBookingsNewIndexRoute
   '/_admin/clients/new/': typeof AdminClientsNewIndexRoute
+  '/_admin/hr/departments/': typeof AdminHrDepartmentsIndexRoute
+  '/_admin/hr/leave/': typeof AdminHrLeaveIndexRoute
+  '/_admin/hr/payroll/': typeof AdminHrPayrollIndexRoute
+  '/_admin/hr/setup/': typeof AdminHrSetupIndexRoute
+  '/_admin/hr/staff/': typeof AdminHrStaffIndexRoute
   '/_admin/quotations/new/': typeof AdminQuotationsNewIndexRoute
   '/_admin/reports/audits/': typeof AdminReportsAuditsIndexRoute
   '/_admin/reports/invoices/': typeof AdminReportsInvoicesIndexRoute
@@ -895,6 +992,8 @@ export interface FileRoutesById {
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
   '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
+  '/_admin/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
+  '/_admin/hr/staff/$staffId/view': typeof AdminHrStaffStaffIdViewRoute
   '/_admin/settings/user-management/permissions/': typeof AdminSettingsUserManagementPermissionsIndexRoute
   '/_admin/settings/user-management/roles/': typeof AdminSettingsUserManagementRolesIndexRoute
   '/_admin/settings/user-management/users/': typeof AdminSettingsUserManagementUsersIndexRoute
@@ -912,6 +1011,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/billing'
+    | '/hr'
     | '/settings'
     | '/shipments'
     | '/login'
@@ -934,6 +1034,7 @@ export interface FileRouteTypes {
     | '/invoices/'
     | '/live-map/'
     | '/maintenance/'
+    | '/my-hr/'
     | '/payments/'
     | '/quotations/'
     | '/reports/'
@@ -949,6 +1050,8 @@ export interface FileRouteTypes {
     | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
+    | '/hr/payroll/$runId'
+    | '/hr/staff/new'
     | '/invoices/$invoiceId/pdf'
     | '/invoices/$invoiceId/view'
     | '/quotations/$quotationId/edit'
@@ -968,6 +1071,11 @@ export interface FileRouteTypes {
     | '/billing/quotations/'
     | '/bookings/new/'
     | '/clients/new/'
+    | '/hr/departments/'
+    | '/hr/leave/'
+    | '/hr/payroll/'
+    | '/hr/setup/'
+    | '/hr/staff/'
     | '/quotations/new/'
     | '/reports/audits/'
     | '/reports/invoices/'
@@ -991,6 +1099,8 @@ export interface FileRouteTypes {
     | '/shipments/confirmed/'
     | '/shipments/requests/'
     | '/vehicles/new/'
+    | '/hr/staff/$staffId/edit'
+    | '/hr/staff/$staffId/view'
     | '/settings/user-management/permissions/'
     | '/settings/user-management/roles/'
     | '/settings/user-management/users/'
@@ -1006,6 +1116,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/billing'
+    | '/hr'
     | '/settings'
     | '/shipments'
     | '/login'
@@ -1028,6 +1139,7 @@ export interface FileRouteTypes {
     | '/invoices'
     | '/live-map'
     | '/maintenance'
+    | '/my-hr'
     | '/payments'
     | '/quotations'
     | '/reports'
@@ -1043,6 +1155,8 @@ export interface FileRouteTypes {
     | '/clients/data/$clientId'
     | '/drivers/$driverId/edit'
     | '/drivers/$driverId/view'
+    | '/hr/payroll/$runId'
+    | '/hr/staff/new'
     | '/invoices/$invoiceId/pdf'
     | '/invoices/$invoiceId/view'
     | '/quotations/$quotationId/edit'
@@ -1062,6 +1176,11 @@ export interface FileRouteTypes {
     | '/billing/quotations'
     | '/bookings/new'
     | '/clients/new'
+    | '/hr/departments'
+    | '/hr/leave'
+    | '/hr/payroll'
+    | '/hr/setup'
+    | '/hr/staff'
     | '/quotations/new'
     | '/reports/audits'
     | '/reports/invoices'
@@ -1085,6 +1204,8 @@ export interface FileRouteTypes {
     | '/shipments/confirmed'
     | '/shipments/requests'
     | '/vehicles/new'
+    | '/hr/staff/$staffId/edit'
+    | '/hr/staff/$staffId/view'
     | '/settings/user-management/permissions'
     | '/settings/user-management/roles'
     | '/settings/user-management/users'
@@ -1101,6 +1222,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_admin'
     | '/_admin/billing'
+    | '/_admin/hr'
     | '/_admin/settings'
     | '/_admin/shipments'
     | '/_auth/login'
@@ -1123,6 +1245,7 @@ export interface FileRouteTypes {
     | '/_admin/invoices/'
     | '/_admin/live-map/'
     | '/_admin/maintenance/'
+    | '/_admin/my-hr/'
     | '/_admin/payments/'
     | '/_admin/quotations/'
     | '/_admin/reports/'
@@ -1138,6 +1261,8 @@ export interface FileRouteTypes {
     | '/_admin/clients/data/$clientId'
     | '/_admin/drivers/$driverId/edit'
     | '/_admin/drivers/$driverId/view'
+    | '/_admin/hr/payroll/$runId'
+    | '/_admin/hr/staff/new'
     | '/_admin/invoices/$invoiceId/pdf'
     | '/_admin/invoices/$invoiceId/view'
     | '/_admin/quotations/$quotationId/edit'
@@ -1157,6 +1282,11 @@ export interface FileRouteTypes {
     | '/_admin/billing/quotations/'
     | '/_admin/bookings/new/'
     | '/_admin/clients/new/'
+    | '/_admin/hr/departments/'
+    | '/_admin/hr/leave/'
+    | '/_admin/hr/payroll/'
+    | '/_admin/hr/setup/'
+    | '/_admin/hr/staff/'
     | '/_admin/quotations/new/'
     | '/_admin/reports/audits/'
     | '/_admin/reports/invoices/'
@@ -1180,6 +1310,8 @@ export interface FileRouteTypes {
     | '/_admin/shipments/confirmed/'
     | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
+    | '/_admin/hr/staff/$staffId/edit'
+    | '/_admin/hr/staff/$staffId/view'
     | '/_admin/settings/user-management/permissions/'
     | '/_admin/settings/user-management/roles/'
     | '/_admin/settings/user-management/users/'
@@ -1260,6 +1392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/hr': {
+      id: '/_admin/hr'
+      path: '/hr'
+      fullPath: '/hr'
+      preLoaderRoute: typeof AdminHrRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/_admin/billing': {
       id: '/_admin/billing'
       path: '/billing'
@@ -1314,6 +1453,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments/'
       preLoaderRoute: typeof AdminPaymentsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/my-hr/': {
+      id: '/_admin/my-hr/'
+      path: '/my-hr'
+      fullPath: '/my-hr/'
+      preLoaderRoute: typeof AdminMyHrIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/maintenance/': {
@@ -1589,6 +1735,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQuotationsNewIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/hr/staff/': {
+      id: '/_admin/hr/staff/'
+      path: '/staff'
+      fullPath: '/hr/staff/'
+      preLoaderRoute: typeof AdminHrStaffIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/setup/': {
+      id: '/_admin/hr/setup/'
+      path: '/setup'
+      fullPath: '/hr/setup/'
+      preLoaderRoute: typeof AdminHrSetupIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/payroll/': {
+      id: '/_admin/hr/payroll/'
+      path: '/payroll'
+      fullPath: '/hr/payroll/'
+      preLoaderRoute: typeof AdminHrPayrollIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/leave/': {
+      id: '/_admin/hr/leave/'
+      path: '/leave'
+      fullPath: '/hr/leave/'
+      preLoaderRoute: typeof AdminHrLeaveIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/departments/': {
+      id: '/_admin/hr/departments/'
+      path: '/departments'
+      fullPath: '/hr/departments/'
+      preLoaderRoute: typeof AdminHrDepartmentsIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
     '/_admin/clients/new/': {
       id: '/_admin/clients/new/'
       path: '/clients/new'
@@ -1722,6 +1903,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInvoicesInvoiceIdPdfRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/_admin/hr/staff/new': {
+      id: '/_admin/hr/staff/new'
+      path: '/staff/new'
+      fullPath: '/hr/staff/new'
+      preLoaderRoute: typeof AdminHrStaffNewRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/payroll/$runId': {
+      id: '/_admin/hr/payroll/$runId'
+      path: '/payroll/$runId'
+      fullPath: '/hr/payroll/$runId'
+      preLoaderRoute: typeof AdminHrPayrollRunIdRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
     '/_admin/drivers/$driverId/view': {
       id: '/_admin/drivers/$driverId/view'
       path: '/drivers/$driverId/view'
@@ -1834,6 +2029,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsUserManagementPermissionsIndexRouteImport
       parentRoute: typeof AdminSettingsUserManagementRouteRoute
     }
+    '/_admin/hr/staff/$staffId/view': {
+      id: '/_admin/hr/staff/$staffId/view'
+      path: '/staff/$staffId/view'
+      fullPath: '/hr/staff/$staffId/view'
+      preLoaderRoute: typeof AdminHrStaffStaffIdViewRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
+    '/_admin/hr/staff/$staffId/edit': {
+      id: '/_admin/hr/staff/$staffId/edit'
+      path: '/staff/$staffId/edit'
+      fullPath: '/hr/staff/$staffId/edit'
+      preLoaderRoute: typeof AdminHrStaffStaffIdEditRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
     '/_admin/settings/user-management/users/new/': {
       id: '/_admin/settings/user-management/users/new/'
       path: '/users/new'
@@ -1870,6 +2079,34 @@ const AdminBillingRouteRouteChildren: AdminBillingRouteRouteChildren = {
 
 const AdminBillingRouteRouteWithChildren =
   AdminBillingRouteRoute._addFileChildren(AdminBillingRouteRouteChildren)
+
+interface AdminHrRouteRouteChildren {
+  AdminHrPayrollRunIdRoute: typeof AdminHrPayrollRunIdRoute
+  AdminHrStaffNewRoute: typeof AdminHrStaffNewRoute
+  AdminHrDepartmentsIndexRoute: typeof AdminHrDepartmentsIndexRoute
+  AdminHrLeaveIndexRoute: typeof AdminHrLeaveIndexRoute
+  AdminHrPayrollIndexRoute: typeof AdminHrPayrollIndexRoute
+  AdminHrSetupIndexRoute: typeof AdminHrSetupIndexRoute
+  AdminHrStaffIndexRoute: typeof AdminHrStaffIndexRoute
+  AdminHrStaffStaffIdEditRoute: typeof AdminHrStaffStaffIdEditRoute
+  AdminHrStaffStaffIdViewRoute: typeof AdminHrStaffStaffIdViewRoute
+}
+
+const AdminHrRouteRouteChildren: AdminHrRouteRouteChildren = {
+  AdminHrPayrollRunIdRoute: AdminHrPayrollRunIdRoute,
+  AdminHrStaffNewRoute: AdminHrStaffNewRoute,
+  AdminHrDepartmentsIndexRoute: AdminHrDepartmentsIndexRoute,
+  AdminHrLeaveIndexRoute: AdminHrLeaveIndexRoute,
+  AdminHrPayrollIndexRoute: AdminHrPayrollIndexRoute,
+  AdminHrSetupIndexRoute: AdminHrSetupIndexRoute,
+  AdminHrStaffIndexRoute: AdminHrStaffIndexRoute,
+  AdminHrStaffStaffIdEditRoute: AdminHrStaffStaffIdEditRoute,
+  AdminHrStaffStaffIdViewRoute: AdminHrStaffStaffIdViewRoute,
+}
+
+const AdminHrRouteRouteWithChildren = AdminHrRouteRoute._addFileChildren(
+  AdminHrRouteRouteChildren,
+)
 
 interface AdminSettingsPricingConfigRouteRouteChildren {
   AdminSettingsPricingConfigDistancePricingRoute: typeof AdminSettingsPricingConfigDistancePricingRoute
@@ -2010,6 +2247,7 @@ const AdminShipmentsRouteRouteWithChildren =
 
 interface AdminRouteRouteChildren {
   AdminBillingRouteRoute: typeof AdminBillingRouteRouteWithChildren
+  AdminHrRouteRoute: typeof AdminHrRouteRouteWithChildren
   AdminSettingsRouteRoute: typeof AdminSettingsRouteRouteWithChildren
   AdminShipmentsRouteRoute: typeof AdminShipmentsRouteRouteWithChildren
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
@@ -2025,6 +2263,7 @@ interface AdminRouteRouteChildren {
   AdminInvoicesIndexRoute: typeof AdminInvoicesIndexRoute
   AdminLiveMapIndexRoute: typeof AdminLiveMapIndexRoute
   AdminMaintenanceIndexRoute: typeof AdminMaintenanceIndexRoute
+  AdminMyHrIndexRoute: typeof AdminMyHrIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
@@ -2066,6 +2305,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminBillingRouteRoute: AdminBillingRouteRouteWithChildren,
+  AdminHrRouteRoute: AdminHrRouteRouteWithChildren,
   AdminSettingsRouteRoute: AdminSettingsRouteRouteWithChildren,
   AdminShipmentsRouteRoute: AdminShipmentsRouteRouteWithChildren,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
@@ -2081,6 +2321,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminInvoicesIndexRoute: AdminInvoicesIndexRoute,
   AdminLiveMapIndexRoute: AdminLiveMapIndexRoute,
   AdminMaintenanceIndexRoute: AdminMaintenanceIndexRoute,
+  AdminMyHrIndexRoute: AdminMyHrIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
