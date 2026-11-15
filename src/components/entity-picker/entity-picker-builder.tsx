@@ -23,6 +23,8 @@ export interface PickerProps<
   value: T | string | null | undefined
   onChange: (value: T | null | undefined) => void
   disabled?: boolean
+  /** Shown while nothing is picked, e.g. "All clients" when used as a filter. */
+  placeholder?: string
   /** Per-instance overrides — fall back to the config's defaults when omitted. */
   renderOption?: (item: T, selected: boolean) => React.ReactNode
   renderValue?: (item: T) => React.ReactNode
@@ -53,6 +55,7 @@ export function createEntityPicker<
     value,
     onChange,
     disabled,
+    placeholder,
     renderOption,
     renderValue,
     staticOptions,
@@ -75,6 +78,7 @@ export function createEntityPicker<
           triggerLoading={p.isResolving}
           loading={p.isFetching}
           disabled={disabled}
+          placeholder={placeholder}
           filterFn={p.filterFn}
           onSearch={p.setSearch}
           onChange={onChange}

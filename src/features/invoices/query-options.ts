@@ -1,4 +1,4 @@
-import { EntityId, SearchQuery } from "@/schemas"
+import { EntityId } from "@/schemas"
 import { InvoiceListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import {

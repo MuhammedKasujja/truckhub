@@ -1,9 +1,8 @@
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import {
   InvoiceTable,
-  InvoiceTableFilter,
+  InvoiceTableSkeleton,
 } from "@/features/invoices/components"
 import {
   invoiceQueryOptions,
@@ -20,9 +19,13 @@ export const Route = createFileRoute("/_admin/invoices/")({
   pendingComponent: InvoiceTableSkeleton,
   beforeLoad: () => requirePermission("invoices:module"),
   component: RouteComponent,
-  loader: ({ context, deps: { search } }) => {
-    context.queryClient.prefetchQuery(invoiceStatisticsQueryOptions())
-    return context.queryClient.prefetchQuery(invoiceQueryOptions(search))
+  loader: ({ context: { queryClient }, deps: { search }, cause }) => {
+    // Statistics load in the background
+    queryClient.prefetchQuery(invoiceStatisticsQueryOptions())
+    const list = queryClient.prefetchQuery(invoiceQueryOptions(search))
+    // Only opening the screen waits for the list. Changing a filter keeps the
+    // screen up (and its open pickers and focused search box) while it reloads.
+    return cause === "stay" ? undefined : list
   },
 })
 
@@ -40,20 +43,7 @@ function RouteComponent() {
           </Button>
         </PageAction>
       </PageHeader>
-      <div className="space-y-5">
-        <InvoiceTableFilter />
-        <InvoiceTable />
-      </div>
+      <InvoiceTable />
     </div>
-  )
-}
-function InvoiceTableSkeleton() {
-  return (
-    <DataTableSkeleton
-      columnCount={6}
-      filterCount={1}
-      shrinkZero
-      rowCount={25}
-    />
   )
 }
