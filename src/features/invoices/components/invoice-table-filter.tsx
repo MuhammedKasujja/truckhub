@@ -85,6 +85,7 @@ export function InvoiceTableFilter({
               <ClientPicker
                 value={client_id}
                 placeholder="All clients"
+                allowCreate={false}
                 onChange={(client) =>
                   onFiltersChange({ client_id: client?.id })
                 }

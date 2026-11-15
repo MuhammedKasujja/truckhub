@@ -25,6 +25,8 @@ export interface PickerProps<
   disabled?: boolean
   /** Shown while nothing is picked, e.g. "All clients" when used as a filter. */
   placeholder?: string
+  /** Set false to hide the "create new" row, e.g. when the picker is a filter. */
+  allowCreate?: boolean
   /** Per-instance overrides — fall back to the config's defaults when omitted. */
   renderOption?: (item: T, selected: boolean) => React.ReactNode
   renderValue?: (item: T) => React.ReactNode
@@ -56,6 +58,7 @@ export function createEntityPicker<
     onChange,
     disabled,
     placeholder,
+    allowCreate = true,
     renderOption,
     renderValue,
     staticOptions,
@@ -68,6 +71,7 @@ export function createEntityPicker<
       filters,
     }
     const p = useEntityPicker(config, value, onChange, overrides)
+    const canCreate = allowCreate && p.canCreate
 
     return (
       <>
@@ -82,7 +86,7 @@ export function createEntityPicker<
           filterFn={p.filterFn}
           onSearch={p.setSearch}
           onChange={onChange}
-          onCreateNew={p.canCreate ? p.triggerCreate : undefined}
+          onCreateNew={canCreate ? p.triggerCreate : undefined}
           /// Load more for infiite scroll ///
           onLoadMore={p.hasMore ? p.fetchMore : undefined}
           hasMore={p.hasMore}
@@ -94,7 +98,7 @@ export function createEntityPicker<
           label={config.label}
         />
 
-        {config.CreateForm && (
+        {canCreate && config.CreateForm && (
           <Dialog
             open={p.createDialog.open}
             onOpenChange={p.createDialog.setOpen}
@@ -118,6 +122,7 @@ export function createEntityPicker<
     label,
     description,
     disabled,
+    allowCreate,
     renderOption,
     renderValue,
     staticOptions,
@@ -130,6 +135,7 @@ export function createEntityPicker<
     label?: string
     description?: string
     disabled?: boolean
+    allowCreate?: boolean
     onChange?: (value: T | null | undefined) => void
     renderOption?: (item: T, selected: boolean) => React.ReactNode
     renderValue?: (item: T) => React.ReactNode
@@ -156,6 +162,7 @@ export function createEntityPicker<
             onChange?.(val)
           }}
           disabled={disabled}
+          allowCreate={allowCreate}
           renderOption={renderOption}
           renderValue={renderValue}
           staticOptions={staticOptions}
