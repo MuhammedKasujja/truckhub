@@ -4,8 +4,12 @@ import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useEditInvoiceBase = createEntityActionHook(
   createInvoiceFn,
-  (invalidator, _) => {
+  (invalidator, input) => {
     invalidator.invoices.list.invalidate()
+    // The shipments are now invoiced and the quotation's status has moved on
+    invalidator.quotations.list.invalidate()
+    invalidator.quotations.details(input.data.quotationId)
+    invalidator.shipments.all.invalidate()
   }
 )
 

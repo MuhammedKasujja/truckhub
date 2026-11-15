@@ -1,9 +1,15 @@
 import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { createInvoiceSchema, InvoiceSearchParams } from "../schemas"
+import {
+  createInvoiceSchema,
+  InvoiceSearchParams,
+  voidInvoiceSchema,
+} from "../schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 import {
   getInvoices,
+  voidInvoice,
   createInvoice,
   getInvoicePdf,
   sendInvoiceEmail,
@@ -43,11 +49,15 @@ export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
 export const createInvoiceFn = createServerFn()
   .inputValidator(createInvoiceSchema)
   .handler(async ({ data }) => {
-    const result = await createInvoice(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return apiResponseTransform(createInvoice(data))
+  })
+
+export const voidInvoiceFn = createServerFn({ method: "POST" })
+  .inputValidator(voidInvoiceSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(voidInvoice(data))
+    // The billing endpoint answers with a generic message
+    return { ...result, message: "Invoice voided" }
   })
 
 export const sendInvoiceEmailFn = createServerFn({ method: "POST" })

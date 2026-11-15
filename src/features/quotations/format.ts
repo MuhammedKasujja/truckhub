@@ -1,3 +1,4 @@
+import { ACCEPTED_QUOTATION_STATUSES } from "./enums"
 import type { QuotationStatus } from "./enums"
 import type { QuotationVersion } from "./types"
 
@@ -11,17 +12,23 @@ export const QUOTATION_STATUS_META: Record<
   sent: { label: "Sent", tone: "info" },
   accepted: { label: "Accepted", tone: "success" },
   rejected: { label: "Rejected", tone: "error" },
+  cancelled: { label: "Cancelled", tone: "default" },
+  partially_invoiced: { label: "Partially invoiced", tone: "info" },
   invoiced: { label: "Invoiced", tone: "success" },
   revised: { label: "Revised", tone: "success" },
   expired: { label: "Expired", tone: "warning" },
 }
 
 /** Which status actions are allowed; mirrors the quotations table menu. */
-export const quotationActions = (status: QuotationStatus) => ({
-  accept: status !== "accepted",
-  reject: !["invoiced", "accepted", "rejected"].includes(status),
-  cancel: status === "accepted",
-})
+export const quotationActions = (status: QuotationStatus) => {
+  // Invoicing moves an accepted quotation on to partially_invoiced / invoiced
+  const isAccepted = ACCEPTED_QUOTATION_STATUSES.includes(status)
+  return {
+    accept: !isAccepted,
+    reject: !isAccepted && status !== "rejected",
+    cancel: status === "accepted",
+  }
+}
 
 const DAY_MS = 86_400_000
 

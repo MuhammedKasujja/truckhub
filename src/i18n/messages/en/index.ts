@@ -224,6 +224,7 @@ const en = {
       issued: "Issued",
       draft: "Draft",
       refunded: "Refunded",
+      partially_refunded: "Partially Refunded",
       partially_paid: "Partially Paid",
       paid: "Paid",
       cancelled: "Cancelled",

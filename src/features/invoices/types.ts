@@ -48,5 +48,5 @@ export type InvoiceStatistics = {
 
 export interface InvoiceTableRowAction extends DataTableRowAction<
   Invoice,
-  "update" | "view" | "makePayment" | "email"
+  "update" | "view" | "makePayment" | "email" | "void"
 > {}

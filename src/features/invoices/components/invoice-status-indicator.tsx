@@ -12,6 +12,7 @@ const INVOICE_STATUS_TONE: Record<InvoiceStatus, StatusTone> = {
   partially_paid: "warning",
   over_due: "error",
   paid: "success",
+  partially_refunded: "warning",
   refunded: "default",
   cancelled: "default",
   void: "default",

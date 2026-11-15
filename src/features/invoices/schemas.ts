@@ -25,3 +25,10 @@ export const createInvoiceSchema = z.object({
 })
 
 export type InvoiceCreateInput = z.infer<typeof createInvoiceSchema>
+
+export const voidInvoiceSchema = z.object({
+  invoiceId: IDSchema,
+  reason: z.string("Required").trim().min(3, "Too short"),
+})
+
+export type VoidInvoiceInput = z.infer<typeof voidInvoiceSchema>

@@ -55,6 +55,13 @@ export class QueryInvalidator {
   }
 
   quotations = {
+    /** Lists, details and each quotation's shipments */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.quotations.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({
@@ -369,6 +376,13 @@ export class QueryInvalidator {
   }
 
   shipments = {
+    /** Lists, details and per-quotation shipments */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({

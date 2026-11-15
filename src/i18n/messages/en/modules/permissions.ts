@@ -37,6 +37,7 @@ export const en = {
   "invoices:edit": "Edit Invoices",
   "invoices:pdf": "Download Invoice PDFs",
   "invoices:email": "Email Invoices",
+  "invoices:void": "Void Invoices",
   "shipments:module": "Shipments",
   "shipments:dispatch": "Dispatch Shipments",
   "shipments:complete": "Complete Shipments",

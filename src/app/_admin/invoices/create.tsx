@@ -174,6 +174,11 @@ function RouteComponent() {
       unitIds: selectedIds,
       dueDate: dueDate.toLocaleDateString("en-CA"),
     })
+      // The invoiced shipments leave the list, so the selection is stale
+      .then(() => setSelectedIds([]))
+      .catch(() => {
+        // The hook already shows the error (e.g. a shipment was invoiced meanwhile)
+      })
   }
 
   const canSubmit = !!quotation && !!dueDate && selectedIds.length > 0

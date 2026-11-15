@@ -8,6 +8,7 @@ import { invoiceQueryOptions } from "../query-options"
 import { useSearch } from "@tanstack/react-router"
 import { InvoiceTableRowAction } from "../types"
 import { EnterPaymentModal } from "@/features/payments/components"
+import { VoidInvoiceModal } from "./void-invoice-modal"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 
 export function InvoiceTable() {
@@ -56,6 +57,14 @@ export function InvoiceTable() {
           type: "invoice",
         }}
       />
+      {rowAction?.variant === "void" && (
+        <VoidInvoiceModal
+          key={rowAction.row.id}
+          open
+          onOpenChange={() => setRowAction(null)}
+          invoice={rowAction.row.original}
+        />
+      )}
     </>
   )
 }

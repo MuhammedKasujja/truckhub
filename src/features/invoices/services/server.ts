@@ -3,7 +3,11 @@ import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
 import { Invoice, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
-import { InvoiceCreateInput, InvoiceListSearchParams } from "../schemas"
+import {
+  InvoiceCreateInput,
+  InvoiceListSearchParams,
+  VoidInvoiceInput,
+} from "../schemas"
 
 const endpoint = "/v1/invoices"
 
@@ -41,6 +45,17 @@ export async function getInvoicePdf(invoiceId: EntityId) {
 
 export async function getInvoiceStatistics() {
   return await apiClient.getFn<InvoiceStatistics>(`${endpoint}/statistics`)
+}
+
+/**
+ * Voiding reverses the invoice's charge: payments on it become client credit and
+ * its shipments can be invoiced again.
+ */
+export async function voidInvoice(data: VoidInvoiceInput) {
+  return await apiClient.postFn<{ entry_id: EntityId; amount: string }>(
+    "/v1/billing/charges/reverse",
+    { kind: "invoice", target_id: data.invoiceId, reason: data.reason }
+  )
 }
 
 export async function sendInvoiceEmail(invoiceId: EntityId) {

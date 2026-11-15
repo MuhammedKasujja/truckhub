@@ -4,6 +4,7 @@ import { Link, createFileRoute } from "@tanstack/react-router"
 import Decimal from "decimal.js"
 import {
   AlertCircle,
+  Ban,
   CalendarClock,
   CheckCircle2,
   Download,
@@ -36,7 +37,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { InvoiceStatusIndicator } from "@/features/invoices/components"
+import {
+  InvoiceStatusIndicator,
+  VoidInvoiceModal,
+} from "@/features/invoices/components"
+import { isChargedInvoice } from "@/features/invoices/enums"
 import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { getInvoicePdfFn } from "@/features/invoices/services"
@@ -210,6 +215,9 @@ function dueHint(days: number, isSettled: boolean) {
 function InvoiceActions({ invoice }: { invoice: Invoice }) {
   const tr = useTranslation()
   const [openPayment, setOpenPayment] = useState(false)
+  const [openVoid, setOpenVoid] = useState(false)
+  // Draft, cancelled and void invoices are neither emailed nor voided
+  const isCharged = isChargedInvoice(invoice.status)
   const [isDownloading, setIsDownloading] = useState(false)
   const { sendInvoiceEmail, isPending: isSending } = useSendInvoiceEmail()
 
@@ -264,18 +272,35 @@ function InvoiceActions({ invoice }: { invoice: Invoice }) {
         )}
         Download
       </Button>
-      <Button
-        variant="outline"
-        onClick={() => sendInvoiceEmail(invoice.id)}
-        disabled={isSending}
-      >
-        {isSending ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <ActionIcon action="email" />
-        )}
-        Send email
-      </Button>
+      {isCharged && (
+        <Can permission={"invoices:email"}>
+          <Button
+            variant="outline"
+            onClick={() => sendInvoiceEmail(invoice.id)}
+            disabled={isSending}
+          >
+            {isSending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ActionIcon action="email" />
+            )}
+            Send email
+          </Button>
+        </Can>
+      )}
+      {isCharged && (
+        <Can permission={"invoices:void"}>
+          <Button variant="destructive" onClick={() => setOpenVoid(true)}>
+            <Ban className="size-4" />
+            Void
+          </Button>
+          <VoidInvoiceModal
+            open={openVoid}
+            onOpenChange={setOpenVoid}
+            invoice={invoice}
+          />
+        </Can>
+      )}
     </div>
   )
 }
