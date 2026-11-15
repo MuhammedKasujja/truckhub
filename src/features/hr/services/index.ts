@@ -57,8 +57,6 @@ async function readPage<T>(call: Promise<ApiPaginatedResponse<T>>) {
   return { data: result.data, pagination: result.pagination }
 }
 
-const post = () => createServerFn({ method: "POST" })
-
 /* ------------------------------ Departments ------------------------------- */
 
 export const getDepartmentsFn = createServerFn().handler(async () => {
@@ -66,15 +64,15 @@ export const getDepartmentsFn = createServerFn().handler(async () => {
   return data
 })
 
-export const createDepartmentFn = post()
+export const createDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(DepartmentCreateSchema)
   .handler(({ data }) => hr.createDepartment(data))
 
-export const updateDepartmentFn = post()
+export const updateDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(DepartmentUpdateSchema)
   .handler(({ data }) => hr.updateDepartment(data))
 
-export const deleteDepartmentFn = post()
+export const deleteDepartmentFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.deleteDepartment(data.id))
 
@@ -88,27 +86,27 @@ export const getStaffFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => read(hr.getStaff(data.id)))
 
-export const createStaffFn = post()
+export const createStaffFn = createServerFn({ method: "POST" })
   .inputValidator(StaffCreateSchema)
   .handler(({ data }) => hr.createStaff(data))
 
-export const updateStaffFn = post()
+export const updateStaffFn = createServerFn({ method: "POST" })
   .inputValidator(StaffUpdateSchema)
   .handler(({ data }) => hr.updateStaff(data))
 
-export const deleteStaffFn = post()
+export const deleteStaffFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.deleteStaff(data.id))
 
-export const terminateStaffFn = post()
+export const terminateStaffFn = createServerFn({ method: "POST" })
   .inputValidator(StaffTerminateSchema)
   .handler(({ data }) => hr.terminateStaff(data))
 
-export const grantSystemAccessFn = post()
+export const grantSystemAccessFn = createServerFn({ method: "POST" })
   .inputValidator(SystemAccessGrantSchema)
   .handler(({ data }) => hr.grantSystemAccess(data))
 
-export const revokeSystemAccessFn = post()
+export const revokeSystemAccessFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.revokeSystemAccess(data.id))
 
@@ -116,11 +114,11 @@ export const getStaffCompensationFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => read(hr.getStaffCompensation(data.id)))
 
-export const setStaffCompensationFn = post()
+export const setStaffCompensationFn = createServerFn({ method: "POST" })
   .inputValidator(CompensationSetSchema)
   .handler(({ data }) => hr.setStaffCompensation(data))
 
-export const setStaffComponentsFn = post()
+export const setStaffComponentsFn = createServerFn({ method: "POST" })
   .inputValidator(StaffComponentsSetSchema)
   .handler(({ data }) => hr.setStaffComponents(data))
 
@@ -130,15 +128,15 @@ export const getLeaveTypesFn = createServerFn().handler(() =>
   read(hr.getLeaveTypes())
 )
 
-export const createLeaveTypeFn = post()
+export const createLeaveTypeFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveTypeCreateSchema)
   .handler(({ data }) => hr.createLeaveType(data))
 
-export const updateLeaveTypeFn = post()
+export const updateLeaveTypeFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveTypeUpdateSchema)
   .handler(({ data }) => hr.updateLeaveType(data))
 
-export const deleteLeaveTypeFn = post()
+export const deleteLeaveTypeFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.deleteLeaveType(data.id))
 
@@ -146,11 +144,11 @@ export const getPublicHolidaysFn = createServerFn()
   .inputValidator(z.object({ year: z.number().int().optional() }))
   .handler(({ data }) => read(hr.getPublicHolidays(data.year)))
 
-export const createPublicHolidayFn = post()
+export const createPublicHolidayFn = createServerFn({ method: "POST" })
   .inputValidator(PublicHolidayCreateSchema)
   .handler(({ data }) => hr.createPublicHoliday(data))
 
-export const deletePublicHolidayFn = post()
+export const deletePublicHolidayFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.deletePublicHoliday(data.id))
 
@@ -158,7 +156,7 @@ export const getLeaveBalancesFn = createServerFn()
   .inputValidator(LeaveBalanceQuerySchema)
   .handler(({ data }) => read(hr.getLeaveBalances(data.staff_id, data.year)))
 
-export const adjustLeaveBalanceFn = post()
+export const adjustLeaveBalanceFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveBalanceAdjustSchema)
   .handler(({ data }) => hr.adjustLeaveBalance(data))
 
@@ -166,19 +164,19 @@ export const getLeaveRequestsFn = createServerFn()
   .inputValidator(LeaveRequestSearchSchema)
   .handler(({ data }) => readPage(hr.getLeaveRequests(data)))
 
-export const createLeaveRequestFn = post()
+export const createLeaveRequestFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveRequestCreateSchema)
   .handler(({ data }) => hr.createLeaveRequest(data))
 
-export const approveLeaveRequestFn = post()
+export const approveLeaveRequestFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveDecisionSchema)
   .handler(({ data }) => hr.decideLeaveRequest("approve", data))
 
-export const rejectLeaveRequestFn = post()
+export const rejectLeaveRequestFn = createServerFn({ method: "POST" })
   .inputValidator(LeaveDecisionSchema)
   .handler(({ data }) => hr.decideLeaveRequest("reject", data))
 
-export const cancelLeaveRequestFn = post()
+export const cancelLeaveRequestFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.cancelLeaveRequest(data.id))
 
@@ -188,15 +186,15 @@ export const getPayComponentsFn = createServerFn().handler(() =>
   read(hr.getPayComponents())
 )
 
-export const createPayComponentFn = post()
+export const createPayComponentFn = createServerFn({ method: "POST" })
   .inputValidator(PayComponentCreateSchema)
   .handler(({ data }) => hr.createPayComponent(data))
 
-export const updatePayComponentFn = post()
+export const updatePayComponentFn = createServerFn({ method: "POST" })
   .inputValidator(PayComponentUpdateSchema)
   .handler(({ data }) => hr.updatePayComponent(data))
 
-export const deletePayComponentFn = post()
+export const deletePayComponentFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.deletePayComponent(data.id))
 
@@ -204,7 +202,7 @@ export const getTaxBandsFn = createServerFn().handler(() =>
   read(hr.getTaxBands())
 )
 
-export const replaceTaxBandsFn = post()
+export const replaceTaxBandsFn = createServerFn({ method: "POST" })
   .inputValidator(TaxBandsReplaceSchema)
   .handler(({ data }) => hr.replaceTaxBands(data))
 
@@ -216,23 +214,23 @@ export const getPayrollRunFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => read(hr.getPayrollRun(data.id)))
 
-export const createPayrollRunFn = post()
+export const createPayrollRunFn = createServerFn({ method: "POST" })
   .inputValidator(PayrollRunCreateSchema)
   .handler(({ data }) => hr.createPayrollRun(data))
 
-export const generatePayrollRunFn = post()
+export const generatePayrollRunFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.generatePayrollRun(data.id))
 
-export const approvePayrollRunFn = post()
+export const approvePayrollRunFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.approvePayrollRun(data.id))
 
-export const payPayrollRunFn = post()
+export const payPayrollRunFn = createServerFn({ method: "POST" })
   .inputValidator(PayrollRunPaySchema)
   .handler(({ data }) => hr.payPayrollRun(data))
 
-export const cancelPayrollRunFn = post()
+export const cancelPayrollRunFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.cancelPayrollRun(data.id))
 
@@ -240,11 +238,11 @@ export const getPayslipFn = createServerFn()
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => read(hr.getPayslip(data.id)))
 
-export const addPayslipLineFn = post()
+export const addPayslipLineFn = createServerFn({ method: "POST" })
   .inputValidator(PayslipLineCreateSchema)
   .handler(({ data }) => hr.addPayslipLine(data))
 
-export const removePayslipLineFn = post()
+export const removePayslipLineFn = createServerFn({ method: "POST" })
   .inputValidator(PayslipLineRemoveSchema)
   .handler(({ data }) => hr.removePayslipLine(data))
 
@@ -270,11 +268,11 @@ export const getMyLeaveRequestsFn = createServerFn().handler(async () => {
   return data
 })
 
-export const requestMyLeaveFn = post()
+export const requestMyLeaveFn = createServerFn({ method: "POST" })
   .inputValidator(MyLeaveRequestSchema)
   .handler(({ data }) => hr.requestMyLeave(data))
 
-export const cancelMyLeaveFn = post()
+export const cancelMyLeaveFn = createServerFn({ method: "POST" })
   .inputValidator(EntityIdSchema)
   .handler(({ data }) => hr.cancelMyLeave(data.id))
 
