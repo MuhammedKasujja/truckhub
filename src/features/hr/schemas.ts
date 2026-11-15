@@ -73,6 +73,15 @@ export const StaffFormSchema = z.object({
 
 export const StaffCreateSchema = StaffFormSchema.extend({
   basic_salary: optionalAmount,
+  /** Set when the staff member is created from an existing user or driver. */
+  user_id: optionalId,
+  driver_id: optionalId,
+})
+
+/** `/hr/staff/new?from_user=…` or `?from_driver=…` prefills the form from that record. */
+export const StaffNewSearchSchema = z.object({
+  from_user: z.string().optional(),
+  from_driver: z.string().optional(),
 })
 
 export const StaffUpdateSchema = StaffFormSchema.extend({
@@ -88,6 +97,9 @@ export const StaffSearchSchema = z.object({
   status: z.enum(["active", "suspended", "terminated"]).optional(),
   department_id: z.string().optional(),
   has_system_access: z.boolean().optional(),
+  /** Finds the staff record linked to a login or a driver. */
+  user_id: z.string().optional(),
+  driver_id: z.string().optional(),
 })
 
 export type StaffSearch = z.infer<typeof StaffSearchSchema>

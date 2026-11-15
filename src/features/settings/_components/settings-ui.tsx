@@ -27,7 +27,7 @@ export function SettingsPage({
   return (
     <div
       className={cn(
-        "flex w-full max-w-6xl flex-col gap-6 pr-4 pb-10",
+        "flex w-full flex-col gap-6 pb-10",
         className
       )}
       {...props}

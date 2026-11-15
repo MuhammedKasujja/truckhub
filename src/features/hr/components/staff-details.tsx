@@ -263,6 +263,21 @@ export function StaffDetails({ staff }: { staff: Staff }) {
               <DetailItem icon={CalendarDays} label="Hired">
                 {formatDate(staff.hire_date)}
               </DetailItem>
+              {staff.driver_id && (
+                <DetailItem icon={IdCard} label="Also a driver">
+                  {hasPermission("drivers:view") ? (
+                    <Link
+                      to="/drivers/$driverId/view"
+                      params={{ driverId: staff.driver_id }}
+                      className="text-primary hover:underline"
+                    >
+                      View driver record
+                    </Link>
+                  ) : (
+                    "Yes"
+                  )}
+                </DetailItem>
+              )}
             </div>
           </SettingsSection>
 

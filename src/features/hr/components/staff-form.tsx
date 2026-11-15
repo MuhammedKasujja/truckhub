@@ -2,7 +2,13 @@ import { Link, useNavigate } from "@tanstack/react-router"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { ArrowLeft, Banknote, BriefcaseBusiness, IdCard } from "lucide-react"
+import {
+  ArrowLeft,
+  Banknote,
+  BriefcaseBusiness,
+  IdCard,
+  Link2,
+} from "lucide-react"
 import { departmentsQueryOptions } from "../query-options"
 import { StaffCreateSchema, StaffUpdateSchema } from "../schemas"
 import { createStaffFn, updateStaffFn } from "../services"
@@ -14,6 +20,7 @@ import {
 } from "../labels"
 import { EARLIEST_DATE, OptionalSelectField } from "./hr-ui"
 import type z from "zod"
+import type { StaffPrefill, StaffSource } from "../staff-source"
 import type { Staff } from "../types"
 import { Button } from "@/components/ui/button"
 import {
@@ -35,7 +42,7 @@ const STATUS_OPTIONS = [
   { value: "suspended", label: "Suspended" },
 ]
 
-export function toFormValues(staff?: Staff): FormValues {
+export function toFormValues(staff?: Staff, prefill?: StaffPrefill): FormValues {
   if (!staff) {
     return {
       first_name: "",
@@ -46,6 +53,7 @@ export function toFormValues(staff?: Staff): FormValues {
       payment_method: "bank",
       hire_date: new Date().toLocaleDateString("en-CA"),
       basic_salary: "",
+      ...prefill,
     }
   }
   return {
@@ -73,14 +81,21 @@ export function toFormValues(staff?: Staff): FormValues {
   }
 }
 
-export function StaffForm({ staff }: { staff?: Staff }) {
+type StaffFormProps = {
+  staff?: Staff
+  /** The user or driver a new staff member is being created from. */
+  source?: StaffSource
+  prefill?: StaffPrefill
+}
+
+export function StaffForm({ staff, source, prefill }: StaffFormProps) {
   const navigate = useNavigate()
   const isEdit = !!staff
   const { data: departments = [] } = useQuery(departmentsQueryOptions())
 
   const form = useForm<FormValues>({
     resolver: zodResolver(isEdit ? StaffUpdateSchema : StaffCreateSchema),
-    defaultValues: toFormValues(staff),
+    defaultValues: toFormValues(staff, prefill),
   })
   const paymentMethod = useWatch({ control: form.control, name: "payment_method" })
 
@@ -107,7 +122,19 @@ export function StaffForm({ staff }: { staff?: Staff }) {
 
   const backLink = staff
     ? ({ to: "/hr/staff/$staffId/view", params: { staffId: staff.id } } as const)
-    : ({ to: "/hr/staff" } as const)
+    : source?.kind === "user"
+      ? ({
+          to: "/settings/user-management/users/$userId/view",
+          params: { userId: source.id },
+        } as const)
+      : source?.kind === "driver"
+        ? ({ to: "/drivers/$driverId/view", params: { driverId: source.id } } as const)
+        : ({ to: "/hr/staff" } as const)
+  const backText = isEdit
+    ? "Back to staff member"
+    : source
+      ? `Back to ${source.name}`
+      : "All staff"
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
@@ -117,17 +144,45 @@ export function StaffForm({ staff }: { staff?: Staff }) {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
-          {isEdit ? "Back to staff member" : "All staff"}
+          {backText}
         </Link>
         <h2 className="text-lg font-bold tracking-tight">
-          {isEdit ? `Edit ${staff.name}` : "Add a staff member"}
+          {isEdit
+            ? `Edit ${staff.name}`
+            : source
+              ? `Create a staff record for ${source.name}`
+              : "Add a staff member"}
         </h2>
         <p className="text-sm text-muted-foreground">
           {isEdit
             ? "Update their personal, employment and payment details."
-            : "This creates their staff record. You can give them a login afterwards."}
+            : source
+              ? "Check the details copied over, then add their employment and pay."
+              : "This creates their staff record. You can give them a login afterwards."}
         </p>
       </div>
+
+      {source && (
+        <p className="flex items-start gap-2.5 rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+          <Link2 className="mt-0.5 size-4 shrink-0 text-primary" />
+          <span>
+            {source.kind === "user" ? (
+              <>
+                This staff record will be linked to{" "}
+                <span className="font-medium">{source.name}</span>'s existing
+                login, so they can see their own leave and payslips straight
+                away. Their login and roles don't change.
+              </>
+            ) : (
+              <>
+                This staff record will be linked to the driver{" "}
+                <span className="font-medium">{source.name}</span>. Their driver
+                record doesn't change.
+              </>
+            )}
+          </span>
+        </p>
+      )}
 
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <SettingsSection icon={IdCard} title="Personal details">

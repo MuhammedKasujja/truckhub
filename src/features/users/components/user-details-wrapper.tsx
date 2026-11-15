@@ -20,6 +20,7 @@ import { UserAvatar, formatRelativeTime } from "./user-avatar"
 import { DeleteUserDialog, UserActionsMenu } from "./user-actions"
 import { UserAssignRolesDialog } from "./user-assign-roles-dialog"
 import type { SystemUser } from "../types"
+import { StaffLink } from "@/features/hr/components/staff-link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
@@ -103,6 +104,7 @@ export function UserDetailsWrapper({ user }: UserDetailsWrapperProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <StaffLink userId={user.id} />
           <Can permission="users:edit">
             <Button variant="outline" asChild>
               <Link

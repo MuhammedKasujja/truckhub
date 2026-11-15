@@ -12,6 +12,11 @@ import {
   formatDays,
   formatPeriod,
 } from "@/features/hr/labels"
+import {
+  splitFullName,
+  staffValuesFromDriver,
+  staffValuesFromUser,
+} from "@/features/hr/staff-source"
 import { HrModulePermissions } from "@/features/auth/permissions/hr_permissions"
 import { checkUserPermission } from "@/lib/permissions"
 
@@ -191,5 +196,77 @@ describe("permissions", () => {
       permissions: [...HrModulePermissions["hr:staff:view"]],
     })
     expect(fully("hr:staff:view")).toBe(true)
+  })
+})
+
+describe("creating staff from a user or driver", () => {
+  it("copies a user's details and links their login", () => {
+    expect(
+      staffValuesFromUser({
+        id: "user-1",
+        first_name: "Joan",
+        last_name: "Auma",
+        email: "joan@example.com",
+        phone: undefined,
+      })
+    ).toEqual({
+      first_name: "Joan",
+      last_name: "Auma",
+      email: "joan@example.com",
+      phone: "",
+      user_id: "user-1",
+    })
+  })
+
+  it("splits a driver's single name field", () => {
+    expect(splitFullName("Musa Kato")).toEqual({ first_name: "Musa", last_name: "Kato" })
+    expect(splitFullName("  Mary  Jane   Nakato ")).toEqual({
+      first_name: "Mary",
+      last_name: "Jane Nakato",
+    })
+    expect(splitFullName("Musa")).toEqual({ first_name: "Musa", last_name: "" })
+  })
+
+  it("copies a driver's details and links the driver", () => {
+    expect(
+      staffValuesFromDriver({
+        id: "driver-1",
+        full_name: "Musa Kato",
+        email: "musa@example.com",
+        phone: "0700000000",
+        gender: "Male",
+        date_of_birth: "1990-05-17T00:00:00",
+        national_id: "CM90001",
+      })
+    ).toEqual({
+      first_name: "Musa",
+      last_name: "Kato",
+      email: "musa@example.com",
+      phone: "0700000000",
+      gender: "male",
+      date_of_birth: "1990-05-17",
+      national_id: "CM90001",
+      driver_id: "driver-1",
+    })
+  })
+
+  it("leaves an unknown gender and missing details for HR to fill in", () => {
+    const values = staffValuesFromDriver({
+      id: "driver-2",
+      full_name: "Sam",
+      email: "sam@example.com",
+      gender: "other",
+    })
+    expect(values.gender).toBeNull()
+    expect(values.date_of_birth).toBeNull()
+    // a one-word name leaves the last name empty, which the form then asks for
+    expect(
+      StaffCreateSchema.safeParse({ ...staff, ...values }).error?.issues[0].path
+    ).toEqual(["last_name"])
+  })
+
+  it("accepts the link ids on the create form", () => {
+    expect(StaffCreateSchema.safeParse({ ...staff, user_id: "user-1" }).success).toBe(true)
+    expect(StaffCreateSchema.safeParse({ ...staff, driver_id: "driver-1" }).success).toBe(true)
   })
 })

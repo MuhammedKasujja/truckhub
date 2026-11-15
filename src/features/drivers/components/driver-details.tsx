@@ -33,11 +33,12 @@ import { VEHICLE_TYPES, labelFor } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
 import type { TestStatus, VehicleType } from "./driver-options"
 import type { DriverPolicy } from "./driver-policy"
-import type { Driver, Document } from "../types"
+import type { Document, Driver } from "../types"
 import type { Vehicle } from "@/features/vehicles/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
+import { StaffLink } from "@/features/hr/components/staff-link"
 import { Skeleton } from "@/components/ui/skeleton"
 import { VehiclePicker } from "@/features/vehicles/components"
 import {
@@ -135,17 +136,20 @@ export function DriverDetails({
               </span>
             </div>
           </div>
-          <Can permission="drivers:edit">
-            <Button asChild>
-              <Link
-                to="/drivers/$driverId/edit"
-                params={{ driverId: driver.id }}
-              >
-                <PencilIcon />
-                Edit
-              </Link>
-            </Button>
-          </Can>
+          <div className="flex flex-wrap items-center gap-2">
+            <StaffLink driverId={driver.id} />
+            <Can permission="drivers:edit">
+              <Button asChild>
+                <Link
+                  to="/drivers/$driverId/edit"
+                  params={{ driverId: driver.id }}
+                >
+                  <PencilIcon />
+                  Edit
+                </Link>
+              </Button>
+            </Can>
+          </div>
         </section>
       </div>
 
