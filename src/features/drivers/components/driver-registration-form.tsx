@@ -126,7 +126,7 @@ export function toDriverCreatePayload(
   )
   return {
     payload: {
-      full_name: values.fullName.trim(),
+      full_name: (values.fullName ?? "").trim(),
       phone: values.phone.trim(),
       email: values.email.trim(),
       avatar: values.avatar ?? undefined,

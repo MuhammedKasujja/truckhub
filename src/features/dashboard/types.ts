@@ -7,9 +7,12 @@ import type { VehicleStatus } from "@/features/vehicles/enums"
 import type { MaintenanceRecord } from "@/features/maintanence/types"
 
 /**
- * A single headline metric for the selected period.
+ * A single headline metric.
  * `previous` is the same metric for the period of equal length immediately before.
- * `series` is an ordered list of values (oldest → newest) used for sparklines.
+ * It is null for metrics that describe the present (outstanding balance, active
+ * shipments, fleet utilisation), which have no earlier value to compare with.
+ * `series` is one value per day of the period (oldest → newest) for sparklines;
+ * empty for present-state metrics.
  */
 export type DashboardKpi = {
   value: number
@@ -18,24 +21,30 @@ export type DashboardKpi = {
 }
 
 export type DashboardKpis = {
-  revenue?: DashboardKpi
-  collected?: DashboardKpi
-  outstanding?: DashboardKpi & { count?: number }
-  active_shipments?: DashboardKpi
+  /** Invoices issued in the period */
+  revenue: DashboardKpi
+  /** Payments received in the period, net of refunds */
+  collected: DashboardKpi
+  /** Balance still owed now; `count` is the number of unpaid invoices */
+  outstanding: DashboardKpi & { count: number }
+  /** Trips dispatched, in progress or delayed now */
+  active_shipments: DashboardKpi
   /** percentage 0–100 */
-  fleet_utilization?: DashboardKpi & { in_use?: number; total?: number }
-  /** percentage 0–100 */
-  quote_conversion?: DashboardKpi
+  fleet_utilization: DashboardKpi & { in_use: number; total: number }
+  /** percentage 0–100 of sent quotations that were accepted */
+  quote_conversion: DashboardKpi
 }
 
 export type DashboardAlerts = {
-  delayed_shipments?: number
-  unassigned_shipments?: number
-  overdue_invoices?: number
-  maintenance_due?: number
+  delayed_shipments: number
+  unassigned_shipments: number
+  overdue_invoices: number
+  /** Scheduled services starting within 7 days, including late ones */
+  maintenance_due: number
 }
 
 export type DashboardRevenuePoint = {
+  /** yyyy-MM-dd */
   date: string
   invoiced: number
   paid: number
@@ -64,12 +73,13 @@ export type DashboardStatistics = {
   recent_invoices: Invoice[]
   recent_payments: Payment[]
 
-  // ---- Period-aware fields (optional until the backend ships them) ----
-  kpis?: DashboardKpis
-  alerts?: DashboardAlerts
-  revenue_series?: DashboardRevenuePoint[]
-  shipments_by_status?: Partial<Record<ShipmentStatus, number>>
-  vehicles_by_status?: Partial<Record<VehicleStatus, number>>
-  upcoming_maintenance?: MaintenanceRecord[]
-  recent_shipments?: Shipment[]
+  // ---- Depend on the selected period, or describe operations right now ----
+  kpis: DashboardKpis
+  alerts: DashboardAlerts
+  /** One point per day of the selected period */
+  revenue_series: DashboardRevenuePoint[]
+  shipments_by_status: Partial<Record<ShipmentStatus, number>>
+  vehicles_by_status: Partial<Record<VehicleStatus, number>>
+  upcoming_maintenance: MaintenanceRecord[]
+  recent_shipments: Shipment[]
 }

@@ -4,18 +4,12 @@ import { useQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   BanknoteIcon,
-  FileTextIcon,
   GaugeIcon,
   ReceiptIcon,
   RepeatIcon,
   TruckIcon,
-  UsersIcon,
 } from "lucide-react"
-import type { DashboardStatistics } from "@/features/dashboard/types"
-import {
-  isDashboardPreviewEnabled,
-  withDashboardPreview,
-} from "@/features/dashboard/preview-data"
+import type { DashboardKpis } from "@/features/dashboard/types"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
@@ -73,13 +67,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate()
   const period = useMemo(() => resolveDashboardPeriod(search), [search])
   const { data: response } = useQuery(dashboardQueryOptions(period))
-
-  const preview = isDashboardPreviewEnabled(search.preview)
-  const data = useMemo(
-    () =>
-      preview ? withDashboardPreview(response?.data, period) : response?.data,
-    [preview, response?.data, period]
-  )
+  const data = response?.data
 
   const periodLabel =
     search.range === "custom"
@@ -100,22 +88,10 @@ function RouteComponent() {
           <DashboardRangePicker
             search={search}
             period={period}
-            onChange={(next) =>
-              navigate({
-                search: { ...next, preview: search.preview },
-                replace: true,
-              })
-            }
+            onChange={(next) => navigate({ search: next, replace: true })}
           />
         </PageAction>
       </PageHeader>
-
-      {preview && (
-        <div className="rounded-lg border border-dashed border-info/40 bg-info/10 px-3 py-2 text-xs text-info-foreground">
-          Preview mode: fields the API doesn't return yet are filled with sample
-          data. Remove <code>?preview=true</code> to see real data only.
-        </div>
-      )}
 
       {!data ? (
         <div className="rounded-lg border border-dashed p-10 text-center text-sm text-muted-foreground">
@@ -124,51 +100,35 @@ function RouteComponent() {
       ) : (
         <>
           <ActionStrip alerts={data.alerts} />
-          <KpiRow data={data} comparisonLabel={comparisonLabel} />
+          <KpiRow kpis={data.kpis} comparisonLabel={comparisonLabel} />
 
-          {(data.revenue_series || data.shipments_by_status) && (
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-              {data.revenue_series && (
-                <Can permission="invoices:view">
-                  <div className="lg:col-span-8">
-                    <RevenueChart
-                      data={data.revenue_series}
-                      periodLabel={periodLabel}
-                    />
-                  </div>
-                </Can>
-              )}
-              {data.shipments_by_status && (
-                <Can permission="shipments:module">
-                  <div className="lg:col-span-4">
-                    <ShipmentPipeline counts={data.shipments_by_status} />
-                  </div>
-                </Can>
-              )}
-            </div>
-          )}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+            <Can permission="invoices:view">
+              <div className="lg:col-span-8">
+                <RevenueChart
+                  data={data.revenue_series}
+                  periodLabel={periodLabel}
+                />
+              </div>
+            </Can>
+            <Can permission="shipments:module">
+              <div className="lg:col-span-4">
+                <ShipmentPipeline counts={data.shipments_by_status} />
+              </div>
+            </Can>
+          </div>
 
-          {(data.vehicles_by_status ||
-            data.recent_shipments ||
-            data.upcoming_maintenance) && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {data.vehicles_by_status && (
-                <Can permission="vehicles:view">
-                  <FleetStatusChart counts={data.vehicles_by_status} />
-                </Can>
-              )}
-              {data.recent_shipments && (
-                <Can permission="shipments:module">
-                  <LiveOperations shipments={data.recent_shipments} />
-                </Can>
-              )}
-              {data.upcoming_maintenance && (
-                <Can permission="maintenance:view">
-                  <UpcomingMaintenance records={data.upcoming_maintenance} />
-                </Can>
-              )}
-            </div>
-          )}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <Can permission="vehicles:view">
+              <FleetStatusChart counts={data.vehicles_by_status} />
+            </Can>
+            <Can permission="shipments:module">
+              <LiveOperations shipments={data.recent_shipments} />
+            </Can>
+            <Can permission="maintenance:view">
+              <UpcomingMaintenance records={data.upcoming_maintenance} />
+            </Can>
+          </div>
 
           <RecentActivityTabs data={data} />
         </>
@@ -178,130 +138,70 @@ function RouteComponent() {
 }
 
 /**
- * Headline numbers. Uses the period-aware `kpis` block when the API provides it,
- * otherwise falls back to the all-time totals in `statistics`.
+ * Headline numbers. Revenue and quote conversion cover the selected period and
+ * show a change against the period before; the others describe right now.
  */
 function KpiRow({
-  data,
+  kpis,
   comparisonLabel,
 }: {
-  data: DashboardStatistics
+  kpis: DashboardKpis
   comparisonLabel: string
 }) {
-  const { kpis, statistics } = data
-
-  if (!kpis) {
-    return (
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Can permission="payments:view">
-          <KpiCard
-            label="Payments"
-            value={compactMoney(statistics.payments.total_amount)}
-            description={`${statistics.payments.total_count} payments`}
-            icon={<BanknoteIcon />}
-            to="/payments"
-          />
-        </Can>
-        <Can permission="invoices:view">
-          <KpiCard
-            label="Invoices"
-            value={statistics.invoices.total}
-            icon={<ReceiptIcon />}
-            to="/invoices"
-          />
-        </Can>
-        <KpiCard
-          label="Clients"
-          value={statistics.clients.total}
-          icon={<UsersIcon />}
-          to="/clients"
-        />
-        <Can permission="quotations:view">
-          <KpiCard
-            label="Quotations"
-            value={statistics.quotations.total}
-            icon={<FileTextIcon />}
-            to="/quotations"
-          />
-        </Can>
-      </div>
-    )
-  }
-
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-      {kpis.revenue && (
-        <Can permission="invoices:view">
-          <KpiCard
-            label="Revenue"
-            value={compactMoney(kpis.revenue.value)}
-            kpi={kpis.revenue}
-            comparisonLabel={comparisonLabel}
-            icon={<BanknoteIcon />}
-            to="/billing/overview"
-          />
-        </Can>
-      )}
-      {kpis.active_shipments && (
-        <Can permission="shipments:module">
-          <KpiCard
-            label="Active shipments"
-            value={kpis.active_shipments.value}
-            kpi={kpis.active_shipments}
-            comparisonLabel={comparisonLabel}
-            icon={<TruckIcon />}
-            to="/shipments/active"
-          />
-        </Can>
-      )}
-      {kpis.fleet_utilization && (
-        <Can permission="vehicles:view">
-          <KpiCard
-            label="Fleet utilisation"
-            value={`${Math.round(kpis.fleet_utilization.value)}%`}
-            kpi={kpis.fleet_utilization}
-            comparisonLabel={comparisonLabel}
-            description={
-              kpis.fleet_utilization.total !== undefined
-                ? `${kpis.fleet_utilization.in_use ?? 0}/${kpis.fleet_utilization.total} trucks in use`
-                : undefined
-            }
-            icon={<GaugeIcon />}
-            to="/vehicles"
-          />
-        </Can>
-      )}
-      {kpis.outstanding && (
-        <Can permission="invoices:view">
-          <KpiCard
-            label="Outstanding"
-            value={compactMoney(kpis.outstanding.value)}
-            kpi={kpis.outstanding}
-            invertTrend
-            comparisonLabel={comparisonLabel}
-            description={
-              kpis.outstanding.count !== undefined
-                ? `${kpis.outstanding.count} unpaid invoices`
-                : undefined
-            }
-            icon={<ReceiptIcon />}
-            to="/invoices"
-            search={{ status: ["issued", "partially_paid", "over_due"] }}
-          />
-        </Can>
-      )}
-      {kpis.quote_conversion && (
-        <Can permission="quotations:view">
-          <KpiCard
-            label="Quote conversion"
-            value={`${Math.round(kpis.quote_conversion.value)}%`}
-            kpi={kpis.quote_conversion}
-            comparisonLabel={comparisonLabel}
-            icon={<RepeatIcon />}
-            to="/quotations"
-          />
-        </Can>
-      )}
+      <Can permission="invoices:view">
+        <KpiCard
+          label="Revenue"
+          value={compactMoney(kpis.revenue.value)}
+          kpi={kpis.revenue}
+          comparisonLabel={comparisonLabel}
+          icon={<BanknoteIcon />}
+          to="/billing/overview"
+        />
+      </Can>
+      <Can permission="shipments:module">
+        <KpiCard
+          label="Active shipments"
+          value={kpis.active_shipments.value}
+          kpi={kpis.active_shipments}
+          description="On the road now"
+          icon={<TruckIcon />}
+          to="/shipments/active"
+        />
+      </Can>
+      <Can permission="vehicles:view">
+        <KpiCard
+          label="Fleet utilisation"
+          value={`${Math.round(kpis.fleet_utilization.value)}%`}
+          kpi={kpis.fleet_utilization}
+          description={`${kpis.fleet_utilization.in_use}/${kpis.fleet_utilization.total} trucks in use`}
+          icon={<GaugeIcon />}
+          to="/vehicles"
+        />
+      </Can>
+      <Can permission="invoices:view">
+        <KpiCard
+          label="Outstanding"
+          value={compactMoney(kpis.outstanding.value)}
+          kpi={kpis.outstanding}
+          invertTrend
+          description={`${kpis.outstanding.count} unpaid invoice${kpis.outstanding.count === 1 ? "" : "s"}`}
+          icon={<ReceiptIcon />}
+          to="/invoices"
+          search={{ status: ["issued", "partially_paid", "over_due"] }}
+        />
+      </Can>
+      <Can permission="quotations:view">
+        <KpiCard
+          label="Quote conversion"
+          value={`${Math.round(kpis.quote_conversion.value)}%`}
+          kpi={kpis.quote_conversion}
+          comparisonLabel={comparisonLabel}
+          icon={<RepeatIcon />}
+          to="/quotations"
+        />
+      </Can>
     </div>
   )
 }

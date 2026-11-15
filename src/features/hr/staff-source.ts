@@ -51,7 +51,7 @@ export function staffValuesFromUser(user: UserLike): StaffPrefill {
 
 /** Drivers have one name field: the first word is the first name, the rest the last. */
 export function splitFullName(fullName: string) {
-  const [first = "", ...rest] = fullName.trim().split(/\s+/)
+  const [first = "", ...rest] = (fullName ?? "").trim().split(/\s+/)
   return { first_name: first, last_name: rest.join(" ") }
 }
 

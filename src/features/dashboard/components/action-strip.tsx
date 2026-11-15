@@ -68,13 +68,11 @@ const toneClasses = {
     "border-warning/30 bg-warning/10 text-warning-foreground hover:bg-warning/20",
 }
 
-export function ActionStrip({ alerts }: { alerts?: DashboardAlerts }) {
+export function ActionStrip({ alerts }: { alerts: DashboardAlerts }) {
   const { hasPermission } = usePermissions()
 
-  if (!alerts) return null
-
   const visible = items.filter(
-    (item) => (alerts[item.key] ?? 0) > 0 && hasPermission(item.permission)
+    (item) => alerts[item.key] > 0 && hasPermission(item.permission)
   )
 
   if (!visible.length) {
@@ -106,7 +104,7 @@ export function ActionStrip({ alerts }: { alerts?: DashboardAlerts }) {
           )}
         >
           {item.icon}
-          {item.label(alerts[item.key] ?? 0)}
+          {item.label(alerts[item.key])}
           <ChevronRightIcon className="opacity-60" />
         </Link>
       ))}

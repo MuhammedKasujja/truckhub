@@ -70,21 +70,15 @@ export function RecentActivityTabs({ data }: { data: DashboardStatistics }) {
   const { hasPermission } = usePermissions()
 
   const tabs: TabDef[] = [
-    ...(data.recent_shipments
-      ? [
-          {
-            key: "shipments" as const,
-            label: "Shipments",
-            permission: "shipments:module" as const,
-            to: "/shipments/active" as const,
-            render: () => (
-              <RecentShipments
-                shipments={data.recent_shipments!.slice(0, ROWS)}
-              />
-            ),
-          },
-        ]
-      : []),
+    {
+      key: "shipments",
+      label: "Shipments",
+      permission: "shipments:module",
+      to: "/shipments/active",
+      render: () => (
+        <RecentShipments shipments={data.recent_shipments.slice(0, ROWS)} />
+      ),
+    },
     {
       key: "quotations",
       label: "Quotations",

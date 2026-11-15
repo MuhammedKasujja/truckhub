@@ -21,8 +21,6 @@ export const DashboardSearchParams = z.object({
   from: z.string().optional(),
   /** yyyy-MM-dd, only used when range is "custom" */
   to: z.string().optional(),
-  /** DEV-only: fill missing fields with sample data (see preview-data.ts) */
-  preview: z.boolean().optional().default(true),
 })
 
 export type DashboardSearchParamsInput = z.infer<typeof DashboardSearchParams>
