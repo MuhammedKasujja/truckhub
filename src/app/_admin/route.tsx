@@ -17,6 +17,7 @@ import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { AppBreadcrumbs } from "@/components/app-breadcrumbs"
+import { NotificationsProvider } from "@/components/providers/notifications/notification-context"
 
 export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
@@ -42,32 +43,34 @@ function RouteComponent() {
   useGlobalShortcuts()
   return (
     <AuthProvider>
-      <SidebarProvider
-        className="overflow-x-clip"
-        defaultOpen={false}
-        style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
-      >
-        <AppSidebar />
-        <SidebarInset className="overflow-x-clip">
-          <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
-            {/* <SidebarTrigger className="-ml-1" /> */}
-            <div className="flex w-full items-center justify-between gap-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <NavigationButtons />
-                <AppBreadcrumbs />
+      <NotificationsProvider>
+        <SidebarProvider
+          className="overflow-x-clip"
+          defaultOpen={false}
+          style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
+        >
+          <AppSidebar />
+          <SidebarInset className="overflow-x-clip">
+            <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
+              {/* <SidebarTrigger className="-ml-1" /> */}
+              <div className="flex w-full items-center justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <NavigationButtons />
+                  <AppBreadcrumbs />
+                </div>
+                <div className="flex items-center gap-2">
+                  <GlobalSearchDialog />
+                  <CreateEntityDialog />
+                </div>
+                <NavigationActions />
               </div>
-              <div className="flex items-center gap-2">
-                <GlobalSearchDialog />
-                <CreateEntityDialog />
-              </div>
-              <NavigationActions />
+            </nav>
+            <div className="p-4 md:p-6">
+              <Outlet />
             </div>
-          </nav>
-          <div className="p-4 md:p-6">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </NotificationsProvider>
     </AuthProvider>
   )
 }

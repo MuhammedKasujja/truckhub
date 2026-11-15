@@ -1,4 +1,4 @@
-import { Quotation } from "../types"
+import { Quotation, QuotationActivity } from "../types"
 import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
@@ -37,6 +37,13 @@ export async function updateQuotation(data: UpdateQuotationRequest) {
 
 export async function getQuotationDetails(quotationId: EntityId) {
   return await apiClient.getFn<Quotation>(`${endpoint}/${quotationId}`)
+}
+
+/** What happened to the quotation: created, sent, accepted, ... */
+export async function getQuotationActivities(quotationId: EntityId) {
+  return await apiClient.getFn<QuotationActivity[]>(
+    `${endpoint}/${quotationId}/activities`
+  )
 }
 
 export async function markQuotationAccepted(quotationId: EntityId) {

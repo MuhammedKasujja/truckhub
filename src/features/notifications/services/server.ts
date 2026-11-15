@@ -1,27 +1,37 @@
-import { EntityId } from "@/schemas"
-import { NotificationItem } from "../types"
+import type { NotificationItem } from "../types"
+import type { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
+import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "v1/notifications"
 
-export function getNotifications(userId: EntityId, unreadOnly?: boolean) {
-  return apiClient.getFn<NotificationItem[]>(
-    `${endpoint}?unread_only=${unreadOnly ?? false}`
+type ListInput = { page: number; perPage: number; unreadOnly: boolean }
+
+/** The logged-in user's notifications, newest first. */
+export async function getNotifications(input: ListInput) {
+  const params = generateApiSearchParams(input)
+  const response = await apiClient.getPaginatedFn<NotificationItem[]>(
+    `${endpoint}?${params}`
   )
+
+  if (response.success) {
+    return { data: response.data, pagination: response.pagination }
+  }
+
+  return { error: response.error }
 }
 
-export function markNotificationRead(
-  userId: EntityId,
-  notificationId: EntityId
-) {
-  return apiClient.postFn<NotificationItem>(
-    `${endpoint}/${notificationId}/read`,
-    {}
-  )
+export function getUnreadNotificationCount() {
+  return apiClient.getFn<{ count: number }>(`${endpoint}/unread-count`)
 }
 
-export async function markAllNotificationsRead(userId: EntityId) {
-  return await apiClient.postFn<NotificationItem[]>(`${endpoint}/read-all`, {})
+/** `id` is the recipient row id, the `id` of a listed or pushed notification. */
+export function markNotificationRead(id: EntityId) {
+  return apiClient.postFn<null>(`${endpoint}/${id}/read`, {})
+}
+
+export function markAllNotificationsRead() {
+  return apiClient.postFn<null>(`${endpoint}/read-all`, {})
 }
 
 /**
@@ -30,7 +40,6 @@ export async function markAllNotificationsRead(userId: EntityId) {
  * reaches the browser, and it's worthless a few seconds after issue or
  * immediately after the socket connects — whichever comes first.
  */
-
 export async function websocketConnect() {
   return await apiClient.postFn<{ ticket: string; expires_in: number }>(
     "v1/auth/ws-ticket",

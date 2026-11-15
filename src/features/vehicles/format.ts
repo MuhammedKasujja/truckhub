@@ -26,6 +26,7 @@ export const VEHICLE_STATUS_META: Record<
   reserved: { label: "Reserved", tone: "warning" },
   rented: { label: "Rented", tone: "warning" },
   in_maintenance: { label: "In maintenance", tone: "error" },
+  retired: { label: "Retired", tone: "default" },
 }
 
 export const vehicleStatusMeta = (status: VehicleStatus | string) =>

@@ -13,6 +13,7 @@ import {
   updateQuotation,
   sendQuotationEmail,
   getQuotationDetails,
+  getQuotationActivities,
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
@@ -94,6 +95,13 @@ export const getQuotationDetailsFn = createServerFn({ method: "GET" })
       data: { ...quotation, activeRevision, versions },
       message: result.message,
     }
+  })
+
+export const getQuotationActivitiesFn = createServerFn({ method: "GET" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getQuotationActivities(data.id))
+    return result.data ?? []
   })
 
 export const getQuotationReportPdfFn = createServerFn({ method: "GET" })

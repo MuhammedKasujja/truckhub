@@ -1,3 +1,5 @@
+import { useState } from "react"
+import { Link } from "@tanstack/react-router"
 import { BellIcon } from "lucide-react"
 import {
   DropdownMenu,
@@ -7,31 +9,25 @@ import {
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { useNotifications } from "@/features/notifications/hooks/use-notifications"
-import { useAuth } from "./providers/auth-context"
-import { formatDateTime } from "@/lib/format"
+import { useNotificationsContext } from "@/components/providers/notifications/notification-context"
+import { NotificationRow } from "@/features/notifications/components/notification-row"
 
 export function NotificationDropdown() {
-  const { user } = useAuth()
-  const { unreadCount, notifications, markAllRead } = useNotifications(user?.id)
+  const [open, setOpen] = useState(false)
+  const { unreadCount, notifications, isLoading, markRead, markAllRead } =
+    useNotificationsContext()
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        {/* <Button variant="ghost" size="icon" className="relative">
-          <Bell className="w-5 h-5" />
-
-          {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[10px]">
-              {unreadCount}
-            </Badge>
-          )}
-        </Button> */}
         <Button
           type="button"
           className="relative inline-flex items-center justify-center rounded-md p-2 hover:bg-accent"
-          aria-label="Notifications"
+          aria-label={
+            unreadCount > 0
+              ? `Notifications, ${unreadCount} unread`
+              : "Notifications"
+          }
           size={"icon-sm"}
           variant={"ghost"}
         >
@@ -41,9 +37,6 @@ export function NotificationDropdown() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
             </span>
-            // <span className="text-destructive-foreground absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-xs">
-            //   {unreadCount > 99 ? "99+" : unreadCount}
-            // </span>
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -54,7 +47,7 @@ export function NotificationDropdown() {
             Notifications
             {unreadCount > 0 && (
               <span className="ml-2 rounded-lg bg-secondary px-2 py-0.5 text-xs font-normal text-secondary-foreground">
-                {unreadCount} new
+                {unreadCount > 99 ? "99+" : unreadCount} new
               </span>
             )}
           </p>
@@ -71,36 +64,32 @@ export function NotificationDropdown() {
         </div>
         <Separator />
 
-        {/* List */}
         <ScrollArea className="h-72">
-          <div className="flex flex-col">
-            {notifications.map((n) => (
-              <button
-                key={n.id}
-                className={cn(
-                  "border-b px-3 py-2 text-left transition hover:bg-muted",
-                  n.is_read && "bg-muted/40"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">{n.title}</p>
-                  <span className="text-[10px] text-muted-foreground">
-                    {formatDateTime(n.created_at)}
-                  </span>
-                </div>
-
-                <p className="text-xs text-muted-foreground">{n.body}</p>
-              </button>
-            ))}
-          </div>
+          {notifications.length === 0 ? (
+            <p className="px-3 py-10 text-center text-sm text-muted-foreground">
+              {isLoading ? "Loading…" : "No notifications yet."}
+            </p>
+          ) : (
+            <div className="flex flex-col">
+              {notifications.map((n) => (
+                <NotificationRow
+                  key={n.id}
+                  notification={n}
+                  onRead={markRead}
+                  onOpen={() => setOpen(false)}
+                />
+              ))}
+            </div>
+          )}
         </ScrollArea>
 
         <Separator />
 
-        {/* Footer */}
         <div className="p-2">
-          <Button variant="ghost" className="w-full">
-            View all notifications
+          <Button variant="ghost" className="w-full" asChild>
+            <Link to="/notifications" onClick={() => setOpen(false)}>
+              View all notifications
+            </Link>
           </Button>
         </div>
       </DropdownMenuContent>

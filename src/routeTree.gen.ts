@@ -27,6 +27,7 @@ import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/inde
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
 import { Route as AdminProfileIndexRouteImport } from './app/_admin/profile/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
+import { Route as AdminNotificationsIndexRouteImport } from './app/_admin/notifications/index'
 import { Route as AdminMyHrIndexRouteImport } from './app/_admin/my-hr/index'
 import { Route as AdminMaintenanceIndexRouteImport } from './app/_admin/maintenance/index'
 import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
@@ -201,6 +202,11 @@ const AdminProfileIndexRoute = AdminProfileIndexRouteImport.update({
 const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   id: '/payments/',
   path: '/payments/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNotificationsIndexRoute = AdminNotificationsIndexRouteImport.update({
+  id: '/notifications/',
+  path: '/notifications/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminMyHrIndexRoute = AdminMyHrIndexRouteImport.update({
@@ -715,6 +721,7 @@ export interface FileRoutesByFullPath {
   '/live-map/': typeof AdminLiveMapIndexRoute
   '/maintenance/': typeof AdminMaintenanceIndexRoute
   '/my-hr/': typeof AdminMyHrIndexRoute
+  '/notifications/': typeof AdminNotificationsIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
   '/profile/': typeof AdminProfileIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
@@ -820,6 +827,7 @@ export interface FileRoutesByTo {
   '/live-map': typeof AdminLiveMapIndexRoute
   '/maintenance': typeof AdminMaintenanceIndexRoute
   '/my-hr': typeof AdminMyHrIndexRoute
+  '/notifications': typeof AdminNotificationsIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
   '/profile': typeof AdminProfileIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
@@ -927,6 +935,7 @@ export interface FileRoutesById {
   '/_admin/live-map/': typeof AdminLiveMapIndexRoute
   '/_admin/maintenance/': typeof AdminMaintenanceIndexRoute
   '/_admin/my-hr/': typeof AdminMyHrIndexRoute
+  '/_admin/notifications/': typeof AdminNotificationsIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
   '/_admin/profile/': typeof AdminProfileIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
@@ -1034,6 +1043,7 @@ export interface FileRouteTypes {
     | '/live-map/'
     | '/maintenance/'
     | '/my-hr/'
+    | '/notifications/'
     | '/payments/'
     | '/profile/'
     | '/quotations/'
@@ -1139,6 +1149,7 @@ export interface FileRouteTypes {
     | '/live-map'
     | '/maintenance'
     | '/my-hr'
+    | '/notifications'
     | '/payments'
     | '/profile'
     | '/quotations'
@@ -1245,6 +1256,7 @@ export interface FileRouteTypes {
     | '/_admin/live-map/'
     | '/_admin/maintenance/'
     | '/_admin/my-hr/'
+    | '/_admin/notifications/'
     | '/_admin/payments/'
     | '/_admin/profile/'
     | '/_admin/quotations/'
@@ -1459,6 +1471,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/payments/'
       preLoaderRoute: typeof AdminPaymentsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/notifications/': {
+      id: '/_admin/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications/'
+      preLoaderRoute: typeof AdminNotificationsIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/my-hr/': {
@@ -2261,6 +2280,7 @@ interface AdminRouteRouteChildren {
   AdminLiveMapIndexRoute: typeof AdminLiveMapIndexRoute
   AdminMaintenanceIndexRoute: typeof AdminMaintenanceIndexRoute
   AdminMyHrIndexRoute: typeof AdminMyHrIndexRoute
+  AdminNotificationsIndexRoute: typeof AdminNotificationsIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
   AdminProfileIndexRoute: typeof AdminProfileIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
@@ -2320,6 +2340,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminLiveMapIndexRoute: AdminLiveMapIndexRoute,
   AdminMaintenanceIndexRoute: AdminMaintenanceIndexRoute,
   AdminMyHrIndexRoute: AdminMyHrIndexRoute,
+  AdminNotificationsIndexRoute: AdminNotificationsIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
   AdminProfileIndexRoute: AdminProfileIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,

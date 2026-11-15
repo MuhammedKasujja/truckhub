@@ -4,6 +4,7 @@ import { queryOptions } from "@tanstack/react-query"
 import {
   getInvoicesFn,
   getInvoiceDetailsFn,
+  getInvoiceActivitiesFn,
   getInvoiceStatisticsFn,
 } from "./services"
 
@@ -15,6 +16,9 @@ export const invoiceQueryKeys = {
     [...invoiceQueryKeys.list(), "search", search] as const,
   details: () => [...invoiceQueryKeys.all(), "detail"] as const,
   detail: (id: EntityId) => [...invoiceQueryKeys.details(), id] as const,
+  // Under the detail key, so refreshing an invoice refreshes its timeline
+  activities: (id: EntityId) =>
+    [...invoiceQueryKeys.detail(id), "activities"] as const,
 } as const
 
 export const invoiceQueryOptions = (search: InvoiceListSearchParams) =>
@@ -42,4 +46,10 @@ export const invoiceStatisticsQueryOptions = () =>
   queryOptions({
     queryKey: invoiceQueryKeys.statistics(),
     queryFn: () => getInvoiceStatisticsFn(),
+  })
+
+export const invoiceActivitiesQueryOptions = (id: EntityId) =>
+  queryOptions({
+    queryKey: invoiceQueryKeys.activities(id),
+    queryFn: () => getInvoiceActivitiesFn({ data: { id } }),
   })

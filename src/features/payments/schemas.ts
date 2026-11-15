@@ -13,7 +13,15 @@ export const EditPaymentBaseSchema = z.object({
   entityId: IDSchema,
   paymentMethod: z.enum(PaymentModeList),
   clientId: IDSchema.optional(),
-  paidAt: z.date().optional().nullable(),
+  // Left empty for a payment made now; a past date back-dates the payment
+  paidAt: z
+    .date()
+    .optional()
+    .nullable()
+    .refine(
+      (date) => !date || date.getTime() <= Date.now(),
+      "Cannot be in the future"
+    ),
   transactionRef: z.string().optional().nullable(),
   type: z.enum(PaymentEntityList),
 })
@@ -39,8 +47,11 @@ export const PaymentSearchParamsCache = z.object({
   method: z.array(z.enum(PaymentModeList)).optional(),
   // sort: getSortingStateSchema<Payment>().default([{ id: "date", desc: true }]),
   sort: getSortingStateSchema<Payment>().default([
-    { id: "created_at", desc: true },
+    { id: "paid_at", desc: true },
   ]),
+  // Narrow the list to one client or one invoice
+  clientId: IDSchema.optional(),
+  invoiceId: IDSchema.optional(),
   date: z.array(z.number().nullable()).max(2).optional().nullable(),
   // advanced filter
   filters: getFiltersStateSchema().optional(),

@@ -207,7 +207,7 @@ function availableActions(shipment: Shipment): ActionDef[] {
   if (a.assignDriver)
     list.push({
       key: "assign-driver",
-      label: "Assign driver",
+      label: shipment.driver ? "Change driver" : "Assign driver",
       icon: UserRoundPlus,
     })
   if (a.dispatch)
@@ -217,10 +217,7 @@ function availableActions(shipment: Shipment): ActionDef[] {
   if (a.capture)
     list.push({
       key: "record",
-      label:
-        shipment.status === "captured_details"
-          ? "Edit trip details"
-          : "Capture details",
+      label: "Capture details",
       icon: IconReceiptTax,
     })
   if (a.changeVehicle)
@@ -423,7 +420,7 @@ const STEP_INDEX: Record<ShipmentStatus, number> = {
   dispatched: 2,
   in_progress: 3,
   delayed: 3,
-  idel: 3,
+  idle: 3,
   completed: 4,
   captured_details: 5,
   invoiced: 6,
@@ -441,7 +438,7 @@ function StatusProgress({ status }: { status: ShipmentStatus }) {
   }
 
   const current = STEP_INDEX[status]
-  const isTrouble = status === "delayed" || status === "idel"
+  const isTrouble = status === "delayed" || status === "idle"
 
   return (
     <ol className="flex overflow-x-auto border-b bg-background px-5 py-4">
@@ -516,7 +513,7 @@ const JOURNEY_PROGRESS: Record<ShipmentStatus, number> = {
   dispatched: 8,
   in_progress: 50,
   delayed: 50,
-  idel: 50,
+  idle: 50,
   completed: 100,
   captured_details: 100,
   invoiced: 100,
@@ -528,7 +525,7 @@ function JourneySection({ shipment }: { shipment: Shipment }) {
   const route = tripRoute(shipment)
   const started = shipment.actual_start ?? shipment.started_at
   const progress = JOURNEY_PROGRESS[shipment.status]
-  const isTrouble = shipment.status === "delayed" || shipment.status === "idel"
+  const isTrouble = shipment.status === "delayed" || shipment.status === "idle"
   const tonnage = (item as { tonnage?: string | number | null }).tonnage
 
   const chips = [
@@ -729,7 +726,9 @@ function BillingSection({ shipment }: { shipment: Shipment }) {
       <div className="overflow-hidden rounded-xl border bg-background">
         <dl className="space-y-3 p-4 text-sm">
           <BillLine
-            label={`Unit price × ${b.days} day${b.days === 1 ? "" : "s"}`}
+            label={`Unit price × ${b.days} day${b.days === 1 ? "" : "s"}${
+              b.isRoundTrip ? " × 2 (round trip)" : ""
+            }`}
             hint={formatMoney(b.unitPrice.toString())}
             value={formatMoney(b.base.toString())}
           />

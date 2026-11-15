@@ -14,7 +14,12 @@ import {
 } from "./shipment-action-dialog"
 import type { RecordShipmentDetailsInput } from "../schemas"
 import type { Shipment } from "../types"
-import { TextField, TextareaField } from "@/components/ui/form-fields"
+import {
+  DateTimePickerField,
+  TextField,
+  TextareaField,
+} from "@/components/ui/form-fields"
+import { ON_TRIP_STATUSES } from "../enums"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Decimal from "@/lib/decimal-config"
@@ -57,8 +62,13 @@ function defaultsFor(shipment?: Shipment): RecordShipmentDetailsInput {
       : [{ value: undefined }],
     actualFuelConsumed: "0",
     notes: "",
+    // A trip still on the road ends when its details are saved
+    endedAt: shipment && isOnTrip(shipment) ? new Date() : undefined,
   }
 }
+
+const isOnTrip = (shipment: Shipment) =>
+  ON_TRIP_STATUSES.includes(shipment.status)
 
 export function RecordShipmentDetailsDialog({
   shipment,
@@ -104,13 +114,8 @@ export function RecordShipmentDetailsDialog({
     const start = safeDecimal(startMileage)
     const end = safeDecimal(endMileage)
     if (!endMileage) return
-    if (start.greaterThan(end)) {
-      form.setError("endMileage", {
-        message: "Must be higher than the start reading",
-      })
-      return
-    }
-    form.clearErrors("endMileage")
+    // The schema reports a reading below the start; nothing to compute from it
+    if (start.greaterThan(end)) return
     const distance = end.minus(start)
     form.setValue("distanceKm", distance.toFixed())
     const rate = safeDecimal(consumptionRate)
@@ -144,6 +149,9 @@ export function RecordShipmentDetailsDialog({
 
   const vehicleRate = safeDecimal(consumptionRate)
 
+  const ratesErrors = form.formState.errors.consumedFuelRates
+  const ratesError = ratesErrors?.root?.message ?? ratesErrors?.message
+
   return (
     <ShipmentActionDialog
       open={open && !!shipment}
@@ -152,7 +160,11 @@ export function RecordShipmentDetailsDialog({
       icon={IconReceiptTax}
       hue="emerald"
       title="Capture trip details"
-      description="Odometer and fuel figures used to bill this trip."
+      description={
+        shipment && isOnTrip(shipment)
+          ? "Odometer and fuel figures used to bill this trip. Saving also ends the trip."
+          : "Odometer and fuel figures used to bill this trip."
+      }
       formId="shipment-details"
       submitLabel="Save details"
       isSubmitting={isPending}
@@ -196,6 +208,13 @@ export function RecordShipmentDetailsDialog({
             name="endMileage"
             control={form.control}
           />
+          {shipment && isOnTrip(shipment) && (
+            <DateTimePickerField
+              label="Trip ended at"
+              name="endedAt"
+              control={form.control}
+            />
+          )}
         </FormSection>
 
         {/* Fuel */}
@@ -261,6 +280,11 @@ export function RecordShipmentDetailsDialog({
               </div>
             ))}
           </div>
+          {ratesError && (
+            <p role="alert" className="text-sm text-destructive">
+              {ratesError}
+            </p>
+          )}
         </FormSection>
 
         {/* Result */}

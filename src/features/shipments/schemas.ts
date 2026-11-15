@@ -41,23 +41,51 @@ export const assignShipmentDriverSchema = z.object({
   driverId: IDSchema,
 })
 
-export const recordShipmentDetailsSchema = z.object({
-  unitId: IDSchema,
-  startMileage: z.string(),
-  endMileage: z.string(),
-  distanceKm: z.string(),
-  vehicleConsumptionRate: MoneySchema,
-  fuelUsedLitres: MoneySchema.optional(),
-  fuelRate: MoneySchema.optional(),
-  actualFuelConsumed: MoneySchema,
-  notes: z.string().optional().nullable(),
-  consumedFuelRates: z.array(consumedFuelRateSchema),
-})
+const notInFuture = (date: Date | null | undefined) =>
+  !date || date.getTime() <= Date.now()
+
+const isPositiveAmount = (value: string | null | undefined) =>
+  !!value && Number(value) > 0
+
+export const recordShipmentDetailsSchema = z
+  .object({
+    unitId: IDSchema,
+    startMileage: z.string(),
+    endMileage: z
+      .string("Required")
+      .trim()
+      .min(1, "Required")
+      .regex(/^\d+(\.\d+)?$/, "Enter the odometer reading"),
+    distanceKm: z.string(),
+    vehicleConsumptionRate: MoneySchema,
+    fuelUsedLitres: MoneySchema.optional(),
+    fuelRate: MoneySchema.optional(),
+    actualFuelConsumed: MoneySchema,
+    notes: z.string().optional().nullable(),
+    // Only asked for a trip that is still on the road: saving its details ends it
+    endedAt: z
+      .date()
+      .optional()
+      .nullable()
+      .refine(notInFuture, "Cannot be in the future"),
+    // The API prices fuel from the average, so it needs at least one price
+    consumedFuelRates: z
+      .array(consumedFuelRateSchema)
+      .refine(
+        (rates) => rates.some((r) => isPositiveAmount(r.value)),
+        "Enter at least one fuel price"
+      ),
+  })
+  .refine(
+    (data) =>
+      !data.startMileage || Number(data.endMileage) >= Number(data.startMileage),
+    { path: ["endMileage"], message: "Must not be lower than the start reading" }
+  )
 
 export const endShipmentSchema = z.object({
   unitId: IDSchema,
-  endMileage: z.number(),
-  endedAt: z.date(),
+  endMileage: z.number("Required").nonnegative(),
+  endedAt: z.date().refine(notInFuture, "Cannot be in the future"),
 })
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>

@@ -6,8 +6,10 @@ import { invoiceQueryOptions } from "../query-options"
 import { getInvoiceTableColumns } from "./invoice-table-columns"
 import { InvoiceTableFilter } from "./invoice-table-filter"
 import { VoidInvoiceModal } from "./void-invoice-modal"
+import { useDeleteInvoice } from "../hooks/use-invoice-actions"
 import type { InvoiceListSearchParams } from "../schemas"
 import type { InvoiceTableRowAction } from "../types"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 import { DataTable } from "@/components/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { Can } from "@/components/has-permission"
@@ -86,6 +88,7 @@ export function InvoiceTable() {
     })
   }
   const closeRowAction = () => setRowAction(null)
+  const { deleteInvoice, isPending: isDeleting } = useDeleteInvoice()
 
   return (
     <div className="flex flex-col gap-4">
@@ -160,6 +163,21 @@ export function InvoiceTable() {
           open
           onOpenChange={closeRowAction}
           invoice={rowAction.row.original}
+        />
+      )}
+      {rowAction?.variant === "delete" && (
+        <ConfirmDialog
+          open
+          onOpenChange={closeRowAction}
+          isLoading={isDeleting}
+          title={`Delete invoice ${rowAction.row.original.number}?`}
+          description="The client does not owe this invoice. Deleting removes it from the list."
+          onConfirm={() =>
+            // Closes either way: on failure the action hook shows the reason
+            deleteInvoice(rowAction.row.original.id)
+              .catch(() => undefined)
+              .finally(closeRowAction)
+          }
         />
       )}
     </div>

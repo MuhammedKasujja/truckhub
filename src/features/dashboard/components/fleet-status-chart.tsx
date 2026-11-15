@@ -25,6 +25,7 @@ const chartConfig = {
   reserved: { label: "Reserved", color: "var(--info)" },
   rented: { label: "Rented", color: "var(--chart-2)" },
   in_maintenance: { label: "In maintenance", color: "var(--warning)" },
+  retired: { label: "Retired", color: "var(--muted-foreground)" },
 } satisfies ChartConfig & Record<VehicleStatus, unknown>
 
 const order = Object.keys(chartConfig) as VehicleStatus[]

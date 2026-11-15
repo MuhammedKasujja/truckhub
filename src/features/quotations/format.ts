@@ -1,6 +1,7 @@
 import { ACCEPTED_QUOTATION_STATUSES } from "./enums"
-import type { QuotationStatus } from "./enums"
-import type { QuotationVersion } from "./types"
+import type { QuotationActivityType, QuotationStatus } from "./enums"
+import type { QuotationActivity, QuotationVersion } from "./types"
+import type { ActivityMeta } from "@/components/activity-timeline"
 
 export type QuotationTone = "success" | "info" | "warning" | "error" | "default"
 
@@ -53,3 +54,28 @@ export const daysUntilDate = (date?: string | null) => {
 export const defaultVersion = (versions: QuotationVersion[]) =>
   versions.find((v) => v.is_active || v.isActive) ??
   [...versions].sort((a, b) => b.version_number - a.version_number).at(0)
+
+export const QUOTATION_ACTIVITY_META: Record<
+  QuotationActivityType,
+  ActivityMeta
+> = {
+  created: { label: "Created", tone: "default" },
+  revised: { label: "Revised", tone: "info" },
+  sent: { label: "Emailed to the client", tone: "info" },
+  resent: { label: "Emailed again", tone: "info" },
+  email_failed: { label: "Email could not be sent", tone: "error" },
+  accepted: { label: "Accepted", tone: "success" },
+  rejected: { label: "Rejected", tone: "error" },
+  cancelled: { label: "Cancelled", tone: "default" },
+  expired: { label: "Expired", tone: "warning" },
+}
+
+/** The extra line under a quotation activity, when it has something to add. */
+export const describeQuotationActivity = (entry: QuotationActivity) => {
+  const { details } = entry
+  if (entry.type === "email_failed" && details.error) {
+    return String(details.error)
+  }
+  if (details.version_number != null) return `Version ${details.version_number}`
+  return null
+}

@@ -137,6 +137,7 @@ function _handleApiException<T>(error: unknown): ApiResponse<T> {
       code: (error as any).response.data.error?.code,
       status: statusMessage,
       statusCode: errorCode,
+      details: (error as any).response.data.error?.details,
     },
   }
 }

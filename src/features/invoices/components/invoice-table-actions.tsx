@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { InvoiceTableRowAction } from "../types"
-import { isChargedInvoice } from "../enums"
+import { isChargedInvoice, isDeletableInvoice } from "../enums"
 import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
 import { ActionIcon } from "@/components/icons"
 
@@ -94,7 +94,7 @@ export function InvoiceTableActions({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
                   <MailIcon />
-                  Send Email
+                  {invoice.send_count > 0 ? "Resend Email" : "Send Email"}
                 </DropdownMenuItem>
               </Can>
               <Can permission={"invoices:void"}>
@@ -110,6 +110,20 @@ export function InvoiceTableActions({
                 </DropdownMenuItem>
               </Can>
             </>
+          )}
+          {isDeletableInvoice(invoice.status) && (
+            <Can permission={"invoices:delete"}>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() =>
+                  setRowAction({ row: invoiceRow.row, variant: "delete" })
+                }
+              >
+                <ActionIcon action="delete" />
+                Delete
+              </DropdownMenuItem>
+            </Can>
           )}
         </DropdownMenuGroup>
       </DropdownMenuContent>

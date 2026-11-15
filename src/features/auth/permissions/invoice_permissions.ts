@@ -6,6 +6,7 @@ export const InvoiceModulePermissions = {
   "invoices:edit": ["invoices:update", "invoices:view"],
   "invoices:pdf": ["invoices:pdf"],
   "invoices:email": ["invoices:email"],
+  "invoices:activities": ["invoices:activities"],
   // Voiding an invoice reverses its charge in billing
   "invoices:void": ["charges:reverse"],
 } as const

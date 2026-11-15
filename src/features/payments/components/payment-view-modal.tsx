@@ -132,10 +132,12 @@ export function PaymentViewModal({
                 label={tr("payments.paid_at")}
                 value={formatDateTime(payment.paid_at)}
               />
-              <Row
-                label="Recorded"
-                value={formatDateTime(payment.created_at)}
-              />
+              {payment.reversed_at && (
+                <Row
+                  label="Reversed"
+                  value={formatDateTime(payment.reversed_at)}
+                />
+              )}
             </dl>
           </Section>
         </div>
@@ -168,8 +170,7 @@ function AmountSummary({ payment }: { payment: Payment }) {
   const tr = useTranslation()
   const amount = toDecimal(payment.amount)
   const applied = toDecimal(payment.applied)
-  const refunded = toDecimal(payment.refunded)
-  const unapplied = Decimal.max(0, amount.minus(applied).minus(refunded))
+  const unapplied = Decimal.max(0, amount.minus(applied))
   const appliedPercent = amount.gt(0)
     ? Math.min(100, applied.div(amount).times(100).toNumber())
     : 0
@@ -195,10 +196,9 @@ function AmountSummary({ payment }: { payment: Payment }) {
         className="mt-4 h-2"
         aria-label="Share of the payment applied"
       />
-      <dl className="mt-3 grid grid-cols-3 gap-2">
+      <dl className="mt-3 grid grid-cols-2 gap-2">
         <MiniStat label={tr("payments.applied")} value={applied} />
         <MiniStat label="Unapplied" value={unapplied} />
-        <MiniStat label="Refunded" value={refunded} />
       </dl>
     </div>
   )
@@ -222,7 +222,7 @@ const ENTITY_LINKS = {
 function PaidForCard({ payment }: { payment: Payment }) {
   const tr = useTranslation()
   const { entity } = payment
-  const balance = toDecimal(entity.balance)
+  const balance = toDecimal(entity.balance_due)
   const link = ENTITY_LINKS[payment.entity_type](entity.id)
 
   return (
@@ -239,7 +239,7 @@ function PaidForCard({ payment }: { payment: Payment }) {
             {tr(`payments.${payment.entity_type}`)} {entity.number}
           </p>
           <p className="text-xs text-muted-foreground">
-            Total {formatMoney(entity.amount)}
+            Total {formatMoney(entity.total)}
           </p>
         </div>
         <div className="text-right">
@@ -252,7 +252,7 @@ function PaidForCard({ payment }: { payment: Payment }) {
                 : "text-emerald-700 dark:text-emerald-400"
             )}
           >
-            {balance.gt(0) ? formatMoney(entity.balance) : "Settled"}
+            {balance.gt(0) ? formatMoney(entity.balance_due) : "Settled"}
           </p>
         </div>
         <ArrowUpRight className="size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />

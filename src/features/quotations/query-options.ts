@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import {
+  getQuotationActivitiesFn,
   getQuotationDetailsFn,
   getQuotationShipmentsFn,
   getQuotationsFn,
@@ -22,6 +23,11 @@ export const quotationQueryKeys = {
   details: () => [...quotationQueryKeys.all(), "details"],
   detail: (id: EntityId) => [...quotationQueryKeys.details(), id],
   shipments: (id: EntityId) => [...quotationQueryKeys.detail(id), "shipments"],
+  // Under the detail key, so refreshing a quotation refreshes its timeline
+  activities: (id: EntityId) => [
+    ...quotationQueryKeys.detail(id),
+    "activities",
+  ],
 } as const
 
 export const quotationQueryOptions = (search: QuotationListSearchParams) =>
@@ -53,3 +59,9 @@ export const quotationFilterQueryOptions = (params: QuotationFilterParams) => ({
     }),
   initialPageParam: 1,
 })
+
+export const quotationActivitiesQueryOptions = (id: EntityId) =>
+  queryOptions({
+    queryKey: quotationQueryKeys.activities(id),
+    queryFn: () => getQuotationActivitiesFn({ data: { id } }),
+  })

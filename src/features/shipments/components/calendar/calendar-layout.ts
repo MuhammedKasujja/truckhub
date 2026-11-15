@@ -73,10 +73,12 @@ export function toShipmentSpans(shipments: Shipment[]): ShipmentSpan[] {
   const spans: ShipmentSpan[] = []
 
   for (const shipment of shipments) {
+    // `new Date(null)` is 1970, not an invalid date
+    if (!shipment.item.scheduled_start) continue
     const scheduledStart = new Date(shipment.item.scheduled_start)
     if (Number.isNaN(scheduledStart.getTime())) continue
 
-    const scheduledEnd = new Date(shipment.item.scheduled_end)
+    const scheduledEnd = new Date(shipment.item.scheduled_end ?? Number.NaN)
     const start = startOfDay(scheduledStart)
     const end =
       Number.isNaN(scheduledEnd.getTime()) || scheduledEnd < start
@@ -90,8 +92,8 @@ export function toShipmentSpans(shipments: Shipment[]): ShipmentSpan[] {
     (left, right) =>
       left.start.getTime() - right.start.getTime() ||
       right.end.getTime() - left.end.getTime() ||
-      new Date(left.shipment.item.scheduled_start).getTime() -
-        new Date(right.shipment.item.scheduled_start).getTime()
+      new Date(left.shipment.item.scheduled_start ?? 0).getTime() -
+        new Date(right.shipment.item.scheduled_start ?? 0).getTime()
   )
 }
 

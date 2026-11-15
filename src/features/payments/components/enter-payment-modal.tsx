@@ -29,7 +29,11 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { MoneyField, TextField } from "@/components/ui/form-fields"
+import {
+  DateTimePickerField,
+  MoneyField,
+  TextField,
+} from "@/components/ui/form-fields"
 import { Progress } from "@/components/ui/progress"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -357,6 +361,13 @@ export function EnterPaymentModal({
                 label={methodMeta?.refLabel ?? "Transaction reference"}
                 placeholder={methodMeta?.refPlaceholder ?? "Optional"}
                 name={"transactionRef"}
+                control={form.control}
+                required={false}
+              />
+              <DateTimePickerField
+                label="Paid on"
+                description="Leave empty for a payment made now"
+                name={"paidAt"}
                 control={form.control}
                 required={false}
               />

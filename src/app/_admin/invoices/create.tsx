@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
+import { shipmentBilling } from "@/features/shipments/format"
 import { createFileRoute } from "@tanstack/react-router"
 import Decimal from "decimal.js"
 import {
@@ -71,8 +72,9 @@ const toDecimal = (value: string | number | null | undefined) => {
 
 const serviceDays = (shp: Shipment) => shp.consumption?.days || 1
 
-const shipmentAmount = (shp: Shipment) =>
-  toDecimal(shp.item.unit_price).times(serviceDays(shp))
+// The taxable hire for a trip, priced exactly as the invoice prices it:
+// round trips doubled, less the trip's share of the line discount
+const shipmentAmount = (shp: Shipment) => shipmentBilling(shp).hire
 
 const addDays = (days: number) => {
   const date = new Date()
@@ -488,6 +490,7 @@ function ShipmentRow({
 }) {
   const days = serviceDays(shp)
   const fuel = toDecimal(shp.consumption?.total_fuel_charge)
+  const billing = shipmentBilling(shp)
 
   return (
     <li>
@@ -521,7 +524,13 @@ function ShipmentRow({
               <p className="text-xs text-muted-foreground tabular-nums">
                 {formatMoney(shp.item.unit_price)} × {days} day
                 {days === 1 ? "" : "s"}
+                {billing.isRoundTrip && <> × 2 (round trip)</>}
               </p>
+              {billing.discount.gt(0) && (
+                <p className="text-xs text-emerald-700 tabular-nums dark:text-emerald-400">
+                  − {formatMoney(billing.discount.toString())} discount
+                </p>
+              )}
             </div>
           </div>
 

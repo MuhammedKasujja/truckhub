@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { Link, createFileRoute } from "@tanstack/react-router"
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router"
 import Decimal from "decimal.js"
 import {
   AlertCircle,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import type { Invoice } from "@/features/invoices/types"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
 import { PageBackButton } from "@/components/page-header"
@@ -41,8 +42,15 @@ import {
   InvoiceStatusIndicator,
   VoidInvoiceModal,
 } from "@/features/invoices/components"
-import { isChargedInvoice } from "@/features/invoices/enums"
-import { useSendInvoiceEmail } from "@/features/invoices/hooks/use-invoice-actions"
+import { InvoiceActivityCard } from "@/features/invoices/components/invoice-activity"
+import {
+  isChargedInvoice,
+  isDeletableInvoice,
+} from "@/features/invoices/enums"
+import {
+  useDeleteInvoice,
+  useSendInvoiceEmail,
+} from "@/features/invoices/hooks/use-invoice-actions"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { getInvoicePdfFn } from "@/features/invoices/services"
 import { EnterPaymentModal } from "@/features/payments/components"
@@ -99,6 +107,7 @@ function RouteComponent() {
         <div className="space-y-6">
           <BillToCard invoice={invoice} />
           <RecordCard invoice={invoice} />
+          <InvoiceActivityCard invoiceId={invoice.id} />
         </div>
       </div>
     </div>
@@ -141,6 +150,13 @@ function InvoiceHero({
             <p className="text-sm text-muted-foreground">
               Issued {formatDate(invoice.created_at)} · Due{" "}
               {formatDate(invoice.due_date)}
+              {invoice.sent_date && (
+                <>
+                  {" "}
+                  · Sent {formatDate(invoice.sent_date)}
+                  {invoice.send_count > 1 && ` (${invoice.send_count} times)`}
+                </>
+              )}
             </p>
             <Link
               to="/clients/$clientId/view"
@@ -220,6 +236,9 @@ function InvoiceActions({ invoice }: { invoice: Invoice }) {
   const isCharged = isChargedInvoice(invoice.status)
   const [isDownloading, setIsDownloading] = useState(false)
   const { sendInvoiceEmail, isPending: isSending } = useSendInvoiceEmail()
+  const [openDelete, setOpenDelete] = useState(false)
+  const { deleteInvoice, isPending: isDeleting } = useDeleteInvoice()
+  const navigate = useNavigate()
 
   async function downloadPdf() {
     setIsDownloading(true)
@@ -284,8 +303,32 @@ function InvoiceActions({ invoice }: { invoice: Invoice }) {
             ) : (
               <ActionIcon action="email" />
             )}
-            Send email
+            {invoice.send_count > 0 ? "Resend email" : "Send email"}
           </Button>
+        </Can>
+      )}
+      {isDeletableInvoice(invoice.status) && (
+        <Can permission={"invoices:delete"}>
+          <Button variant="destructive" onClick={() => setOpenDelete(true)}>
+            <ActionIcon action="delete" />
+            Delete
+          </Button>
+          <ConfirmDialog
+            open={openDelete}
+            onOpenChange={setOpenDelete}
+            isLoading={isDeleting}
+            title={`Delete invoice ${invoice.number}?`}
+            description="The client does not owe this invoice. Deleting removes it from the list."
+            onConfirm={async () => {
+              try {
+                await deleteInvoice(invoice.id)
+                navigate({ to: "/invoices" })
+              } catch {
+                // The action hook has already shown the reason
+                setOpenDelete(false)
+              }
+            }}
+          />
         </Can>
       )}
       {isCharged && (
@@ -314,7 +357,14 @@ function LineItemsCard({ invoice }: { invoice: Invoice }) {
     (sum, item) => sum.plus(toDecimal(item.fuel_surcharge)),
     new Decimal(0)
   )
-  const discount = toDecimal(invoice.discount)
+  // Each line total is already net of its discount, and so is the subtotal.
+  // Showing the hire before discount makes the summary add up to the total.
+  const discount = invoice.line_items.reduce(
+    (sum, item) => sum.plus(toDecimal(item.discount)),
+    new Decimal(0)
+  )
+  const hasDiscount = discount.gt(0)
+  const grossSubtotal = toDecimal(invoice.subtotal).plus(discount)
   const loading = toDecimal(invoice.loading_charge)
   const offloading = toDecimal(invoice.offloading_charge)
 
@@ -336,6 +386,9 @@ function LineItemsCard({ invoice }: { invoice: Invoice }) {
             <TableHead className="text-right">Qty</TableHead>
             <TableHead className="text-right">Unit price</TableHead>
             <TableHead className="text-right">Fuel</TableHead>
+            {hasDiscount && (
+              <TableHead className="text-right">Discount</TableHead>
+            )}
             <TableHead className="pr-5 text-right">Amount</TableHead>
           </TableRow>
         </TableHeader>
@@ -369,6 +422,13 @@ function LineItemsCard({ invoice }: { invoice: Invoice }) {
                   ? formatMoney(item.fuel_surcharge)
                   : "—"}
               </TableCell>
+              {hasDiscount && (
+                <TableCell className="text-right text-emerald-700 tabular-nums dark:text-emerald-400">
+                  {toDecimal(item.discount).gt(0)
+                    ? `− ${formatMoney(item.discount)}`
+                    : "—"}
+                </TableCell>
+              )}
               <TableCell className="pr-5 text-right font-medium tabular-nums">
                 {formatMoney(item.line_total)}
               </TableCell>
@@ -382,8 +442,15 @@ function LineItemsCard({ invoice }: { invoice: Invoice }) {
         <dl className="w-full max-w-xs space-y-2 text-sm">
           <SummaryRow
             label="Subtotal"
-            value={formatMoney(invoice.subtotal ?? 0)}
+            value={formatMoney(grossSubtotal.toString())}
           />
+          {hasDiscount && (
+            <SummaryRow
+              label="Discount"
+              value={`− ${formatMoney(discount.toString())}`}
+              className="text-emerald-700 dark:text-emerald-400"
+            />
+          )}
           {fuelTotal.gt(0) && (
             <SummaryRow
               label="Fuel charges"
@@ -400,13 +467,6 @@ function LineItemsCard({ invoice }: { invoice: Invoice }) {
             <SummaryRow
               label="Offloading fees"
               value={formatMoney(invoice.offloading_charge)}
-            />
-          )}
-          {discount.gt(0) && (
-            <SummaryRow
-              label="Discount"
-              value={`− ${formatMoney(invoice.discount)}`}
-              className="text-emerald-700 dark:text-emerald-400"
             />
           )}
           <SummaryRow
@@ -488,6 +548,20 @@ function RecordCard({ invoice }: { invoice: Invoice }) {
           <SummaryRow label="Invoice no." value={invoice.number} />
           <SummaryRow label="Issued" value={formatDate(invoice.created_at)} />
           <SummaryRow label="Due" value={formatDate(invoice.due_date)} />
+          <Can permission={"payments:module"}>
+            <SummaryRow
+              label="Payments"
+              value={
+                <Link
+                  to="/payments"
+                  search={{ invoiceId: invoice.id }}
+                  className="text-primary hover:underline"
+                >
+                  View payments
+                </Link>
+              }
+            />
+          </Can>
           <SummaryRow
             label="Invoice ID"
             value={

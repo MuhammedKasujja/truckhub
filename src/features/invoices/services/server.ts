@@ -1,7 +1,7 @@
 import { api } from "@/lib/api"
 import * as apiClient from "@/lib/api-client"
 import { EntityId, SearchQuery } from "@/schemas"
-import { Invoice, InvoiceStatistics } from "../types"
+import { Invoice, InvoiceActivity, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
 import {
   InvoiceCreateInput,
@@ -56,6 +56,21 @@ export async function voidInvoice(data: VoidInvoiceInput) {
     "/v1/billing/charges/reverse",
     { kind: "invoice", target_id: data.invoiceId, reason: data.reason }
   )
+}
+
+/** What happened to the invoice: created, sent, payments, voided. */
+export async function getInvoiceActivities(invoiceId: EntityId) {
+  return await apiClient.getFn<InvoiceActivity[]>(
+    `${endpoint}/${invoiceId}/activities`
+  )
+}
+
+/**
+ * Hides an invoice the client does not owe. The API refuses one that is still
+ * charged: void it first.
+ */
+export async function deleteInvoice(invoiceId: EntityId) {
+  return await apiClient.deleteFn(`${endpoint}/${invoiceId}`)
 }
 
 export async function sendInvoiceEmail(invoiceId: EntityId) {

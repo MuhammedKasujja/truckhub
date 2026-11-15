@@ -1,10 +1,14 @@
 import { EntityId } from "@/schemas"
-import { InvoiceStatus } from "./enums"
+import { InvoiceActivityType, InvoiceStatus } from "./enums"
+import type { ActivityEntry } from "@/components/activity-timeline"
 import { DataTableRowAction } from "@/types/data-table"
 
 export type InvoiceLineItem = {
   unit_price: string
+  /** Net of `discount`. */
   line_total: string
+  /** The trip's share of its booking line's discount. */
+  discount: string
   quantity: number
   description: string
   service_days: number
@@ -29,6 +33,9 @@ export type Invoice = {
   due_date: string
   purpose: string | null
   created_at: Date
+  /** When the invoice was last emailed to the client, and how many times. */
+  sent_date: string | null
+  send_count: number
   line_items: InvoiceLineItem[]
   client: {
     id: EntityId
@@ -46,7 +53,9 @@ export type InvoiceStatistics = {
   outstanding: number
 }
 
+export type InvoiceActivity = ActivityEntry<InvoiceActivityType>
+
 export interface InvoiceTableRowAction extends DataTableRowAction<
   Invoice,
-  "update" | "view" | "makePayment" | "email" | "void"
+  "update" | "view" | "makePayment" | "email" | "void" | "delete"
 > {}

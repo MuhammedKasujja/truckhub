@@ -71,6 +71,7 @@ export function QuotationDetailsPageHeader({ quotation, children }: Props) {
               </Link>
               <span>Issued {formatDate(quotation.created_at)}</span>
               <span>Updated {formatDate(quotation.last_updated_at)}</span>
+              <SentInfo quotation={quotation} />
             </div>
           </div>
         </div>
@@ -83,10 +84,28 @@ export function QuotationDetailsPageHeader({ quotation, children }: Props) {
   )
 }
 
+/** When the current version was last emailed to the client, if it was. */
+function SentInfo({ quotation }: { quotation: Quotation }) {
+  const version = quotation.activeRevision ?? quotation.current_version
+  if (!version?.sent_date) return null
+
+  const count = version.send_count ?? 0
+  return (
+    <span>
+      Sent {formatDate(version.sent_date)}
+      {count > 1 && ` · ${count} times`}
+    </span>
+  )
+}
+
 function QuotationActions({ quotation }: { quotation: Quotation }) {
   const quotationId = quotation.id
   const allowed = quotationActions(quotation.status)
   const [confirm, setConfirm] = useState<"reject" | "cancel">()
+
+  // Sends are tracked on the version the client is being quoted
+  const sendCount =
+    (quotation.activeRevision ?? quotation.current_version)?.send_count ?? 0
 
   const { acceptQuotation, isPending: isAccepting } = useAcceptQuotation()
   const { sendEmail, isPending: isSending } = useSendQuotationEmail()
@@ -123,7 +142,7 @@ function QuotationActions({ quotation }: { quotation: Quotation }) {
           ) : (
             <ActionIcon action="email" />
           )}
-          Send email
+          {sendCount > 0 ? "Resend email" : "Send email"}
         </Button>
       </Can>
       <Button variant="outline" asChild>

@@ -24,6 +24,7 @@ import {
   defaultVersion,
   periodDays,
 } from "@/features/quotations/format"
+import { QuotationActivity } from "@/features/quotations/components/details/quotation-activity"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
 import { requirePermission } from "@/lib/auth"
@@ -355,6 +356,10 @@ function RouteComponent() {
                   )
                 })}
               </ul>
+
+              <div className="mt-6 border-t pt-5">
+                <QuotationActivity quotationId={quotation.id} />
+              </div>
             </div>
           </aside>
         </div>

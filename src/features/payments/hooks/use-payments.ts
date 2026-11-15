@@ -86,6 +86,9 @@ export function usePaymentReverse() {
     },
     onSuccess: () => {
       queryInvalidator.payments.list()
+      // The invoice it paid owes that money again, and records the reversal
+      queryInvalidator.invoices.all.invalidate()
+      queryInvalidator.clients.refresh()
       toast.success("Payment reversed successfully")
     },
     onError: (err) => {

@@ -57,7 +57,8 @@ export async function createPayment(data: PaymentRequestInput) {
     amount: data.amount,
     method: data.paymentMethod,
     transaction_ref: data.transactionRef,
-    // paid_at: "2026-10-12T13:23:12.381Z",
+    // When the client actually paid; the API uses now when it is left out
+    paid_at: data.paidAt ?? undefined,
     targets: [
       {
         kind: "invoice",

@@ -92,6 +92,13 @@ export class QueryInvalidator {
   } as const
 
   invoices = {
+    /** Lists, statistics, details and each invoice's activity */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.all(),
+        }),
+    },
     list: {
       invalidate: () => {
         this.queryClient.invalidateQueries({
@@ -443,6 +450,13 @@ export class QueryInvalidator {
   }
 
   vehicles = {
+    /** Lists, statistics and every vehicle's details */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.vehicles.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({

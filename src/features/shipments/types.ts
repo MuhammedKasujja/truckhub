@@ -1,12 +1,12 @@
 import { EntityId } from "@/schemas"
-import { ShipmentStatus } from "./enums"
+import { ShipmentHistoryStatus, ShipmentStatus } from "./enums"
 import { LineItemType } from "@/common/enums"
 import { DataTableRowAction } from "@/types/data-table"
 import { LineItemResponse } from "../quotations/schemas"
 
 export type ShipmentLineItem = LineItemResponse & {
-  scheduled_start: string
-  scheduled_end: string
+  scheduled_start: string | null
+  scheduled_end: string | null
   car_brand_id: EntityId
   tonnage: string | null
   car_brand: { id: EntityId; name: string } | null
@@ -15,14 +15,15 @@ export type ShipmentLineItem = LineItemResponse & {
   service_id: EntityId | null
   car_model_id: EntityId | null
   vehicle_category_id: EntityId | null
-  with_loaders: boolean
-  with_driver: boolean
+  with_loaders: boolean | null
+  with_driver: boolean | null
   estimated_fuel_rate_km: string | null
   locations: []
   vehicle_addons: string[]
   item_type: LineItemType
+  /** The whole line's discount; a trip is billed its `discount_share` of it. */
   discount: string | null
-  is_round_trip: boolean
+  is_round_trip: boolean | null
   vehicle_year: string | null
 }
 
@@ -38,9 +39,9 @@ export type ShipmentVehicleConsumption = {
 }
 
 export type ShipmentHistory = {
-  status: ShipmentStatus
+  status: ShipmentHistoryStatus
   note: string | null
-  changed_by: EntityId
+  changed_by: EntityId | null
   created_at: Date
 }
 
@@ -52,7 +53,7 @@ export type Shipment = {
   actual_start?: Date
   actual_end?: Date
   contact_name?: string
-  quotation_id: EntityId
+  quotation_id: EntityId | null
   driver?: {
     id: EntityId
     number: string
@@ -69,6 +70,8 @@ export type Shipment = {
   }
   item: ShipmentLineItem
   consumption: ShipmentVehicleConsumption | null
+  /** This trip's part of its line's discount, as it will be invoiced. */
+  discount_share: string
   updated_at: string
   history: ShipmentHistory[] | null
 }

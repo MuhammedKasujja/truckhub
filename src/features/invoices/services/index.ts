@@ -11,6 +11,8 @@ import {
   getInvoices,
   voidInvoice,
   createInvoice,
+  deleteInvoice,
+  getInvoiceActivities,
   getInvoicePdf,
   sendInvoiceEmail,
   getInvoiceDetails,
@@ -58,6 +60,20 @@ export const voidInvoiceFn = createServerFn({ method: "POST" })
     const result = await apiResponseTransform(voidInvoice(data))
     // The billing endpoint answers with a generic message
     return { ...result, message: "Invoice voided" }
+  })
+
+export const getInvoiceActivitiesFn = createServerFn({ method: "GET" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getInvoiceActivities(data.id))
+    return result.data ?? []
+  })
+
+export const deleteInvoiceFn = createServerFn({ method: "POST" })
+  .inputValidator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(deleteInvoice(data.id))
+    return { message: result.message ?? "Invoice deleted" }
   })
 
 export const sendInvoiceEmailFn = createServerFn({ method: "POST" })

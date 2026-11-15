@@ -1,18 +1,19 @@
-import type { ShipmentStatus } from "../enums"
+import type { ShipmentHistoryStatus, ShipmentStatus } from "../enums"
 import { useTranslation } from "@/i18n"
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { cn } from "@/lib/utils"
 
 export type StatusTone = "success" | "info" | "warning" | "error" | "default"
 
-export const SHIPMENT_STATUS_TONE: Record<ShipmentStatus, StatusTone> = {
+export const SHIPMENT_STATUS_TONE: Record<ShipmentHistoryStatus, StatusTone> = {
   unassigned: "warning",
   vehicle_assigned: "info",
   assigned: "info",
   dispatched: "info",
   in_progress: "info",
   delayed: "error",
-  idel: "warning",
+  idle: "warning",
+  vehicle_reassigned: "warning",
   completed: "success",
   captured_details: "success",
   invoiced: "default",
