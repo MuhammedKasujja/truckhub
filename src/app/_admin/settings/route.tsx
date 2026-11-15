@@ -12,9 +12,14 @@ import { requirePermission } from "@/lib/auth"
 export const Route = createFileRoute("/_admin/settings")({
   component: RouteComponent,
   beforeLoad: async ({ location }) => {
+    const path = normalizePath(location.pathname)
+    // The profile used to live here; it is open to every signed-in user now.
+    if (path === "/settings/user-profile") {
+      throw redirect({ to: "/profile", replace: true })
+    }
     await requirePermission("config:module")
     // /settings has no page of its own; open the first section.
-    if (normalizePath(location.pathname) === "/settings") {
+    if (path === "/settings") {
       throw redirect({ to: defaultSettingsPath, replace: true })
     }
   },

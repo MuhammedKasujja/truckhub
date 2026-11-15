@@ -45,6 +45,7 @@ import { usePermissions } from "@/features/auth/hooks/use-permissions"
 import { logoutFn } from "@/features/auth/services"
 import { useAuth } from "@/components/providers/auth-context"
 import { getModuleIcon } from "@/components/icons"
+import { Can } from "@/components/has-permission"
 
 const APP_VERSION = "1.0.1"
 
@@ -394,17 +395,19 @@ function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link to="/settings/user-profile">
+                <Link to="/profile">
                   <UserIcon />
                   {tr("sidebar.profile")}
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to={"/settings/company-details"}>
-                  <SettingsIcon />
-                  {tr("routes.settings")}
-                </Link>
-              </DropdownMenuItem>
+              <Can permission="config:module">
+                <DropdownMenuItem asChild>
+                  <Link to={"/settings/company-details"}>
+                    <SettingsIcon />
+                    {tr("routes.settings")}
+                  </Link>
+                </DropdownMenuItem>
+              </Can>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={() => logout()}>

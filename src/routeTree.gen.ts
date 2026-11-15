@@ -25,6 +25,7 @@ import { Route as AdminRidesIndexRouteImport } from './app/_admin/rides/index'
 import { Route as AdminReviewsIndexRouteImport } from './app/_admin/reviews/index'
 import { Route as AdminReportsIndexRouteImport } from './app/_admin/reports/index'
 import { Route as AdminQuotationsIndexRouteImport } from './app/_admin/quotations/index'
+import { Route as AdminProfileIndexRouteImport } from './app/_admin/profile/index'
 import { Route as AdminPaymentsIndexRouteImport } from './app/_admin/payments/index'
 import { Route as AdminMyHrIndexRouteImport } from './app/_admin/my-hr/index'
 import { Route as AdminMaintenanceIndexRouteImport } from './app/_admin/maintenance/index'
@@ -48,7 +49,6 @@ import { Route as AdminShipmentsRequestsIndexRouteImport } from './app/_admin/sh
 import { Route as AdminShipmentsConfirmedIndexRouteImport } from './app/_admin/shipments/confirmed/index'
 import { Route as AdminShipmentsCompletedIndexRouteImport } from './app/_admin/shipments/completed/index'
 import { Route as AdminShipmentsActiveIndexRouteImport } from './app/_admin/shipments/active/index'
-import { Route as AdminSettingsUserProfileIndexRouteImport } from './app/_admin/settings/user-profile/index'
 import { Route as AdminSettingsTaxRatesIndexRouteImport } from './app/_admin/settings/tax-rates/index'
 import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin/settings/pdf-templates/index'
 import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
@@ -193,6 +193,11 @@ const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
   path: '/quotations/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminProfileIndexRoute = AdminProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminPaymentsIndexRoute = AdminPaymentsIndexRouteImport.update({
   id: '/payments/',
   path: '/payments/',
@@ -314,12 +319,6 @@ const AdminShipmentsActiveIndexRoute =
     id: '/active/',
     path: '/active/',
     getParentRoute: () => AdminShipmentsRouteRoute,
-  } as any)
-const AdminSettingsUserProfileIndexRoute =
-  AdminSettingsUserProfileIndexRouteImport.update({
-    id: '/user-profile/',
-    path: '/user-profile/',
-    getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsTaxRatesIndexRoute =
   AdminSettingsTaxRatesIndexRouteImport.update({
@@ -717,6 +716,7 @@ export interface FileRoutesByFullPath {
   '/maintenance/': typeof AdminMaintenanceIndexRoute
   '/my-hr/': typeof AdminMyHrIndexRoute
   '/payments/': typeof AdminPaymentsIndexRoute
+  '/profile/': typeof AdminProfileIndexRoute
   '/quotations/': typeof AdminQuotationsIndexRoute
   '/reports/': typeof AdminReportsIndexRoute
   '/reviews/': typeof AdminReviewsIndexRoute
@@ -774,7 +774,6 @@ export interface FileRoutesByFullPath {
   '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
-  '/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/shipments/active/': typeof AdminShipmentsActiveIndexRoute
   '/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
@@ -822,6 +821,7 @@ export interface FileRoutesByTo {
   '/maintenance': typeof AdminMaintenanceIndexRoute
   '/my-hr': typeof AdminMyHrIndexRoute
   '/payments': typeof AdminPaymentsIndexRoute
+  '/profile': typeof AdminProfileIndexRoute
   '/quotations': typeof AdminQuotationsIndexRoute
   '/reports': typeof AdminReportsIndexRoute
   '/reviews': typeof AdminReviewsIndexRoute
@@ -879,7 +879,6 @@ export interface FileRoutesByTo {
   '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
   '/settings/pdf-templates': typeof AdminSettingsPdfTemplatesIndexRoute
   '/settings/tax-rates': typeof AdminSettingsTaxRatesIndexRoute
-  '/settings/user-profile': typeof AdminSettingsUserProfileIndexRoute
   '/shipments/active': typeof AdminShipmentsActiveIndexRoute
   '/shipments/completed': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
@@ -929,6 +928,7 @@ export interface FileRoutesById {
   '/_admin/maintenance/': typeof AdminMaintenanceIndexRoute
   '/_admin/my-hr/': typeof AdminMyHrIndexRoute
   '/_admin/payments/': typeof AdminPaymentsIndexRoute
+  '/_admin/profile/': typeof AdminProfileIndexRoute
   '/_admin/quotations/': typeof AdminQuotationsIndexRoute
   '/_admin/reports/': typeof AdminReportsIndexRoute
   '/_admin/reviews/': typeof AdminReviewsIndexRoute
@@ -986,7 +986,6 @@ export interface FileRoutesById {
   '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
   '/_admin/settings/pdf-templates/': typeof AdminSettingsPdfTemplatesIndexRoute
   '/_admin/settings/tax-rates/': typeof AdminSettingsTaxRatesIndexRoute
-  '/_admin/settings/user-profile/': typeof AdminSettingsUserProfileIndexRoute
   '/_admin/shipments/active/': typeof AdminShipmentsActiveIndexRoute
   '/_admin/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
@@ -1036,6 +1035,7 @@ export interface FileRouteTypes {
     | '/maintenance/'
     | '/my-hr/'
     | '/payments/'
+    | '/profile/'
     | '/quotations/'
     | '/reports/'
     | '/reviews/'
@@ -1093,7 +1093,6 @@ export interface FileRouteTypes {
     | '/settings/notifications/'
     | '/settings/pdf-templates/'
     | '/settings/tax-rates/'
-    | '/settings/user-profile/'
     | '/shipments/active/'
     | '/shipments/completed/'
     | '/shipments/confirmed/'
@@ -1141,6 +1140,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/my-hr'
     | '/payments'
+    | '/profile'
     | '/quotations'
     | '/reports'
     | '/reviews'
@@ -1198,7 +1198,6 @@ export interface FileRouteTypes {
     | '/settings/notifications'
     | '/settings/pdf-templates'
     | '/settings/tax-rates'
-    | '/settings/user-profile'
     | '/shipments/active'
     | '/shipments/completed'
     | '/shipments/confirmed'
@@ -1247,6 +1246,7 @@ export interface FileRouteTypes {
     | '/_admin/maintenance/'
     | '/_admin/my-hr/'
     | '/_admin/payments/'
+    | '/_admin/profile/'
     | '/_admin/quotations/'
     | '/_admin/reports/'
     | '/_admin/reviews/'
@@ -1304,7 +1304,6 @@ export interface FileRouteTypes {
     | '/_admin/settings/notifications/'
     | '/_admin/settings/pdf-templates/'
     | '/_admin/settings/tax-rates/'
-    | '/_admin/settings/user-profile/'
     | '/_admin/shipments/active/'
     | '/_admin/shipments/completed/'
     | '/_admin/shipments/confirmed/'
@@ -1446,6 +1445,13 @@ declare module '@tanstack/react-router' {
       path: '/quotations'
       fullPath: '/quotations/'
       preLoaderRoute: typeof AdminQuotationsIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/profile/': {
+      id: '/_admin/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AdminProfileIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/payments/': {
@@ -1608,13 +1614,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/shipments/active/'
       preLoaderRoute: typeof AdminShipmentsActiveIndexRouteImport
       parentRoute: typeof AdminShipmentsRouteRoute
-    }
-    '/_admin/settings/user-profile/': {
-      id: '/_admin/settings/user-profile/'
-      path: '/user-profile'
-      fullPath: '/settings/user-profile/'
-      preLoaderRoute: typeof AdminSettingsUserProfileIndexRouteImport
-      parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/tax-rates/': {
       id: '/_admin/settings/tax-rates/'
@@ -2202,7 +2201,6 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
   AdminSettingsPdfTemplatesIndexRoute: typeof AdminSettingsPdfTemplatesIndexRoute
   AdminSettingsTaxRatesIndexRoute: typeof AdminSettingsTaxRatesIndexRoute
-  AdminSettingsUserProfileIndexRoute: typeof AdminSettingsUserProfileIndexRoute
 }
 
 const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
@@ -2222,7 +2220,6 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsNotificationsIndexRoute: AdminSettingsNotificationsIndexRoute,
   AdminSettingsPdfTemplatesIndexRoute: AdminSettingsPdfTemplatesIndexRoute,
   AdminSettingsTaxRatesIndexRoute: AdminSettingsTaxRatesIndexRoute,
-  AdminSettingsUserProfileIndexRoute: AdminSettingsUserProfileIndexRoute,
 }
 
 const AdminSettingsRouteRouteWithChildren =
@@ -2265,6 +2262,7 @@ interface AdminRouteRouteChildren {
   AdminMaintenanceIndexRoute: typeof AdminMaintenanceIndexRoute
   AdminMyHrIndexRoute: typeof AdminMyHrIndexRoute
   AdminPaymentsIndexRoute: typeof AdminPaymentsIndexRoute
+  AdminProfileIndexRoute: typeof AdminProfileIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
   AdminReportsIndexRoute: typeof AdminReportsIndexRoute
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
@@ -2323,6 +2321,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminMaintenanceIndexRoute: AdminMaintenanceIndexRoute,
   AdminMyHrIndexRoute: AdminMyHrIndexRoute,
   AdminPaymentsIndexRoute: AdminPaymentsIndexRoute,
+  AdminProfileIndexRoute: AdminProfileIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
   AdminReportsIndexRoute: AdminReportsIndexRoute,
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,

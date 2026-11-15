@@ -13,7 +13,7 @@ import { userProfileQueryOptions } from "@/features/users/query-options"
 import { useFetchEror } from "@/hooks/use-fetch-error"
 import { requireAuth } from "@/lib/auth"
 
-export const Route = createFileRoute("/_admin/settings/user-profile/")({
+export const Route = createFileRoute("/_admin/profile/")({
   component: RouteComponent,
   beforeLoad: () => requireAuth(),
   loader: ({ context }) =>

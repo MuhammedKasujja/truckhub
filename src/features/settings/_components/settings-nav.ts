@@ -143,8 +143,8 @@ export const settingsNav: SettingsNavGroup[] = [
       {
         label: "User profile",
         icon: UserIcon,
-        to: "/settings/user-profile",
-        base: "/settings/user-profile",
+        to: "/profile",
+        base: "/profile",
       },
     ],
   },
