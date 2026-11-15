@@ -23,6 +23,22 @@ export class QueryInvalidator {
     refresh: () => this.queryClient.clear(),
   }
 
+  documents = {
+    /** Types, every owner's documents and the expiring lists */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.documents.all(),
+        }),
+    },
+    types: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.documents.types(),
+        }),
+    },
+  }
+
   dashboard = {
     app: () =>
       this.queryClient.invalidateQueries({

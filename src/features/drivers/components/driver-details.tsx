@@ -24,7 +24,6 @@ import { driverQueryKeys } from "../queries"
 import { ageOn } from "../schemas"
 import {
   DRIVER_TESTS,
-  currentDocument,
   driverHealthAnswers,
   driverTest,
 } from "../driver-record"
@@ -33,7 +32,8 @@ import { VEHICLE_TYPES, labelFor } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
 import type { TestStatus, VehicleType } from "./driver-options"
 import type { DriverPolicy } from "./driver-policy"
-import type { Document, Driver } from "../types"
+import type { Driver } from "../types"
+import { DocumentsPanel } from "@/features/documents/components/documents-panel"
 import type { Vehicle } from "@/features/vehicles/types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -401,16 +401,11 @@ export function DriverDetails({
           <CurrentVehicleSection driver={driver} />
 
           <Section icon={FileText} title="Documents">
-            <ul className="space-y-2">
-              <DocumentRow
-                label="Licence photocopy"
-                doc={currentDocument(driver, "license_copy")}
-              />
-              <DocumentRow
-                label="Signed questionnaire"
-                doc={currentDocument(driver, "signed_questionnaire")}
-              />
-            </ul>
+            <DocumentsPanel
+              ownerKind="driver"
+              ownerId={driver.id}
+              permissions={DRIVER_DOCUMENT_PERMISSIONS}
+            />
           </Section>
 
           <Section icon={FileCheck2} title="Registration">
@@ -775,35 +770,12 @@ function LicenceClassTile({
   )
 }
 
-function DocumentRow({ label, doc }: { label: string; doc?: Document }) {
-  return (
-    <li className="flex items-center gap-3 rounded-lg border p-3">
-      <span
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground",
-          doc && "bg-primary/10 text-primary"
-        )}
-      >
-        <FileText className="size-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="truncate text-xs text-muted-foreground">
-          {doc
-            ? `${doc.name} · ${(doc.size / 1024 / 1024).toFixed(1)} MB · ${formatDate(doc.uploaded_at)}`
-            : "Not uploaded yet"}
-        </p>
-      </div>
-      {doc?.url && (
-        <Button variant="ghost" size="sm" asChild>
-          <a href={doc.url} target="_blank" rel="noreferrer">
-            View
-          </a>
-        </Button>
-      )}
-    </li>
-  )
-}
+const DRIVER_DOCUMENT_PERMISSIONS = {
+  view: "drivers:documents:view",
+  upload: "drivers:documents:upload",
+  download: "drivers:documents:download",
+  void: "drivers:documents:void",
+} as const
 
 export function DriverDetailsSkeleton() {
   return (

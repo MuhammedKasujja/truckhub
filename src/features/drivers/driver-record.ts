@@ -1,11 +1,11 @@
 /**
  * Reads the parts of a driver record the API returns as lists (tests,
- * health responses, documents) by key, for the details screen and the edit
+ * health responses) by key, for the details screen and the edit
  * form.
  */
 import { HEALTH_QUESTIONS } from "./schemas"
 import type { HealthCondition, TestType } from "./enums"
-import type { Driver, Document, DriverDocumentType } from "./types"
+import type { Driver } from "./types"
 
 /** The selection tests, in the order they are shown. */
 export const DRIVER_TESTS = [
@@ -49,22 +49,6 @@ export function driverHealthAnswers(driver: Driver) {
       details: response?.details ?? null,
     }
   })
-}
-
-/** The current version of a document, if one has been uploaded. */
-export function currentDocument(
-  driver: Driver,
-  type: DriverDocumentType
-): Document | undefined {
-  if (!driver.documents) return undefined
-
-  if (type === "license_copy" && driver.license.copy_document_id != null) {
-    const copy = driver.documents.find(
-      (d) => d.id === driver.license.copy_document_id
-    )
-    if (copy) return copy
-  }
-  return driver.documents.find((d) => d.document_type === type && d.is_current)
 }
 
 /** "2026-03-12T00:00:00Z" -> "2026-03-12", for date inputs. */

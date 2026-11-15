@@ -55,6 +55,7 @@ import { Route as AdminSettingsPdfTemplatesIndexRouteImport } from './app/_admin
 import { Route as AdminSettingsNotificationsIndexRouteImport } from './app/_admin/settings/notifications/index'
 import { Route as AdminSettingsIslandsIndexRouteImport } from './app/_admin/settings/islands/index'
 import { Route as AdminSettingsGenerateNumbersIndexRouteImport } from './app/_admin/settings/generate-numbers/index'
+import { Route as AdminSettingsDocumentTypesIndexRouteImport } from './app/_admin/settings/document-types/index'
 import { Route as AdminSettingsCompanyDetailsIndexRouteImport } from './app/_admin/settings/company-details/index'
 import { Route as AdminSettingsBookingRoutesIndexRouteImport } from './app/_admin/settings/booking-routes/index'
 import { Route as AdminSettingsBankAccountsIndexRouteImport } from './app/_admin/settings/bank-accounts/index'
@@ -354,6 +355,12 @@ const AdminSettingsGenerateNumbersIndexRoute =
   AdminSettingsGenerateNumbersIndexRouteImport.update({
     id: '/generate-numbers/',
     path: '/generate-numbers/',
+    getParentRoute: () => AdminSettingsRouteRoute,
+  } as any)
+const AdminSettingsDocumentTypesIndexRoute =
+  AdminSettingsDocumentTypesIndexRouteImport.update({
+    id: '/document-types/',
+    path: '/document-types/',
     getParentRoute: () => AdminSettingsRouteRoute,
   } as any)
 const AdminSettingsCompanyDetailsIndexRoute =
@@ -776,6 +783,7 @@ export interface FileRoutesByFullPath {
   '/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/settings/document-types/': typeof AdminSettingsDocumentTypesIndexRoute
   '/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/islands/': typeof AdminSettingsIslandsIndexRoute
   '/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
@@ -882,6 +890,7 @@ export interface FileRoutesByTo {
   '/settings/bank-accounts': typeof AdminSettingsBankAccountsIndexRoute
   '/settings/booking-routes': typeof AdminSettingsBookingRoutesIndexRoute
   '/settings/company-details': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/settings/document-types': typeof AdminSettingsDocumentTypesIndexRoute
   '/settings/generate-numbers': typeof AdminSettingsGenerateNumbersIndexRoute
   '/settings/islands': typeof AdminSettingsIslandsIndexRoute
   '/settings/notifications': typeof AdminSettingsNotificationsIndexRoute
@@ -990,6 +999,7 @@ export interface FileRoutesById {
   '/_admin/settings/bank-accounts/': typeof AdminSettingsBankAccountsIndexRoute
   '/_admin/settings/booking-routes/': typeof AdminSettingsBookingRoutesIndexRoute
   '/_admin/settings/company-details/': typeof AdminSettingsCompanyDetailsIndexRoute
+  '/_admin/settings/document-types/': typeof AdminSettingsDocumentTypesIndexRoute
   '/_admin/settings/generate-numbers/': typeof AdminSettingsGenerateNumbersIndexRoute
   '/_admin/settings/islands/': typeof AdminSettingsIslandsIndexRoute
   '/_admin/settings/notifications/': typeof AdminSettingsNotificationsIndexRoute
@@ -1098,6 +1108,7 @@ export interface FileRouteTypes {
     | '/settings/bank-accounts/'
     | '/settings/booking-routes/'
     | '/settings/company-details/'
+    | '/settings/document-types/'
     | '/settings/generate-numbers/'
     | '/settings/islands/'
     | '/settings/notifications/'
@@ -1204,6 +1215,7 @@ export interface FileRouteTypes {
     | '/settings/bank-accounts'
     | '/settings/booking-routes'
     | '/settings/company-details'
+    | '/settings/document-types'
     | '/settings/generate-numbers'
     | '/settings/islands'
     | '/settings/notifications'
@@ -1311,6 +1323,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/bank-accounts/'
     | '/_admin/settings/booking-routes/'
     | '/_admin/settings/company-details/'
+    | '/_admin/settings/document-types/'
     | '/_admin/settings/generate-numbers/'
     | '/_admin/settings/islands/'
     | '/_admin/settings/notifications/'
@@ -1667,6 +1680,13 @@ declare module '@tanstack/react-router' {
       path: '/generate-numbers'
       fullPath: '/settings/generate-numbers/'
       preLoaderRoute: typeof AdminSettingsGenerateNumbersIndexRouteImport
+      parentRoute: typeof AdminSettingsRouteRoute
+    }
+    '/_admin/settings/document-types/': {
+      id: '/_admin/settings/document-types/'
+      path: '/document-types'
+      fullPath: '/settings/document-types/'
+      preLoaderRoute: typeof AdminSettingsDocumentTypesIndexRouteImport
       parentRoute: typeof AdminSettingsRouteRoute
     }
     '/_admin/settings/company-details/': {
@@ -2215,6 +2235,7 @@ interface AdminSettingsRouteRouteChildren {
   AdminSettingsBankAccountsIndexRoute: typeof AdminSettingsBankAccountsIndexRoute
   AdminSettingsBookingRoutesIndexRoute: typeof AdminSettingsBookingRoutesIndexRoute
   AdminSettingsCompanyDetailsIndexRoute: typeof AdminSettingsCompanyDetailsIndexRoute
+  AdminSettingsDocumentTypesIndexRoute: typeof AdminSettingsDocumentTypesIndexRoute
   AdminSettingsGenerateNumbersIndexRoute: typeof AdminSettingsGenerateNumbersIndexRoute
   AdminSettingsIslandsIndexRoute: typeof AdminSettingsIslandsIndexRoute
   AdminSettingsNotificationsIndexRoute: typeof AdminSettingsNotificationsIndexRoute
@@ -2233,6 +2254,7 @@ const AdminSettingsRouteRouteChildren: AdminSettingsRouteRouteChildren = {
   AdminSettingsBankAccountsIndexRoute: AdminSettingsBankAccountsIndexRoute,
   AdminSettingsBookingRoutesIndexRoute: AdminSettingsBookingRoutesIndexRoute,
   AdminSettingsCompanyDetailsIndexRoute: AdminSettingsCompanyDetailsIndexRoute,
+  AdminSettingsDocumentTypesIndexRoute: AdminSettingsDocumentTypesIndexRoute,
   AdminSettingsGenerateNumbersIndexRoute:
     AdminSettingsGenerateNumbersIndexRoute,
   AdminSettingsIslandsIndexRoute: AdminSettingsIslandsIndexRoute,

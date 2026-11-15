@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { requirePermission } from "@/lib/auth"
 import { DriverSearchParamsCache } from "@/features/drivers/schemas"
 import { ActionIcon } from "@/components/icons"
+import { ExpiringDriverDocumentsCard } from "@/features/documents/components/expiring-documents-card"
 
 export const Route = createFileRoute("/_admin/drivers/")({
   validateSearch: DriverSearchParamsCache,
@@ -37,6 +38,7 @@ function RouteComponent() {
           </Can>
         </PageAction>
       </PageHeader>
+      <ExpiringDriverDocumentsCard />
       <DriverList />
     </>
   )

@@ -5,6 +5,7 @@ import {
   Users,
   Wallet,
   FileText,
+  Files,
   Landmark,
   UserIcon,
   Building2,
@@ -103,6 +104,13 @@ export const settingsNav: SettingsNavGroup[] = [
         icon: FileText,
         to: "/settings/pdf-templates",
         base: "/settings/pdf-templates",
+      },
+      {
+        label: "Document types",
+        icon: Files,
+        to: "/settings/document-types",
+        base: "/settings/document-types",
+        permission: "config:document_types:view",
       },
       {
         label: "Document numbers",

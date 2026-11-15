@@ -44,6 +44,12 @@ export const ConfigModulePermissions = {
     "drive_trains:delete",
   ],
   "config:user:management": ["users:view", "users:read", "roles:read"],
+  // Document types
+  "config:document_types:view": ["document_types:list"],
+  "config:document_types:edit": [
+    "document_types:create",
+    "document_types:update",
+  ],
   // tax_rates routes
   "config:tax_rates:view": ["tax_rates:read", "tax_rates:view"],
   "config:tax_rates:create": ["tax_rates:create"],

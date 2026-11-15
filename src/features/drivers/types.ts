@@ -60,20 +60,6 @@ export interface Driver {
     tested_on: string | null
     notes: string | null
   }[]
-  documents: Document[] // every version; filter on is_current
-}
-
-export type DriverDocumentType = "license_copy" | "signed_questionnaire"
-
-export interface Document {
-  id: EntityId
-  document_type: DriverDocumentType
-  name: string
-  /** Bytes. */
-  size: number
-  url: string | null
-  uploaded_at: string
-  is_current: boolean
 }
 
 export interface LicenseRead {
@@ -86,5 +72,5 @@ export interface LicenseRead {
   ended_on: string | null
   change_reason: LicenseChangeReason
   notes: string | null
-  copy_document_id: EntityId | null // id of the photocopy in documents
+  copy_document_id: EntityId | null // the photocopy: a document link id
 }
