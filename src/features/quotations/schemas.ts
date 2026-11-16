@@ -11,6 +11,8 @@ export const QuotationSearchParams = z.object({
     { id: "created_at", desc: true },
   ]),
   clientId: IDSchema.optional(),
+  /** true: only quotations with a shipment that can be invoiced now. */
+  hasInvoiceableTrips: z.boolean().optional(),
   filters: getFiltersStateSchema<Quotation>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })

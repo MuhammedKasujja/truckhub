@@ -227,7 +227,8 @@ function RouteComponent() {
                 Invoice details
               </CardTitle>
               <CardDescription>
-                Choose the quotation to bill and when payment is due.
+                Choose the quotation to bill and when payment is due. Only
+                quotations with shipments ready to invoice are listed.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -239,6 +240,7 @@ function RouteComponent() {
                       id="quotation"
                       value={quotation}
                       onChange={setQuotation}
+                      filters={{ hasInvoiceableTrips: true }}
                     />
                   </FieldContent>
                 </Field>
