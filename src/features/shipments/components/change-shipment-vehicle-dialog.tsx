@@ -114,7 +114,7 @@ export function ChangeShipmentVehicleDialog({
             label="Replacement vehicle"
             name="newVehicleId"
             control={form.control}
-            filters={{ status: "available" }}
+            filters={{ available_for_trip_id: shipment?.id }}
           />
         </FormSection>
 

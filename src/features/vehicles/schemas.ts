@@ -53,6 +53,8 @@ export const VehicleSearchParamsCache = z.object({
   engine_type: z.enum(EngineTypes).nullable().optional(),
   gearbox: z.enum(vehicleTransmissionList).nullable().optional(),
   consumption_rate: z.string().nullable().optional(),
+  /** Only vehicles the API would let onto this trip: free for its dates. */
+  available_for_trip_id: IDSchema.nullable().optional(),
   filters: getFiltersStateSchema().nullable().optional(),
   ...DefaultSearchParamsSchema.shape,
 })

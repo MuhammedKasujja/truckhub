@@ -108,7 +108,7 @@ export function ShipmentAssignVehicleDialog({
       icon={Truck}
       hue="blue"
       title="Assign vehicle"
-      description="Pick an available vehicle for this trip."
+      description="Pick a vehicle that is free for this trip's dates."
       formId="assign-vehicle-form"
       submitLabel="Assign vehicle"
       isSubmitting={isPending}
@@ -184,8 +184,8 @@ export function ShipmentAssignVehicleDialog({
         title="Vehicle"
         description={
           activeCount > 0
-            ? `Showing available vehicles matching ${activeCount} requirement${activeCount === 1 ? "" : "s"}`
-            : "Showing all available vehicles"
+            ? `Showing vehicles free for the trip's dates matching ${activeCount} requirement${activeCount === 1 ? "" : "s"}`
+            : "Showing all vehicles free for the trip's dates"
         }
       >
         <form
@@ -201,7 +201,7 @@ export function ShipmentAssignVehicleDialog({
             label="Vehicle"
             name="vehicleId"
             control={form.control}
-            filters={{ status: "available", ...filters }}
+            filters={{ available_for_trip_id: shipment?.id, ...filters }}
           />
         </form>
       </FormSection>
