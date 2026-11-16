@@ -1,4 +1,3 @@
-import { redirect } from "@tanstack/react-router"
 import { jsonFormatter, logger } from "@/lib/logger"
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios"
 import {
@@ -16,13 +15,22 @@ declare module "axios" {
 
 type Retriable = InternalAxiosRequestConfig & { _retry?: boolean }
 
+type RefreshEnvelope = { data: TokenRefreshResponse } | TokenRefreshResponse
+
 // Dedupe concurrent refreshes (important as refresh tokens rotate)
 let refreshing: Promise<TokenRefreshResponse> | null = null
 
-const PUBLIC_PATHS = ["/v1/auth/login", "/v1/auth/refresh-token"]
+const PUBLIC_PATHS = ["/v1/auth/login", "/v1/auth/refresh"]
 
 const isPublic = (url?: string) =>
   !!url && PUBLIC_PATHS.some((p) => url.startsWith(p))
+
+// 401s that could not be recovered by a token refresh: the session is dead
+const expiredSessionErrors = new WeakSet<object>()
+
+/** True when the request failed with a 401 and the token refresh failed too. */
+export const isSessionExpired = (error: unknown) =>
+  typeof error === "object" && error !== null && expiredSessionErrors.has(error)
 
 const apiOptions = {
   baseURL: `${process.env.BACKEND_URL}`,
@@ -49,7 +57,9 @@ api.interceptors.request.use(async (config: Retriable) => {
   // Don't overwrite on retry. The new cookie isn't readable from the incoming request yet.
   if (!config.headers.Authorization) {
     const session = await getSession()
-    if (session) config.headers.Authorization = `Bearer ${session.accessToken}`
+    if (session?.accessToken) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`
+    }
   }
   return config
 })
@@ -83,7 +93,8 @@ api.interceptors.response.use(
       error.response?.status !== 401 ||
       !original ||
       original._retry ||
-      original.skipAuth // public endpoint: just pass the 401 through
+      original.skipAuth || // public endpoint: just pass the 401 through
+      isPublic(original.url)
     ) {
       if (error.code === "ECONNABORTED") {
         return Promise.reject({
@@ -120,7 +131,7 @@ api.interceptors.response.use(
         })
       }
       // This handles when the API endpoint is Not Found
-      if (error.status === 404 && !(error.response?.data as any).error) {
+      if (error.status === 404 && !(error.response?.data as any)?.error) {
         if (process.env.NODE_ENV === "development") {
           logger.error(
             `${error.request?.method} ${error.request.path} 404 - NOT FOUND`
@@ -145,18 +156,22 @@ api.interceptors.response.use(
 
     original._retry = true
 
+    // Reject with the original 401, marked as a dead session. The api-client
+    // wrappers turn that into the redirect to /login.
     const session = await getSession()
-    if (!session) {
-      throw redirect({ to: "/login" })
+    if (!session?.refreshToken) {
+      expiredSessionErrors.add(error)
+      return Promise.reject(error)
     }
     logger.info("Refreshing auth token")
 
     try {
       refreshing ??= authApi
-        .post<TokenRefreshResponse>("/v1/auth/refresh", {
+        .post<RefreshEnvelope>("/v1/auth/refresh", {
           refresh_token: session.refreshToken,
         })
-        .then((r) => r.data)
+        // The backend wraps payloads as `{ data, message }`
+        .then((r) => ("data" in r.data ? r.data.data : r.data))
         .finally(() => {
           refreshing = null
         })
@@ -164,11 +179,14 @@ api.interceptors.response.use(
       const tokens = await refreshing
       await updateSession({ data: tokens })
       original.headers.Authorization = `Bearer ${tokens.access_token}`
-      return api(original) // retry once
-    } catch {
-      clearSession() // refresh failed, so log out
-      throw redirect({ to: "/login" })
+    } catch (refreshError) {
+      logger.error(`Token refresh failed: ${(refreshError as Error)?.message}`)
+      await clearSession() // refresh failed, so log out
+      expiredSessionErrors.add(error)
+      return Promise.reject(error)
     }
+
+    return api(original) // retry once
   }
 )
 

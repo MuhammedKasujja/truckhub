@@ -1,4 +1,5 @@
-import { api } from "@/lib/api"
+import { api, isSessionExpired } from "@/lib/api"
+import { redirect } from "@tanstack/react-router"
 import { logoutFn } from "@/features/auth/services"
 import { AxiosError, RawAxiosRequestHeaders } from "axios"
 import type {
@@ -41,11 +42,12 @@ export async function getPaginatedFn<T>(
     const statusCode = (
       error instanceof AxiosError ? error.status : 400
     ) as StatusCode
+    const body = errorBody(error)
     return {
       success: false,
       error: {
-        message: (error as any).response.data.error.message,
-        code: (error as any).response.data.error.code,
+        message: body.message,
+        code: body.code,
         statusCode: statusCode,
         erroCode: errorCode,
       },
@@ -130,15 +132,27 @@ function _handleApiException<T>(error: unknown): ApiResponse<T> {
   const errorCode = (
     error instanceof AxiosError ? error.status : 400
   ) as StatusCode
+  const body = errorBody(error)
   return {
     isSuccess: false,
     error: {
-      message: (error as any).response.data.error?.message,
-      code: (error as any).response.data.error?.code,
+      message: body.message,
+      code: body.code,
       status: statusMessage,
       statusCode: errorCode,
-      details: (error as any).response.data.error?.details,
+      details: body.details,
     },
+  }
+}
+
+/** Reads the backend error payload; safe for errors with no `response`. */
+function errorBody(error: unknown) {
+  const body = (error as any)?.response?.data?.error
+  return {
+    message:
+      body?.message ?? (error as any)?.message ?? "Something went wrong",
+    code: body?.code,
+    details: body?.details,
   }
 }
 
@@ -155,11 +169,14 @@ async function logoutOnServerActions(error: unknown) {
   logger.info(
     `API Error with status code ${statusCode} and message: ${(error as any)?.message}`
   )
-  // const navigate = useNavigate()
+  // The token refresh failed too: the session is already cleared, so send
+  // the user to login right away. Loaders and the query cache handle this.
+  if (isSessionExpired(error)) {
+    throw redirect({ to: "/login", replace: true })
+  }
   if (statusCode === "NOT_AUTHENTICATED") {
     try {
       await logoutFn()
     } catch {}
-    // navigate({ to: "/login" })
   }
 }

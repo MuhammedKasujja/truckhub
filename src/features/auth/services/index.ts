@@ -42,7 +42,7 @@ export const getSession = createServerFn().handler(async () => {
 
 export const clearSession = createServerFn().handler(async () => {
   const session = await useAppSession()
-  session.clear()
+  await session.clear()
 })
 
 export const updateSession = createServerFn()
