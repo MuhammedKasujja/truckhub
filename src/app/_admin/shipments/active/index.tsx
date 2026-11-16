@@ -7,11 +7,13 @@ import {
 } from "@/features/shipments/components"
 import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/shipments/active/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   pendingComponent: ShipmentTableSkeleton,
+  beforeLoad: () => requirePermission("shipments:module"),
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>

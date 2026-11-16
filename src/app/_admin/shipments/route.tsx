@@ -76,7 +76,7 @@ function RouteComponent() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Can permission="rides:active">
+          <Can permission="shipments:module">
             <Button variant="outline" asChild>
               <Link to={"/calendar"}>
                 <CalendarIcon />
@@ -84,7 +84,7 @@ function RouteComponent() {
               </Link>
             </Button>
           </Can>
-          <Can permission="rides:active">
+          <Can permission="shipments:active">
             <Button asChild>
               <Link to={"/live-map"}>
                 <MapIcon />

@@ -193,7 +193,7 @@ export function StaffList() {
                       {person.has_system_access ? (
                         <span className="inline-flex items-center gap-1 text-xs">
                           <KeyRound className="size-3.5 text-primary" />
-                          Can sign in
+                          Allowed
                         </span>
                       ) : (
                         <span className="text-xs text-muted-foreground">

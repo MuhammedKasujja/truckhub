@@ -90,14 +90,14 @@ export const sidebarSections: SidebarSection[] = [
         title: "routes.dispatch",
         url: "/live-map",
         icon: getModuleIcon("Dispatches"),
-        permission: "dashboard:view",
+        permission: "shipments:active",
       },
       {
         title: "routes.shipments",
         url: "/shipments/requests",
         match: "/shipments",
         icon: getModuleIcon("Shipments"),
-        permission: "dashboard:view",
+        permission: "shipments:module",
       },
       {
         title: "routes.quotations",
