@@ -1,10 +1,10 @@
 import { toast } from "sonner"
-import { startTransition, useEffect } from "react"
-import { logoutFn } from "@/features/auth/services"
+import { useEffect } from "react"
 import { ApiError, AppErrorDetails, Prettify } from "@/types"
 
 /**
- * Automatically logs out user on `NOT_AUTHENTICATED` api status error
+ * Toasts an api error. A 401 is skipped: the query/mutation caches in
+ * `router.tsx` log the user out for it.
  * @param error AppErrorDetails
  */
 export function useFetchEror(
@@ -12,13 +12,7 @@ export function useFetchEror(
 ) {
   useEffect(() => {
     if (error) {
-      if (error.statusCode == 401) {
-        startTransition(async () => {
-          await logoutFn()
-        })
-      } else {
-        toast.error(error.message)
-      }
+      if (error.statusCode != 401) toast.error(error.message)
     }
   }, [error])
 }
