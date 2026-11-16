@@ -4,6 +4,7 @@ import {
   DriverCreateSchemaType,
   DriverListSearchParams,
   DriverUpdateSchemaType,
+  RecordTestResult,
 } from "@/features/drivers/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { toDriverApiFormData } from "../driver-form-data"
@@ -60,5 +61,16 @@ export async function createDriver(input: DriverCreateSchemaType) {
   return await apiClient.postFn<Driver>(
     "/v1/drivers",
     toDriverApiFormData(input)
+  )
+}
+
+export async function recordDriverTest(input: RecordTestResult) {
+  return await apiClient.putFn<Driver>(
+    `/v1/drivers/${input.driverId}/tests/${input.testType}`,
+    {
+      status: input.status,
+      tested_on: input.testedOn ?? null,
+      notes: input.notes ?? null,
+    }
   )
 }

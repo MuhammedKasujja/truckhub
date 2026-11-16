@@ -91,6 +91,59 @@ export const DriverUpdateSchema = z.object({
 
 export type DriverCreateSchemaType = z.infer<typeof DriverCreateSchema>
 
+export const DRIVER_TEST_TYPES = [
+  "drug_alcohol",
+  "driving_skills",
+  "practical_driving",
+] as const
+
+export const TEST_NOTES_MAX = 500
+
+/** Today as "YYYY-MM-DD" in the user's own time zone. */
+export const todayDateInput = () => new Date().toLocaleDateString("en-CA")
+
+/** The result of one selection test. A pending test has no date. */
+export const recordTestResultSchema = z
+  .object({
+    driverId: IDSchema,
+    testType: z.enum(DRIVER_TEST_TYPES),
+    status: testStatus,
+    testedOn: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date")
+      .optional(),
+    notes: z
+      .string()
+      .trim()
+      .max(TEST_NOTES_MAX, `Keep notes under ${TEST_NOTES_MAX} characters`)
+      .optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.status === "pending") return
+    if (!value.testedOn) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["testedOn"],
+        message: "Enter the date of the test",
+      })
+    } else if (value.testedOn > todayDateInput()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["testedOn"],
+        message: "The test date cannot be in the future",
+      })
+    }
+  })
+  .transform((value) => ({
+    ...value,
+    // A pending test has not been taken, so it carries no date
+    testedOn: value.status === "pending" ? undefined : value.testedOn,
+    notes: value.notes || undefined,
+  }))
+
+export type RecordTestResultInput = z.input<typeof recordTestResultSchema>
+export type RecordTestResult = z.output<typeof recordTestResultSchema>
+
 export type DriverUpdateSchemaType = z.infer<typeof DriverUpdateSchema>
 
 export const DriverSearchParamsCache = z.object({

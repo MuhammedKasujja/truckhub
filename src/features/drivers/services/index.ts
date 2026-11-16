@@ -2,6 +2,7 @@ import {
   DriverUpdateSchema,
   DriverCreateSchema,
   DriverSearchParamsCache,
+  recordTestResultSchema,
 } from "@/features/drivers/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -13,6 +14,7 @@ import {
   deleteDriverById,
   getDriversByQuery,
   getDriverDetailsById,
+  recordDriverTest,
 } from "./server"
 import { ApiError } from "@/types"
 import { driverRequestInput } from "../driver-form-data"
@@ -68,4 +70,10 @@ export const createDriverFn = createServerFn({ method: "POST" })
   .inputValidator(driverRequestInput(DriverCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createDriver(data))
+  })
+
+export const recordDriverTestFn = createServerFn({ method: "POST" })
+  .inputValidator(recordTestResultSchema)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(recordDriverTest(data))
   })

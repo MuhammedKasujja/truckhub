@@ -115,6 +115,11 @@ interface DatePickerProps {
   startDate?: Date
   endDate?: Date
   initialDate?: Date
+  /** Controls the selected date from outside; omit to let the picker own it. */
+  value?: Date
+  /** Days after this one cannot be picked. */
+  maxDate?: Date
+  "aria-invalid"?: boolean
   format?: "PPP" | "P"
   onDateChanged: (date: Date | undefined) => void
 }
@@ -126,12 +131,16 @@ export function DatePicker({
   placeholder,
   onDateChanged,
   initialDate,
+  value,
+  maxDate,
+  "aria-invalid": ariaInvalid,
   format = "PPP",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const [activeDate, setActiveDate] = React.useState<Date | undefined>(
+  const [pickedDate, setActiveDate] = React.useState<Date | undefined>(
     initialDate
   )
+  const activeDate = value ?? pickedDate
 
   const newStartDate = React.useMemo(() => {
     if (startDate) return startDate
@@ -145,6 +154,7 @@ export function DatePicker({
       <PopoverTrigger asChild>
         <Button
           id={id}
+          aria-invalid={ariaInvalid}
           variant={"outline"}
           className={cn(
             "w-full font-normal",
@@ -171,10 +181,7 @@ export function DatePicker({
           onDayClick={() => setIsOpen(false)}
           startMonth={newStartDate}
           endMonth={endDate}
-          // disabled={(date) =>
-          //   Number(date) < Date.now() - 1000 * 60 * 60 * 24 ||
-          //   Number(date) > Date.now() + 1000 * 60 * 60 * 24 * 30
-          // }
+          disabled={maxDate ? { after: maxDate } : undefined}
           defaultMonth={activeDate}
         />
       </PopoverContent>

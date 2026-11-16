@@ -980,11 +980,14 @@ function TestResultRow({
   name,
   label,
   description,
+  readOnly,
 }: {
   control: C
   name: N
   label: string
   description: string
+  /** Show the result without letting it be changed. */
+  readOnly?: boolean
 }) {
   const labelId = `${name}-label`
   return (
@@ -999,18 +1002,27 @@ function TestResultRow({
             </p>
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
-          <Segmented
-            labelledBy={labelId}
-            value={field.value as TestStatus}
-            options={
-              toOptions("testStatus", TEST_STATUSES) as {
-                value: TestStatus
-                label: string
-              }[]
-            }
-            onChange={field.onChange}
-            tone={TEST_TONES}
-          />
+          {readOnly ? (
+            <span
+              aria-labelledby={labelId}
+              className="text-sm font-medium text-muted-foreground"
+            >
+              {labelFor("testStatus", field.value as TestStatus)}
+            </span>
+          ) : (
+            <Segmented
+              labelledBy={labelId}
+              value={field.value as TestStatus}
+              options={
+                toOptions("testStatus", TEST_STATUSES) as {
+                  value: TestStatus
+                  label: string
+                }[]
+              }
+              onChange={field.onChange}
+              tone={TEST_TONES}
+            />
+          )}
         </div>
       )}
     />
@@ -1734,7 +1746,11 @@ export function DriverRegistrationForm({
 
           <FormSection
             id="tests"
-            description="Leave as Pending until each test is done."
+            description={
+              isEdit
+                ? "Update test results from the driver's page."
+                : "Leave as Pending until each test is done."
+            }
             aside={
               <span className="shrink-0 text-sm font-semibold tabular-nums">
                 {testsDone}/3
@@ -1747,18 +1763,21 @@ export function DriverRegistrationForm({
                 name="drugAlcoholTest"
                 label="Drug and alcohol test"
                 description="Screening for substances"
+                readOnly={isEdit}
               />
               <TestResultRow
                 control={control}
                 name="skillsTest"
                 label="Driving skills test"
                 description="Theory and road knowledge"
+                readOnly={isEdit}
               />
               <TestResultRow
                 control={control}
                 name="practicalTest"
                 label="Practical driving test"
                 description="On-road assessment"
+                readOnly={isEdit}
               />
             </div>
           </FormSection>

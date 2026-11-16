@@ -30,9 +30,11 @@ import {
 import { VEHICLE_ICONS } from "./driver-registration-form"
 import { VEHICLE_TYPES, labelFor } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
+import { RecordTestDialog } from "./record-test-dialog"
 import type { TestStatus, VehicleType } from "./driver-options"
 import type { DriverPolicy } from "./driver-policy"
 import type { Driver } from "../types"
+import type { TestType } from "../enums"
 import { DocumentsPanel } from "@/features/documents/components/documents-panel"
 import type { Vehicle } from "@/features/vehicles/types"
 import { Badge } from "@/components/ui/badge"
@@ -84,6 +86,8 @@ export function DriverDetails({
     ...driverTest(driver, t.type),
   }))
   const results = tests.map((t) => t.status)
+  const [recordingType, setRecordingType] = React.useState<TestType>()
+  const recording = tests.find((t) => t.type === recordingType)
   const passed = results.filter((t) => t === "passed").length
   const status = selectionStatus(results)
   const assigned = driver.vehicle_types.map((v) => v.vehicle_type)
@@ -340,10 +344,27 @@ export function DriverDetails({
                       </p>
                     )}
                   </div>
-                  <TestStatusPill status={t.status} />
+                  <div className="flex shrink-0 items-center gap-2">
+                    <TestStatusPill status={t.status} />
+                    <Can permission="drivers:tests:record">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        aria-label={`Update ${t.label.toLowerCase()}`}
+                        onClick={() => setRecordingType(t.type)}
+                      >
+                        Update
+                      </Button>
+                    </Can>
+                  </div>
                 </li>
               ))}
             </ul>
+            <RecordTestDialog
+              driverId={driver.id}
+              test={recording}
+              onClose={() => setRecordingType(undefined)}
+            />
           </Section>
         </div>
 

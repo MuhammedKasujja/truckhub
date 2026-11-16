@@ -74,6 +74,7 @@ export const en = {
   "drivers:view": "View Drivers",
   "drivers:delete": "Delete Drivers",
   "drivers:edit": "Edit Drivers",
+  "drivers:tests:record": "Record Driver Test Results",
   "drivers:documents:view": "View Driver Documents",
   "drivers:documents:upload": "Upload Driver Documents",
   "drivers:documents:download": "Open Driver Documents",

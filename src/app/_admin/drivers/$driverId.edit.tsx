@@ -85,7 +85,16 @@ function RouteComponent() {
         avatarSrc={data.photo_url}
         isSubmitting={isPending}
         onCancel={back}
-        onSubmit={({ payload }) => mutate({ id: driverId, ...payload })}
+        onSubmit={({ payload }) => {
+          // Test results are recorded one at a time from the driver's page
+          const {
+            drug_alcohol_test: _drugAlcohol,
+            skills_test: _skills,
+            practical_test: _practical,
+            ...fields
+          } = payload
+          mutate({ id: driverId, ...fields })
+        }}
       />
     </div>
   )
