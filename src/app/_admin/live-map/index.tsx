@@ -53,6 +53,7 @@ import { cn } from "@/lib/utils"
 export const Route = createFileRoute("/_admin/live-map/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
+  pendingComponent: LiveMapSkeleton,
   validateSearch: ShipmentSearchParams,
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
@@ -268,11 +269,7 @@ function RouteComponent() {
 
           <div className="min-h-0 flex-1 overflow-y-auto">
             {isLoading ? (
-              <div className="space-y-2 p-3">
-                {[0, 1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-24 w-full rounded-lg" />
-                ))}
-              </div>
+              <TripListSkeleton />
             ) : visible.length === 0 ? (
               <Empty className="h-full">
                 <EmptyHeader>
@@ -567,6 +564,86 @@ function SelectedTripPanel({
       >
         Open trip details
       </Button>
+    </div>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Skeletons                                 */
+/* -------------------------------------------------------------------------- */
+
+function TripListSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <ul className="divide-y" aria-busy="true" aria-label="Loading trips">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li
+          key={i}
+          className="space-y-2 border-l-4 border-l-transparent px-3 py-3"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <Skeleton className="h-5 w-28" />
+            <Skeleton className="h-5 w-20 rounded-full" />
+          </div>
+          <Skeleton className="h-4 w-3/4" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-3.5 w-16" />
+            <Skeleton className="h-3.5 w-20" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function LiveMapSkeleton() {
+  return (
+    <div className="space-y-4" aria-busy="true" aria-label="Loading live map">
+      {/* Header */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
+          <Skeleton className="h-8 w-36" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+        <div className="flex gap-2">
+          <Skeleton className="h-9 w-24" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+      </div>
+
+      {/* Status tiles */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-xs"
+          >
+            <Skeleton className="size-10 shrink-0 rounded-lg" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-6 w-10" />
+              <Skeleton className="h-3 w-24 max-w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Fleet list + map */}
+      <div className="grid gap-4 lg:h-[calc(100vh-17rem)] lg:min-h-[560px] lg:grid-cols-[minmax(320px,380px)_1fr]">
+        <Card className="flex max-h-[70vh] min-h-0 flex-col gap-0 overflow-hidden py-0 lg:max-h-none">
+          <div className="space-y-2 border-b p-3">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="mx-1 h-3 w-24" />
+          </div>
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <TripListSkeleton />
+          </div>
+        </Card>
+
+        <Card className="relative h-[60vh] gap-0 overflow-hidden py-0 lg:h-auto">
+          <Skeleton className="size-full rounded-none" />
+        </Card>
+      </div>
     </div>
   )
 }
