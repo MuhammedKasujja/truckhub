@@ -12,13 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ShipmentStatusIndicator } from "@/features/shipments/components"
+import {
+  ShipmentDelayBadge,
+  ShipmentStatusIndicator,
+} from "@/features/shipments/components"
 
-const onRoadStatuses: ShipmentStatus[] = [
-  "dispatched",
-  "in_progress",
-  "delayed",
-]
+const onRoadStatuses: ShipmentStatus[] = ["dispatched", "in_progress"]
 
 /**
  * Compact "who is on the road right now" list with a jump-off to the full live map.
@@ -27,10 +26,8 @@ const onRoadStatuses: ShipmentStatus[] = [
 export function LiveOperations({ shipments }: { shipments: Shipment[] }) {
   const onRoad = shipments
     .filter((s) => onRoadStatuses.includes(s.status))
-    // delayed first so problems surface
-    .sort(
-      (a, b) => Number(b.status === "delayed") - Number(a.status === "delayed")
-    )
+    // overdue first so problems surface
+    .sort((a, b) => Number(b.is_delayed) - Number(a.is_delayed))
     .slice(0, 5)
 
   return (
@@ -67,7 +64,11 @@ export function LiveOperations({ shipments }: { shipments: Shipment[] }) {
                     {shipment.driver?.full_name ?? "No driver"}
                   </p>
                 </div>
-                <ShipmentStatusIndicator status={shipment.status} />
+                {shipment.is_delayed ? (
+                  <ShipmentDelayBadge shipment={shipment} />
+                ) : (
+                  <ShipmentStatusIndicator status={shipment.status} />
+                )}
               </li>
             ))}
           </ul>

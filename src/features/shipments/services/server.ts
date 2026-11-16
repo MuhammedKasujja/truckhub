@@ -1,4 +1,4 @@
-import { Shipment } from "../types"
+import { Shipment, ShipmentDelayReport } from "../types"
 import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
 import type { ApiResponse } from "@/types"
@@ -12,6 +12,7 @@ import {
   RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
   ChangeShipmentVehicleInput,
+  ReportShipmentDelayInput,
 } from "../schemas"
 
 const endpoint = "/v1/trips"
@@ -103,4 +104,18 @@ export async function shipmentAssignDriver(data: AssignShipmentDriverInput) {
   return await apiClient.postFn<Shipment>(`${endpoint}/${data.unitId}/driver`, {
     driver_id: data.driverId,
   })
+}
+
+export async function reportShipmentDelay(data: ReportShipmentDelayInput) {
+  const { unitId, reason, expectedEnd, note } = data
+  // Responds with the trip and the other trips booked on its vehicle before
+  // it is expected back
+  return await apiClient.postFn<ShipmentDelayReport>(
+    `${endpoint}/${unitId}/delay`,
+    {
+      reason,
+      expected_end: expectedEnd ?? undefined,
+      note: note || undefined,
+    }
+  )
 }

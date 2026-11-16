@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { Copy, Eye, Route as RouteIcon } from "lucide-react"
 import { toast } from "sonner"
 import { tripRoute } from "../format"
+import { ShipmentDelayBadge } from "./shipment-delay-badge"
 import { ShipmentStatusIndicator } from "./shipment-status-indicator"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Shipment } from "../types"
@@ -165,7 +166,10 @@ export function getShipmentTableColumns({
       accessorKey: "status",
       header: tr("common.status"),
       cell: ({ row }) => (
-        <ShipmentStatusIndicator status={row.original.status} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          <ShipmentStatusIndicator status={row.original.status} />
+          <ShipmentDelayBadge shipment={row.original} />
+        </div>
       ),
     },
     {

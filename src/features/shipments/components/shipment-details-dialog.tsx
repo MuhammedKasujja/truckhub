@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ClipboardList,
   Clock,
+  ClockAlert,
   FileCheck2,
   Flag,
   Fuel,
@@ -30,6 +31,8 @@ import {
   Wallet,
 } from "lucide-react"
 import {
+  delayReasonLabel,
+  delaySummary,
   elapsedLabel,
   shipmentActions,
   shipmentBilling,
@@ -42,6 +45,8 @@ import { ShipmentAssignVehicleDialog } from "./shipment-assign-vehicle-dailog"
 import { ShipmentAssignDriverDialog } from "./shipment-assign-driver-dailog"
 import { EndShipmentDialog } from "./end-shipment-dailog copy"
 import { ChangeShipmentVehicleDialog } from "./change-shipment-vehicle-dialog"
+import { ReportShipmentDelayDialog } from "./report-shipment-delay-dialog"
+import { ShipmentDelayBadge } from "./shipment-delay-badge"
 import { ShipmentHistoryTimeline } from "./shipment-history-timeline"
 import { HUE } from "./shipment-hues"
 import {
@@ -89,6 +94,7 @@ type ActionKey =
   | "change-vehicle"
   | "assign-driver"
   | "end-shipment"
+  | "report-delay"
 
 type IconType = React.ComponentType<{ className?: string }>
 
@@ -120,7 +126,10 @@ export function ShipmentDetailsDialog({
             <>
               <DetailsHeader shipment={shipment} onAction={setOpenModal} />
               <div className="flex-1 overflow-y-auto bg-muted/20">
-                <StatusProgress status={shipment.status} />
+                <StatusProgress
+                  status={shipment.status}
+                  isDelayed={shipment.is_delayed}
+                />
                 <div className="grid gap-5 p-5 lg:grid-cols-3">
                   <div className="space-y-5 lg:col-span-2">
                     <JourneySection shipment={shipment} />
@@ -136,6 +145,7 @@ export function ShipmentDetailsDialog({
                       shipment={shipment}
                       onAction={setOpenModal}
                     />
+                    <DelaySection shipment={shipment} />
                     <Section icon={History} hue="slate" title="Activity">
                       <ShipmentHistoryTimeline
                         history={shipment.history ?? []}
@@ -189,6 +199,11 @@ export function ShipmentDetailsDialog({
         open={openModal === "end-shipment"}
         onOpenChange={close}
       />
+      <ReportShipmentDelayDialog
+        shipment={shipment}
+        open={openModal === "report-delay"}
+        onOpenChange={close}
+      />
     </>
   )
 }
@@ -226,6 +241,8 @@ function availableActions(shipment: Shipment): ActionDef[] {
       label: "Change vehicle",
       icon: ArrowLeftRight,
     })
+  if (a.reportDelay)
+    list.push({ key: "report-delay", label: "Report delay", icon: ClockAlert })
   return list
 }
 
@@ -240,7 +257,9 @@ function DetailsHeader({
   const primary = actions.at(0)
   const secondary = actions.slice(1)
   const { dispatchBlocked } = shipmentActions(shipment)
-  const hue = HUE[statusHue(shipment.status)]
+  // A late trip is flagged in red whatever its status
+  const hue = HUE[shipment.is_delayed ? "red" : statusHue(shipment.status)]
+  const lateBecause = delaySummary(shipment)
 
   const started = shipment.actual_start ?? shipment.started_at
   const billing = shipmentBilling(shipment)
@@ -278,6 +297,7 @@ function DetailsHeader({
                 {shipment.number ?? "Unnumbered shipment"}
               </DialogTitle>
               <ShipmentStatusIndicator status={shipment.status} />
+              <ShipmentDelayBadge shipment={shipment} />
             </div>
             <DialogDescription className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="font-medium text-foreground">
@@ -293,6 +313,12 @@ function DetailsHeader({
               <p className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2 py-1 text-xs text-amber-700 dark:text-amber-400">
                 <AlertTriangle className="size-3.5" />
                 Assign a vehicle and a driver before dispatching
+              </p>
+            )}
+            {lateBecause && (
+              <p className="flex w-fit items-center gap-1.5 rounded-md bg-destructive/10 px-2 py-1 text-xs text-destructive">
+                <ClockAlert className="size-3.5 shrink-0" />
+                {lateBecause}
               </p>
             )}
           </div>
@@ -419,7 +445,6 @@ const STEP_INDEX: Record<ShipmentStatus, number> = {
   assigned: 1,
   dispatched: 2,
   in_progress: 3,
-  delayed: 3,
   idle: 3,
   completed: 4,
   captured_details: 5,
@@ -427,7 +452,13 @@ const STEP_INDEX: Record<ShipmentStatus, number> = {
   cancelled: -1,
 }
 
-function StatusProgress({ status }: { status: ShipmentStatus }) {
+function StatusProgress({
+  status,
+  isDelayed,
+}: {
+  status: ShipmentStatus
+  isDelayed: boolean
+}) {
   if (status === "cancelled") {
     return (
       <div className="flex items-center gap-2 border-b bg-muted/50 px-5 py-3 text-sm text-muted-foreground">
@@ -438,7 +469,8 @@ function StatusProgress({ status }: { status: ShipmentStatus }) {
   }
 
   const current = STEP_INDEX[status]
-  const isTrouble = status === "delayed" || status === "idle"
+  // A late trip stays on its own step; the step is only flagged
+  const isTrouble = isDelayed || status === "idle"
 
   return (
     <ol className="flex overflow-x-auto border-b bg-background px-5 py-4">
@@ -479,11 +511,7 @@ function StatusProgress({ status }: { status: ShipmentStatus }) {
                       : "text-muted-foreground"
                 )}
               >
-                {active && isTrouble
-                  ? status === "delayed"
-                    ? "Delayed"
-                    : "Idle"
-                  : label}
+                {active && status === "idle" ? "Idle" : label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
@@ -512,7 +540,6 @@ const JOURNEY_PROGRESS: Record<ShipmentStatus, number> = {
   assigned: 0,
   dispatched: 8,
   in_progress: 50,
-  delayed: 50,
   idle: 50,
   completed: 100,
   captured_details: 100,
@@ -525,7 +552,7 @@ function JourneySection({ shipment }: { shipment: Shipment }) {
   const route = tripRoute(shipment)
   const started = shipment.actual_start ?? shipment.started_at
   const progress = JOURNEY_PROGRESS[shipment.status]
-  const isTrouble = shipment.status === "delayed" || shipment.status === "idle"
+  const isTrouble = shipment.is_delayed || shipment.status === "idle"
   const tonnage = (item as { tonnage?: string | number | null }).tonnage
 
   const chips = [
@@ -897,6 +924,52 @@ function DriverSection({
           onAction={() => onAction("assign-driver")}
         />
       )}
+    </Section>
+  )
+}
+
+/** The latest estimate and every delay report, newest first. */
+function DelaySection({ shipment }: { shipment: Shipment }) {
+  const delays = [...(shipment.delays ?? [])].reverse()
+  if (!delays.length && !shipment.expected_end) return null
+
+  return (
+    <Section icon={ClockAlert} hue="red" title="Delays">
+      {shipment.expected_end && (
+        <div
+          className={cn(
+            "mb-3 rounded-lg border px-3 py-2",
+            shipment.is_delayed ? HUE.red.soft : HUE.slate.soft
+          )}
+        >
+          <p className="text-xs text-muted-foreground">Expected back</p>
+          <p className="text-sm font-medium">
+            {formatDateTime(shipment.expected_end)}
+          </p>
+        </div>
+      )}
+      <ul className="space-y-3">
+        {delays.map((delay) => (
+          <li key={delay.id.toString()} className="text-sm">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-medium">
+                {delayReasonLabel(delay.reason)}
+              </span>
+              <time
+                dateTime={new Date(delay.reported_at).toISOString()}
+                className="shrink-0 text-xs text-muted-foreground"
+              >
+                {formatDateTime(delay.reported_at)}
+              </time>
+            </div>
+            {delay.note && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {delay.note}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
     </Section>
   )
 }

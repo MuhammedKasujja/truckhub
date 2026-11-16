@@ -6,6 +6,7 @@ import {
   RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
   ChangeShipmentVehicleInput,
+  ReportShipmentDelayInput,
 } from "../schemas"
 import {
   endShipmentFn,
@@ -14,6 +15,7 @@ import {
   recordShipmentDetailsFn,
   shipmentAssignVehicleFn,
   changeShipmentVehicleFn,
+  reportShipmentDelayFn,
 } from "../services"
 import { Shipment } from "../types"
 import { EntityId } from "@/schemas"
@@ -193,6 +195,29 @@ export function useChangeShipmentVehicle() {
     )
   }
   return { isPending, changeShipmentVehicle, ...reset }
+}
+
+const useReportShipmentDelayBase = createEntityActionHook(
+  reportShipmentDelayFn,
+  (invalidator, input) => {
+    // A trip moves in or out of the delayed list, and the dashboard counts it
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId).invalidate()
+    invalidator.dashboard.app()
+  }
+)
+
+export function useReportShipmentDelay() {
+  const queryClient = useQueryClient()
+  const { isPending, execute } = useReportShipmentDelayBase()
+
+  /** Resolves to the other trips the delay collides with on the same vehicle. */
+  async function reportShipmentDelay(data: ReportShipmentDelayInput) {
+    const result = await execute({ data })
+    refreshShipmentDetails(queryClient, data.unitId, result.data?.trip)
+    return result.data?.affected_trips ?? []
+  }
+  return { isPending, reportShipmentDelay }
 }
 
 function refreshShipmentDetails(

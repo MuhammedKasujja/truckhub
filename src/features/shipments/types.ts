@@ -1,5 +1,10 @@
 import { EntityId } from "@/schemas"
-import { ShipmentHistoryStatus, ShipmentStatus } from "./enums"
+import {
+  ShipmentDelayKind,
+  ShipmentDelayReason,
+  ShipmentHistoryStatus,
+  ShipmentStatus,
+} from "./enums"
 import { LineItemType } from "@/common/enums"
 import { DataTableRowAction } from "@/types/data-table"
 import { LineItemResponse } from "../quotations/schemas"
@@ -45,6 +50,31 @@ export type ShipmentHistory = {
   created_at: Date
 }
 
+/** One report that a trip is running late. A trip keeps every report made on it. */
+export type ShipmentDelay = {
+  id: EntityId
+  reason: ShipmentDelayReason
+  note: string | null
+  /** When the trip was expected back as of this report */
+  expected_end: string | null
+  reported_by: EntityId | null
+  reported_at: string
+}
+
+/** Another trip booked on the same vehicle before a delayed trip is due back. */
+export type ShipmentDelayCollision = {
+  trip_id: EntityId
+  number: string | null
+  status: ShipmentStatus
+  starts_at: string
+  ends_at: string | null
+}
+
+export type ShipmentDelayReport = {
+  trip: Shipment
+  affected_trips: ShipmentDelayCollision[]
+}
+
 export type Shipment = {
   id: EntityId
   number: string | null
@@ -73,7 +103,14 @@ export type Shipment = {
   /** This trip's part of its line's discount, as it will be invoiced. */
   discount_share: string
   updated_at: string
+  /** Behind its plan right now. Worked out by the API from the trip's dates. */
+  is_delayed: boolean
+  delay_kind: ShipmentDelayKind | null
+  /** When it is now expected back, if a delay was reported */
+  expected_end: string | null
   history: ShipmentHistory[] | null
+  /** Delay reports, oldest first. Only on a trip's details, not in lists. */
+  delays?: ShipmentDelay[] | null
 }
 
 export interface ShipmentTableRowAction extends DataTableRowAction<

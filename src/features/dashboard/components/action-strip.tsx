@@ -30,8 +30,7 @@ const items: AlertItem[] = [
     icon: <ClockAlertIcon />,
     tone: "danger",
     permission: "shipments:module",
-    to: "/shipments/active",
-    search: { status: ["delayed"] },
+    to: "/shipments/delayed",
   },
   {
     key: "unassigned_shipments",

@@ -327,14 +327,13 @@ function shipments(rand: Rand, period: ResolvedReportPeriod): ShipmentReport {
         "dispatched",
         "assigned",
         "unassigned",
-        "delayed",
         "cancelled",
       ] as const
     ).map((status, i) => ({
       status,
       count: Math.max(
         0,
-        Math.round(total * [0.38, 0.22, 0.1, 0.06, 0.07, 0.07, 0.06, 0.04][i])
+        Math.round(total * [0.38, 0.22, 0.1, 0.06, 0.07, 0.07, 0.04][i])
       ),
     })),
     by_lane: sortBy(

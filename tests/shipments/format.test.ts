@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
+  delayReasonLabel,
+  delaySummary,
   shipmentActions,
   shipmentBilling,
   vehicleConflictMessage,
@@ -149,5 +151,62 @@ describe("vehicleConflictMessage", () => {
     expect(vehicleConflictMessage(undefined)).toBeNull()
     expect(vehicleConflictMessage([])).toBeNull()
     expect(vehicleConflictMessage([{ nope: true }])).toBeNull()
+  })
+})
+
+describe("reporting a delay", () => {
+  it("is offered until the trip ends, dispatched or not", () => {
+    for (const status of [
+      "unassigned",
+      "vehicle_assigned",
+      "assigned",
+      "dispatched",
+      "in_progress",
+    ] as const) {
+      expect(shipmentActions(shipment({ status })).reportDelay).toBe(true)
+    }
+    for (const status of [
+      "completed",
+      "captured_details",
+      "invoiced",
+      "cancelled",
+    ] as const) {
+      expect(shipmentActions(shipment({ status })).reportDelay).toBe(false)
+    }
+  })
+})
+
+describe("delaySummary", () => {
+  const late = (fields: Partial<Shipment>): Shipment => ({
+    ...shipment({ status: "dispatched" }),
+    ...fields,
+  })
+
+  it("says nothing about a trip that is on plan", () => {
+    expect(delaySummary(late({ delay_kind: null }))).toBeNull()
+  })
+
+  it("tells a late start from an overdue trip", () => {
+    expect(delaySummary(late({ delay_kind: "late_start" }))).toMatch(
+      /not dispatched/i
+    )
+    expect(delaySummary(late({ delay_kind: "overdue" }))).toMatch(
+      /scheduled end day/
+    )
+  })
+
+  it("measures an overdue trip against the estimate once one was reported", () => {
+    expect(
+      delaySummary(
+        late({ delay_kind: "overdue", expected_end: "2026-11-15T10:00:00Z" })
+      )
+    ).toMatch(/last expected back/)
+  })
+})
+
+describe("delayReasonLabel", () => {
+  it("reads as words", () => {
+    expect(delayReasonLabel("border_customs")).toBe("Border customs")
+    expect(delayReasonLabel("traffic")).toBe("Traffic")
   })
 })

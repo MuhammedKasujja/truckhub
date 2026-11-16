@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
 import {
+  ShipmentSearchParams,
   endShipmentSchema,
   recordShipmentDetailsSchema,
+  reportShipmentDelaySchema,
 } from "../../src/features/shipments/schemas"
 
 const UNIT_ID = "0199a1b2-c3d4-7e5f-8a6b-7c8d9e0f1a2b"
@@ -86,5 +88,55 @@ describe("endShipmentSchema", () => {
     })
 
     expect(result.success).toBe(true)
+  })
+})
+
+describe("reportShipmentDelaySchema", () => {
+  const delayIssues = (input: Record<string, unknown>) => {
+    const result = reportShipmentDelaySchema.safeParse({
+      unitId: UNIT_ID,
+      ...input,
+    })
+    return result.success
+      ? []
+      : result.error.issues.map((i) => i.path.join("."))
+  }
+  const hours = (n: number) => new Date(Date.now() + n * 3_600_000)
+
+  it("accepts a reason on its own", () => {
+    expect(delayIssues({ reason: "traffic" })).toEqual([])
+    expect(
+      delayIssues({ reason: "traffic", note: "", expectedEnd: null })
+    ).toEqual([])
+  })
+
+  it("needs a reason the API knows", () => {
+    expect(delayIssues({})).toContain("reason")
+    expect(delayIssues({ reason: "lost" })).toContain("reason")
+  })
+
+  it("needs a note when the reason is other", () => {
+    expect(delayIssues({ reason: "other" })).toContain("note")
+    expect(delayIssues({ reason: "other", note: "   " })).toContain("note")
+    expect(delayIssues({ reason: "other", note: "Road closed" })).toEqual([])
+  })
+
+  it("takes an estimate only in the future", () => {
+    expect(delayIssues({ reason: "weather", expectedEnd: hours(6) })).toEqual(
+      []
+    )
+    expect(
+      delayIssues({ reason: "weather", expectedEnd: hours(-1) })
+    ).toContain("expectedEnd")
+  })
+})
+
+describe("ShipmentSearchParams", () => {
+  it("has no delayed status: late trips are asked for with the delayed flag", () => {
+    expect(
+      ShipmentSearchParams.safeParse({ status: ["delayed"] }).success
+    ).toBe(false)
+    expect(ShipmentSearchParams.parse({ delayed: true }).delayed).toBe(true)
+    expect(ShipmentSearchParams.parse({}).delayed).toBeUndefined()
   })
 })

@@ -47,6 +47,7 @@ import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_adm
 import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admin/settings/pricing-config/route'
 import { Route as AdminVehiclesNewIndexRouteImport } from './app/_admin/vehicles/new/index'
 import { Route as AdminShipmentsRequestsIndexRouteImport } from './app/_admin/shipments/requests/index'
+import { Route as AdminShipmentsDelayedIndexRouteImport } from './app/_admin/shipments/delayed/index'
 import { Route as AdminShipmentsConfirmedIndexRouteImport } from './app/_admin/shipments/confirmed/index'
 import { Route as AdminShipmentsCompletedIndexRouteImport } from './app/_admin/shipments/completed/index'
 import { Route as AdminShipmentsActiveIndexRouteImport } from './app/_admin/shipments/active/index'
@@ -307,6 +308,12 @@ const AdminShipmentsRequestsIndexRoute =
   AdminShipmentsRequestsIndexRouteImport.update({
     id: '/requests/',
     path: '/requests/',
+    getParentRoute: () => AdminShipmentsRouteRoute,
+  } as any)
+const AdminShipmentsDelayedIndexRoute =
+  AdminShipmentsDelayedIndexRouteImport.update({
+    id: '/delayed/',
+    path: '/delayed/',
     getParentRoute: () => AdminShipmentsRouteRoute,
   } as any)
 const AdminShipmentsConfirmedIndexRoute =
@@ -792,6 +799,7 @@ export interface FileRoutesByFullPath {
   '/shipments/active/': typeof AdminShipmentsActiveIndexRoute
   '/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
+  '/shipments/delayed/': typeof AdminShipmentsDelayedIndexRoute
   '/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
@@ -899,6 +907,7 @@ export interface FileRoutesByTo {
   '/shipments/active': typeof AdminShipmentsActiveIndexRoute
   '/shipments/completed': typeof AdminShipmentsCompletedIndexRoute
   '/shipments/confirmed': typeof AdminShipmentsConfirmedIndexRoute
+  '/shipments/delayed': typeof AdminShipmentsDelayedIndexRoute
   '/shipments/requests': typeof AdminShipmentsRequestsIndexRoute
   '/vehicles/new': typeof AdminVehiclesNewIndexRoute
   '/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
@@ -1008,6 +1017,7 @@ export interface FileRoutesById {
   '/_admin/shipments/active/': typeof AdminShipmentsActiveIndexRoute
   '/_admin/shipments/completed/': typeof AdminShipmentsCompletedIndexRoute
   '/_admin/shipments/confirmed/': typeof AdminShipmentsConfirmedIndexRoute
+  '/_admin/shipments/delayed/': typeof AdminShipmentsDelayedIndexRoute
   '/_admin/shipments/requests/': typeof AdminShipmentsRequestsIndexRoute
   '/_admin/vehicles/new/': typeof AdminVehiclesNewIndexRoute
   '/_admin/hr/staff/$staffId/edit': typeof AdminHrStaffStaffIdEditRoute
@@ -1117,6 +1127,7 @@ export interface FileRouteTypes {
     | '/shipments/active/'
     | '/shipments/completed/'
     | '/shipments/confirmed/'
+    | '/shipments/delayed/'
     | '/shipments/requests/'
     | '/vehicles/new/'
     | '/hr/staff/$staffId/edit'
@@ -1224,6 +1235,7 @@ export interface FileRouteTypes {
     | '/shipments/active'
     | '/shipments/completed'
     | '/shipments/confirmed'
+    | '/shipments/delayed'
     | '/shipments/requests'
     | '/vehicles/new'
     | '/hr/staff/$staffId/edit'
@@ -1332,6 +1344,7 @@ export interface FileRouteTypes {
     | '/_admin/shipments/active/'
     | '/_admin/shipments/completed/'
     | '/_admin/shipments/confirmed/'
+    | '/_admin/shipments/delayed/'
     | '/_admin/shipments/requests/'
     | '/_admin/vehicles/new/'
     | '/_admin/hr/staff/$staffId/edit'
@@ -1624,6 +1637,13 @@ declare module '@tanstack/react-router' {
       path: '/requests'
       fullPath: '/shipments/requests/'
       preLoaderRoute: typeof AdminShipmentsRequestsIndexRouteImport
+      parentRoute: typeof AdminShipmentsRouteRoute
+    }
+    '/_admin/shipments/delayed/': {
+      id: '/_admin/shipments/delayed/'
+      path: '/delayed'
+      fullPath: '/shipments/delayed/'
+      preLoaderRoute: typeof AdminShipmentsDelayedIndexRouteImport
       parentRoute: typeof AdminShipmentsRouteRoute
     }
     '/_admin/shipments/confirmed/': {
@@ -2270,6 +2290,7 @@ interface AdminShipmentsRouteRouteChildren {
   AdminShipmentsActiveIndexRoute: typeof AdminShipmentsActiveIndexRoute
   AdminShipmentsCompletedIndexRoute: typeof AdminShipmentsCompletedIndexRoute
   AdminShipmentsConfirmedIndexRoute: typeof AdminShipmentsConfirmedIndexRoute
+  AdminShipmentsDelayedIndexRoute: typeof AdminShipmentsDelayedIndexRoute
   AdminShipmentsRequestsIndexRoute: typeof AdminShipmentsRequestsIndexRoute
 }
 
@@ -2277,6 +2298,7 @@ const AdminShipmentsRouteRouteChildren: AdminShipmentsRouteRouteChildren = {
   AdminShipmentsActiveIndexRoute: AdminShipmentsActiveIndexRoute,
   AdminShipmentsCompletedIndexRoute: AdminShipmentsCompletedIndexRoute,
   AdminShipmentsConfirmedIndexRoute: AdminShipmentsConfirmedIndexRoute,
+  AdminShipmentsDelayedIndexRoute: AdminShipmentsDelayedIndexRoute,
   AdminShipmentsRequestsIndexRoute: AdminShipmentsRequestsIndexRoute,
 }
 

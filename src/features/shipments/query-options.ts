@@ -18,6 +18,7 @@ export const shipmentsQueryKeys = {
   confirmed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "confirmed", search],
   requested: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "requested", search],
   completed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "completed", search],
+  delayed: (search: ShipmentSearchParamsInput) => [...shipmentsQueryKeys.list(), "delayed", search],
   details: () => [...shipmentsQueryKeys.all(), "detail"],
   search: () => [...shipmentsQueryKeys.all(), "search"],
   detail: (id: EntityId) => [...shipmentsQueryKeys.details(), id],
@@ -63,8 +64,17 @@ export const shipmentsActiveQueryOptions = (
     queryKey: shipmentsQueryKeys.active(search),
     queryFn: () =>
       getShipmentsFn({
-        data: { ...search, status: ["in_progress", "dispatched", "delayed"] },
+        data: { ...search, status: ["in_progress", "dispatched"] },
       }),
+  })
+
+/** Trips behind their plan, whatever their status: late to start, or overdue. */
+export const shipmentsDelayedQueryOptions = (
+  search: ShipmentSearchParamsInput
+) =>
+  queryOptions({
+    queryKey: shipmentsQueryKeys.delayed(search),
+    queryFn: () => getShipmentsFn({ data: { ...search, delayed: true } }),
   })
 
 export const shipmentsRequestsQueryOptions = (

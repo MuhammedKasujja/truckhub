@@ -30,7 +30,6 @@ const stages: Stage[] = [
   },
   { status: "dispatched", color: "var(--primary)", to: "/shipments/active" },
   { status: "in_progress", color: "var(--primary)", to: "/shipments/active" },
-  { status: "delayed", color: "var(--destructive)", to: "/shipments/active" },
 ]
 
 export function ShipmentPipeline({

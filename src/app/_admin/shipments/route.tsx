@@ -9,6 +9,7 @@ import {
   CalendarIcon,
   CheckCircle2,
   ClipboardList,
+  ClockAlert,
   MapIcon,
   Navigation,
   UserCheck,
@@ -39,7 +40,13 @@ const shipmentTabs = [
     name: "inTransit",
     route: "/shipments/active",
     icon: Navigation,
-    hint: "Dispatched, on the road or delayed",
+    hint: "Dispatched and on the road",
+  },
+  {
+    name: "delayed",
+    route: "/shipments/delayed",
+    icon: ClockAlert,
+    hint: "Behind plan: late to start, or overdue back",
   },
   {
     name: "completed",

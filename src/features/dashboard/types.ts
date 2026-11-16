@@ -27,7 +27,7 @@ export type DashboardKpis = {
   collected: DashboardKpi
   /** Balance still owed now; `count` is the number of unpaid invoices */
   outstanding: DashboardKpi & { count: number }
-  /** Trips dispatched, in progress or delayed now */
+  /** Trips dispatched or in progress now */
   active_shipments: DashboardKpi
   /** percentage 0–100 */
   fleet_utilization: DashboardKpi & { in_use: number; total: number }

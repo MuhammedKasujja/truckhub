@@ -59,7 +59,6 @@ const statusColors: Partial<Record<ShipmentStatus, string>> = {
   assigned: "var(--info)",
   vehicle_assigned: "var(--info)",
   unassigned: "var(--warning)",
-  delayed: "var(--destructive)",
   cancelled: "var(--muted-foreground)",
 }
 

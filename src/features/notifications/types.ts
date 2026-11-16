@@ -10,6 +10,7 @@ export type NotificationSource =
   | "trip_created"
   | "trip_started"
   | "trip_ended"
+  | "trip_delayed"
 
 /** What a notification is about, when a business event raised it. */
 export type NotificationResourceType =

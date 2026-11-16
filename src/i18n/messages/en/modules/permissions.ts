@@ -47,6 +47,7 @@ export const en = {
   "shipments:asssign_driver": "Assign Driver",
   "shipments:asssign_vehicle": "Assign Vehicle",
   "shipments:cancel": "Cancel Shipments",
+  "shipments:report_delay": "Report Shipment Delays",
   "services:module": "Services Module",
   "services:create": "Create Services",
   "services:view": "View Services",

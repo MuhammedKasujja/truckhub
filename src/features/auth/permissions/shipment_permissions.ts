@@ -6,6 +6,7 @@ export const ShipmentModulePermissions = {
   "shipments:asssign_driver": ["trips:asssign_driver"],
   "shipments:asssign_vehicle": ["trips:asssign_vehicle"],
   "shipments:cancel": ["trips:cancel"],
+  "shipments:report_delay": ["trips:delay"],
   "shipments:active": ["shipments:module", "trips:read",],
 } as const
 

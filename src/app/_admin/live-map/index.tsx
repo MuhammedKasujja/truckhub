@@ -40,7 +40,10 @@ import {
 import { Map, MapControls } from "@/components/ui/map"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MAP_DARK_STYLE_URL, MAP_LIGHT_STYLE_URL } from "@/config/constants"
-import { ShipmentStatusIndicator } from "@/features/shipments/components"
+import {
+  ShipmentDelayBadge,
+  ShipmentStatusIndicator,
+} from "@/features/shipments/components"
 import { ShipmentDetailsDialog } from "@/features/shipments/components/shipment-details-dialog"
 import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
@@ -60,9 +63,11 @@ const REFRESH_INTERVAL_MS = 30_000
 // Kampala, zoomed out to the wider region until trips carry coordinates
 const DEFAULT_CENTER: [number, number] = [32.5825, 0.3476]
 
+// "delayed" is not a status: it picks the trips that are overdue back
 type StatusFilter =
   | "all"
-  | Extract<ShipmentStatus, "in_progress" | "dispatched" | "delayed">
+  | "delayed"
+  | Extract<ShipmentStatus, "in_progress" | "dispatched">
 
 type TripRoute = { origin: string; checkpoints: string[]; destination: string }
 
@@ -102,7 +107,7 @@ function RouteComponent() {
       all: shipments.length,
       in_progress: shipments.filter((s) => s.status === "in_progress").length,
       dispatched: shipments.filter((s) => s.status === "dispatched").length,
-      delayed: shipments.filter((s) => s.status === "delayed").length,
+      delayed: shipments.filter((s) => s.is_delayed).length,
     }),
     [shipments]
   )
@@ -111,7 +116,11 @@ function RouteComponent() {
     const q = query.trim().toLowerCase()
     return (
       shipments
-        .filter((s) => statusFilter === "all" || s.status === statusFilter)
+        .filter((s) =>
+          statusFilter === "delayed"
+            ? s.is_delayed
+            : statusFilter === "all" || s.status === statusFilter
+        )
         .filter((s) => {
           if (!q) return true
           const route = tripRoute(s)
@@ -126,10 +135,7 @@ function RouteComponent() {
           ].some((v) => v?.toLowerCase().includes(q))
         })
         // Delayed trips first so problems surface
-        .sort(
-          (a, b) =>
-            Number(b.status === "delayed") - Number(a.status === "delayed")
-        )
+        .sort((a, b) => Number(b.is_delayed) - Number(a.is_delayed))
     )
   }, [shipments, statusFilter, query])
 
@@ -417,7 +423,7 @@ function TripRow({
         aria-current={selected}
         className={cn(
           "w-full space-y-2 border-l-4 border-l-transparent px-3 py-3 text-left transition-colors hover:bg-muted/50",
-          shp.status === "delayed" && "border-l-amber-500",
+          shp.is_delayed && "border-l-amber-500",
           selected && "border-l-primary bg-primary/5 hover:bg-primary/10"
         )}
       >
@@ -425,7 +431,10 @@ function TripRow({
           <span className="truncate font-semibold">
             {shp.number ?? "Unnumbered trip"}
           </span>
-          <ShipmentStatusIndicator status={shp.status} />
+          <span className="flex shrink-0 items-center gap-1.5">
+            <ShipmentDelayBadge shipment={shp} />
+            <ShipmentStatusIndicator status={shp.status} />
+          </span>
         </div>
 
         {route && (

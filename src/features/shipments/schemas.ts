@@ -2,7 +2,11 @@ import z from "zod"
 import { Shipment } from "./types"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
 import { type EntityId, IDSchema, MoneySchema } from "@/schemas"
-import { reassignmentReasonsList, shipmentStatuses } from "./enums"
+import {
+  reassignmentReasonsList,
+  shipmentDelayReasons,
+  shipmentStatuses,
+} from "./enums"
 import { EngineTypes, vehicleTransmissionList } from "../vehicles/types"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
@@ -10,6 +14,8 @@ export const ShipmentSearchParams = z.object({
   sort: getSortingStateSchema<Shipment>().default([]),
   // advanced filter
   status: z.array(z.enum(shipmentStatuses)).optional(),
+  // true: only trips behind their plan; false: only the rest
+  delayed: z.boolean().optional(),
   filters: getFiltersStateSchema<Shipment>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
@@ -87,6 +93,28 @@ export const endShipmentSchema = z.object({
   endMileage: z.number("Required").nonnegative(),
   endedAt: z.date().refine(notInFuture, "Cannot be in the future"),
 })
+
+const inFuture = (date: Date | null | undefined) =>
+  !date || date.getTime() > Date.now()
+
+export const reportShipmentDelaySchema = z
+  .object({
+    unitId: IDSchema,
+    reason: z.enum(shipmentDelayReasons, "Required"),
+    // An estimate of when the trip will be back; it can be left out
+    expectedEnd: z
+      .date()
+      .optional()
+      .nullable()
+      .refine(inFuture, "Must be in the future"),
+    note: z.string().trim().max(500, "Too long").nullable().optional(),
+  })
+  .refine((data) => data.reason !== "other" || !!data.note, {
+    path: ["note"],
+    message: "Say what is holding the trip up",
+  })
+
+export type ReportShipmentDelayInput = z.infer<typeof reportShipmentDelaySchema>
 
 export type EndShipmentInput = z.infer<typeof endShipmentSchema>
 

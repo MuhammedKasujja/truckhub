@@ -1,6 +1,10 @@
 import Decimal from "decimal.js"
-import { ON_TRIP_STATUSES } from "./enums"
-import type { ShipmentStatus } from "./enums"
+import { ON_TRIP_STATUSES, PRE_TRIP_STATUSES } from "./enums"
+import type {
+  ShipmentDelayKind,
+  ShipmentDelayReason,
+  ShipmentStatus,
+} from "./enums"
 import type { Shipment } from "./types"
 
 export type TripRoute = {
@@ -60,7 +64,7 @@ export const shipmentBilling = (shp: Shipment) => {
 /** Status-driven workflow: which actions make sense right now. */
 export const shipmentActions = (shp: Shipment) => {
   const s: ShipmentStatus = shp.status
-  const isPreTrip = ["unassigned", "vehicle_assigned", "assigned"].includes(s)
+  const isPreTrip = PRE_TRIP_STATUSES.includes(s)
   const isOnTrip = ON_TRIP_STATUSES.includes(s)
   const isClosed = ["invoiced", "cancelled"].includes(s)
 
@@ -75,8 +79,33 @@ export const shipmentActions = (shp: Shipment) => {
     // Capturing details also ends a trip still on the road. Details are
     // captured once: the API refuses a second capture.
     capture: isOnTrip || s === "completed",
+    // A delay can be reported until the trip ends, dispatched or not
+    reportDelay: isPreTrip || isOnTrip,
     isClosed,
   }
+}
+
+export const DELAY_KIND_LABEL: Record<ShipmentDelayKind, string> = {
+  late_start: "Late start",
+  overdue: "Overdue",
+}
+
+export const delayReasonLabel = (reason: ShipmentDelayReason) => {
+  const words = reason.replace(/_/g, " ")
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
+/** Why a late trip counts as late, as one sentence. Null when it is on plan. */
+export const delaySummary = (shp: Shipment): string | null => {
+  if (shp.delay_kind === "late_start") {
+    return "Not dispatched although its scheduled start day has passed."
+  }
+  if (shp.delay_kind === "overdue") {
+    return shp.expected_end
+      ? "Still on the road after the time it was last expected back."
+      : "Still on the road after its scheduled end day."
+  }
+  return null
 }
 
 export const elapsedLabel = (from?: Date | string, to?: Date | string) => {

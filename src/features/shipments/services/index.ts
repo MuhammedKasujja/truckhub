@@ -8,6 +8,7 @@ import {
   recordShipmentDetailsSchema,
   assignShipmentVehicleSchema,
   changeShipmentVehicleSchema,
+  reportShipmentDelaySchema,
 } from "../schemas"
 import {
   endShipment,
@@ -18,6 +19,7 @@ import {
   recordShipmentDetails,
   shipmentAssignVehicle,
   changeShipmentVehicle,
+  reportShipmentDelay,
 } from "./server"
 import { ApiError } from "@/types"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
@@ -74,4 +76,10 @@ export const changeShipmentVehicleFn = createServerFn()
   .inputValidator(changeShipmentVehicleSchema)
   .handler(({ data }) => {
     return apiResponseTransform(changeShipmentVehicle(data))
+  })
+
+export const reportShipmentDelayFn = createServerFn()
+  .inputValidator(reportShipmentDelaySchema)
+  .handler(({ data }) => {
+    return apiResponseTransform(reportShipmentDelay(data))
   })
