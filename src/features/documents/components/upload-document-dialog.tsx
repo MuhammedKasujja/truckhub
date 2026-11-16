@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from "react"
+import { format, parseISO } from "date-fns"
 import { FileUp, Loader2, Upload } from "lucide-react"
 import { contentTypesLabel, fileProblem, fileSizeLabel } from "../format"
 import { useUploadDocument } from "../hooks/use-document-actions"
@@ -14,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/form-fields"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
@@ -27,12 +28,7 @@ type Props = {
   onClose: () => void
 }
 
-const todayIso = () => {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, "0")
-  const day = String(now.getDate()).padStart(2, "0")
-  return `${now.getFullYear()}-${month}-${day}`
-}
+const todayIso = () => format(new Date(), "yyyy-MM-dd")
 
 /** Upload a document, or a newer version of one. The old version is kept. */
 export function UploadDocumentDialog({
@@ -183,13 +179,17 @@ export function UploadDocumentDialog({
           {documentType.requires_expiry && (
             <div className="space-y-1.5">
               <Label htmlFor={expiryInputId}>Expiry date</Label>
-              <Input
+              <DatePicker
                 id={expiryInputId}
-                type="date"
-                min={todayIso()}
-                value={expiresOn}
+                value={expiresOn ? parseISO(expiresOn) : undefined}
+                minDate={new Date()}
+                endDate={new Date(2030, 11)}
+                placeholder="Pick a date"
                 aria-invalid={!!expiryError}
-                onChange={(event) => setExpiresOn(event.target.value)}
+                format="P"
+                onDateChanged={(date) =>
+                  setExpiresOn(date ? format(date, "yyyy-MM-dd") : "")
+                }
               />
               {expiryError && (
                 <p role="alert" className="text-sm text-destructive">

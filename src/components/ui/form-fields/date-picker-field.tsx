@@ -117,6 +117,8 @@ interface DatePickerProps {
   initialDate?: Date
   /** Controls the selected date from outside; omit to let the picker own it. */
   value?: Date
+  /** Days before this one cannot be picked. */
+  minDate?: Date
   /** Days after this one cannot be picked. */
   maxDate?: Date
   "aria-invalid"?: boolean
@@ -132,6 +134,7 @@ export function DatePicker({
   onDateChanged,
   initialDate,
   value,
+  minDate,
   maxDate,
   "aria-invalid": ariaInvalid,
   format = "PPP",
@@ -181,7 +184,10 @@ export function DatePicker({
           onDayClick={() => setIsOpen(false)}
           startMonth={newStartDate}
           endMonth={endDate}
-          disabled={maxDate ? { after: maxDate } : undefined}
+          disabled={[
+            ...(minDate ? [{ before: minDate }] : []),
+            ...(maxDate ? [{ after: maxDate }] : []),
+          ]}
           defaultMonth={activeDate}
         />
       </PopoverContent>
