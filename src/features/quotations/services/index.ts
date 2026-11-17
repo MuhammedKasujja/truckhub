@@ -13,12 +13,12 @@ import {
   updateQuotation,
   sendQuotationEmail,
   getQuotationDetails,
-  getQuotationActivities,
   markQuotationExpired,
   markQuotationAccepted,
   markQuotationRejected,
   getQuotationReportPdf,
   getQuotationShipments,
+  getQuotationActivities,
   markQuotationCancelled,
 } from "./server"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
@@ -37,7 +37,7 @@ export const getQuotationsFn = createServerFn()
 export const createQuotationFn = createServerFn({ method: "POST" })
   .inputValidator(createQuotationSchema)
   .handler(async ({ data }) => {
-    return createQuotation(data)
+    return apiResponseTransform(createQuotation(data))
   })
 
 export const updateQuotationFn = createServerFn({ method: "POST" })

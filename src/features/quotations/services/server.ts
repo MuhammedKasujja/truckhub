@@ -26,12 +26,27 @@ export async function getQuotations(input: QuotationListSearchParams) {
   return { error: response.error }
 }
 
+const emptyToNull = (value?: string | null) =>
+  value == null || value.trim() === "" ? null : value
+
+/** The API wants null, not "", for "no discount". */
+function normalizeDiscounts<T extends CreateQuotationRequest>(data: T): T {
+  return {
+    ...data,
+    discount: emptyToNull(data.discount),
+    line_items: data.line_items.map((item) => ({
+      ...item,
+      discount: emptyToNull(item.discount),
+    })),
+  }
+}
+
 export async function createQuotation(data: CreateQuotationRequest) {
-  return await apiClient.postFn<Quotation>(endpoint, data)
+  return await apiClient.postFn<Quotation>(endpoint, normalizeDiscounts(data))
 }
 
 export async function updateQuotation(data: UpdateQuotationRequest) {
-  const { quotationId, ...rest } = data
+  const { quotationId, ...rest } = normalizeDiscounts(data)
   return await apiClient.putFn<Quotation>(`${endpoint}/${quotationId}`, rest)
 }
 
