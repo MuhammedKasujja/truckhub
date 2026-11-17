@@ -80,7 +80,7 @@ export function ServicesDialog({
     const price = new Decimal(unitPrice ?? 0)
     const qty = quantity ?? 1
     const subtotal = price.times(qty).times(isRoundTrip === true ? 2 : 1)
-    const lineTotal = subtotal.sub(discount ?? 0)
+    const lineTotal = subtotal.sub(discount || 0)
     form.setValue("subtotal", subtotal.toFixed(2))
     form.setValue("line_total", lineTotal.toFixed(2))
   }, [unitPrice, quantity, isRoundTrip, discount])

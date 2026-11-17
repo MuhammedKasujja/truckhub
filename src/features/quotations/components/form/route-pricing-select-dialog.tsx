@@ -25,7 +25,7 @@ import { ENGINE_MODES } from "@/common/config"
 import { useCompanyActiveRoutePricings } from "@/features/settings/pricing/hooks/use-company-routes-pricings"
 import { RouteTonnagePricingGrid } from "@/features/settings/pricing/components/route-pricing/route-tonnage-pricing"
 import { RoutePricingRow } from "@/features/settings/pricing/schemas"
-import Decimal from "decimal.js"
+import Decimal from "@/lib/decimal-config"
 import { RouteSummary } from "./routes-dialog"
 import {
   ConfigSection,
@@ -108,7 +108,7 @@ export function RoutePricingSelectDialog({
     )
     const unitPrice = new Decimal(activePricing?.price ?? "0")
     const subtotal = unitPrice.times(quantity ?? "0").times(isRoundTrip ? 2 : 1)
-    const lineTotal = subtotal.minus(discount ?? 0)
+    const lineTotal = subtotal.minus(discount || 0)
     form.setValue("unit_price", unitPrice.toString())
     form.setValue("subtotal", subtotal.toString())
     form.setValue("line_total", lineTotal.toString())

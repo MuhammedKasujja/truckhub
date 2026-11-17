@@ -87,7 +87,7 @@ export function DistancePricingSelectDialog({
     const subtotal = new Decimal(unitPrice ?? 0)
       .times(quantity ?? 0)
       .times(isRoundTrip ? 2 : 1)
-    const lineTotal = subtotal.minus(discount ?? 0)
+    const lineTotal = subtotal.minus(discount || 0)
     form.setValue("subtotal", subtotal.toFixed(2))
     form.setValue("line_total", lineTotal.toFixed(2))
   }, [quantity, isRoundTrip, unitPrice, discount])
