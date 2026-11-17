@@ -561,7 +561,7 @@ function JourneySection({ shipment }: { shipment: Shipment }) {
     `${item.engine_mode} hire`,
     item.with_driver ? "With driver" : "Without driver",
     item.with_loaders ? "With loaders" : null,
-    tonnage ? `${tonnage} t` : null,
+    tonnage ? `${tonnage} tons` : null,
   ].filter(Boolean) as string[]
 
   return (

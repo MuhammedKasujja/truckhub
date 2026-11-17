@@ -15,6 +15,7 @@ import {
   markNotificationReadFn,
 } from "../services"
 import { NOTIFICATIONS_PER_PAGE } from "../schemas"
+import { ApiError } from "@/types"
 import type { InfiniteData, QueryClient } from "@tanstack/react-query"
 import type { EntityId } from "@/schemas"
 import type { NotificationItem } from "../types"
@@ -55,13 +56,20 @@ export const notificationListOptions = (
 ) =>
   infiniteQueryOptions({
     queryKey: notificationKeys.list(userId, unreadOnly),
-    queryFn: ({ pageParam }) =>
-      listNotificationsFn({
+    queryFn: async ({ pageParam }) => {
+      const page = await listNotificationsFn({
         data: { page: pageParam, perPage: NOTIFICATIONS_PER_PAGE, unreadOnly },
-      }),
+      })
+      // A server-side redirect to /login resolves the call with nothing.
+      // Fail the query so the global 401 handler runs instead of caching
+      // an undefined page.
+      if (!page) throw new ApiError("Not authenticated", 401)
+      return page
+    },
     initialPageParam: 1,
     getNextPageParam: (last) => {
-      const meta = last.pagination
+      const meta = last?.pagination
+      if (!meta) return undefined
       return meta.page * meta.per_page < meta.total ? meta.page + 1 : undefined
     },
   })
@@ -89,7 +97,7 @@ export function useNotificationList(
 
   return {
     notifications,
-    total: query.data?.pages[0]?.pagination.total ?? 0,
+    total: query.data?.pages[0]?.pagination?.total ?? 0,
     isLoading: query.isLoading,
     hasNextPage: query.hasNextPage,
     isFetchingNextPage: query.isFetchingNextPage,
@@ -132,6 +140,7 @@ function prependToLists(
       )
       if (known) return old
       const [first, ...rest] = old.pages
+      if (!first?.pagination) return old
       return {
         ...old,
         pages: [
