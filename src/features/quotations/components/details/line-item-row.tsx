@@ -31,12 +31,12 @@ export function LineItemRow({ item, idx, actions, onClick }: Props) {
   if (item.source === "service") {
     if (item.vehicle_year) chips.push(`Year ${item.vehicle_year}`)
     if (item.tonnage) {
-      chips.push(`${item.tonnage} t`)
+      chips.push(`${item.tonnage} tons`)
       chips.push(item.with_loaders ? "With loaders" : "No loaders")
     }
   } else {
     if (item.source === "distance") chips.push(`${item.distance_km} km`)
-    chips.push(`${item.tonnage} t`)
+    chips.push(`${item.tonnage} tons`)
     chips.push(item.with_loaders ? "With loaders" : "No loaders")
   }
 
