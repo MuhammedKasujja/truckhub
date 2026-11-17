@@ -21,7 +21,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import { formatMoney } from "@/lib/format"
+import { formatMoney, formatNumber } from "@/lib/format"
 import { ENGINE_MODES } from "@/common/config"
 import Decimal from "@/lib/decimal-config"
 import { useQuotationServiceProducts } from "@/features/quotations/hooks/use-quotation-pricings"
@@ -86,22 +86,42 @@ export function ServicesDialog({
   }, [unitPrice, quantity, isRoundTrip, discount])
 
   useEffect(() => {
-    const selectedService = services?.find((s) => selectedIds.includes(s.id))
+    const selectedService = services?.find((s) => s.id === serviceId)
     const price = selectedService?.base_fare
     form.setValue("unit_price", price ?? "0")
     form.setValue("car_model_id", selectedService?.car_model?.id)
     form.setValue("vehicle_category_id", selectedService?.vehicle_category?.id)
   }, [serviceId])
 
+  // Kept apart from the pricing effect so a late services load can't reset the price.
+  useEffect(() => {
+    const selectedService = services?.find((s) => s.id === serviceId)
+    // Services not loaded yet: leave the current values alone.
+    if (serviceId && !selectedService) return
+    const truck = selectedService?.source === "truck"
+    form.setValue("is_truck", truck)
+    if (!truck) {
+      form.setValue("tonnage", null)
+      form.setValue("with_loaders", false)
+      form.clearErrors("tonnage")
+    }
+  }, [serviceId, services])
+
   useEffect(() => {
     if (!open) return
 
     if (lineItem) {
+      const lineService = services?.find((s) => s.id === lineItem.service_id)
       form.reset({
         ...lineItem,
         source: "service",
         vehicle_addons: [],
         item_type: "small",
+        is_truck: lineService
+          ? lineService.source === "truck"
+          : (lineItem.is_truck ?? false),
+        tonnage: lineItem.tonnage ?? null,
+        with_loaders: lineItem.with_loaders ?? false,
       })
       setSelectedIds(lineItem.service_id ? [lineItem.service_id] : [])
       setRoute(lineItem.route)
@@ -135,6 +155,8 @@ export function ServicesDialog({
   }
 
   const selectedService = services?.find((s) => s.id === serviceId)
+  const isTruck = selectedService?.source === "truck"
+  const tonnage = form.watch("tonnage")
   const filteredServices = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return services ?? []
@@ -151,7 +173,7 @@ export function ServicesDialog({
       title="Vehicle hire"
       description={
         selectedService
-          ? selectedService.display_name
+          ? `${selectedService.display_name}${isTruck && tonnage ? ` · ${formatNumber(tonnage)} t` : ""}`
           : "Pick a vehicle, set the hire terms and price."
       }
       isEditing={!!lineItem}
@@ -243,6 +265,13 @@ export function ServicesDialog({
             name={"estimated_consumption_rate_km"}
             control={form.control}
           />
+          {isTruck && (
+            <NumberField
+              label={"Tonnage"}
+              name={"tonnage"}
+              control={form.control}
+            />
+          )}
         </div>
         <SwitchField
           label={"With driver"}
@@ -250,6 +279,14 @@ export function ServicesDialog({
           name={"with_driver"}
           control={form.control}
         />
+        {isTruck && (
+          <SwitchField
+            label={"With loaders"}
+            description="Include loaders for loading and offloading"
+            name={"with_loaders"}
+            control={form.control}
+          />
+        )}
       </ConfigSection>
       <RoundTripField control={form.control} name="is_round_trip" />
       <RouteSummary

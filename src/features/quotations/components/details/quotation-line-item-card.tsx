@@ -40,6 +40,10 @@ export function QuotationLineItemCard({
   if (item.source === "service") {
     if (item.vehicle_year) chips.push(`Year ${item.vehicle_year}`)
     chips.push(...item.vehicle_addons.map((a) => a.name))
+    if (item.tonnage) {
+      chips.push(`${item.tonnage} t`)
+      chips.push(item.with_loaders ? "With loaders" : "No loaders")
+    }
   } else {
     chips.push(`${item.tonnage} t`)
     chips.push(item.with_loaders ? "With loaders" : "No loaders")

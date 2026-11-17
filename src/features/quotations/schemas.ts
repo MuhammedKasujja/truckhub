@@ -57,18 +57,32 @@ const lineItemBase = z.object({
   display_name: z.string().optional().nullable(),
 })
 
-export const createServiceQuotationLineItemSchema = z.object({
-  source: z.literal("service"),
-  route: routeSchema,
-  vehicle_addons: z.array(createVehicleAddonSchema),
-  item_type: z.literal("small"),
-  vehicle_year: z.string().optional().nullable(),
-  service_id: IDSchema,
-  vehicle_category_id: IDSchema.optional().nullable(),
-  car_model_id: IDSchema.optional().nullable(),
-  estimated_consumption_rate_km: z.number().optional().nullable(),
-  ...lineItemBase.shape,
-})
+export const createServiceQuotationLineItemSchema = z
+  .object({
+    source: z.literal("service"),
+    route: routeSchema,
+    vehicle_addons: z.array(createVehicleAddonSchema),
+    item_type: z.literal("small"),
+    vehicle_year: z.string().optional().nullable(),
+    service_id: IDSchema,
+    vehicle_category_id: IDSchema.optional().nullable(),
+    car_model_id: IDSchema.optional().nullable(),
+    estimated_consumption_rate_km: z.number().optional().nullable(),
+    /** Copied from the picked service (`source === "truck"`); drives the tonnage rule. */
+    is_truck: z.boolean().optional(),
+    tonnage: z.number().optional().nullable(),
+    with_loaders: z.boolean().optional(),
+    ...lineItemBase.shape,
+  })
+  .superRefine((item, ctx) => {
+    if (item.is_truck && !(item.tonnage != null && item.tonnage >= 0.1)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["tonnage"],
+        message: "Tonnage is required",
+      })
+    }
+  })
 
 export const createRouteQuotationLineItemSchema = z.object({
   source: z.literal("route"),

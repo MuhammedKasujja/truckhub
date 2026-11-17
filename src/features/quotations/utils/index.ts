@@ -26,6 +26,9 @@ export function generateServiceEmptyLineItem() {
     with_driver: false,
     estimated_consumption_rate_km: undefined,
     engine_mode: "wet",
+    is_truck: false,
+    tonnage: null,
+    with_loaders: false,
   }
   return emptyLineItem
 }
