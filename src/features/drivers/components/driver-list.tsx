@@ -97,7 +97,7 @@ export function DriverList() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {rows.map((row) => (
             <DriverCard key={row.id} driver={row.original} />
           ))}

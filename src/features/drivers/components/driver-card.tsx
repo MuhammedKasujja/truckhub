@@ -5,6 +5,7 @@ import type { DriverSummary } from "../types"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { formatDate, generateAvatorFallback } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { Attachment, AttachmentMedia } from "@/components/ui/attachment"
 
 export function DriverAvatar({
   driver,
@@ -16,7 +17,9 @@ export function DriverAvatar({
   return (
     <Avatar size={size}>
       <AvatarImage src={driver.photo_url} alt={driver.full_name} />
-      <AvatarFallback>{generateAvatorFallback(driver.full_name)}</AvatarFallback>
+      <AvatarFallback>
+        {generateAvatorFallback(driver.full_name)}
+      </AvatarFallback>
     </Avatar>
   )
 }
@@ -82,8 +85,13 @@ function DetailRow({
 export function DriverCard({ driver }: { driver: DriverSummary }) {
   return (
     <article className="flex flex-col rounded-xl border bg-card shadow-xs transition-shadow hover:shadow-sm">
+      <Attachment className="w-full">
+        <AttachmentMedia variant="image" className="w-full">
+          <img src={driver.photo_url} alt={driver.full_name} />
+        </AttachmentMedia>
+      </Attachment>
       <div className="flex items-start gap-3 p-4">
-        <DriverAvatar driver={driver} size="lg" />
+        {/* <DriverAvatar driver={driver} size="lg" /> */}
         <div className="min-w-0 flex-1">
           <Link
             to="/drivers/$driverId/view"
@@ -102,7 +110,11 @@ export function DriverCard({ driver }: { driver: DriverSummary }) {
       <dl className="flex flex-1 flex-col gap-2 border-t px-4 py-3 text-sm">
         <DetailRow icon={PhoneIcon} label="Phone">
           {driver.phone ? (
-            <a href={`tel:${driver.phone}`} className="hover:underline" target="_blank">
+            <a
+              href={`tel:${driver.phone}`}
+              className="hover:underline"
+              target="_blank"
+            >
               {driver.phone}
             </a>
           ) : (
@@ -110,7 +122,11 @@ export function DriverCard({ driver }: { driver: DriverSummary }) {
           )}
         </DetailRow>
         <DetailRow icon={MailIcon} label="Email">
-          <a href={`mailto:${driver.email}`} className="hover:underline" target="_blank">
+          <a
+            href={`mailto:${driver.email}`}
+            className="hover:underline"
+            target="_blank"
+          >
             {driver.email}
           </a>
         </DetailRow>

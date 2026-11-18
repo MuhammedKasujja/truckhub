@@ -559,7 +559,7 @@ function JourneySection({ shipment }: { shipment: Shipment }) {
     item.is_round_trip ? "Round trip" : "One way",
     item.item_type === "truck" ? "Truck" : "Small vehicle",
     `${item.engine_mode} hire`,
-    item.with_driver ? "With driver" : "Without driver",
+    item.with_driver ? "With driver" : "Self driver",
     item.with_loaders ? "With loaders" : null,
     tonnage ? `${tonnage} tons` : null,
   ].filter(Boolean) as string[]
@@ -586,7 +586,7 @@ function JourneySection({ shipment }: { shipment: Shipment }) {
                   ? formatDateTime(shipment.actual_end)
                   : undefined
               }
-              scheduled={formatDateTime(item.scheduled_end)}
+              scheduled={formatDate(item.scheduled_end)}
             />
           </div>
 

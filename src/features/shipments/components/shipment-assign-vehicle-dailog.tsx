@@ -60,7 +60,7 @@ export function ShipmentAssignVehicleDialog({
           label: "Category",
           display: config?.vehicle_types.find(
             (e) => e.id === item.vehicle_category_id
-          )?.name,
+          )?.display_name,
           value: item.vehicle_category_id,
         },
         {
@@ -80,7 +80,7 @@ export function ShipmentAssignVehicleDialog({
         {
           key: "tonnage",
           label: "Tonnage",
-          display: item.tonnage ? `${item.tonnage} t` : undefined,
+          display: item.tonnage ? `${item.tonnage} tons` : undefined,
           value: item.tonnage,
         },
         {
