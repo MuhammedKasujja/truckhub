@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './app/__root'
 import { Route as AdminRouteRouteImport } from './app/_admin/route'
 import { Route as IndexRouteImport } from './app/index'
+import { Route as CaptureIdRouteImport } from './app/capture.$id'
 import { Route as AuthUnauthorizedModuleRouteImport } from './app/_auth/unauthorized-module'
 import { Route as AuthUnauthorizedRouteImport } from './app/_auth/unauthorized'
 import { Route as AuthLogoutRouteImport } from './app/_auth/logout'
@@ -124,6 +125,11 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaptureIdRoute = CaptureIdRouteImport.update({
+  id: '/capture/$id',
+  path: '/capture/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthUnauthorizedModuleRoute = AuthUnauthorizedModuleRouteImport.update({
@@ -718,6 +724,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/capture/$id': typeof CaptureIdRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
@@ -826,6 +833,7 @@ export interface FileRoutesByTo {
   '/logout': typeof AuthLogoutRoute
   '/unauthorized': typeof AuthUnauthorizedRoute
   '/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/capture/$id': typeof CaptureIdRoute
   '/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
@@ -936,6 +944,7 @@ export interface FileRoutesById {
   '/_auth/logout': typeof AuthLogoutRoute
   '/_auth/unauthorized': typeof AuthUnauthorizedRoute
   '/_auth/unauthorized-module': typeof AuthUnauthorizedModuleRoute
+  '/capture/$id': typeof CaptureIdRoute
   '/_admin/settings/pricing-config': typeof AdminSettingsPricingConfigRouteRouteWithChildren
   '/_admin/settings/user-management': typeof AdminSettingsUserManagementRouteRouteWithChildren
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
@@ -1046,6 +1055,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/capture/$id'
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
@@ -1154,6 +1164,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/unauthorized'
     | '/unauthorized-module'
+    | '/capture/$id'
     | '/settings/pricing-config'
     | '/settings/user-management'
     | '/settings/vehicle-config'
@@ -1263,6 +1274,7 @@ export interface FileRouteTypes {
     | '/_auth/logout'
     | '/_auth/unauthorized'
     | '/_auth/unauthorized-module'
+    | '/capture/$id'
     | '/_admin/settings/pricing-config'
     | '/_admin/settings/user-management'
     | '/_admin/settings/vehicle-config'
@@ -1369,6 +1381,7 @@ export interface RootRouteChildren {
   AuthLogoutRoute: typeof AuthLogoutRoute
   AuthUnauthorizedRoute: typeof AuthUnauthorizedRoute
   AuthUnauthorizedModuleRoute: typeof AuthUnauthorizedModuleRoute
+  CaptureIdRoute: typeof CaptureIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1385,6 +1398,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/capture/$id': {
+      id: '/capture/$id'
+      path: '/capture/$id'
+      fullPath: '/capture/$id'
+      preLoaderRoute: typeof CaptureIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/unauthorized-module': {
@@ -2436,6 +2456,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLogoutRoute: AuthLogoutRoute,
   AuthUnauthorizedRoute: AuthUnauthorizedRoute,
   AuthUnauthorizedModuleRoute: AuthUnauthorizedModuleRoute,
+  CaptureIdRoute: CaptureIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

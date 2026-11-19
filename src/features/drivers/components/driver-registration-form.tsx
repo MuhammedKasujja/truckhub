@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { PhoneCaptureButton } from "@/features/phone-capture"
 
 /* ------------------------------------------------------------------ */
 /* API payload                                                         */
@@ -492,6 +493,13 @@ function FileField({
               }}
               aria-invalid={fieldState.invalid}
             />
+            {!file && (
+              <PhoneCaptureButton
+                accept=".jpg,.jpeg,.png,.pdf"
+                onFile={(picked) => field.onChange(picked)}
+                className="self-start"
+              />
+            )}
             {description && <FieldDescription>{description}</FieldDescription>}
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>

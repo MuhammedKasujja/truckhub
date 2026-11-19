@@ -18,6 +18,7 @@ import {
 import { DatePicker } from "@/components/ui/form-fields"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { PhoneCaptureButton } from "@/features/phone-capture"
 
 type Props = {
   owner: DocumentOwner
@@ -169,6 +170,12 @@ export function UploadDocumentDialog({
               aria-invalid={!!fileError}
               onChange={(event) => setFile(event.target.files?.[0])}
             />
+            <div className="flex justify-end">
+              <PhoneCaptureButton
+                accept={documentType.allowed_content_types.join(",")}
+                onFile={setFile}
+              />
+            </div>
             {fileError && (
               <p role="alert" className="text-sm text-destructive">
                 {fileError}
