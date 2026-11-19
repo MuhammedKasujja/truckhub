@@ -1,7 +1,20 @@
-import { useEffect, useRef, useState } from "react"
+import {
+  Fragment,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react"
 import { Camera, Trash2, Upload } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Dialog,
   DialogContent,
@@ -22,6 +35,21 @@ import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
  */
 export type AvatarValue = File | null | undefined
 
+/** An extra entry in the avatar's menu, e.g. "Use phone". */
+export type AvatarExtraAction = {
+  id: string
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  onSelect: () => void
+  /** Kept mounted outside the menu (dialogs, hidden inputs). */
+  element?: React.ReactNode
+}
+
+export type AvatarUploaderHandle = {
+  /** Runs a file through the same checks and crop dialog as one picked from disk. */
+  pickFile: (file: File) => void
+}
+
 export type AvatarUploaderProps = {
   value?: AvatarValue
   onChange: (value: AvatarValue) => void
@@ -37,10 +65,11 @@ export type AvatarUploaderProps = {
   size?: number
   className?: string
   /**
-   * Extra buttons next to "Upload photo". `pickFile` sends a file through
-   * the same checks and crop dialog as a file picked from disk.
+   * Extra entries in the avatar's menu. Use `ref.pickFile` to send the file
+   * they produce through the crop dialog.
    */
-  extraActions?: (pickFile: (file: File) => void) => React.ReactNode
+  extraActions?: AvatarExtraAction[]
+  ref?: React.Ref<AvatarUploaderHandle>
   // forwarded by shadcn's <FormControl> so labels and errors link up
   id?: string
   "aria-invalid"?: boolean
@@ -70,7 +99,8 @@ export function AvatarUploader({
   shape = "circle",
   size = 100,
   className,
-  extraActions,
+  extraActions = [],
+  ref,
   id,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
@@ -132,6 +162,8 @@ export function AvatarUploader({
     setOpen(true)
   }
 
+  useImperativeHandle(ref, () => ({ pickFile: pick }))
+
   // base scale so the image always covers the crop box
   const baseScale = () => {
     const img = imgRef.current
@@ -191,6 +223,57 @@ export function AvatarUploader({
     )
   }
 
+  const openFilePicker = () => inputRef.current?.click()
+  // a menu with only "upload" in it is pointless; click straight through
+  const menu = extraActions.length > 0 || !!display
+
+  const avatarButton = (
+    <button
+      id={id}
+      type="button"
+      disabled={disabled}
+      aria-invalid={ariaInvalid}
+      aria-describedby={ariaDescribedBy}
+      aria-label="Change profile picture"
+      onClick={menu ? undefined : openFilePicker}
+      className={cn(
+        "group relative focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
+        radius,
+        ariaInvalid && "ring-2 ring-destructive"
+      )}
+    >
+      <Avatar
+        className={cn("shrink-0", radius, afterRadius)}
+        style={{ width: size, height: size }}
+      >
+        {display && (
+          <AvatarImage
+            src={display}
+            alt={name ?? "Profile picture"}
+            className={cn("aspect-square h-full w-full object-cover", radius)}
+          />
+        )}
+        <AvatarFallback className={cn("text-xl", radius)}>
+          {initials(name)}
+        </AvatarFallback>
+      </Avatar>
+      <span
+        className={cn(
+          "absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+          radius
+        )}
+      >
+        <Camera className="h-6 w-6 text-white" />
+      </span>
+      <span
+        aria-hidden
+        className="absolute right-0.5 bottom-0.5 flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm ring-2 ring-background group-disabled:hidden"
+      >
+        <Camera className="size-3.5" />
+      </span>
+    </button>
+  )
+
   return (
     <div className={cn("flex items-center gap-5", className)}>
       <input
@@ -205,71 +288,48 @@ export function AvatarUploader({
         }}
       />
 
-      {/* Avatar with camera overlay */}
-      <button
-        id={id}
-        type="button"
-        disabled={disabled}
-        aria-invalid={ariaInvalid}
-        aria-describedby={ariaDescribedBy}
-        aria-label="Change profile picture"
-        onClick={() => inputRef.current?.click()}
-        className={cn(
-          "group relative focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none disabled:opacity-50",
-          radius,
-          ariaInvalid && "ring-2 ring-destructive"
-        )}
-      >
-        <Avatar
-          className={cn("shrink-0", radius, afterRadius)}
-          style={{ width: size, height: size }}
-        >
-          {display && (
-            <AvatarImage
-              src={display}
-              alt={name ?? "Profile picture"}
-              className={cn("aspect-square h-full w-full object-cover", radius)}
-            />
-          )}
-          <AvatarFallback className={cn("text-xl", radius)}>
-            {initials(name)}
-          </AvatarFallback>
-        </Avatar>
-        <span
-          className={cn(
-            "absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
-            radius
-          )}
-        >
-          <Camera className="h-6 w-6 text-white" />
-        </span>
-      </button>
+      {/* Avatar; opens a menu when there's more than "upload" to offer */}
+      {menu ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild disabled={disabled}>
+            {avatarButton}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-48">
+            <DropdownMenuItem onSelect={openFilePicker}>
+              <Upload />
+              Upload from computer
+            </DropdownMenuItem>
+            {extraActions.map((action) => (
+              <DropdownMenuItem key={action.id} onSelect={action.onSelect}>
+                <action.icon />
+                {action.label}
+              </DropdownMenuItem>
+            ))}
+            {display && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onSelect={() => onChange(null)}
+                >
+                  <Trash2 />
+                  Remove photo
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        avatarButton
+      )}
+      {extraActions.map((action) => (
+        <Fragment key={action.id}>{action.element}</Fragment>
+      ))}
 
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            disabled={disabled}
-            onClick={() => inputRef.current?.click()}
-          >
-            <Upload className="mr-2 h-4 w-4" />
-            {display ? "Change photo" : "Upload photo"}
-          </Button>
-          {!disabled && extraActions?.(pick)}
-          {display && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={disabled}
-              onClick={() => onChange(null)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Remove
-            </Button>
-          )}
-        </div>
+      <div className="space-y-1">
+        <p className="text-sm font-medium">
+          {display ? "Select the photo to change it" : "Add a photo"}
+        </p>
         <p className="text-xs text-muted-foreground">
           JPG, PNG or WEBP. Max {maxSizeMB}MB.
         </p>

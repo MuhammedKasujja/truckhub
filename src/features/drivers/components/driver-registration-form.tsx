@@ -48,6 +48,7 @@ import type {
   DriverFormMode,
   DriverFormValues,
 } from "../schemas"
+import type { AvatarUploaderHandle } from "@/components/ui/extensions/avatar-uploader"
 import { Button } from "@/components/ui/button"
 import { AvatarField, DatePickerField } from "@/components/ui/form-fields"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -67,7 +68,10 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { PhoneCaptureButton } from "@/features/phone-capture"
+import {
+  PhoneCaptureButton,
+  usePhoneCaptureAction,
+} from "@/features/phone-capture"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 
 /* ------------------------------------------------------------------ */
@@ -1433,6 +1437,11 @@ export function DriverRegistrationForm({
   const { control } = form
   const formRef = React.useRef<HTMLFormElement>(null)
   const { activeId, goTo } = useActiveSection(formRef)
+  const avatarUploaderRef = React.useRef<AvatarUploaderHandle>(null)
+  const avatarPhoneAction = usePhoneCaptureAction({
+    accept: SUPPORTED_IMAGE_EXTENSIONS.join(","),
+    onFile: (file) => avatarUploaderRef.current?.pickFile(file),
+  })
   const values = useWatch({ control }) as Values
   const { errors } = form.formState
   const isSubmitting = form.formState.isSubmitting || isSubmittingProp
@@ -1560,12 +1569,18 @@ export function DriverRegistrationForm({
                 label="Profile photo"
                 src={avatarSrc}
                 className="sm:col-span-2 2xl:col-span-4"
-                extraActions={(pickFile) => (
-                  <PhoneCaptureButton
-                    accept={SUPPORTED_IMAGE_EXTENSIONS.join(",")}
-                    onFile={pickFile}
-                  />
-                )}
+                uploaderRef={avatarUploaderRef}
+                extraActions={
+                  avatarPhoneAction
+                    ? [
+                        {
+                          id: "phone",
+                          ...avatarPhoneAction,
+                          onSelect: avatarPhoneAction.start,
+                        },
+                      ]
+                    : []
+                }
               />
               <TextField
                 control={control}

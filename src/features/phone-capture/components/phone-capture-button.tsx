@@ -45,95 +45,66 @@ function useSecondsLeft(expiresAt: number | undefined) {
 const mmss = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`
 
+export type PhoneCaptureAction = {
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  /** Opens the QR dialog (computer) or the camera (phone). */
+  start: () => void
+  /** Dialog or hidden input; keep it mounted wherever the trigger lives. */
+  element: React.ReactNode
+}
+
 /**
- * On a computer: shows a QR code so a phone can take a photo or pick a file
- * and send it here. On a phone: opens the camera or file picker directly.
+ * The phone-capture action without its button, for menus and custom
+ * triggers. On a computer it shows a QR code so a phone can take a photo or
+ * pick a file and send it here. On a phone it opens the camera directly
+ * (the form's own file input already covers the gallery and files), and
+ * returns null when `accept` takes no images.
  */
-export function PhoneCaptureButton({
+export function usePhoneCaptureAction({
   onFile,
   accept = "image/*,application/pdf",
   label = "Use phone",
-  className,
-}: Props) {
+}: Omit<Props, "className">): PhoneCaptureAction | null {
   const isTouch = useIsTouchDevice()
-  if (isTouch) {
-    return (
-      <OnDeviceCamera onFile={onFile} accept={accept} className={className} />
-    )
-  }
-  return (
-    <QrHandOff
-      onFile={onFile}
-      accept={accept}
-      label={label}
-      className={className}
-    />
-  )
-}
+  const onFileRef = useRef(onFile)
+  useEffect(() => {
+    onFileRef.current = onFile
+  })
 
-/**
- * On a phone the form's own file input already opens the gallery and files,
- * so only a direct "Take photo" shortcut is added.
- */
-function OnDeviceCamera({
-  onFile,
-  accept,
-  className,
-}: {
-  onFile: (file: File) => void
-  accept: string
-  className?: string
-}) {
   const cameraRef = useRef<HTMLInputElement>(null)
-  if (!acceptsImages(accept)) return null
-
-  return (
-    <>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className={className}
-        onClick={() => cameraRef.current?.click()}
-      >
-        <Camera /> Take photo
-      </Button>
-      <input
-        ref={cameraRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="sr-only"
-        tabIndex={-1}
-        onChange={(event) => {
-          const file = event.target.files?.[0]
-          event.target.value = ""
-          if (file) onFile(file)
-        }}
-      />
-    </>
-  )
-}
-
-function QrHandOff({
-  onFile,
-  accept,
-  label,
-  className,
-}: Required<Omit<Props, "className">> & { className?: string }) {
   const [open, setOpen] = useState(false)
   const capture = usePhoneCapture({
     accept,
     onFile: (file) => {
       setOpen(false)
-      onFile(file)
+      onFileRef.current(file)
     },
   })
   const secondsLeft = useSecondsLeft(capture.expiresAt)
 
-  function openDialog() {
-    setOpen(true)
-    capture.start()
+  if (isTouch) {
+    if (!acceptsImages(accept)) return null
+    return {
+      label: "Take photo",
+      icon: Camera,
+      start: () => cameraRef.current?.click(),
+      element: (
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          tabIndex={-1}
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            event.target.value = ""
+            if (file) onFileRef.current(file)
+          }}
+        />
+      ),
+    }
   }
 
   function close() {
@@ -141,18 +112,14 @@ function QrHandOff({
     capture.cancel()
   }
 
-  return (
-    <>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className={className}
-        onClick={openDialog}
-      >
-        <Smartphone /> {label}
-      </Button>
-
+  return {
+    label,
+    icon: Smartphone,
+    start: () => {
+      setOpen(true)
+      capture.start()
+    },
+    element: (
       <Dialog open={open} onOpenChange={(next) => !next && close()}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
@@ -201,6 +168,30 @@ function QrHandOff({
           </div>
         </DialogContent>
       </Dialog>
+    ),
+  }
+}
+
+/**
+ * On a computer: shows a QR code so a phone can take a photo or pick a file
+ * and send it here. On a phone: opens the camera directly.
+ */
+export function PhoneCaptureButton({ className, ...props }: Props) {
+  const action = usePhoneCaptureAction(props)
+  if (!action) return null
+  const Icon = action.icon
+  return (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className={className}
+        onClick={action.start}
+      >
+        <Icon /> {action.label}
+      </Button>
+      {action.element}
     </>
   )
 }
