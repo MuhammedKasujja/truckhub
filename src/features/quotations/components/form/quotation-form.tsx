@@ -1,4 +1,5 @@
 import { FieldGroup } from "@/components/ui/field"
+import { uuid } from "@/lib/id"
 import {
   DiscountField,
   TextField,
@@ -193,7 +194,7 @@ export function QuotationForm({ initialData, onSubmit }: QuotationFormProps) {
     if (index > -1) {
       lineItemsFields.update(index, lineItem)
     } else {
-      lineItemsFields.prepend({ ...lineItem, tempId: crypto.randomUUID() })
+      lineItemsFields.prepend({ ...lineItem, tempId: uuid() })
     }
   }
 

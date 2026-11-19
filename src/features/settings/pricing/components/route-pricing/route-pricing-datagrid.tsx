@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { uuid } from "@/lib/id"
 import { MapPin, Ruler, Search, X } from "lucide-react"
 import { bandsAreValid } from "./tonnage-band-builder"
 import type { ColumnDef, FilterFn } from "@tanstack/react-table"
@@ -29,7 +30,7 @@ import { formatHoursRange } from "@/features/settings/booking-routes/components/
 // ---------------------------------------------------------------------------
 
 export interface RoutePricingRow {
-  /** Stable row identity — use crypto.randomUUID() for new rows */
+  /** Stable row identity — use uuid() for new rows */
   id: string
   route_name: string
   origin: string
@@ -79,7 +80,7 @@ export function priceKey(band: TonnageBand): `price__${string}` {
 
 export function emptyRow(bands: TonnageBand[]): RoutePricingRow {
   const base: RoutePricingRow = {
-    id: crypto.randomUUID(),
+    id: uuid(),
     route_name: "",
     origin: "",
     destination: "",

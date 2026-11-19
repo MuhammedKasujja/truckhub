@@ -113,7 +113,7 @@ expired".
 
 ## Security
 
-- The session id is `crypto.randomUUID()`. The upload token is a separate
+- The session id is `uuid()`. The upload token is a separate
   32-byte random value that appears only in the QR URL and is compared in
   constant time.
 - A session accepts **one** upload and is deleted when the desktop takes the

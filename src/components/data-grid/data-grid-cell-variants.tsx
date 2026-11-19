@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Upload, X } from "lucide-react";
+import { uuid } from "@/lib/id";
 import * as React from "react";
 import { toast } from "sonner";
 import { DataGridCellWrapper } from "@/components/data-grid/data-grid-cell-wrapper";
@@ -1712,7 +1713,7 @@ export function FileCell<TData>({
       if (filesToValidate.length > 0) {
         if (!skipUpload) {
           const tempFiles = filesToValidate.map((f) => ({
-            id: crypto.randomUUID(),
+            id: uuid(),
             name: f.name,
             size: f.size,
             type: f.type,
@@ -1745,7 +1746,7 @@ export function FileCell<TData>({
             }
           } else {
             uploadedFiles = filesToValidate.map((f, i) => ({
-              id: tempFiles[i]?.id ?? crypto.randomUUID(),
+              id: tempFiles[i]?.id ?? uuid(),
               name: f.name,
               size: f.size,
               type: f.type,
@@ -1767,7 +1768,7 @@ export function FileCell<TData>({
           tableMeta?.onDataUpdate?.({ rowIndex, columnId, value: finalFiles });
         } else {
           const newFilesData: FileCellData[] = filesToValidate.map((f) => ({
-            id: crypto.randomUUID(),
+            id: uuid(),
             name: f.name,
             size: f.size,
             type: f.type,
