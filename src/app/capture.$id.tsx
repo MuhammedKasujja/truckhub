@@ -35,7 +35,54 @@ export const Route = createFileRoute("/capture/$id")({
   component: CapturePage,
 })
 
-type Step = "pick" | "preview" | "sending" | "done" | "expired"
+type Step = "pick" | "processing" | "preview" | "sending" | "done" | "expired"
+
+/**
+ * Set when the camera or file picker opens, cleared when a file comes back.
+ * If it is still set on load, the phone dropped the page while the camera was
+ * open (Android does this when low on memory) and the photo was lost.
+ */
+const pendingKey = (id: string) => `capture-pending:${id}`
+
+function readPending(id: string) {
+  try {
+    const pending = sessionStorage.getItem(pendingKey(id)) === "1"
+    sessionStorage.removeItem(pendingKey(id))
+    return pending
+  } catch {
+    return false
+  }
+}
+
+function writePending(id: string, pending: boolean) {
+  try {
+    if (pending) sessionStorage.setItem(pendingKey(id), "1")
+    else sessionStorage.removeItem(pendingKey(id))
+  } catch {
+    // Storage blocked: the reload hint just won't show
+  }
+}
+
+/** Some phone pickers (Google Drive, file managers) give no MIME type. */
+const TYPE_BY_EXTENSION: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+  heic: "image/heic",
+  heif: "image/heif",
+  pdf: "application/pdf",
+}
+
+function withGuessedType(file: File) {
+  if (file.type) return file
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? ""
+  const type = TYPE_BY_EXTENSION[extension]
+  return type
+    ? new File([file], file.name, { type, lastModified: file.lastModified })
+    : file
+}
 
 const sizeLabel = (bytes: number) =>
   bytes < 1024 * 1024
@@ -63,6 +110,23 @@ function CapturePage() {
     setPreviewUrl(url)
     return () => URL.revokeObjectURL(url)
   }, [file])
+
+  useEffect(() => {
+    if (readPending(id)) {
+      setError(
+        "Your phone reloaded this page while the camera or file picker was open, so your file didn't come through. Close other apps and try again, or use Choose file."
+      )
+    }
+  }, [id])
+
+  // Closing the picker without choosing is not a lost photo
+  useEffect(() => {
+    const inputs = [cameraRef.current, pickerRef.current]
+    const clear = () => writePending(id, false)
+    inputs.forEach((input) => input?.addEventListener("cancel", clear))
+    return () =>
+      inputs.forEach((input) => input?.removeEventListener("cancel", clear))
+  }, [id, step])
 
   // The link dies after its time limit even if the page stays open
   useEffect(() => {
@@ -99,18 +163,35 @@ function CapturePage() {
   }
 
   async function choose(event: React.ChangeEvent<HTMLInputElement>) {
-    const picked = event.target.files?.[0]
+    const raw = event.target.files?.[0]
     event.target.value = ""
+    const picked = raw && withGuessedType(raw)
+    writePending(id, false)
     if (!picked || !info) return
     setError(undefined)
     if (!matchesAccept(picked, info.accept)) {
       setError("This type of file is not allowed here.")
       return
     }
-    const smaller = await compressImage(picked)
-    // Keep the original if the JPEG version would not be accepted
-    setFile(matchesAccept(smaller, info.accept) ? smaller : picked)
+    // Shrinking a big photo can take a few seconds on a phone, so show that
+    // something is happening instead of leaving the pick buttons up
+    setStep("processing")
+    let chosen = picked
+    try {
+      const smaller = await compressImage(picked)
+      // Keep the original if the JPEG version would not be accepted
+      if (matchesAccept(smaller, info.accept)) chosen = smaller
+    } catch {
+      // Send the original
+    }
+    setFile(chosen)
     setStep("preview")
+  }
+
+  function openPicker(input: HTMLInputElement | null) {
+    if (!input) return
+    writePending(id, true)
+    input.click()
   }
 
   async function send() {
@@ -146,7 +227,7 @@ function CapturePage() {
             <Button
               size="lg"
               className="h-14 text-base"
-              onClick={() => cameraRef.current?.click()}
+              onClick={() => openPicker(cameraRef.current)}
             >
               <Camera /> Take photo
             </Button>
@@ -155,10 +236,16 @@ function CapturePage() {
             size="lg"
             variant="outline"
             className="h-14 text-base"
-            onClick={() => pickerRef.current?.click()}
+            onClick={() => openPicker(pickerRef.current)}
           >
             <FolderOpen /> Choose file
           </Button>
+        </div>
+      )}
+
+      {step === "processing" && (
+        <div className="flex items-center gap-2 py-6 text-sm text-muted-foreground">
+          <Loader2 className="size-5 animate-spin" /> Preparing file…
         </div>
       )}
 
@@ -168,6 +255,8 @@ function CapturePage() {
             <img
               src={previewUrl}
               alt="Preview"
+              // Some images (HEIC on Android) can't be shown: fall back to the name card
+              onError={() => setPreviewUrl(undefined)}
               className="max-h-[55svh] w-full rounded-xl border object-contain"
             />
           ) : (
@@ -187,7 +276,11 @@ function CapturePage() {
             disabled={step === "sending"}
             onClick={send}
           >
-            {step === "sending" ? <Loader2 className="animate-spin" /> : <Send />}
+            {step === "sending" ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Send />
+            )}
             {step === "sending" ? "Sending…" : "Send to computer"}
           </Button>
           <Button
