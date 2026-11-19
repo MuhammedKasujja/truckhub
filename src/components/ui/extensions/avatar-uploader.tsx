@@ -36,6 +36,11 @@ export type AvatarUploaderProps = {
   /** Width and height of the image in px */
   size?: number
   className?: string
+  /**
+   * Extra buttons next to "Upload photo". `pickFile` sends a file through
+   * the same checks and crop dialog as a file picked from disk.
+   */
+  extraActions?: (pickFile: (file: File) => void) => React.ReactNode
   // forwarded by shadcn's <FormControl> so labels and errors link up
   id?: string
   "aria-invalid"?: boolean
@@ -65,6 +70,7 @@ export function AvatarUploader({
   shape = "circle",
   size = 100,
   className,
+  extraActions,
   id,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
@@ -250,6 +256,7 @@ export function AvatarUploader({
             <Upload className="mr-2 h-4 w-4" />
             {display ? "Change photo" : "Upload photo"}
           </Button>
+          {!disabled && extraActions?.(pick)}
           {display && (
             <Button
               type="button"

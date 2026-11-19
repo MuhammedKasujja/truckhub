@@ -9,6 +9,7 @@ import {
 import { cn } from "cn"
 import {
   AvatarUploader,
+  type AvatarUploaderProps,
   type AvatarValue,
 } from "@/components/ui/extensions/avatar-uploader"
 import {
@@ -30,6 +31,8 @@ type AvatarFieldProps<T extends FieldValues> = {
   maxSizeMB?: number
   disabled?: boolean
   className?: string
+  /** Extra buttons next to "Upload photo"; see AvatarUploader. */
+  extraActions?: AvatarUploaderProps["extraActions"]
 }
 
 export function AvatarField<T extends FieldValues>({
@@ -42,6 +45,7 @@ export function AvatarField<T extends FieldValues>({
   maxSizeMB,
   disabled,
   className,
+  extraActions,
 }: AvatarFieldProps<T>) {
   const uid = useId()
   const inputId = `${uid}-input`
@@ -83,6 +87,7 @@ export function AvatarField<T extends FieldValues>({
               name={displayName}
               maxSizeMB={maxSizeMB}
               disabled={disabled}
+              extraActions={extraActions}
               aria-invalid={fieldState.invalid}
             />
 

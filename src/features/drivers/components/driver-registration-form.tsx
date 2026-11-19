@@ -68,6 +68,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { PhoneCaptureButton } from "@/features/phone-capture"
+import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 
 /* ------------------------------------------------------------------ */
 /* API payload                                                         */
@@ -1559,6 +1560,12 @@ export function DriverRegistrationForm({
                 label="Profile photo"
                 src={avatarSrc}
                 className="sm:col-span-2 2xl:col-span-4"
+                extraActions={(pickFile) => (
+                  <PhoneCaptureButton
+                    accept={SUPPORTED_IMAGE_EXTENSIONS.join(",")}
+                    onFile={pickFile}
+                  />
+                )}
               />
               <TextField
                 control={control}
