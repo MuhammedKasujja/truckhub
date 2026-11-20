@@ -13,19 +13,19 @@ export const getBookingRoutesFn = createServerFn().handler(async () => {
 })
 
 export const createRouteFn = createServerFn({ method: "POST" })
-  .inputValidator(RouteCreateSchema)
+  .validator(RouteCreateSchema)
   .handler(async ({ data }) => {
     return createRoute(data)
   })
 
 export const updateRouteFn = createServerFn({ method: "POST" })
-  .inputValidator(RouteUpdateSchema)
+  .validator(RouteUpdateSchema)
   .handler(async ({ data }) => {
     return updateRoute(data)
   })
 
 export const deleteRouteFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteRoute(data.id)
   })

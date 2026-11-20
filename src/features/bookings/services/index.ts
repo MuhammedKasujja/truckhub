@@ -22,7 +22,7 @@ import {
 import { ApiError } from "@/types"
 
 export const getBookingsFn = createServerFn({ method: "POST" })
-  .inputValidator(BookingSearchParamsSchema)
+  .validator(BookingSearchParamsSchema)
   .handler(async ({ data }) => {
     const response = await getBookings(data)
     if (response.error) {
@@ -33,19 +33,19 @@ export const getBookingsFn = createServerFn({ method: "POST" })
   })
 
 export const getBookingsByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     return getBookingsByQuery(data)
   })
 
 export const getBookingByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getBookingById(data.id)
   })
 
 export const getBookingDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await getBookingDetailsById(data.id)
     if (result.error) {
@@ -55,25 +55,25 @@ export const getBookingDetailsFn = createServerFn()
   })
 
 export const deleteBookingFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteBookingById(data.id)
   })
 
 export const updateBookingFn = createServerFn()
-  .inputValidator(BookingUpdateSchema)
+  .validator(BookingUpdateSchema)
   .handler(async ({ data }) => {
     return updateBooking(data)
   })
 
 export const createBookingFn = createServerFn()
-  .inputValidator(BookingCreateSchema)
+  .validator(BookingCreateSchema)
   .handler(async ({ data }) => {
     return createBooking(data)
   })
 
 export const createTruckBookingFn = createServerFn()
-  .inputValidator(TruckBookingSchema)
+  .validator(TruckBookingSchema)
   .handler(async ({ data }) => {
     return createTruckBooking(data)
   })

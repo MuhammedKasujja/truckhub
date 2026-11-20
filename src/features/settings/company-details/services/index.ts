@@ -3,5 +3,5 @@ import { updateCompanyDetails } from "./server"
 import { createServerFn } from "@tanstack/react-start"
 
 export const updateCompanyDetailsFn = createServerFn()
-  .inputValidator(CompanySchema)
+  .validator(CompanySchema)
   .handler(({ data }) => updateCompanyDetails(data))

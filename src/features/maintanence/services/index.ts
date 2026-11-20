@@ -19,7 +19,7 @@ import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
 
 export const getMaintenanceBoardViewFn = createServerFn()
-  .inputValidator(maintenanceSearchParams)
+  .validator(maintenanceSearchParams)
   .handler(async ({ data }) => {
     const response = await getMaintenanceBoardView(data)
     if (response.error) {
@@ -35,37 +35,37 @@ export const getMaintenanceBoardViewFn = createServerFn()
   })
 
 export const createMaintenanceRecordFn = createServerFn()
-  .inputValidator(maintenanceCreateSchema)
+  .validator(maintenanceCreateSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createMaintenanceRecord(data))
   })
 
 export const updateMaintenanceRecordFn = createServerFn()
-  .inputValidator(maintenanceUpdateSchema)
+  .validator(maintenanceUpdateSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(updateMaintenanceRecord(data))
   })
 
 export const changeMaintenanceStatusFn = createServerFn()
-  .inputValidator(maintenanceMoveSchema)
+  .validator(maintenanceMoveSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(changeMaintenanceStatus(data))
   })
 
 export const finishMaintenanceRecordFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(finishMaintenanceRecord(data.id))
   })
 
 export const startMaintenanceFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(startMaintenance(data.id))
   })
 
 export const cancleMaintenanceRecordFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(cancleMaintenance(data.id))
   })

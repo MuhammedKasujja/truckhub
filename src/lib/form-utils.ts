@@ -32,7 +32,7 @@ function fail(fieldErrors: Record<string, string[]>, message?: string): never {
   throw new Error(JSON.stringify({ fieldErrors, message }))
 }
 
-/** Use as .inputValidator(formInput(schema)). */
+/** Use as .validator(formInput(schema)). */
 export function formInput<S extends z.ZodObject<any>>(
   schema: S,
   opts: { arrayKeys?: string[] } = {}

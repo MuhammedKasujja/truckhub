@@ -29,25 +29,25 @@ export const getBanksFn = createServerFn().handler(async () => {
 })
 
 export const getBankDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getBankById(data.id)
   })
 
 export const deleteBankFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteBankById(data.id)
   })
 
 export const updateBankFn = createServerFn()
-  .inputValidator(bankDetailsUpdateSchema)
+  .validator(bankDetailsUpdateSchema)
   .handler(async ({ data }) => {
     return updateBankDetails(data)
   })
 
 export const createBankFn = createServerFn()
-  .inputValidator(bankDetailsCreateSchema)
+  .validator(bankDetailsCreateSchema)
   .handler(async ({ data }) => {
     return createBank(data)
   })
@@ -61,31 +61,31 @@ export const getBankAccountsFn = createServerFn().handler(async () => {
 })
 
 export const getBankAccountFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getBankAccountById(data.id)
   })
 
 export const deleteBankAccountFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteBankAccountById(data.id)
   })
 
 export const updateBankAccountFn = createServerFn()
-  .inputValidator(bankAccountUpdateSchema)
+  .validator(bankAccountUpdateSchema)
   .handler(async ({ data }) => {
     return updateBankAccount(data)
   })
 
 export const createBankAccountFn = createServerFn()
-  .inputValidator(bankAccountCreateSchema)
+  .validator(bankAccountCreateSchema)
   .handler(async ({ data }) => {
     return createBankAccount(data)
   })
 
 export const makeDefaultBankAccountFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return makeDefaultBankAccount(data.id)
   })

@@ -21,7 +21,7 @@ export function toDriverRequestFormData(request: DriverRequest) {
   return fd
 }
 
-/** Use as .inputValidator(driverRequestInput(schema)). */
+/** Use as .validator(driverRequestInput(schema)). */
 export function driverRequestInput<T>(schema: ZodType<T>) {
   return (input: unknown): T => {
     if (!(input instanceof FormData)) throw new Error("Expected FormData")

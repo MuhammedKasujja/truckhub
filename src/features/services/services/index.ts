@@ -20,31 +20,31 @@ export const getServicesFn = createServerFn().handler(async () => {
 })
 
 export const getServicesByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     return getServicesByQuery(data)
   })
 
 export const getServiceByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(getServiceById(data.id))
   })
 
 export const deleteServiceFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteServiceById(data.id)
   })
 
 export const updateServiceFn = createServerFn({ method: "POST" })
-  .inputValidator(ServiceUpdateSchema)
+  .validator(ServiceUpdateSchema)
   .handler(async ({ data }) => {
     return updateService(data)
   })
 
 export const createServiceFn = createServerFn({ method: "POST" })
-  .inputValidator(ServiceCreateSchema)
+  .validator(ServiceCreateSchema)
   .handler(async ({ data }) => {
     return createService(data)
   })

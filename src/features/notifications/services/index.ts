@@ -11,7 +11,7 @@ import { ApiError } from "@/types"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const listNotificationsFn = createServerFn({ method: "GET" })
-  .inputValidator(listNotificationSchema)
+  .validator(listNotificationSchema)
   .handler(async ({ data }) => {
     const response = await getNotifications(data)
     if (response.error) {
@@ -29,7 +29,7 @@ export const getUnreadNotificationCountFn = createServerFn({
 })
 
 export const markNotificationReadFn = createServerFn({ method: "POST" })
-  .inputValidator(markNotificationReadSchema)
+  .validator(markNotificationReadSchema)
   .handler(async ({ data }) => {
     return await apiResponseTransform(markNotificationRead(data.id))
   })

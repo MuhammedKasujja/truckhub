@@ -2,26 +2,61 @@ import { cache } from "react"
 import { SignJWT, jwtVerify } from "jose"
 import { systemDateTime } from "@/lib/utils"
 import { redirect } from "@tanstack/react-router"
-import { useSession } from "@tanstack/react-start/server"
+import { getIronSession } from "iron-session"
+import { getCookie, setCookie } from "@tanstack/react-start/server"
 import { UserSession, AuthResponse } from "@/features/auth/types"
 
 const secretKey = process.env.JWT_SECRET
 const encodedSecret = new TextEncoder().encode(secretKey)
 const AUTH_ALGORITHM = "HS256"
 const SESSION_KEY = "x-user-session"
+// Matches the refresh token lifetime. Each save (login, token refresh) renews it.
+const SESSION_TTL_SECONDS = 60 * 60 * 24 * 30
 
-export function useAppSession() {
-  return useSession<UserSession>({
-    name: SESSION_KEY,
-    password: process.env.SESSION_SECRET ?? "MUST_PROVIDE_SECRET_KEY",
-    // Optional: customize cookie settings
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "lax",
-      httpOnly: true,
-      // maxAge: 60 * 60 * 24 * 30, // 30 days — refresh token lifetime
+/**
+ * Encrypted cookie session for the current request.
+ *
+ * TanStack Start removed its built-in `useSession` in 1.169, so this wraps
+ * iron-session but keeps the old `{ data, update, clear }` shape for callers.
+ * Call it once per operation; never keep the result in module scope.
+ */
+export async function useAppSession() {
+  const password = process.env.SESSION_SECRET
+  if (!password || password.length < 32) {
+    throw new Error("SESSION_SECRET must be set and at least 32 characters")
+  }
+
+  const session = await getIronSession<Partial<UserSession>>(
+    { read: getCookie, write: setCookie },
+    {
+      cookieName: SESSION_KEY,
+      password,
+      ttl: SESSION_TTL_SECONDS,
+      cookieOptions: {
+        secure: process.env.NODE_ENV === "production", // HTTPS only in production
+        sameSite: "lax",
+        httpOnly: true,
+        path: "/",
+      },
+    }
+  )
+
+  return {
+    /** Plain copy of the stored fields; empty when signed out. */
+    get data() {
+      return { ...session } as UserSession
     },
-  })
+    /** Merge fields into the session and write the cookie. */
+    async update(patch: Partial<UserSession>) {
+      Object.assign(session, patch)
+      await session.save()
+    },
+    /** Sign out: drop the data and expire the cookie. */
+    clear() {
+      session.destroy()
+      return Promise.resolve()
+    },
+  }
 }
 
 export async function createSessionToken(payload: UserSession) {

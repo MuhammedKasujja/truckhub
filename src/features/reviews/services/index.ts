@@ -14,29 +14,29 @@ import {
 import { EntityIdSchema } from "@/schemas"
 
 export const getReviewsFn = createServerFn()
-  .inputValidator(ReviewSearchParamsCache)
+  .validator(ReviewSearchParamsCache)
   .handler(async ({ data }) => getReviews(data))
 
 export const getReviewByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getReviewById(data.id)
   })
 
 export const deleteReviewFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteReviewById(data.id)
   })
 
 export const updateReviewFn = createServerFn()
-  .inputValidator(ReviewUpdateSchema)
+  .validator(ReviewUpdateSchema)
   .handler(async ({ data }) => {
     return updateReview(data)
   })
 
 export const createReviewFn = createServerFn()
-  .inputValidator(ReviewCreateSchema)
+  .validator(ReviewCreateSchema)
   .handler(async ({ data }) => {
     return createReview(data)
   })

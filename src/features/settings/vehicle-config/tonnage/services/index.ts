@@ -17,25 +17,25 @@ export const getTonnagesFn = createServerFn().handler(async () => {
 })
 
 export const getTonnageFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getTonnageById(data.id)
   })
 
 export const deleteTonnageFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return await deleteTonnageById(data.id)
   })
 
 export const updateTonnageFn = createServerFn()
-  .inputValidator(TonnageUpdateSchema)
+  .validator(TonnageUpdateSchema)
   .handler(async ({ data }) => {
     return updateTonnage(data)
   })
 
 export const createTonnageFn = createServerFn()
-  .inputValidator(TonnageCreateSchema)
+  .validator(TonnageCreateSchema)
   .handler(async ({ data }) => {
     return createTonnage(data)
   })

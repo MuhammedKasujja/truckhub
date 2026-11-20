@@ -10,7 +10,7 @@ const DashboardPeriodSchema = z.object({
 export const getDashboardStatisticsFn = createServerFn({
   method: "GET",
 })
-  .inputValidator(DashboardPeriodSchema)
+  .validator(DashboardPeriodSchema)
   .handler(async ({ data }) => {
     return getDashboardStatistics(data)
   })

@@ -7,7 +7,7 @@ import { getReport } from "./server"
  * page can still render preview data while the backend endpoint is missing.
  */
 export const getReportFn = createServerFn({ method: "GET" })
-  .inputValidator(ReportRequestSchema)
+  .validator(ReportRequestSchema)
   .handler(async ({ data: { entity, from, to } }) => {
     return getReport(entity, { from, to })
   })

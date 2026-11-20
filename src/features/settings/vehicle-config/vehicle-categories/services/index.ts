@@ -16,31 +16,31 @@ import { formInput } from "@/lib/form-utils"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getVehicleCategorysFn = createServerFn()
-  .inputValidator(VehicleCategorySearchParamsCache)
+  .validator(VehicleCategorySearchParamsCache)
   .handler(async ({ data }) => {
     return await getVehicleCategorys(data)
   })
 
 export const getVehicleCategoryFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getVehicleCategoryById(data.id)
   })
 
 export const deleteVehicleCategoryFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteVehicleCategoryById(data.id)
   })
 
 export const updateVehicleCategoryFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(VehicleCategoryUpdateSchema))
+  .validator(formInput(VehicleCategoryUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateVehicleCategory(data))
   })
 
 export const createVehicleCategoryFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(VehicleCategoryCreateSchema))
+  .validator(formInput(VehicleCategoryCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createVehicleCategory(data))
   })

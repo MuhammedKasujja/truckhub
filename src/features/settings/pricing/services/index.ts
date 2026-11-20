@@ -30,25 +30,25 @@ import { EntityIdSchema } from "@/schemas"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const updateBatchRouteTonnagePricingFn = createServerFn({ method: "POST" })
-  .inputValidator(BatchPricingPayloadUpdateSchema)
+  .validator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
     return updateBatchRouteTonnagePricing(data)
   })
 
 export const createBatchRoutePricingFn = createServerFn({ method: "POST" })
-  .inputValidator(BatchPricingPayloadUpdateSchema)
+  .validator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createBatchRouteTonnagePricing(data))
   })
 
 export const createBatchDistancePricingFn = createServerFn({ method: "POST" })
-  .inputValidator(ListDistancePricingSchema)
+  .validator(ListDistancePricingSchema)
   .handler(async ({ data }) => {
     return await apiResponseTransform(createBatchDistancePricing(data))
   })
 
 export const getDistanceTonnagePricingFn = createServerFn()
-  .inputValidator(PricingSearchParamsCache)
+  .validator(PricingSearchParamsCache)
   .handler(async ({ data: req }) => {
     const { data } = await apiResponseTransform(getDistanceTonnagePricing(req))
     return data
@@ -61,7 +61,7 @@ export const getCompanyActiveDistancePricingFn = createServerFn().handler(
 )
 
 export const getRouteTonnagePricingFn = createServerFn()
-  .inputValidator(PricingSearchParamsCache)
+  .validator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(getRouteTonnagePricing(data))
     return result.data
@@ -75,25 +75,25 @@ export const getActiveRouteTonnagePricingFn = createServerFn().handler(
 )
 
 export const createBatchLoadingPricingFn = createServerFn({ method: "POST" })
-  .inputValidator(LoadingOffloadingPricingSchema)
+  .validator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createBatchLoadingPricing(data))
   })
 
 export const getLoadingOffloadingFreesFn = createServerFn()
-  .inputValidator(PricingSearchParamsCache)
+  .validator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
     return getLoadingOffloadingFrees(data)
   })
 
 export const getActiveLoadingOffloadingFreesFn = createServerFn()
-  .inputValidator(ActivePricingSearchParamsCache)
+  .validator(ActivePricingSearchParamsCache)
   .handler(async ({ data }) => {
     return apiResponseTransform(getActiveLoadingOffloadingFrees(data))
   })
 
 export const createBatchIslandPricingsFn = createServerFn({ method: "POST" })
-  .inputValidator(IslandsListPricingSchema)
+  .validator(IslandsListPricingSchema)
   .handler(async ({ data }) => {
     const pricings = data.pricings.map((p) => ({
       island_id: p.island_id,
@@ -108,7 +108,7 @@ export const createBatchIslandPricingsFn = createServerFn({ method: "POST" })
   })
 
 export const getIslandPricingsFn = createServerFn()
-  .inputValidator(PricingSearchParamsCache)
+  .validator(PricingSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await apiResponseTransform(getIslandsPricings(data))
     return {
@@ -132,12 +132,12 @@ export const getCompanyPricingDatesFn = createServerFn().handler(
 )
 
 export const getClientPricingDatesFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const response = await apiResponseTransform(getClientPricingDates(data.id))
     return response.data
   })
 
 export const activateCompanyPricingFn = createServerFn({ method: "POST" })
-  .inputValidator(ActivatePricingSchema)
+  .validator(ActivatePricingSchema)
   .handler(({ data }) => apiResponseTransform(activateCompanyPricing(data)))

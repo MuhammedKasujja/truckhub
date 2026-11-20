@@ -29,7 +29,7 @@ export const getEntityNumberPatternsFn = createServerFn().handler(async () => {
 })
 
 export const updateEntityNumberPatternsFn = createServerFn({ method: "POST" })
-  .inputValidator(NumberingPatternSchema)
+  .validator(NumberingPatternSchema)
   .handler(async ({ data }) => {
     const patterns = Object.entries(data.entities).map(
       ([entity_name, configItem]) => ({

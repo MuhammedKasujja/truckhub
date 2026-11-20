@@ -26,7 +26,7 @@ import { formInput } from "@/lib/form-utils"
 import { ApiError } from "@/types"
 
 export const getDocumentTypesFn = createServerFn({ method: "GET" })
-  .inputValidator(listDocumentTypesSchema)
+  .validator(listDocumentTypesSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(
       getDocumentTypes(data.ownerKind, data.activeOnly)
@@ -35,15 +35,15 @@ export const getDocumentTypesFn = createServerFn({ method: "GET" })
   })
 
 export const createDocumentTypeFn = createServerFn({ method: "POST" })
-  .inputValidator(createDocumentTypeSchema)
+  .validator(createDocumentTypeSchema)
   .handler(({ data }) => apiResponseTransform(createDocumentType(data)))
 
 export const updateDocumentTypeFn = createServerFn({ method: "POST" })
-  .inputValidator(updateDocumentTypeSchema)
+  .validator(updateDocumentTypeSchema)
   .handler(({ data }) => apiResponseTransform(updateDocumentType(data)))
 
 export const getDocumentsFn = createServerFn({ method: "GET" })
-  .inputValidator(listDocumentsSchema)
+  .validator(listDocumentsSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(
       getDocuments(data, data.currentOnly)
@@ -52,7 +52,7 @@ export const getDocumentsFn = createServerFn({ method: "GET" })
   })
 
 export const getExpiringDocumentsFn = createServerFn({ method: "GET" })
-  .inputValidator(expiringDocumentsSchema)
+  .validator(expiringDocumentsSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(
       getExpiringDocuments(data.ownerKind, data.withinDays)
@@ -62,11 +62,11 @@ export const getExpiringDocumentsFn = createServerFn({ method: "GET" })
 
 /** Takes multipart form data: see `uploadDocumentSchema` for the fields. */
 export const uploadDocumentFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(uploadDocumentSchema))
+  .validator(formInput(uploadDocumentSchema))
   .handler(({ data }) => apiResponseTransform(uploadDocument(data)))
 
 export const voidDocumentFn = createServerFn({ method: "POST" })
-  .inputValidator(voidDocumentSchema)
+  .validator(voidDocumentSchema)
   .handler(({ data }) =>
     apiResponseTransform(voidDocument(data, data.linkId, data.reason))
   )
@@ -87,7 +87,7 @@ function downloadErrorMessage(error: unknown) {
 
 /** Streams the file back with the API's content type and file name. */
 export const downloadDocumentFn = createServerFn({ method: "GET" })
-  .inputValidator(documentLinkSchema)
+  .validator(documentLinkSchema)
   .handler(async ({ data }) => {
     try {
       const response = await downloadDocument(data, data.linkId)

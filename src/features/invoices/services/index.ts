@@ -20,7 +20,7 @@ import {
 } from "./server"
 
 export const getInvoicesFn = createServerFn()
-  .inputValidator(InvoiceSearchParams)
+  .validator(InvoiceSearchParams)
   .handler(async ({ data }) => {
     const response = await getInvoices(data)
     if (response.error) {
@@ -31,7 +31,7 @@ export const getInvoicesFn = createServerFn()
   })
 
 export const getInvoiceDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await getInvoiceDetails(data.id)
     if (result.error) {
@@ -49,13 +49,13 @@ export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
 })
 
 export const createInvoiceFn = createServerFn()
-  .inputValidator(createInvoiceSchema)
+  .validator(createInvoiceSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createInvoice(data))
   })
 
 export const voidInvoiceFn = createServerFn({ method: "POST" })
-  .inputValidator(voidInvoiceSchema)
+  .validator(voidInvoiceSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(voidInvoice(data))
     // The billing endpoint answers with a generic message
@@ -63,21 +63,21 @@ export const voidInvoiceFn = createServerFn({ method: "POST" })
   })
 
 export const getInvoiceActivitiesFn = createServerFn({ method: "GET" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(getInvoiceActivities(data.id))
     return result.data ?? []
   })
 
 export const deleteInvoiceFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(deleteInvoice(data.id))
     return { message: result.message ?? "Invoice deleted" }
   })
 
 export const sendInvoiceEmailFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await sendInvoiceEmail(data.id)
     if (result.error) {
@@ -87,7 +87,7 @@ export const sendInvoiceEmailFn = createServerFn({ method: "POST" })
   })
 
 export const getInvoicePdfFn = createServerFn({ method: "GET" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     try {
       const response = await getInvoicePdf(data.id)

@@ -39,7 +39,7 @@ function appOrigin() {
 const sessionIdSchema = z.object({ id: z.uuid() })
 
 export const createCaptureSessionFn = createServerFn({ method: "POST" })
-  .inputValidator(z.object({ accept: z.string().max(500).optional() }))
+  .validator(z.object({ accept: z.string().max(500).optional() }))
   .handler(async ({ data }) => {
     const userId = await requireUserId()
     const session = createSession(userId, data.accept || DEFAULT_ACCEPT)
@@ -51,7 +51,7 @@ export const createCaptureSessionFn = createServerFn({ method: "POST" })
 export type CaptureStatus = "pending" | "ready" | "expired"
 
 export const getCaptureStatusFn = createServerFn({ method: "GET" })
-  .inputValidator(sessionIdSchema)
+  .validator(sessionIdSchema)
   .handler(async ({ data }): Promise<{ status: CaptureStatus }> => {
     const userId = await requireUserId()
     const session = getForOwner(data.id, userId)
@@ -61,7 +61,7 @@ export const getCaptureStatusFn = createServerFn({ method: "GET" })
 
 /** Sends the file to the desktop once, then the session is gone. */
 export const takeCaptureFileFn = createServerFn({ method: "GET" })
-  .inputValidator(sessionIdSchema)
+  .validator(sessionIdSchema)
   .handler(async ({ data }) => {
     const userId = await requireUserId()
     const file = takeFile(data.id, userId)
@@ -78,7 +78,7 @@ export const takeCaptureFileFn = createServerFn({ method: "GET" })
   })
 
 export const cancelCaptureSessionFn = createServerFn({ method: "POST" })
-  .inputValidator(sessionIdSchema)
+  .validator(sessionIdSchema)
   .handler(async ({ data }) => {
     const userId = await requireUserId()
     deleteSession(data.id, userId)
@@ -89,7 +89,7 @@ const tokenSchema = sessionIdSchema.extend({ token: z.string().min(20).max(200) 
 
 /** For the phone page: what it may upload, or null when the link is dead. */
 export const getCaptureInfoFn = createServerFn({ method: "GET" })
-  .inputValidator(tokenSchema)
+  .validator(tokenSchema)
   .handler(({ data }) => {
     const session = getForUpload(data.id, data.token)
     if (!session) return null
@@ -110,7 +110,7 @@ const uploadSchema = z.object({
 
 /** Public: the phone sends FormData { id, token, file }. */
 export const uploadCaptureFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(uploadSchema))
+  .validator(formInput(uploadSchema))
   .handler(async ({ data }) => {
     const session = getForUpload(data.id, data.token)
     if (!session) {

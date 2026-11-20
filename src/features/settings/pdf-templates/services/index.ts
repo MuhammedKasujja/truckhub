@@ -3,7 +3,7 @@ import { ReportTemplateSchema } from "../schemas"
 import { generateReportTemplatePdf } from "./server"
 
 export const generateReportTemplatePdfFn = createServerFn({ method: "GET" })
-  .inputValidator(ReportTemplateSchema)
+  .validator(ReportTemplateSchema)
   .handler(async ({ data }) => {
     try {
       const response = await generateReportTemplatePdf(data.template)

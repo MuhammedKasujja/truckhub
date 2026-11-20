@@ -19,13 +19,13 @@ export const getSettingsFn = createServerFn().handler(async () => {
 })
 
 export const updateSettingsFn = createServerFn()
-  .inputValidator(EditSettingsSchema)
+  .validator(EditSettingsSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(apiClient.patchFn<Settings>(endpoint, data))
   })
 
 export const updateInvoiceTermsFn = createServerFn()
-  .inputValidator(EditInvoiceTermsSchema)
+  .validator(EditInvoiceTermsSchema)
   .handler(async ({ data }) => {
     return await apiClient.patchFn<Settings>(endpoint, {
       invoice_terms: data.invoiceTerms?.map((term) => term.value),
@@ -33,7 +33,7 @@ export const updateInvoiceTermsFn = createServerFn()
   })
 
 export const updateQoutationTermsFn = createServerFn()
-  .inputValidator(EditInvoiceTermsSchema)
+  .validator(EditInvoiceTermsSchema)
   .handler(async ({ data }) => {
     return await apiClient.patchFn<Settings>(endpoint, {
       quotation_terms: data.quotationTerms?.map((term) => term.value),
