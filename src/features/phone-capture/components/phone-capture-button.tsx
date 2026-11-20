@@ -145,13 +145,18 @@ export function usePhoneCaptureAction({
                   Waiting for your phone ·{" "}
                   <span className="tabular-nums">{mmss(secondsLeft)}</span>
                 </p>
+                {capture.sameWifi && (
+                  <p className="text-center text-xs text-muted-foreground">
+                    Your phone must be on the same Wi-Fi as this computer.
+                  </p>
+                )}
               </>
             ) : capture.state === "expired" || capture.state === "error" ? (
               <div className="flex flex-col items-center gap-3 py-8 text-center">
                 <p className="text-sm text-muted-foreground">
                   {capture.state === "expired"
                     ? "This code has expired."
-                    : "Something went wrong."}
+                    : capture.error || "Something went wrong."}
                 </p>
                 <Button type="button" onClick={capture.start}>
                   <RefreshCw /> Make a new code

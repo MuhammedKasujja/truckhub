@@ -61,10 +61,13 @@ fn main_window(app: &App, url: WebviewUrl) -> tauri::Result<()> {
 }
 
 /// Spawns the Nitro server (`.output/`, bundled as the `server-bundle/` resource) with the
-/// Bun sidecar on a free localhost port, then points the main window at it.
+/// Bun sidecar on a free localhost port, then points the main window at it. The entry
+/// (`scripts/desktop-entry.mjs`) also opens a LAN gate on `CAPTURE_PORT` that lets a phone
+/// on the same Wi-Fi reach only the phone-capture page.
 fn start_server(app: &App) -> Result<(), Box<dyn std::error::Error>> {
-  let entry = app.path().resolve("server-bundle/server/index.mjs", BaseDirectory::Resource)?;
-  let port = free_port()?;
+  let entry = app.path().resolve("server-bundle/server/desktop-entry.mjs", BaseDirectory::Resource)?;
+  let port = free_port(Ipv4Addr::LOCALHOST)?;
+  let capture_port = free_port(Ipv4Addr::UNSPECIFIED)?;
   let session_secret = session_secret(&app.path().app_data_dir()?)?;
 
   let (mut events, child) = app
@@ -74,6 +77,7 @@ fn start_server(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     .arg(&entry)
     .envs([
       ("PORT", port.to_string()),
+      ("CAPTURE_PORT", capture_port.to_string()),
       ("HOST", "127.0.0.1".into()),
       ("NODE_ENV", "production".into()),
       ("TRUCKHUB_DESKTOP", "1".into()),
@@ -81,7 +85,6 @@ fn start_server(app: &App) -> Result<(), Box<dyn std::error::Error>> {
       ("BACKEND_URL", env!("TRUCKHUB_BACKEND_URL").into()),
       ("JWT_SECRET", env!("TRUCKHUB_JWT_SECRET").into()),
       ("GOOGLE_PLACES_API_KEY", env!("TRUCKHUB_GOOGLE_PLACES_API_KEY").into()),
-      ("PUBLIC_APP_URL", env!("TRUCKHUB_PUBLIC_APP_URL").into()),
     ])
     .spawn()?;
   *app.state::<ServerProcess>().0.lock().unwrap() = Some(child);
@@ -117,8 +120,8 @@ fn start_server(app: &App) -> Result<(), Box<dyn std::error::Error>> {
   Ok(())
 }
 
-fn free_port() -> std::io::Result<u16> {
-  Ok(TcpListener::bind((Ipv4Addr::LOCALHOST, 0))?.local_addr()?.port())
+fn free_port(host: Ipv4Addr) -> std::io::Result<u16> {
+  Ok(TcpListener::bind((host, 0))?.local_addr()?.port())
 }
 
 fn wait_for_port(port: u16, timeout: Duration) -> bool {

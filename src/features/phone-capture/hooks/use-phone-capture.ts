@@ -8,7 +8,13 @@ import {
   takeCaptureFileFn,
 } from "../services"
 
-type Session = { id: string; url: string; expiresAt: number }
+type Session = {
+  id: string
+  url: string
+  expiresAt: number
+  /** Desktop app: the phone must be on the same Wi-Fi to open the link. */
+  sameWifi: boolean
+}
 
 export type PhoneCaptureState =
   | "idle"
@@ -48,17 +54,24 @@ export function usePhoneCapture({
 }) {
   const [session, setSession] = useState<Session>()
   const [state, setState] = useState<PhoneCaptureState>("idle")
+  const [error, setError] = useState<string>()
   const onFileRef = useRef(onFile)
   onFileRef.current = onFile
 
   const { mutate: createSession } = useMutation({
     mutationFn: () => createCaptureSessionFn({ data: { accept } }),
-    onMutate: () => setState("creating"),
+    onMutate: () => {
+      setError(undefined)
+      setState("creating")
+    },
     onSuccess: (created) => {
       setSession(created)
       setState("waiting")
     },
-    onError: () => setState("error"),
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : undefined)
+      setState("error")
+    },
   })
 
   const status = useQuery({
@@ -118,6 +131,8 @@ export function usePhoneCapture({
     state,
     url: session?.url,
     expiresAt: session?.expiresAt,
+    sameWifi: session?.sameWifi ?? false,
+    error,
     start,
     cancel,
   }

@@ -3,7 +3,9 @@ use std::{fs, path::Path};
 /// Server env vars baked into the desktop binary at compile time and handed to
 /// the bundled Nitro server at runtime. `SESSION_SECRET` is deliberately not
 /// here: each install generates its own (see `lib.rs`).
-const BAKED_ENV: &[&str] = &["BACKEND_URL", "JWT_SECRET", "GOOGLE_PLACES_API_KEY", "PUBLIC_APP_URL"];
+/// `PUBLIC_APP_URL` is not here either: the phone-capture QR points at this computer's
+/// LAN address instead (see `scripts/desktop-entry.mjs`).
+const BAKED_ENV: &[&str] = &["BACKEND_URL", "JWT_SECRET", "GOOGLE_PLACES_API_KEY"];
 
 fn main() {
   // `.env.production` wins over `.env`; a real environment variable wins over both.

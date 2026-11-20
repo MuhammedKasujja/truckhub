@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
+import { createIsomorphicFn } from "@tanstack/react-start"
 import { z } from "zod"
 import {
   Camera,
@@ -13,11 +14,37 @@ import {
 import { Button } from "@/components/ui/button"
 import { matchesAccept } from "@/features/phone-capture/lib/accept"
 import { compressImage } from "@/features/phone-capture/lib/compress-image"
-import {
-  getCaptureInfoFn,
-  uploadCaptureFn,
-} from "@/features/phone-capture/services"
+import { getCaptureInfoFn } from "@/features/phone-capture/services"
 import { objectToFormData } from "@/lib/form-utils"
+
+type CaptureInfo = { accept: string; expiresAt: number }
+
+const captureApi = (id: string) => `/api/capture/${encodeURIComponent(id)}`
+
+/*
+ * The phone talks to /api/capture/$id, not to server functions: in the
+ * desktop app it reaches this page through a LAN gate that lets only those
+ * paths through. The first render happens on the server, so the loader calls
+ * the session store directly there.
+ */
+const loadCaptureInfo = createIsomorphicFn()
+  .server((id: string, token: string) =>
+    getCaptureInfoFn({ data: { id, token } })
+  )
+  .client(async (id: string, token: string): Promise<CaptureInfo | null> => {
+    const response = await fetch(`${captureApi(id)}?t=${encodeURIComponent(token)}`)
+    return response.ok ? response.json() : null
+  })
+
+async function uploadCapture(id: string, token: string, file: File) {
+  const response = await fetch(captureApi(id), {
+    method: "POST",
+    body: objectToFormData({ token, file }),
+  })
+  if (response.ok) return
+  const body = (await response.json().catch(() => ({}))) as { message?: string }
+  throw new Error(body.message ?? "")
+}
 
 /** Public page the phone opens from the QR code. No sign-in needed. */
 export const Route = createFileRoute("/capture/$id")({
@@ -26,7 +53,7 @@ export const Route = createFileRoute("/capture/$id")({
   loader: async ({ params, deps }) => {
     if (!deps.t) return null
     try {
-      return await getCaptureInfoFn({ data: { id: params.id, token: deps.t } })
+      return await loadCaptureInfo(params.id, deps.t)
     } catch {
       return null
     }
@@ -199,7 +226,7 @@ function CapturePage() {
     setStep("sending")
     setError(undefined)
     try {
-      await uploadCaptureFn({ data: objectToFormData({ id, token, file }) })
+      await uploadCapture(id, token, file)
       setStep("done")
     } catch (err) {
       const message = err instanceof Error ? err.message : ""

@@ -19,3 +19,7 @@ mkdir -p src-tauri/binaries
 cp "$BUN_BIN" "src-tauri/binaries/bun-${TRIPLE}${EXT}"
 chmod +x "src-tauri/binaries/bun-${TRIPLE}${EXT}"
 echo "sidecar: src-tauri/binaries/bun-${TRIPLE}${EXT}"
+
+# Entry that starts Nitro plus the phone-capture LAN gate
+cp scripts/desktop-entry.mjs .output/server/desktop-entry.mjs
+echo "entry: .output/server/desktop-entry.mjs"
