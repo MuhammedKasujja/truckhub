@@ -24,4 +24,4 @@ build-web:
 
 preview:
     #!/usr/bin/env bash
-    npx vite preview
+    npx vite preview --host 0.0.0.0 --port 4173 --strictPort

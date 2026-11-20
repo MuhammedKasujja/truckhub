@@ -1,8 +1,8 @@
 import { logger } from "@/lib/logger"
-import { isRedirect, redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { checkUserPermission } from "@/lib/permissions"
 import { isExpiringSoon, useAppSession } from "./session"
+import { isRedirect, redirect } from "@tanstack/react-router"
 import { refreshAuthTokenFn } from "@/features/auth/services"
 import type { UserPermission } from "@/features/auth/permissions"
 
@@ -51,7 +51,7 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
       })
 
       if (error || !token) {
-        logger.error(`Refreshing auth token failed ${error}`)
+        logger.error(`Refreshing auth token failed ${error?.message}`)
         await session.clear()
         return null
       }
