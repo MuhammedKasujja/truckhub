@@ -1,38 +1,29 @@
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-
-import { useForm } from "react-hook-form"
+import { useEffect } from "react"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import z from "zod"
-import {
-  CheckboxField,
-  SelectField,
-  TextField,
-} from "@/components/ui/form-fields"
-import { FieldGroup } from "@/components/ui/field"
-import { useTranslation } from "@/i18n"
-import { SubmitButton } from "@/components/ui/submit-button"
+import { WalletCards } from "lucide-react"
+import { accountPurposes, currencies } from "../enums"
+import { accountPurposeMeta, currencyMeta } from "../labels"
+import { BankPickerField } from "./bank-pickers"
+import type z from "zod"
+import type {
+  BankAccountUpdateInput} from "@/features/settings/bank-accounts/schemas";
+import { SwitchField, TextField } from "@/components/ui/form-fields"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { ActionIcon } from "@/components/icons"
 import {
   bankAccountCreateSchema,
-  BankAccountUpdateInput,
   bankAccountUpdateSchema,
 } from "@/features/settings/bank-accounts/schemas"
 import {
   createBankAccountFn,
   updateBankAccountFn,
 } from "@/features/settings/bank-accounts/services"
-import { BankPickerField } from "./bank-pickers"
-import { accountPurposes, currencies } from "../enums"
+import {
+  FormGroup,
+  OptionTile,
+  SettingsFormDialog,
+} from "@/features/settings/_components/settings-ui"
 
 type BankAccountFormProps = {
   initialData?: BankAccountUpdateInput
@@ -40,106 +31,157 @@ type BankAccountFormProps = {
   onOpenChange: (v: boolean) => void
 }
 
+const createDefaults = {
+  account_name: "",
+  account_number: "",
+  branch: "",
+  currency: "UGX",
+  show_on_invoices: false,
+} as const
+
 export function BankAccountForm({
   initialData,
   open,
   onOpenChange,
 }: BankAccountFormProps) {
   const queryInvalidator = useQueryInvalidator()
-  const tr = useTranslation()
   const isEdit = !!initialData
 
   const formSchema = isEdit ? bankAccountUpdateSchema : bankAccountCreateSchema
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: initialData ?? createDefaults,
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    const promise =
-      "id" in values
-        ? updateBankAccountFn({ data: values })
-        : createBankAccountFn({ data: values })
+  // Start from the saved values every time the dialog opens.
+  useEffect(() => {
+    if (open) form.reset(initialData ?? createDefaults)
+  }, [open])
 
-    const { isSuccess, error, message } = await promise
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { isSuccess, error, message } =
+      "id" in values
+        ? await updateBankAccountFn({ data: values })
+        : await createBankAccountFn({ data: values })
+
     if (isSuccess) {
       toast.success(message)
-      form.reset()
       queryInvalidator.bankAccounts.list.invalidate()
+      onOpenChange(false)
     } else {
       toast.error(error?.message)
     }
   }
 
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="sm:max-w-md">
-        <form
-          onSubmit={form.handleSubmit(onSubmit, (errors) => {
-            console.error(errors)
-          })}
-          className="space-y-4"
-        >
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Button variant={"outline"} size={"icon"} type="button">
-                <ActionIcon action="create" />
-              </Button>
-              Bank Account
-            </DialogTitle>
-            <DialogDescription>Add bank account details</DialogDescription>
-          </DialogHeader>
-          <FieldGroup>
-            <BankPickerField
-              label="Bank name"
-              control={form.control}
-              name={"bank_id"}
-            />
-            <TextField
-              label="Account Name"
-              control={form.control}
-              name={"account_name"}
-            />
-            <TextField
-              label="Account Number"
-              control={form.control}
-              name={"account_number"}
-            />
-            <TextField label="Branch" control={form.control} name={"branch"} />
-            <SelectField
-              label="Currency"
-              control={form.control}
-              name={"currency"}
-              options={currencies.map((ele) => ({
-                label: ele,
-                value: ele,
-              }))}
-            />
-            <SelectField
-              label="Account purpose"
-              control={form.control}
-              name={"purpose"}
-              options={accountPurposes.map((ele) => ({
-                label: ele,
-                value: ele,
-              }))}
-            />
-            <CheckboxField
-              label="Show on invoices"
-              control={form.control}
-              name={"show_on_invoices"}
-              description="Use this account on client invoices"
-            />
-          </FieldGroup>
-          <DialogFooter className="sm:justify-end">
-            <SubmitButton
-              text={tr("common.form.submit")}
-              isSubmitting={form.formState.isSubmitting}
-            />
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <SettingsFormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      icon={WalletCards}
+      eyebrow={isEdit ? "Edit bank account" : "New bank account"}
+      title={isEdit ? (initialData.account_name ?? "Bank account") : "Add a bank account"}
+      description="Where clients pay you and how the account appears on invoices."
+      size="lg"
+      submitText={isEdit ? "Save changes" : "Add account"}
+      isSubmitting={form.formState.isSubmitting}
+      onSubmit={form.handleSubmit(onSubmit)}
+    >
+      <FormGroup title="Account">
+        <BankPickerField
+          label="Bank"
+          control={form.control}
+          name="bank_id"
+        />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            label="Account name"
+            control={form.control}
+            name="account_name"
+            placeholder="As registered with the bank"
+          />
+          <TextField
+            label="Account number"
+            control={form.control}
+            name="account_number"
+          />
+          <TextField
+            label="Branch"
+            control={form.control}
+            name="branch"
+            placeholder="e.g. Kampala Road"
+          />
+        </div>
+      </FormGroup>
+
+      <FormGroup title="Currency">
+        <Controller
+          control={form.control}
+          name="currency"
+          render={({ field, fieldState }) => (
+            <div className="space-y-1.5">
+              <div
+                role="radiogroup"
+                aria-label="Currency"
+                className="grid gap-2 sm:grid-cols-2"
+              >
+                {currencies.map((c) => (
+                  <OptionTile
+                    key={c}
+                    selected={field.value === c}
+                    onSelect={() => field.onChange(c)}
+                    title={c}
+                    description={currencyMeta[c].label}
+                  />
+                ))}
+              </div>
+              {fieldState.error && (
+                <p className="text-xs text-destructive">Choose a currency</p>
+              )}
+            </div>
+          )}
+        />
+      </FormGroup>
+
+      <FormGroup title="Purpose" description="Optional. Helps you tell accounts apart.">
+        <Controller
+          control={form.control}
+          name="purpose"
+          render={({ field }) => (
+            <div
+              role="radiogroup"
+              aria-label="Account purpose"
+              className="grid gap-2 sm:grid-cols-2"
+            >
+              {accountPurposes.map((p) => {
+                const meta = accountPurposeMeta[p]
+                return (
+                  <OptionTile
+                    key={p}
+                    selected={field.value === p}
+                    // Clicking the selected tile clears the purpose.
+                    onSelect={() =>
+                      field.onChange(field.value === p ? undefined : p)
+                    }
+                    icon={meta.icon}
+                    title={meta.label}
+                    description={meta.description}
+                  />
+                )
+              })}
+            </div>
+          )}
+        />
+      </FormGroup>
+
+      <div className="rounded-lg border p-3.5">
+        <SwitchField
+          label="Show on invoices"
+          control={form.control}
+          name="show_on_invoices"
+          description="Print these account details on client invoices so they know where to pay."
+        />
+      </div>
+    </SettingsFormDialog>
   )
 }

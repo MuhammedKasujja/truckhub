@@ -1,4 +1,9 @@
-import { PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
+import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { VehicleForm } from "@/features/vehicles/components/vehicle-form"
 import { useVehicleDetailsQuery } from "@/features/vehicles/hooks/use-vehicle"
 import { vehicleDetailsQueryOptions } from "@/features/vehicles/query-options"
@@ -16,14 +21,18 @@ export const Route = createFileRoute("/_admin/vehicles/$vehicleId/edit")({
 })
 
 function RouteComponent() {
+  const back = useBackNavigation()
   const { vehicleId } = Route.useParams()
   const { data } = useVehicleDetailsQuery(vehicleId)
   return (
     <>
       <PageHeader>
-        <PageTitle>Edit Vehicle</PageTitle>
+        <PageTitle>Edit vehicle</PageTitle>
+        <PageDescription>
+          Update the vehicle's registration, specs and features.
+        </PageDescription>
       </PageHeader>
-      <VehicleForm initialData={mapEditVehicle(data)} />
+      <VehicleForm initialData={mapEditVehicle(data)} onCancel={back} />
     </>
   )
 }

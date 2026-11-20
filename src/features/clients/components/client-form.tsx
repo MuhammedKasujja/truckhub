@@ -14,19 +14,49 @@ import {
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
 import {
+  ClientContactInput,
   ClientCreateInput,
   ClientCreateSchema,
   ClientUpdateInput,
   ClientUpdateSchema,
 } from "@/features/clients/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, UseFormReturn } from "react-hook-form"
 import z from "zod"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { UserPickerField } from "@/features/users/components/user-picker"
 import { BaseFormProps } from "@/common/types"
+import {
+  ClientContactsFields,
+  ClientContactsFormValues,
+} from "./client-contacts-fields"
 
 type ClientFormProps = BaseFormProps<ClientCreateInput, ClientUpdateInput>
+
+function getInitialContacts(
+  contacts: ClientContactInput[] | undefined
+): ClientContactInput[] {
+  if (!contacts?.length) {
+    return [{ name: "", phone: "", email: "", is_primary: true }]
+  }
+  return contacts.map((contact) => ({
+    ...contact,
+    email: contact.email ?? "",
+    is_primary: !!contact.is_primary,
+  }))
+}
+
+function withoutBlankContactEmails<
+  T extends { contacts: ClientContactInput[] },
+>(values: T): T {
+  return {
+    ...values,
+    contacts: values.contacts.map((contact) => ({
+      ...contact,
+      email: contact.email || undefined,
+    })),
+  }
+}
 
 export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
   const tr = useTranslation()
@@ -39,27 +69,28 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
 
   const form = useForm<Values>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      contacts: getInitialContacts(defaultValues?.contacts),
+    },
   })
 
   async function handleSubmit(values: Values) {
     if (mode === "edit") {
-      onSubmit(ClientUpdateSchema.parse(values))
+      onSubmit(withoutBlankContactEmails(ClientUpdateSchema.parse(values)))
     } else {
-      onSubmit(ClientCreateSchema.parse(values))
+      onSubmit(withoutBlankContactEmails(ClientCreateSchema.parse(values)))
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>Create new client</CardDescription>
-      </CardHeader>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log(errors)
-        })}
-      >
+    <form
+      className="grid grid-cols-5 gap-5"
+      onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+        console.log(errors)
+      })}
+    >
+      <Card className="col-span-3">
         <CardContent className="pb-6">
           <FieldGroup>
             <Field orientation={"horizontal"} className="gap-4">
@@ -126,7 +157,22 @@ export function ClientForm({ mode, defaultValues, onSubmit }: ClientFormProps) {
             isSubmitting={form.formState.isSubmitting}
           />
         </CardFooter>
-      </form>
-    </Card>
+      </Card>
+      <div className="col-span-2 flex flex-col gap-5">
+        <Card className="col-span-2">
+          <CardHeader>{tr("clients.contacts")}</CardHeader>
+          <CardContent>
+            <ClientContactsFields
+              // Values is a create/update union; both have the same `contacts`
+              form={form as unknown as UseFormReturn<ClientContactsFormValues>}
+            />
+          </CardContent>
+        </Card>
+        <Card className="col-span-2">
+          <CardHeader>Address</CardHeader>
+          <CardContent></CardContent>
+        </Card>
+      </div>
+    </form>
   )
 }

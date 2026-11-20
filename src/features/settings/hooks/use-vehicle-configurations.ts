@@ -11,11 +11,11 @@ export function useVehicleConfigurations() {
 }
 
 export function useVehicleConfigurationsQuery() {
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, ...rest } = useQuery(
     createVehicleConfigurationsQueryOptions()
   )
 
-  return { data: data?.data, isLoading }
+  return { data: data?.data, isLoading, ...rest }
 }
 
 export function useVehicleConfigurationsSuspense() {

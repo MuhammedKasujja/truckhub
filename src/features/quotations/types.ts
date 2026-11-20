@@ -1,6 +1,8 @@
 import { EntityId } from "@/schemas"
-import { QuotationStatus } from "./enums"
+import { QuotationActivityType, QuotationStatus } from "./enums"
+import type { ActivityEntry } from "@/components/activity-timeline"
 import { DataTableRowAction } from "@/types/data-table"
+import { ClientContact } from "@/features/clients/types"
 import { EngineMode, LineItemType } from "@/common/enums"
 import {
   LineItemResponse,
@@ -62,6 +64,11 @@ export type QuotationVersion = {
   start_date: string
   end_date: string
   revision_reason: string | null
+  accepted_at: string | null
+  rejected_at: string | null
+  /** When this version was last emailed to the client, and how many times. */
+  sent_date: string | null
+  send_count: number
   line_items: LineItemResponse[]
   tax_rates: { id: EntityId; tax_name: string; rate: string }[]
   isActive: boolean
@@ -84,7 +91,10 @@ export type Quotation = {
     phone: string
     email: string | null
   }
+  contact?: ClientContact | null
 }
+
+export type QuotationActivity = ActivityEntry<QuotationActivityType>
 
 export interface QuotationTableRowAction extends DataTableRowAction<
   Quotation,

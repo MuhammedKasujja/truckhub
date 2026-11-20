@@ -8,6 +8,7 @@ import {
   recordShipmentDetailsSchema,
   assignShipmentVehicleSchema,
   changeShipmentVehicleSchema,
+  reportShipmentDelaySchema,
 } from "../schemas"
 import {
   endShipment,
@@ -18,12 +19,13 @@ import {
   recordShipmentDetails,
   shipmentAssignVehicle,
   changeShipmentVehicle,
+  reportShipmentDelay,
 } from "./server"
 import { ApiError } from "@/types"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getShipmentsFn = createServerFn()
-  .inputValidator(ShipmentSearchParams)
+  .validator(ShipmentSearchParams)
   .handler(async ({ data }) => {
     const response = await getShipments(data)
     if (response.error) {
@@ -34,44 +36,50 @@ export const getShipmentsFn = createServerFn()
   })
 
 export const getShipmentByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(getShipmentById(data.id))
     return result.data!
   })
 
 export const endShipmentFn = createServerFn()
-  .inputValidator(endShipmentSchema)
+  .validator(endShipmentSchema)
   .handler(async ({ data }) => {
     return await apiResponseTransform(endShipment(data))
   })
 
 export const dispatchShipmentFn = createServerFn()
-  .inputValidator(dispatchShipmentSchema)
+  .validator(dispatchShipmentSchema)
   .handler(({ data }) => {
     return apiResponseTransform(dispatchShipment(data))
   })
 
 export const recordShipmentDetailsFn = createServerFn()
-  .inputValidator(recordShipmentDetailsSchema)
+  .validator(recordShipmentDetailsSchema)
   .handler(({ data }) => {
     return apiResponseTransform(recordShipmentDetails(data))
   })
 
 export const shipmentAssignVehicleFn = createServerFn()
-  .inputValidator(assignShipmentVehicleSchema)
+  .validator(assignShipmentVehicleSchema)
   .handler(({ data }) => {
     return apiResponseTransform(shipmentAssignVehicle(data))
   })
 
 export const shipmentAssignDriverFn = createServerFn()
-  .inputValidator(assignShipmentDriverSchema)
+  .validator(assignShipmentDriverSchema)
   .handler(({ data }) => {
     return apiResponseTransform(shipmentAssignDriver(data))
   })
 
 export const changeShipmentVehicleFn = createServerFn()
-  .inputValidator(changeShipmentVehicleSchema)
+  .validator(changeShipmentVehicleSchema)
   .handler(({ data }) => {
     return apiResponseTransform(changeShipmentVehicle(data))
+  })
+
+export const reportShipmentDelayFn = createServerFn()
+  .validator(reportShipmentDelaySchema)
+  .handler(({ data }) => {
+    return apiResponseTransform(reportShipmentDelay(data))
   })

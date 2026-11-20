@@ -1,5 +1,5 @@
+import type { ReportTemplate } from "@/common/constants"
 import { api } from "@/lib/api"
-import { ReportTemplate } from "@/common/constants"
 
 export async function generateReportTemplatePdf(template: ReportTemplate) {
   const url = `/v1/reports/templates/${template}/download`

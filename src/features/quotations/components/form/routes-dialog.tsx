@@ -1,5 +1,14 @@
 import * as React from "react"
-import { ArrowDown, ArrowUp, Circle, MapPin, Plus, X } from "lucide-react"
+import {
+  ArrowDown,
+  ArrowUp,
+  MapPin,
+  Navigation,
+  Pencil,
+  Plus,
+  Route as RouteIcon,
+  X,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -12,9 +21,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Route } from "@/features/quotations/schemas"
-
+import { cn } from "@/lib/utils"
 
 type RouteDialogProps = {
   value?: Route
@@ -77,29 +85,47 @@ export function RouteDialog({
     setOpen(false)
   }
 
+  const isNew = !value.origin
+  const stopCount = 2 + route.checkpoints.length
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger ?? <Button variant="outline">Edit route</Button>}
+        {trigger ?? (
+          <Button type="button" variant="outline" size="sm">
+            <Pencil />
+            Edit
+          </Button>
+        )}
       </DialogTrigger>
 
-      <DialogContent className="ring-4 sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Edit route</DialogTitle>
-          <DialogDescription>
-            Set the origin, add checkpoints in the order they must be visited,
-            then set the destination.
-          </DialogDescription>
+      <DialogContent className="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg">
+        <DialogHeader className="shrink-0 flex-row items-center gap-4 border-b p-5 pr-12 text-left">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+            <RouteIcon className="size-5" />
+          </div>
+          <div className="min-w-0 space-y-0.5">
+            <DialogTitle className="text-lg font-bold tracking-tight">
+              {isNew ? "Plan the route" : "Edit route"}
+            </DialogTitle>
+            <DialogDescription>
+              Origin, stops in the order they're visited, then destination.
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
-        <div className="max-h-[60vh] overflow-y-auto pr-1">
-          <div className="grid gap-0">
+        <div className="min-h-0 flex-1 overflow-y-auto bg-muted/30 p-5">
+          <ol className="rounded-xl border bg-card p-4 shadow-xs">
             {/* Origin */}
-            <Stop icon={<Circle className="size-3.5 fill-current" />} line>
-              <Label htmlFor="origin">Origin</Label>
+            <Stop
+              marker={<StopDot kind="origin" />}
+              label="Origin"
+              htmlFor="route-origin"
+            >
               <Input
-                id="origin"
-                placeholder="Where are you starting?"
+                id="route-origin"
+                autoFocus
+                placeholder="Where does the trip start?"
                 value={route.origin}
                 onChange={(e) =>
                   setRoute((r) => ({ ...r, origin: e.target.value }))
@@ -109,85 +135,117 @@ export function RouteDialog({
 
             {/* Checkpoints */}
             {route.checkpoints.map((cp, i) => (
-              <Stop key={i} icon={<Circle className="size-2.5" />} line>
-                <Label htmlFor={`checkpoint-${i}`}>Checkpoint {i + 1}</Label>
-                <div className="flex items-center gap-1">
+              <Stop
+                key={i}
+                marker={<StopDot kind="checkpoint" index={i + 1} />}
+                label={`Stop ${i + 1}`}
+                htmlFor={`route-checkpoint-${i}`}
+              >
+                <div className="flex items-center gap-1.5">
                   <Input
-                    id={`checkpoint-${i}`}
-                    placeholder="Add a stop"
+                    id={`route-checkpoint-${i}`}
+                    autoFocus={cp === "" && i === route.checkpoints.length - 1}
+                    placeholder="Town or landmark"
                     value={cp}
                     onChange={(e) => setCheckpoint(i, e.target.value)}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0"
-                    disabled={i === 0}
-                    onClick={() => moveCheckpoint(i, -1)}
-                    aria-label={`Move checkpoint ${i + 1} up`}
-                  >
-                    <ArrowUp className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0"
-                    disabled={i === route.checkpoints.length - 1}
-                    onClick={() => moveCheckpoint(i, 1)}
-                    aria-label={`Move checkpoint ${i + 1} down`}
-                  >
-                    <ArrowDown className="size-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0"
-                    onClick={() => removeCheckpoint(i)}
-                    aria-label={`Remove checkpoint ${i + 1}`}
-                  >
-                    <X className="size-4" />
-                  </Button>
+                  <div className="flex shrink-0 items-center rounded-lg border bg-background">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 rounded-r-none"
+                      disabled={i === 0}
+                      onClick={() => moveCheckpoint(i, -1)}
+                      aria-label={`Move stop ${i + 1} up`}
+                    >
+                      <ArrowUp className="size-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 rounded-none border-x"
+                      disabled={i === route.checkpoints.length - 1}
+                      onClick={() => moveCheckpoint(i, 1)}
+                      aria-label={`Move stop ${i + 1} down`}
+                    >
+                      <ArrowDown className="size-3.5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 rounded-l-none text-muted-foreground hover:text-destructive"
+                      onClick={() => removeCheckpoint(i)}
+                      aria-label={`Remove stop ${i + 1}`}
+                    >
+                      <X className="size-3.5" />
+                    </Button>
+                  </div>
                 </div>
               </Stop>
             ))}
 
             {/* Add checkpoint */}
-            <Stop icon={<Plus className="size-3.5" />} line>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="-ml-2 w-fit"
-                disabled={route.checkpoints.length >= maxCheckpoints}
-                onClick={addCheckpoint}
-              >
-                Add checkpoint
-              </Button>
-            </Stop>
+            <li className="flex gap-3">
+              <div className="flex w-6 flex-col items-center">
+                <span className="w-px flex-1 border-l border-dashed" />
+              </div>
+              <div className="flex-1 pb-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-dashed text-muted-foreground"
+                  disabled={route.checkpoints.length >= maxCheckpoints}
+                  onClick={addCheckpoint}
+                >
+                  <Plus />
+                  Add a stop
+                </Button>
+              </div>
+            </li>
 
             {/* Destination */}
-            <Stop icon={<MapPin className="size-4" />}>
-              <Label htmlFor="destination">Destination</Label>
+            <Stop
+              marker={<StopDot kind="destination" />}
+              label="Destination"
+              htmlFor="route-destination"
+              last
+            >
               <Input
-                id="destination"
-                placeholder="Where are you going?"
+                id="route-destination"
+                placeholder="Where does the trip end?"
                 value={route.destination}
                 onChange={(e) =>
                   setRoute((r) => ({ ...r, destination: e.target.value }))
                 }
               />
             </Stop>
-          </div>
+          </ol>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <DialogFooter className="mx-0 mb-0 shrink-0 items-center border-t bg-background p-4">
+          <p className="mr-auto hidden text-xs text-muted-foreground sm:block">
+            {stopCount} stops
+            {route.checkpoints.length >= maxCheckpoints &&
+              ` · max ${maxCheckpoints} in between`}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!canSave}>
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className="shadow-sm"
+          >
+            <Navigation />
             Save route
           </Button>
         </DialogFooter>
@@ -196,24 +254,64 @@ export function RouteDialog({
   )
 }
 
-/** One row of the route timeline: icon + connecting line + content */
+function StopDot({
+  kind,
+  index,
+}: {
+  kind: "origin" | "checkpoint" | "destination"
+  index?: number
+}) {
+  if (kind === "destination") {
+    return (
+      <span className="flex size-6 items-center justify-center rounded-full bg-foreground text-background">
+        <MapPin className="size-3.5" />
+      </span>
+    )
+  }
+  if (kind === "origin") {
+    return (
+      <span className="flex size-6 items-center justify-center rounded-full border-2 border-foreground bg-background">
+        <span className="size-2 rounded-full bg-foreground" />
+      </span>
+    )
+  }
+  return (
+    <span className="flex size-6 items-center justify-center rounded-full border bg-background text-[10px] font-semibold text-muted-foreground tabular-nums">
+      {index}
+    </span>
+  )
+}
+
+/** One row of the route timeline: marker + connecting line + content */
 function Stop({
-  icon,
-  line,
+  marker,
+  label,
+  htmlFor,
+  last,
   children,
 }: {
-  icon: React.ReactNode
-  line?: boolean
+  marker: React.ReactNode
+  label: string
+  htmlFor: string
+  last?: boolean
   children: React.ReactNode
 }) {
   return (
-    <div className="flex gap-3">
-      <div className="flex w-5 flex-col items-center pt-7 text-muted-foreground">
-        {icon}
-        {line && <div className="mt-1 w-px flex-1 bg-border" />}
+    <li className="flex gap-3">
+      <div className="flex w-6 flex-col items-center pt-6">
+        {marker}
+        {!last && <span className="mt-1 w-px flex-1 border-l border-dashed" />}
       </div>
-      <div className="grid flex-1 gap-1.5 pb-4">{children}</div>
-    </div>
+      <div className={cn("grid flex-1 gap-1.5", !last && "pb-4")}>
+        <label
+          htmlFor={htmlFor}
+          className="text-xs font-medium text-muted-foreground"
+        >
+          {label}
+        </label>
+        {children}
+      </div>
+    </li>
   )
 }
 
@@ -224,63 +322,84 @@ export function RouteSummary({
   route?: Route
   onEdit: (route: Route) => void
 }) {
-  if (!route) {
+  if (!route?.origin) {
     return (
-      <div className="rounded-lg border border-dashed p-6 text-center">
-        <p className="text-sm font-medium">No route set</p>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Add an origin, checkpoints, and a destination.
-        </p>
+      <div className="flex items-center gap-3 rounded-xl border border-dashed bg-card/50 p-4">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <RouteIcon className="size-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">No route yet</p>
+          <p className="text-xs text-muted-foreground">
+            Optional — shows on the quote as the trip plan.
+          </p>
+        </div>
         <RouteDialog
           onConfirm={onEdit}
-          trigger={<Button size="sm">Add route</Button>}
+          trigger={
+            <Button type="button" size="sm" variant="outline">
+              <Plus />
+              Add
+            </Button>
+          }
         />
       </div>
     )
   }
 
-  const stops = [
-    { label: "Origin", name: route.origin },
-    ...route.checkpoints.map((name, i) => ({
-      label: `Checkpoint ${i + 1}`,
-      name,
-    })),
-    { label: "Destination", name: route.destination },
-  ]
+  const stops = [route.origin, ...route.checkpoints, route.destination]
 
   return (
-    <div className="rounded-lg border p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium">Route</p>
-          <p className="text-sm text-muted-foreground">{stops.length} stops</p>
+    <section className="rounded-xl border bg-card p-4 shadow-xs">
+      <div className="mb-3.5 flex items-start justify-between gap-3">
+        <div className="flex items-start gap-2.5">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <RouteIcon className="size-4" />
+          </span>
+          <div>
+            <h3 className="text-sm leading-7 font-semibold">Route</h3>
+            <p className="-mt-0.5 text-xs text-muted-foreground">
+              {stops.length} stops
+            </p>
+          </div>
         </div>
         <RouteDialog value={route} onConfirm={onEdit} />
       </div>
       <ol>
-        {stops.map((s, i) => (
-          <li key={i} className="flex gap-3">
-            <div className="flex w-5 flex-col items-center pt-1 text-muted-foreground">
-              {i === stops.length - 1 ? (
-                <MapPin className="size-4" />
-              ) : (
-                <Circle
-                  className={
-                    i === 0 ? "mt-0.5 size-3.5 fill-current" : "mt-1 size-2.5"
-                  }
-                />
-              )}
-              {i < stops.length - 1 && (
-                <div className="mt-1 w-px flex-1 bg-border" />
-              )}
-            </div>
-            <div className="pb-4">
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className="text-sm font-medium">{s.name}</p>
-            </div>
-          </li>
-        ))}
+        {stops.map((name, i) => {
+          const isFirst = i === 0
+          const isLast = i === stops.length - 1
+          return (
+            <li key={`${name}-${i}`} className="flex gap-3">
+              <div className="flex w-4 flex-col items-center pt-1">
+                {isLast ? (
+                  <MapPin className="size-4 text-foreground" />
+                ) : (
+                  <span
+                    className={cn(
+                      "mt-0.5 size-2.5 rounded-full",
+                      isFirst
+                        ? "border-2 border-foreground"
+                        : "bg-muted-foreground/40"
+                    )}
+                  />
+                )}
+                {!isLast && (
+                  <span className="mt-1 w-px flex-1 border-l border-dashed" />
+                )}
+              </div>
+              <p
+                className={cn(
+                  "pb-3 text-sm",
+                  isFirst || isLast ? "font-medium" : "text-muted-foreground"
+                )}
+              >
+                {name}
+              </p>
+            </li>
+          )
+        })}
       </ol>
-    </div>
+    </section>
   )
 }

@@ -2,6 +2,7 @@ import {
   DriverUpdateSchema,
   DriverCreateSchema,
   DriverSearchParamsCache,
+  recordTestResultSchema,
 } from "@/features/drivers/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -13,13 +14,14 @@ import {
   deleteDriverById,
   getDriversByQuery,
   getDriverDetailsById,
+  recordDriverTest,
 } from "./server"
 import { ApiError } from "@/types"
-import { formInput } from "@/lib/form-utils"
+import { driverRequestInput } from "../driver-form-data"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getDriversFn = createServerFn()
-  .inputValidator(DriverSearchParamsCache)
+  .validator(DriverSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getDrivers(data)
     if (response.error) {
@@ -30,7 +32,7 @@ export const getDriversFn = createServerFn()
   })
 
 export const getDriversByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     const response = await getDriversByQuery(data)
     if (response.error) {
@@ -41,31 +43,37 @@ export const getDriversByQueryFn = createServerFn()
   })
 
 export const getDriverByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getDriverById(data.id)
   })
 
 export const getDriverProfileFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(getDriverDetailsById(data.id))
   })
 
 export const deleteDriverFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteDriverById(data.id)
   })
 
 export const updateDriverFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(DriverUpdateSchema))
+  .validator(driverRequestInput(DriverUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateDriver(data))
   })
 
 export const createDriverFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(DriverCreateSchema))
+  .validator(driverRequestInput(DriverCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createDriver(data))
+  })
+
+export const recordDriverTestFn = createServerFn({ method: "POST" })
+  .validator(recordTestResultSchema)
+  .handler(async ({ data }) => {
+    return apiResponseTransform(recordDriverTest(data))
   })

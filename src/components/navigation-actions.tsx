@@ -18,6 +18,7 @@ import { useAuth } from "@/components/providers/auth-context"
 import { generateAvatorFallback } from "@/lib/format"
 import { useServerFn } from "@tanstack/react-start"
 import { NotificationDropdown } from "./notifications-dropdown"
+import { Can } from "@/components/has-permission"
 
 export function NavigationActions() {
   return (
@@ -49,11 +50,13 @@ function ProfileDropdown() {
       <DropdownMenuContent className="w-32" align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to="/settings/user-profile">Profile</Link>
+            <Link to="/profile">Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link to="/settings/company-details">Settings</Link>
-          </DropdownMenuItem>
+          <Can permission="config:module">
+            <DropdownMenuItem asChild>
+              <Link to="/settings/company-details">Settings</Link>
+            </DropdownMenuItem>
+          </Can>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

@@ -14,31 +14,31 @@ import {
 } from "./server"
 
 export const getDriveTrainsFn = createServerFn()
-  .inputValidator(DriveTrainSearchParamsCache)
+  .validator(DriveTrainSearchParamsCache)
   .handler(async ({ data }) => {
     return await getDriveTrains()
   })
 
 export const getDriveTrainFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getDriveTrainById(data.id)
   })
 
 export const deleteDriveTrainFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteDriveTrainById(data.id)
   })
 
 export const updateDriveTrainFn = createServerFn()
-  .inputValidator(DriveTrainUpdateSchema)
+  .validator(DriveTrainUpdateSchema)
   .handler(async ({ data }) => {
     return updateDriveTrain(data)
   })
 
 export const createDriveTrainFn = createServerFn()
-  .inputValidator(DriveTrainCreateSchema)
+  .validator(DriveTrainCreateSchema)
   .handler(async ({ data }) => {
     return createDriveTrain(data)
   })

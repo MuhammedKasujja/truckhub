@@ -13,6 +13,8 @@ const useAcceptQuotationBase = createEntityActionHook(
   (invalidator, input) => {
     invalidator.quotations.list.invalidate()
     invalidator.quotations.details(input.data.id)
+    // Accepting creates the booking and its trips
+    invalidator.shipments.all.invalidate()
   }
 )
 

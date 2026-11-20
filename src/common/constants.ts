@@ -1,10 +1,10 @@
 export const NUMBERING_ENTITIES = [
   "Client",
   "Quotation",
-  "Booking",
+  // "Booking",
   "BookingLineItemUnit",
   "Invoice",
-  "RideRequest",
+  // "RideRequest",
   "Payment",
   "Driver",
   "Vehicle",
@@ -16,8 +16,8 @@ export type EntityWithPatterns = (typeof NUMBERING_ENTITIES)[number]
 export const ENTITY_NUMBER_PATTERNS: Record<EntityWithPatterns, string[]> = {
   Invoice: ["{counter}", "{year}", "{date}", "{month}"],
   Quotation: ["{counter}", "{year}", "{date}", "{month}"],
-  Booking: ["{counter}", "{year}", "{date}", "{month}", "{client_short_name}"],
-  RideRequest: ["{counter}", "{year}", "{date}", "{month}"],
+  // Booking: ["{counter}", "{year}", "{date}", "{month}", "{client_short_name}"],
+  // RideRequest: ["{counter}", "{year}", "{date}", "{month}"],
   Payment: ["{counter}", "{year}", "{date}", "{month}"],
   Client: ["{counter}", "{year}", "{date}", "{month}"],
   Driver: ["{counter}", "{year}", "{date}", "{month}", "{day}"],
@@ -31,8 +31,8 @@ export const REPORT_TEMPLATES = [
   "quotation",
   "log_sheet",
   "client_statement",
-  "booking",
-  "ride",
+  // "booking",
+  // "ride",
   "payment",
   "driver",
   "vehicle",
@@ -42,6 +42,40 @@ export const REPORT_TEMPLATES = [
 ] as const
 
 export type ReportTemplate = (typeof REPORT_TEMPLATES)[number]
+
+export const REPORT_TEMPLATE_GROUPS = [
+  "Sales",
+  "Operations",
+  "Fleet",
+  "Pricing",
+] as const
+
+export type ReportTemplateGroup = (typeof REPORT_TEMPLATE_GROUPS)[number]
+
+/**
+ * How each template is shown in the template picker. Every key in
+ * REPORT_TEMPLATES needs an entry here.
+ */
+export const REPORT_TEMPLATE_META: Record<
+  ReportTemplate,
+  { label: string; group: ReportTemplateGroup }
+> = {
+  invoice: { label: "Invoice", group: "Sales" },
+  quotation: { label: "Quotation", group: "Sales" },
+  payment: { label: "Payment receipt", group: "Sales" },
+  client_statement: { label: "Client statement", group: "Sales" },
+  // booking: { label: "Booking", group: "Operations" },
+  // ride: { label: "Ride", group: "Operations" },
+  log_sheet: { label: "Log sheet", group: "Operations" },
+  driver: { label: "Driver", group: "Fleet" },
+  vehicle: { label: "Vehicle", group: "Fleet" },
+  fuel_calculator: { label: "Fuel calculator", group: "Fleet" },
+  route_pricing: { label: "Route pricing", group: "Pricing" },
+  loading_offloading_fees: {
+    label: "Loading & offloading fees",
+    group: "Pricing",
+  },
+}
 
 /**
  * Allowed Entity Counter Padding

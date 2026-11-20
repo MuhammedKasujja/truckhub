@@ -1,10 +1,18 @@
 import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
 import { createServerFn } from "@tanstack/react-start"
-import { createInvoiceSchema, InvoiceSearchParams } from "../schemas"
+import {
+  createInvoiceSchema,
+  InvoiceSearchParams,
+  voidInvoiceSchema,
+} from "../schemas"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 import {
   getInvoices,
+  voidInvoice,
   createInvoice,
+  deleteInvoice,
+  getInvoiceActivities,
   getInvoicePdf,
   sendInvoiceEmail,
   getInvoiceDetails,
@@ -12,7 +20,7 @@ import {
 } from "./server"
 
 export const getInvoicesFn = createServerFn()
-  .inputValidator(InvoiceSearchParams)
+  .validator(InvoiceSearchParams)
   .handler(async ({ data }) => {
     const response = await getInvoices(data)
     if (response.error) {
@@ -23,7 +31,7 @@ export const getInvoicesFn = createServerFn()
   })
 
 export const getInvoiceDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await getInvoiceDetails(data.id)
     if (result.error) {
@@ -41,17 +49,35 @@ export const getInvoiceStatisticsFn = createServerFn().handler(async () => {
 })
 
 export const createInvoiceFn = createServerFn()
-  .inputValidator(createInvoiceSchema)
+  .validator(createInvoiceSchema)
   .handler(async ({ data }) => {
-    const result = await createInvoice(data)
-    if (result.error) {
-      throw new ApiError(result.error.message, 400)
-    }
-    return { data: result.data, message: result.message }
+    return apiResponseTransform(createInvoice(data))
+  })
+
+export const voidInvoiceFn = createServerFn({ method: "POST" })
+  .validator(voidInvoiceSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(voidInvoice(data))
+    // The billing endpoint answers with a generic message
+    return { ...result, message: "Invoice voided" }
+  })
+
+export const getInvoiceActivitiesFn = createServerFn({ method: "GET" })
+  .validator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getInvoiceActivities(data.id))
+    return result.data ?? []
+  })
+
+export const deleteInvoiceFn = createServerFn({ method: "POST" })
+  .validator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(deleteInvoice(data.id))
+    return { message: result.message ?? "Invoice deleted" }
   })
 
 export const sendInvoiceEmailFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await sendInvoiceEmail(data.id)
     if (result.error) {
@@ -61,7 +87,7 @@ export const sendInvoiceEmailFn = createServerFn({ method: "POST" })
   })
 
 export const getInvoicePdfFn = createServerFn({ method: "GET" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     try {
       const response = await getInvoicePdf(data.id)

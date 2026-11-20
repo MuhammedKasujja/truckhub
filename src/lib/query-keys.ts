@@ -1,3 +1,5 @@
+import { documentQueryKeys } from "@/features/documents/query-options"
+import { hrQueryKeys } from "@/features/hr/query-options"
 import { driverQueryKeys } from "@/features/drivers/queries"
 import { usersQueryKeys } from "@/features/users/query-options"
 import { clientQueryKeys } from "@/features/clients/query-options"
@@ -26,6 +28,7 @@ import { bankAccountsQueryKeys, banksQueryKeys } from "@/features/settings/bank-
 import { vehicleTypesQueryKeys } from "@/features/settings/vehicle-config/vehicle-categories/query-options"
 
 export const queryKeys = {
+  documents: documentQueryKeys,
   dashboard: dashboardQueryKeys,
   rides: rideQueryKeys,
   bookings: bookingsQueryKeys,
@@ -51,6 +54,7 @@ export const queryKeys = {
   },
 
   drivers: driverQueryKeys,
+  hr: hrQueryKeys,
   clients: clientQueryKeys,
   users: usersQueryKeys,
   vehicles: vehicleQueryKeys,

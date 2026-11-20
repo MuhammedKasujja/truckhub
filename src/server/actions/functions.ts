@@ -5,7 +5,7 @@ import { getLocationDetailsByPlaceId, getLocationSuggestions } from "./location"
 export const searchLocationSuggestionsFn = createServerFn({
   method: "POST",
 })
-  .inputValidator(SearchLocationSchema)
+  .validator(SearchLocationSchema)
   .handler(({ data }) => {
     return getLocationSuggestions(data)
   })
@@ -13,7 +13,7 @@ export const searchLocationSuggestionsFn = createServerFn({
 export const getPlaceDetailsFn = createServerFn({
   method: "POST",
 })
-  .inputValidator(QueryPlaceDetailsSchema)
+  .validator(QueryPlaceDetailsSchema)
   .handler(({ data }) => {
     return getLocationDetailsByPlaceId(data)
   })

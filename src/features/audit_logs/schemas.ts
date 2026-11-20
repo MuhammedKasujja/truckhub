@@ -1,7 +1,7 @@
-import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 
 import z from "zod"
-import { AuditLog } from "./types"
+import type { AuditLog } from "./types"
+import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
 import { IDSchema } from "@/schemas"
 import { AuditLogSource } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
@@ -15,7 +15,7 @@ export const AuditLogSearchParamsCache = z.object({
   // advanced filter
   filters: getFiltersStateSchema<AuditLog>().optional(),
   ...DefaultSearchParamsSchema.shape,
-  perPage: z.number().default(25)
+  perPage: z.number().default(25),
 })
 
 export const deleteLogsSchema = z.object({

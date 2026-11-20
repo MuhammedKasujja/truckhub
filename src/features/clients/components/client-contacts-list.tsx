@@ -6,29 +6,44 @@ import {
   ItemTitle,
 } from "@/components/ui/item"
 import { ClientContact } from "../types"
+import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useEffect, useState } from "react"
 import { EntityId } from "@/schemas"
+import { useTranslation } from "@/i18n"
+import { cn } from "@/lib/utils"
 // import { PlusIcon } from "lucide-react"
 
+// Stable reference, so the effect below doesn't rerun on every render
+const NO_CONTACTS: ClientContact[] = []
+
 type ClientContactsListProps = {
-  contacts: ClientContact[]
+  contacts?: ClientContact[]
+  /** Makes the selection controlled, and stops primaries being auto-selected */
+  selectedIds?: EntityId[]
   onSelected?: (contactsIds: EntityId[]) => void
 }
 
 export function ClientContactsList({
-  contacts,
+  contacts = NO_CONTACTS,
+  selectedIds,
   onSelected,
 }: ClientContactsListProps) {
-  const [selected, setSelected] = useState<Set<EntityId>>(new Set())
+  const tr = useTranslation()
+  const [internalSelected, setInternalSelected] = useState<Set<EntityId>>(
+    new Set()
+  )
+  const isControlled = selectedIds !== undefined
+  const selected = isControlled ? new Set(selectedIds) : internalSelected
 
   useEffect(() => {
+    if (isControlled) return
     const defaultSelected = new Set([
       ...contacts.filter((ele) => ele.is_primary).map((ele) => ele.id),
     ])
-    setSelected(defaultSelected)
+    setInternalSelected(defaultSelected)
     onSelected?.([...defaultSelected])
-  }, [contacts])
+  }, [contacts, isControlled])
 
   function handleContactSelect(contactId: EntityId, checked: boolean) {
     const newSelected = new Set(selected)
@@ -37,18 +52,31 @@ export function ClientContactsList({
     } else {
       newSelected.delete(contactId)
     }
-    setSelected(newSelected)
+    if (!isControlled) setInternalSelected(newSelected)
     onSelected?.([...newSelected])
   }
   return (
     <>
       {contacts.map((contact) => (
-        <Item key={contact.id}>
+        <Item
+          key={contact.id}
+          variant={onSelected ? "outline" : "default"}
+          data-selected={selected.has(contact.id)}
+          className={cn(
+            onSelected &&
+              "bg-card data-[selected=true]:border-primary data-[selected=true]:bg-primary/5"
+          )}
+        >
           <ItemContent>
-            <ItemTitle>{contact.name}</ItemTitle>
+            <ItemTitle>
+              {contact.name}
+              {contact.is_primary && (
+                <Badge variant="secondary">{tr("clients.primary")}</Badge>
+              )}
+            </ItemTitle>
             <ItemDescription>
-              <div>{contact.phone}</div>
-              {contact.email && <div>{contact.email}</div>}
+              <span className="block">{contact.phone}</span>
+              {contact.email && <span className="block">{contact.email}</span>}
             </ItemDescription>
           </ItemContent>
           <ItemActions>

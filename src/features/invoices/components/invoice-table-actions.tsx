@@ -1,9 +1,5 @@
 import { Button } from "@/components/ui/button"
-import {
-  CreditCard,
-  MailIcon,
-  MoreVertical,
-} from "lucide-react"
+import { Ban, CreditCard, MailIcon, MoreVertical } from "lucide-react"
 import { Link } from "@tanstack/react-router"
 import { Can } from "@/components/has-permission"
 import {
@@ -15,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { InvoiceTableRowAction } from "../types"
+import { isChargedInvoice, isDeletableInvoice } from "../enums"
 import { useSendInvoiceEmail } from "../hooks/use-invoice-actions"
 import { ActionIcon } from "@/components/icons"
 
@@ -34,6 +31,8 @@ export function InvoiceTableActions({
 }: TableActionsProps) {
   const invoice = invoiceRow.row.original
   const { sendInvoiceEmail } = useSendInvoiceEmail()
+  // Draft, cancelled and void invoices are neither emailed nor voided
+  const isCharged = isChargedInvoice(invoice.status)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -89,13 +88,43 @@ export function InvoiceTableActions({
               </Link>
             </DropdownMenuItem>
           </Can>
-          <DropdownMenuSeparator />
-          <Can permission={"invoices:email"}>
-            <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
-              <MailIcon />
-              Send Email
-            </DropdownMenuItem>
-          </Can>
+          {isCharged && (
+            <>
+              <Can permission={"invoices:email"}>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => sendInvoiceEmail(invoice.id)}>
+                  <MailIcon />
+                  {invoice.send_count > 0 ? "Resend Email" : "Send Email"}
+                </DropdownMenuItem>
+              </Can>
+              <Can permission={"invoices:void"}>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() =>
+                    setRowAction({ row: invoiceRow.row, variant: "void" })
+                  }
+                >
+                  <Ban />
+                  Void
+                </DropdownMenuItem>
+              </Can>
+            </>
+          )}
+          {isDeletableInvoice(invoice.status) && (
+            <Can permission={"invoices:delete"}>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() =>
+                  setRowAction({ row: invoiceRow.row, variant: "delete" })
+                }
+              >
+                <ActionIcon action="delete" />
+                Delete
+              </DropdownMenuItem>
+            </Can>
+          )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

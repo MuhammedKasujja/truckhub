@@ -3,7 +3,12 @@ import {
   activeLoadingFreesQueryOptions,
   createCompanyLoadingFreesQueryOptions,
 } from "../query-options"
-import { ActivePricingSearchParams } from "../schemas"
+import { createBatchLoadingPricingFn } from "../services"
+import type {
+  ActivePricingSearchParams,
+  LoadingOffloadingPricingRequest,
+} from "../schemas"
+import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 export function useCompanyLoadingFees() {
   const { data, isLoading, error } = useQuery(
@@ -22,4 +27,20 @@ export function useClientLoadingFeesWithFallback(
   })
 
   return { isLoading, data: data?.data, error }
+}
+
+const useCreateCompanyLoadingPricingBase = createEntityActionHook(
+  createBatchLoadingPricingFn,
+  (invalidator) => {
+    invalidator.settings.pricingPlans.all()
+  }
+)
+
+export function useCreateCompanyLoadingPricing() {
+  const { isPending, execute } = useCreateCompanyLoadingPricingBase()
+
+  function createLoadingPricing(data: LoadingOffloadingPricingRequest) {
+    return execute({ data })
+  }
+  return { isPending, createLoadingPricing }
 }

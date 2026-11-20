@@ -1,40 +1,33 @@
-import { Badge } from "@/components/ui/badge"
-import { PaymentStatus } from "../types"
+import type { PaymentStatus } from "../types"
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 
-type Props = {
-  status: PaymentStatus
+type StatusTone = "success" | "info" | "warning" | "error" | "default"
+
+const PAYMENT_STATUS_TONE: Record<PaymentStatus, StatusTone> = {
+  completed: "success",
+  pending: "warning",
+  partially_refunded: "info",
+  reversed: "default",
+  cancelled: "default",
+  failed: "error",
 }
 
-const getStatusColor = (status: PaymentStatus) => {
-  switch (status) {
-    case "completed":
-      return "bg-emerald-500";
-    case "partially_refunded":
-      return "bg-muted-foreground/64";
-    case "pending":
-      return "bg-amber-500";
-    case "cancelled":
-    case "failed":
-      return "bg-red-500";
-    default:
-      return "bg-muted-foreground/64";
-  }
-};
+type Props = {
+  status: PaymentStatus
+  className?: string
+}
 
-export function PaymentStatusIndicator({ status }: Props) {
+export function PaymentStatusIndicator({ status, className }: Props) {
   const tr = useTranslation()
   return (
-    <Badge
-      variant="outline"
-      className="flex items-center justify-center rounded-sm capitalize"
+    <Status
+      variant={PAYMENT_STATUS_TONE[status]}
+      className={cn("gap-1.5 py-0.5", className)}
     >
-      <span
-        aria-hidden="true"
-        className={cn("size-1.5 rounded-sm", getStatusColor(status))}
-      />
-      {tr(`payments.statuses.${status}`)}
-    </Badge>
+      <StatusIndicator />
+      <StatusLabel>{tr(`payments.statuses.${status}`)}</StatusLabel>
+    </Status>
   )
 }

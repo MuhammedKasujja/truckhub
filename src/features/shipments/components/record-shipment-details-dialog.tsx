@@ -1,38 +1,74 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Shipment } from "../types"
-import { Controller, useFieldArray, useForm } from "react-hook-form"
-import {
-  RecordShipmentDetailsInput,
-  recordShipmentDetailsSchema,
-} from "../schemas"
+import { useEffect } from "react"
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { IconReceiptTax } from "@tabler/icons-react"
+import { Fuel, Gauge, NotebookPen, Plus, X } from "lucide-react"
+import { recordShipmentDetailsSchema } from "../schemas"
 import { useRecordShipmentDetails } from "../hooks/use-shipment-actions"
 import {
-  MoneyField,
-  TextareaField,
+  FormSection,
+  OdometerReading,
+  ResultBanner,
+  ShipmentActionDialog,
+  closeOnSuccess,
+} from "./shipment-action-dialog"
+import type { RecordShipmentDetailsInput } from "../schemas"
+import type { Shipment } from "../types"
+import {
+  DateTimePickerField,
   TextField,
+  TextareaField,
 } from "@/components/ui/form-fields"
-import { SubmitButton } from "@/components/ui/submit-button"
-import { useEffect } from "react"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { XIcon } from "lucide-react"
+import { ON_TRIP_STATUSES } from "../enums"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Decimal from "@/lib/decimal-config"
-import { ActionIcon } from "@/components/icons"
+import { formatMoney } from "@/lib/format"
 
 type Props = {
   shipment?: Shipment
   open: boolean
   onOpenChange: (v: boolean) => void
 }
+
+const safeDecimal = (value: unknown) => {
+  try {
+    return new Decimal(
+      value === undefined || value === null || value === "" ? 0 : String(value)
+    )
+  } catch {
+    return new Decimal(0)
+  }
+}
+
+// Digits with at most one decimal point and two decimal places
+const sanitizeAmount = (raw: string) => {
+  const cleaned = raw.replace(/[^0-9.]/g, "")
+  const [whole, ...rest] = cleaned.split(".")
+  return rest.length ? `${whole}.${rest.join("").slice(0, 2)}` : whole
+}
+
+function defaultsFor(shipment?: Shipment): RecordShipmentDetailsInput {
+  const consumption = shipment?.consumption
+  const rates = consumption?.consumed_fuel_rates ?? []
+  return {
+    unitId: shipment?.id as RecordShipmentDetailsInput["unitId"],
+    startMileage: consumption?.start_mileage ?? "",
+    endMileage: consumption?.end_mileage ?? "",
+    distanceKm: consumption?.distance_km ?? "",
+    vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
+    consumedFuelRates: rates.length
+      ? rates.map((value) => ({ value }))
+      : [{ value: undefined }],
+    actualFuelConsumed: "0",
+    notes: "",
+    // A trip still on the road ends when its details are saved
+    endedAt: shipment && isOnTrip(shipment) ? new Date() : undefined,
+  }
+}
+
+const isOnTrip = (shipment: Shipment) =>
+  ON_TRIP_STATUSES.includes(shipment.status)
 
 export function RecordShipmentDetailsDialog({
   shipment,
@@ -41,208 +77,259 @@ export function RecordShipmentDetailsDialog({
 }: Props) {
   const { saveShipmentDetails, isPending } = useRecordShipmentDetails()
 
-  const consumption = shipment?.consumption
-  const consumedFuelRates = consumption?.consumed_fuel_rates ?? []
-
   const form = useForm<RecordShipmentDetailsInput>({
     resolver: zodResolver(recordShipmentDetailsSchema),
-    defaultValues: {
-      unitId: shipment?.id,
-      startMileage: consumption?.start_mileage,
-      endMileage: consumption?.end_mileage,
-      vehicleConsumptionRate: shipment?.vehicle?.fuel_consumption_rate ?? "0",
-      consumedFuelRates:
-        consumedFuelRates.length > 0
-          ? consumedFuelRates.map((rate) => ({
-              value: rate,
-            }))
-          : [{ value: "0" }],
-      actualFuelConsumed: "0",
-    },
+    defaultValues: defaultsFor(shipment),
     reValidateMode: "onChange",
   })
 
-  const startMileage = form.watch("startMileage")
-  const endMileage = form.watch("endMileage")
-  const fuelRate = form.watch("fuelRate")
-  const litresConsumed = form.watch("fuelUsedLitres")
+  useEffect(() => {
+    if (open) form.reset(defaultsFor(shipment))
+  }, [form, open, shipment])
 
-  const fuelConsumptionRatesFields = useFieldArray({
+  const rateFields = useFieldArray({
     control: form.control,
     name: "consumedFuelRates",
   })
 
-  const fuelConsumptionRates = form.watch("consumedFuelRates")
+  const startMileage = useWatch({ control: form.control, name: "startMileage" })
+  const endMileage = useWatch({ control: form.control, name: "endMileage" })
+  const consumptionRate = useWatch({
+    control: form.control,
+    name: "vehicleConsumptionRate",
+  })
+  const fuelRates = useWatch({
+    control: form.control,
+    name: "consumedFuelRates",
+  })
+  const litres = useWatch({ control: form.control, name: "fuelUsedLitres" })
+  const avgRate = useWatch({ control: form.control, name: "fuelRate" })
+  const fuelCharge = useWatch({
+    control: form.control,
+    name: "actualFuelConsumed",
+  })
 
+  // Distance and litres used from the odometer readings
   useEffect(() => {
-    const newStartMileage = new Decimal(startMileage ?? 0)
-    const newEndMileage = new Decimal(endMileage ?? 0)
-
-    if (newStartMileage.greaterThan(newEndMileage)) {
-      form.setError("endMileage", {
-        message: "Invalid end mileage",
-      })
-    } else {
-      // form.clearErrors()
-      const distance = newEndMileage.minus(newStartMileage)
-      form.setValue("distanceKm", distance.toFixed())
-      const consumptionRate = form.getValues("vehicleConsumptionRate")
-      const litresUsed = new Decimal(distance).div(consumptionRate)
-      form.setValue("fuelUsedLitres", litresUsed.toFixed(2))
-    }
-  }, [startMileage, endMileage, open])
-
-  useEffect(() => {
-    const consumedFuel = new Decimal(fuelRate ?? 0).times(litresConsumed ?? 0)
-    form.setValue("actualFuelConsumed", consumedFuel.toFixed(2))
-  }, [fuelRate, litresConsumed])
-
-  useEffect(() => {
-    const validFuelRates = fuelConsumptionRates.filter(
-      (rate) => rate.value != null
+    const start = safeDecimal(startMileage)
+    const end = safeDecimal(endMileage)
+    if (!endMileage) return
+    // The schema reports a reading below the start; nothing to compute from it
+    if (start.greaterThan(end)) return
+    const distance = end.minus(start)
+    form.setValue("distanceKm", distance.toFixed())
+    const rate = safeDecimal(consumptionRate)
+    form.setValue(
+      "fuelUsedLitres",
+      rate.greaterThan(0) ? distance.div(rate).toFixed(2) : "0"
     )
-    const rates = validFuelRates.reduce(
-      (curr, rate) => curr.plus(new Decimal(rate.value?.toString() ?? 0)),
-      new Decimal(0)
-    )
-    const averageFuelRate = rates.dividedBy(validFuelRates.length)
+  }, [form, startMileage, endMileage, consumptionRate])
 
-    form.setValue("fuelRate", averageFuelRate.toString())
-  }, [fuelConsumptionRates])
+  // Average fuel price across the receipts entered
+  useEffect(() => {
+    const valid = fuelRates.filter((r) => r.value && safeDecimal(r.value).gt(0))
+    const avg = valid.length
+      ? valid
+          .reduce((sum, r) => sum.plus(safeDecimal(r.value)), new Decimal(0))
+          .div(valid.length)
+          .toFixed(2)
+      : "0"
+    form.setValue("fuelRate", avg)
+  }, [form, fuelRates])
+
+  // Fuel charge = litres × average price
+  useEffect(() => {
+    form.setValue(
+      "actualFuelConsumed",
+      safeDecimal(avgRate).times(safeDecimal(litres)).toFixed(2)
+    )
+  }, [form, avgRate, litres])
+
+  const distance = useWatch({ control: form.control, name: "distanceKm" })
+
+  const vehicleRate = safeDecimal(consumptionRate)
+
+  const ratesErrors = form.formState.errors.consumedFuelRates
+  const ratesError = ratesErrors?.root?.message ?? ratesErrors?.message
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden ring-4 sm:max-w-sm md:min-w-lg">
-        <DialogHeader>
-          <DialogTitle>Record Shipment Details</DialogTitle>
-        </DialogHeader>
-        <form
-          id="shipment-details"
-          onSubmit={form.handleSubmit(saveShipmentDetails, (errors) => {
-            console.log(errors.consumedFuelRates)
-          })}
-          className="no-scrollbar min-h-full flex-1 space-y-4 overflow-y-auto"
-        >
-          <Field orientation={"horizontal"}>
-            <TextField
-              readOnly
-              required={false}
-              label="Start Mileage"
-              name="startMileage"
-              control={form.control}
-            />
-            <TextField
-              required={false}
-              label="End Mileage"
-              name="endMileage"
-              control={form.control}
-            />
-          </Field>
+    <ShipmentActionDialog
+      open={open && !!shipment}
+      onOpenChange={onOpenChange}
+      shipment={shipment}
+      icon={IconReceiptTax}
+      hue="emerald"
+      title="Capture trip details"
+      description={
+        shipment && isOnTrip(shipment)
+          ? "Odometer and fuel figures used to bill this trip. Saving also ends the trip."
+          : "Odometer and fuel figures used to bill this trip."
+      }
+      formId="shipment-details"
+      submitLabel="Save details"
+      isSubmitting={isPending}
+      className="sm:max-w-lg"
+    >
+      <form
+        id="shipment-details"
+        className="space-y-4"
+        onSubmit={form.handleSubmit((values) =>
+          closeOnSuccess(
+            () =>
+              saveShipmentDetails({
+                ...values,
+                consumedFuelRates: values.consumedFuelRates.filter(
+                  (r) => !!r.value
+                ),
+              }),
+            () => onOpenChange(false)
+          )
+        )}
+      >
+        {/* Odometer */}
+        <FormSection icon={Gauge} hue="violet" title="Odometer">
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <OdometerReading label="Start (km)" value={startMileage} />
+            </div>
+            <span className="rounded-full bg-violet-500/10 px-2.5 py-1 text-xs font-semibold whitespace-nowrap text-violet-700 tabular-nums dark:text-violet-300">
+              {distance ? `${distance} km` : "— km"}
+            </span>
+            <div className="flex-1">
+              <OdometerReading
+                label="End (km)"
+                value={endMileage}
+                muted={!endMileage}
+              />
+            </div>
+          </div>
           <TextField
-            readOnly
-            required={false}
-            label="Distance (km)"
-            name="distanceKm"
+            label="Odometer at end (km)"
+            name="endMileage"
             control={form.control}
           />
+          {shipment && isOnTrip(shipment) && (
+            <DateTimePickerField
+              label="Trip ended at"
+              name="endedAt"
+              control={form.control}
+            />
+          )}
+        </FormSection>
 
-          <Field orientation={"horizontal"}>
-            <TextField
-              readOnly
-              required={false}
-              label="Vehicle Consumption Rate (km/l)"
-              name="vehicleConsumptionRate"
-              control={form.control}
-            />
-            <TextField
-              readOnly
-              required={false}
-              label="Litres consumed"
-              name="fuelUsedLitres"
-              control={form.control}
-            />
-          </Field>
-          <FieldGroup className="rounded-lg border border-dashed p-4">
-            <FieldLabel>
-              Fuel Consumptions{" "}
-              <Button
-                type="button"
-                variant={"outline"}
-                size={"icon-sm"}
-                onClick={() => fuelConsumptionRatesFields.append({})}
-              >
-                <ActionIcon action="create" />
-              </Button>
-            </FieldLabel>
-            {fuelConsumptionRatesFields.fields.map((ele, index) => (
-              <Field key={ele.id} orientation={"horizontal"}>
+        {/* Fuel */}
+        <FormSection
+          icon={Fuel}
+          hue="amber"
+          title="Fuel prices"
+          description="One price per fill-up; the average is billed."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => rateFields.append({ value: undefined })}
+            >
+              <Plus className="size-3.5" />
+              Add
+            </Button>
+          }
+        >
+          <div className="space-y-2">
+            {rateFields.fields.map((row, index) => (
+              <div key={row.id} className="flex items-center gap-2">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-[11px] font-semibold text-amber-700 tabular-nums dark:text-amber-300">
+                  {index + 1}
+                </span>
                 <Controller
                   control={form.control}
                   name={`consumedFuelRates.${index}.value`}
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      type={"number"}
+                      value={field.value ?? ""}
                       inputMode="decimal"
-                      id={field.name}
+                      placeholder="Price per litre"
+                      aria-label={`Fuel price ${index + 1}`}
                       aria-invalid={fieldState.invalid}
-                      value={field.value}
                       autoComplete="off"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault()
-                          fuelConsumptionRatesFields.append({})
+                          rateFields.append({ value: undefined })
                         }
                       }}
-                      onChange={(e) => {
-                        field.onChange(e.target.value.replace(/[^0-9]/g, ""))
-                      }}
+                      onChange={(e) =>
+                        field.onChange(
+                          sanitizeAmount(e.target.value) || undefined
+                        )
+                      }
                     />
                   )}
                 />
                 <Button
                   type="button"
-                  variant={"destructive"}
-                  onClick={() => fuelConsumptionRatesFields.remove(index)}
-                  size={"icon-sm"}
+                  variant="ghost"
+                  size="icon-sm"
+                  disabled={rateFields.fields.length === 1}
+                  onClick={() => rateFields.remove(index)}
+                  aria-label={`Remove fuel price ${index + 1}`}
                 >
-                  <XIcon />
+                  <X />
                 </Button>
-              </Field>
+              </div>
             ))}
-          </FieldGroup>
-          <MoneyField
-            readOnly
-            required={false}
-            label="Fuel Rate"
-            name="fuelRate"
-            control={form.control}
-          />
-          <MoneyField
-            readOnly
-            required={false}
-            label="Actual Fuel Consumed"
-            name="actualFuelConsumed"
-            control={form.control}
-          />
+          </div>
+          {ratesError && (
+            <p role="alert" className="text-sm text-destructive">
+              {ratesError}
+            </p>
+          )}
+        </FormSection>
 
+        {/* Result */}
+        <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+          <dl className="grid grid-cols-3 divide-x text-center">
+            <ResultStat
+              label="Economy"
+              value={vehicleRate.gt(0) ? `${vehicleRate.toString()} km/L` : "—"}
+            />
+            <ResultStat label="Litres used" value={`${litres ?? "0"} L`} />
+            <ResultStat
+              label="Avg. price"
+              value={`${formatMoney(avgRate ?? 0)} / L`}
+            />
+          </dl>
+          <div className="border-t p-3">
+            <ResultBanner
+              hue="emerald"
+              label="Fuel charge"
+              hint="Litres used × average price"
+              value={formatMoney(fuelCharge)}
+            />
+          </div>
+        </div>
+
+        <FormSection icon={NotebookPen} hue="slate" title="Notes">
           <TextareaField
-            label="Notes"
             name="notes"
             control={form.control}
             required={false}
-            placeholder="optional"
+            placeholder="Anything worth noting about this trip (optional)"
           />
-        </form>
-        <DialogFooter>
-          <DialogClose>
-            {/* <Button type="button" variant={"ghost"}> */}
-            Cancle
-            {/* </Button> */}
-          </DialogClose>
-          <SubmitButton isSubmitting={isPending} form="shipment-details" />
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </FormSection>
+      </form>
+    </ShipmentActionDialog>
+  )
+}
+
+function ResultStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="px-2 py-3">
+      <dt className="text-[11px] text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 truncate text-sm font-medium tabular-nums">
+        {value}
+      </dd>
+    </div>
   )
 }

@@ -11,14 +11,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Quotation, QuotationTableRowAction } from "../types"
-import { isNotInEnum } from "@/common/types"
+import { quotationActions } from "../format"
 import {
   useAcceptQuotation,
   useMarkQuotationCancelled,
   useMarkQuotationRejected,
   useSendQuotationEmail,
 } from "../hooks/use-quotation-actions"
-import { isInEnum } from "@/common/enums"
 import { ActionIcon } from "@/components/icons"
 
 interface TableActionsProps {
@@ -33,6 +32,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
   const { markQuotationRejected } = useMarkQuotationRejected()
   const { sendQuotationEmail } = useSendQuotationEmail()
   const { markQuotationCancelled } = useMarkQuotationCancelled()
+  const allowed = quotationActions(quotation.status)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -66,7 +66,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:accept"}>
-            {isNotInEnum(quotation.status, ["accepted"]) && (
+            {allowed.accept && (
               <DropdownMenuItem onClick={() => acceptQuotation(quotation.id)}>
                 Mark Accepted
               </DropdownMenuItem>
@@ -79,7 +79,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
             </DropdownMenuItem>
           </Can>
           <Can permission={"quotations:cancel"}>
-            {isInEnum(quotation.status, ["accepted"]) && (
+            {allowed.cancel && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -93,11 +93,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
           </Can>
           <DropdownMenuSeparator />
           <Can permission={"quotations:reject"}>
-            {isNotInEnum(quotation.status, [
-              "invoiced",
-              "accepted",
-              "rejected",
-            ]) && (
+            {allowed.reject && (
               <DropdownMenuItem
                 variant="destructive"
                 onClick={() => markQuotationRejected(quotation.id)}

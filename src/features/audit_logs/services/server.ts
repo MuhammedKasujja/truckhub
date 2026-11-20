@@ -1,13 +1,13 @@
 "use server"
 
-import * as apiClient from "@/lib/api-client"
-import { AuditLog } from "@/features/audit_logs/types"
-import { generateApiSearchParams } from "@/lib/search-params"
-import {
-  DeleteLogsRequest,
+import type { AuditLog } from "@/features/audit_logs/types"
+import type {
   AuditLogSearchParams,
+  DeleteLogsRequest,
 } from "@/features/audit_logs/schemas"
-import { EntityId } from "@/schemas"
+import type { EntityId } from "@/schemas"
+import { generateApiSearchParams } from "@/lib/search-params"
+import * as apiClient from "@/lib/api-client"
 
 const endpoint = "/v1/audit-logs"
 

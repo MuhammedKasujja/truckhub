@@ -1,5 +1,5 @@
-import { getBookingRoutesFn } from "./services"
 import { queryOptions, useQuery } from "@tanstack/react-query"
+import { getBookingRoutesFn } from "./services"
 
 export const bookingRoutesQueryKeys = {
   all: () => ["booking-routes"],

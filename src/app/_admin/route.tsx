@@ -1,8 +1,13 @@
+import {
+  Outlet,
+  createFileRoute,
+  isRedirect,
+  redirect,
+} from "@tanstack/react-router"
 import { AuthProvider } from "@/components/providers/auth-provider"
 import { getCurrentUser } from "@/lib/auth"
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import {
   NavigationActions,
   NavigationButtons,
@@ -11,18 +16,25 @@ import { GlobalSearchDialog } from "@/components/global-search-dialog"
 import { useGlobalShortcuts } from "@/hooks/use-shortcuts"
 import { CreateEntityDialog } from "@/components/create-entity-dialog"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs"
+import { NotificationsProvider } from "@/components/providers/notifications/notification-context"
 
 export const Route = createFileRoute("/_admin")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   beforeLoad: async ({ location }) => {
-    const user = await getCurrentUser()
-    if (!user) {
-      throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
-      })
+    const toLogin = () =>
+      redirect({ to: "/login", search: { redirect: location.href } })
+
+    let user: Awaited<ReturnType<typeof getCurrentUser>>
+    try {
+      user = await getCurrentUser()
+    } catch (error) {
+      if (isRedirect(error)) throw error
+      console.error("getCurrentUser failed", error)
+      throw toLogin()
     }
+    if (!user) throw toLogin()
     return { user }
   },
 })
@@ -31,31 +43,34 @@ function RouteComponent() {
   useGlobalShortcuts()
   return (
     <AuthProvider>
-      <SidebarProvider className="overflow-x-hidden" defaultOpen={false}>
-        <AppSidebar />
-        <SidebarInset className="overflow-x-hidden">
-          <nav className="sticky top-0 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
-            {/* <SidebarTrigger className="-ml-1" /> */}
-            <div className="">Dashboard</div>
-            {/* <Separator
-              orientation="vertical"
-              className="mr-2 data-vertical:h-4 data-vertical:self-auto"
-            /> */}
-            <div className="flex w-full items-center justify-between gap-4">
-              {/* <div></div> */}
-              <NavigationButtons />
-              <div className="flex items-center gap-2">
-                <GlobalSearchDialog />
-                <CreateEntityDialog />
+      <NotificationsProvider>
+        <SidebarProvider
+          className="overflow-x-clip"
+          defaultOpen={false}
+          style={{ "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}
+        >
+          <AppSidebar />
+          <SidebarInset className="overflow-x-clip">
+            <nav className="sticky top-0 z-40 flex h-12 shrink-0 items-center gap-2 border-b bg-background px-5">
+              {/* <SidebarTrigger className="-ml-1" /> */}
+              <div className="flex w-full items-center justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <NavigationButtons />
+                  <AppBreadcrumbs />
+                </div>
+                <div className="flex items-center gap-2">
+                  <GlobalSearchDialog />
+                  <CreateEntityDialog />
+                </div>
+                <NavigationActions />
               </div>
-              <NavigationActions />
+            </nav>
+            <div className="p-4 md:p-6">
+              <Outlet />
             </div>
-          </nav>
-          <div className="p-4 md:p-6">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+          </SidebarInset>
+        </SidebarProvider>
+      </NotificationsProvider>
     </AuthProvider>
   )
 }

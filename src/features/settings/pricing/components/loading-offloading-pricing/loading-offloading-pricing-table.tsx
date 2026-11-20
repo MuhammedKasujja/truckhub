@@ -1,100 +1,144 @@
+import { useMemo } from "react"
+import { PackageOpen } from "lucide-react"
+import { formatRange, sortTiers } from "./loading-fees-format"
+import type { LoadingOffloadingPricing } from "../../schemas"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { useFieldArray, useForm } from "react-hook-form"
-import z from "zod"
-import {
-  LoadingOffloadingPricingRequest,
-  LoadingOffloadingPricingSchema,
-} from "../../schemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { DatePicker, MoneyField, TextField } from "@/components/ui/form-fields"
-import { Label } from "@/components/ui/label"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+import { SectionEmpty } from "@/features/settings/_components/settings-ui"
+import { formatMoney } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
-interface Props {
-  pricings?: LoadingOffloadingPricingRequest
+type LoadingOffloadingPricingTableProps = {
+  pricings?: LoadingOffloadingPricing[]
+  isLoading?: boolean
+  /** Shown in the empty state, e.g. a "New pricing" button. */
+  emptyAction?: React.ReactNode
+  emptyDescription?: string
+  className?: string
 }
 
-export function LoadingOffloadingPricingTable({ pricings }: Props) {
-  const form = useForm<z.infer<typeof LoadingOffloadingPricingSchema>>({
-    resolver: zodResolver(LoadingOffloadingPricingSchema),
-    defaultValues: {
-      client_id: pricings?.client_id,
-      effective_date: pricings?.effective_date,
-      pricings: pricings?.pricings,
-    },
-  })
+/** Read-only list of loading / offloading fee tiers, lightest first. */
+export function LoadingOffloadingPricingTable({
+  pricings,
+  isLoading,
+  emptyAction,
+  emptyDescription = "Add fee tiers by tonnage and volume to charge for loading and offloading.",
+  className,
+}: LoadingOffloadingPricingTableProps) {
+  const tiers = useMemo(() => sortTiers(pricings ?? []), [pricings])
 
-  const { fields } = useFieldArray({
-    control: form.control,
-    name: "pricings",
-  })
+  if (!isLoading && tiers.length === 0) {
+    return (
+      <SectionEmpty
+        icon={PackageOpen}
+        title="No loading fees yet"
+        description={emptyDescription}
+        action={emptyAction}
+        className={className}
+      />
+    )
+  }
 
-  // Tonnage  Ranges should not overlap
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>
-          <div className="w-full space-y-2.5 md:w-80">
-            <Label>Effective Date</Label>
-            <DatePicker
-              initialDate={pricings?.effective_date}
-              onDateChanged={() => {}}
-            />
-          </div>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="mb-7 border-t border-b py-4">
-        <FieldGroup className="space-y-1">
-          <Field orientation={"horizontal"} className="grid grid-cols-6">
-            <div>TONS Min</div>
-            <div>TONS Max</div>
-            <div>CBM Min</div>
-            <div>CBM Max</div>
-            <div>Loading fees</div>
-            <div>Offloading fees</div>
-            <div></div>
-          </Field>
-          {fields.map((ele, index) => (
-            <Field key={ele.id} orientation={"horizontal"}>
-              <TextField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.tonnage_min`}
-              />
-              <TextField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.tonnage_max`}
-              />
-              <TextField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.cbm_min`}
-              />
-              <TextField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.cbm_max`}
-              />
-              <MoneyField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.loading_fees`}
-              />
-              <MoneyField
-                readOnly
-                control={form.control}
-                name={`pricings.${index}.offloading_fees`}
-              />
-            </Field>
-          ))}
-        </FieldGroup>
-      </CardContent>
-    </Card>
+    <div className={cn("overflow-hidden rounded-lg border", className)}>
+      <Table>
+        <TableHeader className="bg-muted/40">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-14 pl-4 text-xs text-muted-foreground">
+              Tier
+            </TableHead>
+            <TableHead className="text-xs text-muted-foreground">
+              Tonnage
+            </TableHead>
+            <TableHead className="text-xs text-muted-foreground">
+              CBM (m³)
+            </TableHead>
+            <TableHead className="text-right text-xs text-muted-foreground">
+              Loading fee
+            </TableHead>
+            <TableHead className="pr-4 text-right text-xs text-muted-foreground">
+              Offloading fee
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading
+            ? Array.from({ length: 5 }).map((_row, i) => (
+                <TableRow key={i} className="hover:bg-transparent">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <TableCell key={j} className="py-3 first:pl-4 last:pr-4">
+                      <Skeleton
+                        className={cn(
+                          "h-4",
+                          j === 0 ? "w-6" : "w-20",
+                          j > 2 && "ml-auto"
+                        )}
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            : tiers.map((tier, index) => (
+                <TableRow key={index}>
+                  <TableCell className="py-3 pl-4">
+                    <TierNumber value={index + 1} />
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <RangeValue
+                      min={tier.tonnage_min}
+                      max={tier.tonnage_max}
+                      unit="t"
+                    />
+                  </TableCell>
+                  <TableCell className="py-3">
+                    <RangeValue
+                      min={tier.cbm_min}
+                      max={tier.cbm_max}
+                      unit="m³"
+                    />
+                  </TableCell>
+                  <TableCell className="py-3 text-right font-medium tabular-nums">
+                    {formatMoney(tier.loading_fees)}
+                  </TableCell>
+                  <TableCell className="py-3 pr-4 text-right font-medium tabular-nums">
+                    {formatMoney(tier.offloading_fees)}
+                  </TableCell>
+                </TableRow>
+              ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+export function TierNumber({ value }: { value: number }) {
+  return (
+    <span className="inline-flex size-6 items-center justify-center rounded-md bg-muted text-xs font-medium text-muted-foreground tabular-nums">
+      {value}
+    </span>
+  )
+}
+
+function RangeValue({
+  min,
+  max,
+  unit,
+}: {
+  min: string
+  max: string
+  unit: string
+}) {
+  return (
+    <span className="tabular-nums">
+      {formatRange(min, max)}
+      <span className="ml-1 text-xs text-muted-foreground">{unit}</span>
+    </span>
   )
 }

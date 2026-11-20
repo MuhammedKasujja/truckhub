@@ -1,5 +1,10 @@
 import { EntityId } from "@/schemas"
-import { sendInvoiceEmailFn } from "../services"
+import { VoidInvoiceInput } from "../schemas"
+import {
+  deleteInvoiceFn,
+  sendInvoiceEmailFn,
+  voidInvoiceFn,
+} from "../services"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useSendInvoiceEmailBase = createEntityActionHook(
@@ -17,4 +22,43 @@ export const useSendInvoiceEmail = () => {
     return execute({ data: { id: invoiceId } })
   }
   return { isPending, sendInvoiceEmail }
+}
+
+const useVoidInvoiceBase = createEntityActionHook(
+  voidInvoiceFn,
+  (invalidator, input) => {
+    invalidator.invoices.list.invalidate()
+    invalidator.invoices.details(input.data.invoiceId)
+    // Its payments became client credit, its shipments can be invoiced again
+    // and its quotation is no longer (fully) invoiced
+    invalidator.payments.list()
+    invalidator.quotations.all.invalidate()
+    invalidator.shipments.all.invalidate()
+  }
+)
+
+export const useVoidInvoice = () => {
+  const { isPending, execute } = useVoidInvoiceBase()
+
+  function voidInvoice(data: VoidInvoiceInput) {
+    return execute({ data })
+  }
+  return { isPending, voidInvoice }
+}
+
+const useDeleteInvoiceBase = createEntityActionHook(
+  deleteInvoiceFn,
+  (invalidator) => {
+    invalidator.invoices.list.invalidate()
+  }
+)
+
+/** Deletes an invoice that is not charged to the client (draft, cancelled, void). */
+export const useDeleteInvoice = () => {
+  const { isPending, execute } = useDeleteInvoiceBase()
+
+  function deleteInvoice(invoiceId: EntityId) {
+    return execute({ data: { id: invoiceId } })
+  }
+  return { isPending, deleteInvoice }
 }

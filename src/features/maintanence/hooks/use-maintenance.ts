@@ -1,9 +1,9 @@
-import { MoveRecordInput } from "../schemas"
 import {
   changeMaintenanceStatusFn,
   createMaintenanceRecordFn,
   updateMaintenanceRecordFn,
 } from "../services"
+import type { MoveRecordInput } from "../schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useMoveMaintenanceRecordBase = createEntityActionHook(

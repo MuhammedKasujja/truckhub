@@ -1,39 +1,58 @@
 import {
-  createFileRoute,
   Link,
   Outlet,
+  createFileRoute,
   useLocation,
   useRouter,
 } from "@tanstack/react-router"
-import { Route as ActiveShipmentsRoute } from "@/app/_admin/shipments/active"
-import { Route as ConfirmedShipmentsRoute } from "@/app/_admin/shipments/confirmed"
-import { Route as RequestedShipmentsRoute } from "@/app/_admin/shipments/requests"
-import { Route as CompletedShipmentsRoute } from "@/app/_admin/shipments/completed"
+import {
+  CalendarIcon,
+  CheckCircle2,
+  ClipboardList,
+  ClockAlert,
+  MapIcon,
+  Navigation,
+  UserCheck,
+} from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import { PageBackButton } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
-import { CalendarIcon, MapIcon } from "lucide-react"
-import { useBackNavigation } from "@/hooks/use-back-navigation"
 
+// Literal paths: a route's `.to` isn't set until the router builds the
+// route tree, so reading it at module level can give undefined.
 const shipmentTabs = [
   {
     name: "requests",
-    route: RequestedShipmentsRoute.to,
+    route: "/shipments/requests",
+    icon: ClipboardList,
+    hint: "Waiting for a vehicle and driver",
   },
   {
     name: "confirmed",
-    route: ConfirmedShipmentsRoute.to,
+    route: "/shipments/confirmed",
+    icon: UserCheck,
+    hint: "Assigned and ready to dispatch",
   },
   {
     name: "inTransit",
-    route: ActiveShipmentsRoute.to,
+    route: "/shipments/active",
+    icon: Navigation,
+    hint: "Dispatched and on the road",
+  },
+  {
+    name: "delayed",
+    route: "/shipments/delayed",
+    icon: ClockAlert,
+    hint: "Behind plan: late to start, or overdue back",
   },
   {
     name: "completed",
-    route: CompletedShipmentsRoute.to,
+    route: "/shipments/completed",
+    icon: CheckCircle2,
+    hint: "Finished, captured or invoiced",
   },
 ] as const
 
@@ -46,51 +65,62 @@ function RouteComponent() {
   const location = useLocation()
   const router = useRouter()
   const tr = useTranslation()
-  const handleBack = useBackNavigation()
 
-  const activeTab = location.pathname ?? shipmentTabs[0].route
+  const activeTab =
+    shipmentTabs.find((t) => location.pathname.startsWith(t.route)) ??
+    shipmentTabs[0]
+
   return (
-    <>
-      <PageHeader className="pb-4">
-        <PageTitle>Shipments</PageTitle>
-        <PageAction className="flex gap-2">
-          <Button variant={"outline"} size={"sm"} onClick={handleBack}>
-            Back
-          </Button>
-          <Can permission="rides:active">
-            <Button variant={"outline"} size={"sm"} asChild>
+    <div className="space-y-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="-ml-2">
+            <PageBackButton />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Shipments</h1>
+            <p className="text-sm text-muted-foreground">{activeTab.hint}</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Can permission="shipments:module">
+            <Button variant="outline" asChild>
               <Link to={"/calendar"}>
                 <CalendarIcon />
                 Calendar
               </Link>
             </Button>
           </Can>
-          <Can permission="rides:active">
-            <Button size={"sm"} asChild>
+          <Can permission="shipments:active">
+            <Button asChild>
               <Link to={"/live-map"}>
                 <MapIcon />
-                Live Map
+                Live map
               </Link>
             </Button>
           </Can>
-        </PageAction>
-      </PageHeader>
+        </div>
+      </div>
+
       <Tabs
-        value={activeTab}
+        value={activeTab.route}
         className="w-full"
         onValueChange={(route) => router.navigate({ to: route })}
       >
-        <TabsList>
-          {shipmentTabs.map((section) => (
-            <TabsTrigger key={section.name} value={section.route}>
-              {tr(`common.${section.name}`)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList>
+            {shipmentTabs.map((tab) => (
+              <TabsTrigger key={tab.name} value={tab.route} className="gap-1.5">
+                <tab.icon className="size-4" />
+                {tr(`common.${tab.name}`)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         <div className="mt-4">
           <Outlet />
         </div>
       </Tabs>
-    </>
+    </div>
   )
 }

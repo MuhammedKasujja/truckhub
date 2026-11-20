@@ -6,6 +6,13 @@ export const DriverModulePermissions = {
   "drivers:view": ["drivers:view", "drivers:read"],
   "drivers:delete": ["drivers:delete"],
   "drivers:edit": ["drivers:update", "drivers:view"],
+  "drivers:tests:record": ["drivers:tests:record"],
+  // A driver's documents
+  "drivers:documents:view": ["drivers:documents:read"],
+  "drivers:documents:upload": ["drivers:documents:upload"],
+  "drivers:documents:download": ["drivers:documents:download"],
+  "drivers:documents:void": ["drivers:documents:void"],
+  "drivers:documents:expiring": ["drivers:documents:expiring"],
 } as const;
 
 export type DriverPermissions = keyof typeof DriverModulePermissions;

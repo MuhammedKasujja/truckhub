@@ -1,5 +1,5 @@
+import type { EntityNumberPattern } from "../types"
 import * as apiClient from "@/lib/api-client"
-import { EntityNumberPattern } from "../types"
 
 type EntityNumberUpdateRequest = {
   entity_name: string

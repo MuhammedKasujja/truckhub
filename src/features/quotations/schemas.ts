@@ -11,6 +11,8 @@ export const QuotationSearchParams = z.object({
     { id: "created_at", desc: true },
   ]),
   clientId: IDSchema.optional(),
+  /** true: only quotations with a shipment that can be invoiced now. */
+  hasInvoiceableTrips: z.boolean().optional(),
   filters: getFiltersStateSchema<Quotation>().optional(),
   ...DefaultSearchParamsSchema.shape,
 })
@@ -39,7 +41,7 @@ const createVehicleAddonSchema = z.object({
 const createRouteSchema = z.object({
   route_id: IDSchema,
   origin: z.string(),
-  destination: z.string().optional(),
+  destination: z.string().optional().nullable(),
 })
 
 const lineItemBase = z.object({
@@ -55,18 +57,32 @@ const lineItemBase = z.object({
   display_name: z.string().optional().nullable(),
 })
 
-export const createServiceQuotationLineItemSchema = z.object({
-  source: z.literal("service"),
-  route: routeSchema,
-  vehicle_addons: z.array(createVehicleAddonSchema),
-  item_type: z.literal("small"),
-  vehicle_year: z.string().optional().nullable(),
-  service_id: IDSchema,
-  vehicle_category_id: IDSchema.optional().nullable(),
-  car_model_id: IDSchema.optional().nullable(),
-  estimated_consumption_rate_km: z.number().optional(),
-  ...lineItemBase.shape,
-})
+export const createServiceQuotationLineItemSchema = z
+  .object({
+    source: z.literal("service"),
+    route: routeSchema,
+    vehicle_addons: z.array(createVehicleAddonSchema),
+    item_type: z.literal("small"),
+    vehicle_year: z.string().optional().nullable(),
+    service_id: IDSchema,
+    vehicle_category_id: IDSchema.optional().nullable(),
+    car_model_id: IDSchema.optional().nullable(),
+    estimated_consumption_rate_km: z.number().optional().nullable(),
+    /** Copied from the picked service (`source === "truck"`); drives the tonnage rule. */
+    is_truck: z.boolean().optional(),
+    tonnage: z.number().optional().nullable(),
+    with_loaders: z.boolean().optional(),
+    ...lineItemBase.shape,
+  })
+  .superRefine((item, ctx) => {
+    if (item.is_truck && !(item.tonnage != null && item.tonnage >= 0.1)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["tonnage"],
+        message: "Tonnage is required",
+      })
+    }
+  })
 
 export const createRouteQuotationLineItemSchema = z.object({
   source: z.literal("route"),
@@ -100,6 +116,7 @@ const createLineItemSchema = z.discriminatedUnion("source", [
 
 export const createQuotationSchema = z.object({
   client_id: IDSchema,
+  contact_id: IDSchema.nullable().optional(),
   assigned_user_id: IDSchema.optional().nullable(),
   expiry_date: z.string("Date is required").optional().nullable(),
   start_date: z.string("Date is required"),
@@ -107,7 +124,7 @@ export const createQuotationSchema = z.object({
   purpose: z.string().optional(),
   discount: z.string().optional().nullable(),
   partial: MoneySchema.optional().nullable(),
-  number: z.string().optional(),
+  number: z.string().nullable().optional(),
   tax_rates: z.array(createTaxRateSchema),
   line_items: z.array(createLineItemSchema).min(1),
 })
@@ -118,7 +135,7 @@ export const tonnagePricingRangeSchema = z
     min_tons: z.union([z.string(), z.number()]),
     max_tons: z.union([z.string(), z.number()]),
     tons: z.string().min(1, "Required"),
-    price: MoneySchema.optional(),
+    price: MoneySchema.nullable().optional(),
     default_price: z.union([z.string(), z.number()]),
   })
   .superRefine(({ tons, min_tons, max_tons }, ctx) => {
@@ -146,9 +163,13 @@ export const routePricingsSchema = z.object({
   pricings: z.array(tonnagePricingSchema),
 })
 
+export const editQuotationFormSchema = createQuotationSchema.extend({
+  purpose: z.string("Purpose is required").trim().min(1, "Purpose is required"),
+})
+
 export const updateQuotationSchema = z.object({
   quotationId: IDSchema,
-  ...createQuotationSchema.shape,
+  ...editQuotationFormSchema.shape,
 })
 
 export type CreateQuotationRequest = z.infer<typeof createQuotationSchema>

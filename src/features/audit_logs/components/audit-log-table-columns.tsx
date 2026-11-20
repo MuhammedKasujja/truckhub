@@ -1,14 +1,21 @@
+import { formatDistanceToNowStrict } from "date-fns"
+import { ChevronRightIcon } from "lucide-react"
+import { getRecordLabel, humanize } from "../utils"
+import { AuditActionBadge, AuditActor } from "./audit-log-parts"
 import type { ColumnDef } from "@tanstack/react-table"
 import type {
   AuditLog,
   AuditLogTableRowAction,
 } from "@/features/audit_logs/types"
-import { TFunction } from "@/i18n"
+import type { TFunction } from "@/i18n"
 import { formatDateTime } from "@/lib/format"
-import { ActionButton } from "@/components/ui/action-button"
 import { AuditLogSource } from "@/config/constants"
 import { Button } from "@/components/ui/button"
-import { ActionIcon } from "@/components/icons"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 type Props = {
   tr: TFunction
@@ -22,74 +29,97 @@ export function getAuditLogTableColumns({
   setRowAction,
 }: Props): ColumnDef<AuditLog>[] {
   return [
+    
     {
       accessorKey: "actor_name",
       header: tr("user"),
-      cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.actor_name}</div>
-      },
+      cell: ({ row }) => <AuditActor log={row.original} />,
       meta: {
         label: tr("user"),
       },
+      size: 200,
     },
     {
       accessorKey: "action",
       header: tr("action"),
+      cell: ({ row }) => <AuditActionBadge action={row.original.action} />,
+      size: 130,
+    },
+    {
+      accessorKey: "resource_type",
+      header: "Record",
       cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.action}</div>
+        const record = getRecordLabel(row.original)
+        return (
+          <div className="flex flex-col leading-tight">
+            <span className="font-medium">
+              {row.original.resource_type}
+            </span>
+            {record && (
+              <span className="max-w-56 truncate text-xs text-muted-foreground">
+                {record}
+              </span>
+            )}
+          </div>
+        )
       },
+      enableSorting: false,
+    },
+    {
+      accessorKey: "created_at",
+      header: "When",
+      cell: ({ row }) => {
+        const date = new Date(row.original.created_at)
+        return (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex flex-col leading-tight whitespace-nowrap">
+                <span className="font-medium">
+                  {formatDistanceToNowStrict(date, { addSuffix: true })}
+                </span>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {formatDateTime(date)}
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>{date.toLocaleString()}</TooltipContent>
+          </Tooltip>
+        )
+      },
+      meta: {
+        label: "Date",
+        variant: "dateRange",
+      },
+      enableColumnFilter: true,
+      size: 170,
     },
     {
       id: "source",
       accessorKey: "source",
       header: tr("source"),
-      cell: ({ row }) => {
-        return <div className="flex gap-2">{row.original.source}</div>
-      },
+      // shown inside the actor cell; column kept for the toolbar filter
+      cell: () => null,
       meta: {
         label: "Source",
         variant: "select",
-        options: AuditLogSource.map((s) => ({ label: s, value: s })),
+        options: AuditLogSource.map((s) => ({ label: humanize(s), value: s })),
       },
       enableColumnFilter: true,
-    },
-    {
-      accessorKey: "created_at",
-      header: tr("payments.date"),
-      cell: ({ row }) => {
-        return <p>{formatDateTime(row.original.created_at)}</p>
-      },
-      meta: {
-        label: tr("payments.date"),
-        variant: "dateRange",
-      },
-      enableColumnFilter: true,
+      enableHiding: true,
     },
     {
       id: "actions",
-      cell: ({ row }) => {
-        return (
-          <div className="flex gap-2">
-            <Button
-              size={"icon"}
-              variant={"outline"}
-              onClick={() => setRowAction({ row, variant: "view" })}
-            >
-              <ActionIcon action="view" />
-            </Button>
-            <ActionButton
-              variant={"destructive"}
-              size={"icon"}
-              requireAreYouSure
-              action={async () => {
-                return { error: true, message: "Not implemented yet...." }
-              }}
-            >
-              <ActionIcon action="delete" />
-            </ActionButton>
-          </div>
-        )
-      },
+      cell: ({ row }) => (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="text-muted-foreground"
+          onClick={() => setRowAction({ row, variant: "view" })}
+        >
+          Details
+          <ChevronRightIcon />
+        </Button>
+      ),
       size: 100,
     },
   ]

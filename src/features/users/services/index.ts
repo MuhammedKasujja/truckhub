@@ -20,7 +20,7 @@ import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getUsersFn = createServerFn()
-  .inputValidator(UserSearchParamsCache)
+  .validator(UserSearchParamsCache)
   .handler(async ({ data: query }) => {
     const { data, pagination, error } = await getUsers(query)
     if (error) {
@@ -32,13 +32,13 @@ export const getUsersFn = createServerFn()
   })
 
 export const getUsersByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     return getUsersByQuery(data)
   })
 
 export const getUserDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(getUserById(data.id))
   })
@@ -48,25 +48,25 @@ export const getUserProfileDetailsFn = createServerFn().handler(async () => {
 })
 
 export const deleteUserFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteUserById(data.id)
   })
 
 export const updateUserFn = createServerFn({ method: "POST" })
-  .inputValidator(UserUpdateSchema)
+  .validator(UserUpdateSchema)
   .handler(async ({ data }) => {
     return updateUser(data)
   })
 
 export const createUserFn = createServerFn({ method: "POST" })
-  .inputValidator(UserCreateSchema)
+  .validator(UserCreateSchema)
   .handler(async ({ data }) => {
     return createUser(data)
   })
 
 export const userAssignRolesFn = createServerFn({ method: "POST" })
-  .inputValidator(UserAssignRolesSchema)
+  .validator(UserAssignRolesSchema)
   .handler(({ data }) => {
     return userAssignRoles(data)
   })

@@ -1,4 +1,9 @@
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageAction,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { QuotationForm } from "@/features/quotations/components"
@@ -39,9 +44,14 @@ function RouteComponent() {
     <div>
       <PageHeader>
         <PageTitle>
-          Edit Quotation{" "}
-          <Badge variant={"outline"}>v{quotation.versions.length}</Badge>
+          Edit quotation
+          <Badge variant={"outline"} className="font-mono">
+            v{quotation.versions.length}
+          </Badge>
         </PageTitle>
+        <PageDescription>
+          {quotation.number} · update the client, items and terms
+        </PageDescription>
         <PageAction className="flex gap-2">
           <Button type="button" variant={"outline"} onClick={back}>
             Cancel

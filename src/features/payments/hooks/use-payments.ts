@@ -1,4 +1,5 @@
 import { useRef } from "react"
+import { uuid } from "@/lib/id"
 import { toast } from "sonner"
 import { ApiError } from "@/types"
 import { useServerFn } from "@tanstack/react-start"
@@ -19,7 +20,7 @@ export function useCreatePayment() {
 
   const mutation = useMutation({
     mutationFn: async (input: PaymentInput) => {
-      keyRef.current ??= crypto.randomUUID() // stable across retries
+      keyRef.current ??= uuid() // stable across retries
       const res = await payFn({
         data: { ...input, idempotencyKey: keyRef.current },
       })
@@ -53,6 +54,7 @@ export function useCreatePayment() {
         keyRef.current = null
         toast.success(err.message)
       } else {
+        console.log(err.message)
         toast.error("Payment failed")
       }
     },
@@ -86,10 +88,13 @@ export function usePaymentReverse() {
     },
     onSuccess: () => {
       queryInvalidator.payments.list()
+      // The invoice it paid owes that money again, and records the reversal
+      queryInvalidator.invoices.all.invalidate()
+      queryInvalidator.clients.refresh()
       toast.success("Payment reversed successfully")
     },
     onError: (err) => {
-      toast.success(err.message)
+      toast.error(err.message)
     },
   })
   return { ...muttation }

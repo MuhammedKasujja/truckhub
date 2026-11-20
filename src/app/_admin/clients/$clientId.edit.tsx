@@ -29,7 +29,14 @@ function RouteComponent() {
       </PageHeader>
       <ClientForm
         mode="edit"
-        defaultValues={{ ...data, id: clientId }}
+        defaultValues={{
+          ...data,
+          id: clientId,
+          contacts: (data?.contacts ?? []).map((contact) => ({
+            ...contact,
+            is_primary: !!contact.is_primary,
+          })),
+        }}
         onSubmit={(data) => {
           editClient({ ...data, id: clientId })
         }}

@@ -1,33 +1,16 @@
-import {
-  createFileRoute,
-  Outlet,
-  useLocation,
-  useRouter,
-} from "@tanstack/react-router"
-import { Route as DistancePricingRoute } from "@/app/_admin/settings/pricing-config/distance-pricing"
-import { Route as LoacationPricingRoute } from "@/app/_admin/settings/pricing-config/route-tonnage-pricing"
-import { Route as LoadingOffloadingPricingRoute } from "@/app/_admin/settings/pricing-config/loading-offloading-pricing"
-import { Route as IslandsPricingRoute } from "@/app/_admin/settings/pricing-config/islands-pricing"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createFileRoute } from "@tanstack/react-router"
+import type { SettingsTab } from "@/features/settings/_components/settings-tabs"
+import { SettingsTabsLayout } from "@/features/settings/_components/settings-tabs"
 import { companyPricingDatesQueryOptions } from "@/features/settings/pricing/query-options"
 
-const userManagementTabs = [
+const pricingTabs: SettingsTab[] = [
+  { label: "Route pricing", to: "/settings/pricing-config/route-tonnage-pricing" },
+  { label: "Distance pricing", to: "/settings/pricing-config/distance-pricing" },
   {
-    name: "Route Pricing",
-    route: LoacationPricingRoute.to,
+    label: "Loading & offloading fees",
+    to: "/settings/pricing-config/loading-offloading-pricing",
   },
-  {
-    name: "Distance Pricing",
-    route: DistancePricingRoute.to,
-  },
-  {
-    name: "Loading-Offloading Fees",
-    route: LoadingOffloadingPricingRoute.to,
-  },
-  {
-    name: "Islands Pricing",
-    route: IslandsPricingRoute.to,
-  },
+  { label: "Island pricing", to: "/settings/pricing-config/islands-pricing" },
 ]
 
 export const Route = createFileRoute("/_admin/settings/pricing-config")({
@@ -38,26 +21,5 @@ export const Route = createFileRoute("/_admin/settings/pricing-config")({
 })
 
 function RouteComponent() {
-  const location = useLocation()
-  const router = useRouter()
-
-  const activeTab = location.pathname ?? userManagementTabs[0].route
-  return (
-    <Tabs
-      value={activeTab}
-      className="w-full"
-      onValueChange={(route) => router.navigate({ to: route })}
-    >
-      <TabsList>
-        {userManagementTabs.map((section) => (
-          <TabsTrigger key={section.name} value={section.route}>
-            {section.name}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      <div className="mt-4">
-        <Outlet />
-      </div>
-    </Tabs>
-  )
+  return <SettingsTabsLayout tabs={pricingTabs} />
 }

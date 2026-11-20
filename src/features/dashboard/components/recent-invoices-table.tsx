@@ -30,9 +30,72 @@ import { InvoiceStatusIndicator } from "@/features/invoices/components"
 
 type RecentInvoiceTableProps = {
   invoices: Invoice[]
+  /** Render only the table, without the card chrome */
+  embedded?: boolean
 }
 
-export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
+export function RecentInvoicesTable({ invoices, embedded = false }: RecentInvoiceTableProps) {
+  const table = (
+    <div className="overflow-hidden rounded-lg border bg-background">
+      <Table>
+        <TableHeader className="bg-muted">
+          <TableRow>
+            <TableHead className="w-25">Number</TableHead>
+            <TableHead>Client</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Quotation</TableHead>
+            <TableHead>Due Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {invoices.length ? (
+            invoices.map((invoice) => (
+              <TableRow key={`invoice-${invoice.id.toString()}`}>
+                <TableCell className="font-medium">
+                  {invoice.number}
+                </TableCell>
+                <TableCell>{invoice.client.name}</TableCell>
+                <TableCell>
+                  <InvoiceStatusIndicator status={invoice.status} />
+                </TableCell>
+                <TableCell>{formatMoney(invoice.total)}</TableCell>
+                <TableCell>
+                  <>-</>
+                </TableCell>
+                <TableCell>
+                  {formatDate(invoice.due_date)}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center">
+                <Empty className="">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <Can permission="invoices:create">
+                        <Button type="button" asChild size={"icon"}>
+                          <Link to={"/invoices/create"}>
+                            <ActionIcon action="create"/>
+                          </Link>
+                        </Button>
+                      </Can>
+                    </EmptyMedia>
+                    <EmptyTitle>No Invoices Found</EmptyTitle>
+                  </EmptyHeader>
+                  <EmptyContent></EmptyContent>
+                </Empty>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+
+  if (embedded) return table
+
   return (
     <Card>
       <CardHeader>
@@ -48,62 +111,7 @@ export function RecentInvoicesTable({ invoices }: RecentInvoiceTableProps) {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <div className="overflow-hidden rounded-lg border bg-background">
-          <Table>
-            <TableHeader className="bg-muted">
-              <TableRow>
-                <TableHead className="w-25">Number</TableHead>
-                <TableHead>Client</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Quotation</TableHead>
-                <TableHead>Due Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.length ? (
-                invoices.map((invoice) => (
-                  <TableRow key={`invoice-${invoice.id.toString()}`}>
-                    <TableCell className="font-medium">
-                      {invoice.number}
-                    </TableCell>
-                    <TableCell>{invoice.client.name}</TableCell>
-                    <TableCell>
-                      <InvoiceStatusIndicator status={invoice.status} />
-                    </TableCell>
-                    <TableCell>{formatMoney(invoice.total)}</TableCell>
-                    <TableCell>
-                      <>-</>
-                    </TableCell>
-                    <TableCell>
-                      {formatDate(invoice.due_date)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
-                    <Empty className="">
-                      <EmptyHeader>
-                        <EmptyMedia variant="icon">
-                          <Can permission="invoices:create">
-                            <Button type="button" asChild size={"icon"}>
-                              <Link to={"/invoices/create"}>
-                                <ActionIcon action="create"/>
-                              </Link>
-                            </Button>
-                          </Can>
-                        </EmptyMedia>
-                        <EmptyTitle>No Invoices Found</EmptyTitle>
-                      </EmptyHeader>
-                      <EmptyContent></EmptyContent>
-                    </Empty>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {table}
       </CardContent>
     </Card>
   )

@@ -95,20 +95,109 @@ export type ListDistancePricingRequest = z.infer<
 
 export type DistancePricingRequest = z.infer<typeof DistancePricingSchema>
 
-const loadingOffloadingPricingSchema = z.object({
-  tonnage_min: z.string().min(1, "Required"),
-  tonnage_max: z.string().min(1, "Required"),
-  cbm_min: z.string().min(1, "Required"),
-  cbm_max: z.string().min(1, "Required"),
-  loading_fees: MoneySchema.min(1, "Required"),
-  offloading_fees: MoneySchema.min(1, "Required"),
-})
+const RangeBoundSchema = z
+  .string()
+  .trim()
+  .min(1, "Required")
+  .regex(/^\d+(\.\d+)?$/, "Invalid number")
 
-export const LoadingOffloadingPricingSchema = z.object({
-  client_id: IDSchema.optional().nullable(),
-  pricings: z.array(loadingOffloadingPricingSchema).min(1),
-  effective_date: z.string().min(1, "Required"),
-})
+const loadingOffloadingPricingSchema = z
+  .object({
+    tonnage_min: RangeBoundSchema,
+    tonnage_max: RangeBoundSchema,
+    cbm_min: RangeBoundSchema,
+    cbm_max: RangeBoundSchema,
+    loading_fees: MoneySchema.min(1, "Required"),
+    offloading_fees: MoneySchema.min(1, "Required"),
+  })
+  .superRefine(
+    (row, ctx) => {
+      for (const key of ["tonnage", "cbm"] as const) {
+        const min = toBound(row[`${key}_min`])
+        const max = toBound(row[`${key}_max`])
+        if (min !== null && max !== null && max <= min) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Must be above min",
+            path: [`${key}_max`],
+          })
+        }
+      }
+    },
+    // Run even while other fields (e.g. fees) are still empty
+    {
+      when: (payload) =>
+        typeof payload.value === "object" && payload.value !== null,
+    }
+  )
+
+type LoadingRangeKey = "tonnage" | "cbm"
+
+/** Parses a range bound, or null when it's blank / not a number. */
+function toBound(value: unknown) {
+  if (typeof value !== "string" || value.trim() === "") return null
+  const n = Number(value)
+  return Number.isFinite(n) ? n : null
+}
+
+/**
+ * Each row is a pricing tier, so tonnage ranges must not overlap each other
+ * and CBM ranges must not overlap each other. Bounds are inclusive (2–3, 4–6),
+ * so a shared boundary (2–3, 3–6) counts as an overlap.
+ */
+function addLoadingRangeOverlapIssues(
+  pricings: LoadingOffloadingPricing[],
+  key: LoadingRangeKey,
+  ctx: z.RefinementCtx
+) {
+  const ranges = pricings
+    .map((row, index) => ({
+      index,
+      min: toBound(row[`${key}_min`]),
+      max: toBound(row[`${key}_max`]),
+    }))
+    // Blank or invalid rows already have their own error
+    .filter(
+      (r): r is { index: number; min: number; max: number } =>
+        r.min !== null && r.max !== null && r.max > r.min
+    )
+    .sort((a, b) => a.min - b.min)
+
+  // Compare against the range reaching furthest so far, so a wide range
+  // (0–100) is caught against every later one, not just its neighbour.
+  let furthest = ranges.at(0)
+  for (const current of ranges.slice(1)) {
+    if (!furthest) break
+    if (current.min <= furthest.max) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Overlaps ${furthest.min}–${furthest.max}`,
+        path: ["pricings", current.index, `${key}_min`],
+      })
+    }
+    if (current.max > furthest.max) furthest = current
+  }
+}
+
+export const LoadingOffloadingPricingSchema = z
+  .object({
+    client_id: IDSchema.optional().nullable(),
+    pricings: z
+      .array(loadingOffloadingPricingSchema)
+      .min(1, "Add at least one pricing"),
+    effective_date: z.string().min(1, "Required"),
+  })
+  .superRefine(
+    (data, ctx) => {
+      addLoadingRangeOverlapIssues(data.pricings, "tonnage", ctx)
+      addLoadingRangeOverlapIssues(data.pricings, "cbm", ctx)
+    },
+    // Run even while other fields (e.g. fees) are still empty
+    {
+      when: (payload) =>
+        Array.isArray((payload.value as { pricings?: unknown }).pricings),
+    }
+  )
 
 export type LoadingOffloadingPricing = z.infer<
   typeof loadingOffloadingPricingSchema
@@ -119,19 +208,39 @@ export type LoadingOffloadingPricingRequest = z.infer<
 >
 
 export const islandPricingSchema = z.object({
-  island_id: IDSchema,
-  locations: z.array(z.object({ value: z.string().default("").optional() })),
-  // priceRate: z.number().positive("Required"),
-  priceRate: MoneySchema.min(1, "Required"),
-  newPriceRate: z.number().positive().optional().nullable(),
+  island_id: z.string("Select an island").min(1, "Select an island"),
+  price: MoneySchema.min(1, "Required"),
 })
 
 export type IslandPricingRequest = z.infer<typeof islandPricingSchema>
 
-export const IslandsListPricingSchema = z.object({
-  pricings: z.array(islandPricingSchema).min(1, "Add atleast one pricing"),
-  validFromDate: z.string("Date is required"),
-})
+export const IslandsListPricingSchema = z
+  .object({
+    pricings: z.array(islandPricingSchema).min(1, "Add at least one island"),
+    effective_date: z.string("Required").min(1, "Required"),
+  })
+  .superRefine(
+    (data, ctx) => {
+      // An island can only have one price per version
+      const seen = new Set<string>()
+      data.pricings.forEach((row, index) => {
+        if (!row.island_id) return
+        if (seen.has(row.island_id)) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Island is already priced",
+            path: ["pricings", index, "island_id"],
+          })
+        }
+        seen.add(row.island_id)
+      })
+    },
+    // Run even while other fields (e.g. prices) are still empty
+    {
+      when: (payload) =>
+        Array.isArray((payload.value as { pricings?: unknown }).pricings),
+    }
+  )
 
 export type IslandsListPricingRequest = z.infer<typeof IslandsListPricingSchema>
 

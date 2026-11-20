@@ -9,6 +9,8 @@ import {
 import { cn } from "cn"
 import {
   AvatarUploader,
+  type AvatarUploaderHandle,
+  type AvatarUploaderProps,
   type AvatarValue,
 } from "@/components/ui/extensions/avatar-uploader"
 import {
@@ -30,6 +32,10 @@ type AvatarFieldProps<T extends FieldValues> = {
   maxSizeMB?: number
   disabled?: boolean
   className?: string
+  /** Extra entries in the avatar's menu; see AvatarUploader. */
+  extraActions?: AvatarUploaderProps["extraActions"]
+  /** Gives access to `pickFile`, for actions that produce a file. */
+  uploaderRef?: React.Ref<AvatarUploaderHandle>
 }
 
 export function AvatarField<T extends FieldValues>({
@@ -42,6 +48,8 @@ export function AvatarField<T extends FieldValues>({
   maxSizeMB,
   disabled,
   className,
+  extraActions,
+  uploaderRef,
 }: AvatarFieldProps<T>) {
   const uid = useId()
   const inputId = `${uid}-input`
@@ -83,6 +91,8 @@ export function AvatarField<T extends FieldValues>({
               name={displayName}
               maxSizeMB={maxSizeMB}
               disabled={disabled}
+              extraActions={extraActions}
+              ref={uploaderRef}
               aria-invalid={fieldState.invalid}
             />
 

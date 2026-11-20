@@ -1,3 +1,4 @@
+import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import {
   PageAction,
   PageBackButton,
@@ -8,15 +9,14 @@ import { InvoicePdf } from "@/features/invoices/components"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/_admin/invoices/$invoiceId/pdf")(
-  {
-    component: RouteComponent,
-    loader: ({ context, params }) =>
-      context.queryClient.ensureQueryData(
-        invoiceDetailsQueryOptions(params.invoiceId)
-      ),
-  }
-)
+export const Route = createFileRoute("/_admin/invoices/$invoiceId/pdf")({
+  component: RouteComponent,
+  errorComponent: DefaultCatchBoundary,
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(
+      invoiceDetailsQueryOptions(params.invoiceId)
+    ),
+})
 
 function RouteComponent() {
   const { invoiceId } = Route.useParams()
@@ -29,7 +29,7 @@ function RouteComponent() {
           <PageBackButton />
         </PageAction>
       </PageHeader>
-      <InvoicePdf invoiceId={invoiceId} />
+      <InvoicePdf invoiceId={invoiceId} invoiceNumber={invoice.number} />
     </div>
   )
 }

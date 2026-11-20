@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 import { getMaintenanceBoardViewFn } from "./services"
-import { MaintenanceSearchParamsInput } from "./schemas"
+import type { MaintenanceSearchParamsInput } from "./schemas"
 
 export const maintenanceQueryKeys = {
   all: () => ["maintenance"],

@@ -21,7 +21,7 @@ import { ApiError } from "@/types"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getVehiclesFn = createServerFn()
-  .inputValidator(VehicleSearchParamsCache)
+  .validator(VehicleSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getVehicles(data)
     if (response.error) {
@@ -32,7 +32,7 @@ export const getVehiclesFn = createServerFn()
   })
 
 export const getVehiclesByQueryFn = createServerFn()
-  .inputValidator(VehicleSearchParamsCache)
+  .validator(VehicleSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getVehicles(data)
     if (response.error) {
@@ -43,13 +43,13 @@ export const getVehiclesByQueryFn = createServerFn()
   })
 
 export const getVehicleByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getVehicleById(data.id)
   })
 
 export const getVehicleDetailsByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const { data: vehicle, message } = await apiResponseTransform(
       getVehicleDetailsById(data.id)
@@ -58,31 +58,31 @@ export const getVehicleDetailsByIdFn = createServerFn()
   })
 
 export const deleteVehicleFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteVehicleById(data.id)
   })
 
 export const updateVehicleFn = createServerFn()
-  .inputValidator(VehicleUpdateSchema)
+  .validator(VehicleUpdateSchema)
   .handler(async ({ data }) => {
     return updateVehicle(data)
   })
 
 export const createVehicleFn = createServerFn()
-  .inputValidator(VehicleCreateSchema)
+  .validator(VehicleCreateSchema)
   .handler(async ({ data }) => {
     return createVehicle(data)
   })
 
 export const vehicleAssignDriverFn = createServerFn()
-  .inputValidator(AssignDriverVehicleSchema)
+  .validator(AssignDriverVehicleSchema)
   .handler(async ({ data }) => {
     return vehicleAssignDriver(data)
   })
 
 export const vehicleUnAssignDriverFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return vehicleUnAssignDriver(data.id)
   })

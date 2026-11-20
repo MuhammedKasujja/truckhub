@@ -1,2 +1,3 @@
 export { CarModelPicker, CarModelPickerField } from "./car-model-pickers"
-export * from "./car-model-table"
+export { CarModelList } from "./car-model-list"
+export { CarModelForm } from "./car-model-form"

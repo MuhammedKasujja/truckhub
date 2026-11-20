@@ -14,31 +14,31 @@ import {
 } from "./server"
 
 export const getCarBrandsFn = createServerFn()
-  .inputValidator(CarBrandSearchParamsCache)
+  .validator(CarBrandSearchParamsCache)
   .handler(async ({ data }) => {
     return await getCarBrands(data)
   })
 
 export const getCarBrandFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getCarBrandById(data.id)
   })
 
 export const deleteCarBrandFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteCarBrandById(data.id)
   })
 
 export const updateCarBrandFn = createServerFn()
-  .inputValidator(CarBrandUpdateSchema)
+  .validator(CarBrandUpdateSchema)
   .handler(async ({ data }) => {
     return updateCarBrand(data)
   })
 
 export const createCarBrandFn = createServerFn()
-  .inputValidator(CarBrandCreateSchema)
+  .validator(CarBrandCreateSchema)
   .handler(async ({ data }) => {
     return createCarBrand(data)
   })

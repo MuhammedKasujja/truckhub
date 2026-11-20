@@ -1,8 +1,16 @@
-import { getDashboardStatistics } from "./server"
+import { z } from "zod"
 import { createServerFn } from "@tanstack/react-start"
+import { getDashboardStatistics } from "./server"
+
+const DashboardPeriodSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+})
 
 export const getDashboardStatisticsFn = createServerFn({
   method: "GET",
-}).handler(async () => {
-  return getDashboardStatistics()
 })
+  .validator(DashboardPeriodSchema)
+  .handler(async ({ data }) => {
+    return getDashboardStatistics(data)
+  })

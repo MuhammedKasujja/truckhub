@@ -20,7 +20,7 @@ import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 
 export const getRidesFn = createServerFn()
-  .inputValidator(RideRequestSearchParamsCache)
+  .validator(RideRequestSearchParamsCache)
   .handler(async ({ data }) => {
     const { error, data: rides, pagination } = await getRideRequests(data)
     if (error) {
@@ -31,7 +31,7 @@ export const getRidesFn = createServerFn()
   })
 
 export const getRideRequestsByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     const response = await getRideRequestsByQuery(data)
     if (response.error) {
@@ -42,37 +42,37 @@ export const getRideRequestsByQueryFn = createServerFn()
   })
 
 export const getRideRequestByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getRideRequestById(data.id)
   })
 
 export const getRideDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getRideRequestDetailsById(data.id)
   })
 
 export const deleteRideFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteRideRequestById(data.id)
   })
 
 export const updateRideFn = createServerFn()
-  .inputValidator(RideRequestUpdateSchema)
+  .validator(RideRequestUpdateSchema)
   .handler(async ({ data }) => {
     return updateRideRequest(data)
   })
 
 export const createRideFn = createServerFn()
-  .inputValidator(RideRequestCreateSchema)
+  .validator(RideRequestCreateSchema)
   .handler(async ({ data }) => {
     return createRideRequest(data)
   })
 
 export const computeRideEsimatedFareFn = createServerFn()
-  .inputValidator(EstimateRideFareSchema)
+  .validator(EstimateRideFareSchema)
   .handler(async ({ data }) => {
     return computeRideEsimatedFare(data)
   })

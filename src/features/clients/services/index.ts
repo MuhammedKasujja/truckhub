@@ -40,7 +40,7 @@ import { activateClientPricing } from "./pricings"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCustomersFn = createServerFn()
-  .inputValidator(ClientSearchParamsCache)
+  .validator(ClientSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getCustomers(data)
     if (response.error) {
@@ -51,7 +51,7 @@ export const getCustomersFn = createServerFn()
   })
 
 export const getClientsByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     const response = await getCustomersByQuery(data)
     if (response.error) {
@@ -62,80 +62,80 @@ export const getClientsByQueryFn = createServerFn()
   })
 
 export const getClientByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getCustomerById(data.id)
   })
 
 export const getClientProfileFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(getCustomerDetailsById(data.id))
   })
 
 export const deleteClientFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteCustomerById(data.id)
   })
 
 export const updateClientFn = createServerFn({ method: "POST" })
-  .inputValidator(ClientUpdateSchema)
+  .validator(ClientUpdateSchema)
   .handler(async ({ data }) => {
-    return updateClient(data)
+    return apiResponseTransform(updateClient(data))
   })
 
 export const createClientFn = createServerFn({ method: "POST" })
-  .inputValidator(ClientCreateSchema)
+  .validator(ClientCreateSchema)
   .handler(async ({ data }) => {
-    return createClient(data)
+    return apiResponseTransform(createClient(data))
   })
 
 export const getClientPaymentsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientPayments(data.id)
   })
 
 export const getClientBookingsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientBookings(data.id)
   })
 
 export const getClientRidesFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientRides(data.id)
   })
 
 export const getClientQuotationsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientQuotations(data.id)
   })
 
 export const getClientInvoicesFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientInvoices(data.id)
   })
 
-export const createClientBatchRoutePricingFn = createServerFn()
-  .inputValidator(BatchPricingPayloadUpdateSchema)
+export const createClientBatchRoutePricingFn = createServerFn({ method: "POST" })
+  .validator(BatchPricingPayloadUpdateSchema)
   .handler(async ({ data }) => {
-    return createClientBatchRoutePricing(data)
+    return apiResponseTransform(createClientBatchRoutePricing(data))
   })
 
 export const getClientRoutePricingFn = createServerFn()
-  .inputValidator(clientPricingSearchParams)
+  .validator(clientPricingSearchParams)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(getClientRoutePricing(data))
     return result.data!
   })
 
 export const getClientActiveRoutePricingFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(
       getClientActiveRoutePricing(data.id)
@@ -144,42 +144,42 @@ export const getClientActiveRoutePricingFn = createServerFn()
   })
 
 export const getClientLoadingOffloadingFreesFn = createServerFn()
-  .inputValidator(clientPricingSearchParams)
+  .validator(clientPricingSearchParams)
   .handler(async ({ data }) => {
     return getClientLoadingOffloadingFrees(data)
   })
 
 export const getClientActiveLoadingOffloadingFreesFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getClientActiveLoadingOffloadingFrees(data.id)
   })
 
-export const createClientLoadingOffloadingPricingFn = createServerFn()
-  .inputValidator(LoadingOffloadingPricingSchema)
+export const createClientLoadingOffloadingPricingFn = createServerFn({ method: "POST" })
+  .validator(LoadingOffloadingPricingSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createClientLoadingOffloadingPricing(data))
   })
 
 export const changeClientTypeFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(changeClientType(data.id))
   })
 
 export const getClientServicesFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const response = await apiResponseTransform(getClientServices(data.id))
     return response.data
   })
 
 export const createClientServiceFn = createServerFn({ method: "POST" })
-  .inputValidator(ClientServiceCreateSchema)
+  .validator(ClientServiceCreateSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(createClientService(data))
   })
 
-export const activateClientPricingFn = createServerFn()
-  .inputValidator(ActivateClientPricingSchema)
+export const activateClientPricingFn = createServerFn({ method: "POST" })
+  .validator(ActivateClientPricingSchema)
   .handler(({ data }) => apiResponseTransform(activateClientPricing(data)))

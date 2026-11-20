@@ -1,13 +1,13 @@
-import * as apiClient from "@/lib/api-client"
-import { BoardResponse, MaintenanceRecord } from "../types"
-import {
+import type { BoardResponse, MaintenanceRecord } from "../types"
+import type {
+  MaintenanceCreateInput,
+  MaintenanceSearchParamsInput,
+  MaintenanceUpdateInput,
   MoveRecordInput,
   RecordBreakdownInput,
-  MaintenanceCreateInput,
-  MaintenanceUpdateInput,
-  MaintenanceSearchParamsInput,
 } from "../schemas"
-import { EntityId } from "@/schemas"
+import type { EntityId } from "@/schemas"
+import * as apiClient from "@/lib/api-client"
 import { generateApiSearchParams } from "@/lib/search-params"
 
 const endpoint = "/v1/maintenance"

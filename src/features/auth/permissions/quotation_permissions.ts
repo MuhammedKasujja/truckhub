@@ -5,8 +5,9 @@ export const QuotationModulePermissions = {
   "quotations:delete": ["quotations:delete"],
   "quotations:edit": ["quotations:update", "quotations:view"],
   "quotations:reject": ["quotations:reject"],
-  "quotations:accept": ["quotations:reject"],
+  "quotations:accept": ["quotations:accept"],
   "quotations:email": ["quotations:email"],
+  "quotations:activities": ["quotations:activities"],
   "quotations:cancel": ["quotations:cancel"],
 } as const
 

@@ -88,9 +88,10 @@ export const formatDateTime = (
   }
 }
 
-export function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`
-  return `${(meters / 1000).toFixed(1)} km`
+export function formatDistance(meters: string | number): string {
+  const distance = Number(meters)
+  if (distance < 1000) return `${Math.round(distance)} m`
+  return `${(distance / 1000).toFixed(1)} km`
 }
 
 export function formatDuration(seconds: number): string {
@@ -107,3 +108,11 @@ export const generateAvatorFallback = (fullname: string | undefined) => {
   if (lastName) return `${firstName[0]}${lastName[0]}`.toUpperCase()
   return firstName[0]
 }
+
+export const formatSize = (bytes: number) =>
+  bytes >= 1024 * 1024
+    ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+    : `${Math.max(1, Math.round(bytes / 1024))} KB`
+
+export const daysUntil = (date: string) =>
+  Math.ceil((new Date(date).getTime() - Date.now()) / 86_400_000)

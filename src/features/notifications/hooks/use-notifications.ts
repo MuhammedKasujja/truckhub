@@ -1,36 +1,175 @@
-import { useEffect, useRef, useState, useCallback } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
+  infiniteQueryOptions,
+  queryOptions,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query"
+import {
+  getUnreadNotificationCountFn,
   getWsTicketFn,
   listNotificationsFn,
-  markNotificationReadFn,
   markAllNotificationsReadFn,
+  markNotificationReadFn,
 } from "../services"
-import { EntityId } from "@/schemas"
-import { NotificationItem } from "../types"
+import { NOTIFICATIONS_PER_PAGE } from "../schemas"
+import { ApiError } from "@/types"
+import type { InfiniteData, QueryClient } from "@tanstack/react-query"
+import type { EntityId } from "@/schemas"
+import type { NotificationItem } from "../types"
 
 const WEBSOCKET_CONECTION_RETRY_DELAY = 1000
 
-// The browser still connects directly to FastAPI for the socket itself —
-// only the token is kept off the client. This just needs to be a public
-// env var pointing at your FastAPI host (VITE_API_URL, not FASTAPI_URL —
-// that server-only one lives in server/notifications.functions.ts).
-// const WS_BASE = import.meta.env.BACKEND_URL.replace(/^http/, "ws")
-const WS_BASE = "http://127.0.0.1:8000".replace(/^http/, "ws")
+// The browser connects directly to the API for the socket itself; only the
+// token is kept off the client. VITE_BACKEND_URL is the public address of the
+// API (the server-only BACKEND_URL is not exposed to the browser).
+const WS_BASE = (
+  (import.meta.env.VITE_BACKEND_URL as string | undefined) ??
+  "http://127.0.0.1:8000"
+).replace(/^http/, "ws")
 
-function notificationsKey(userId: EntityId) {
-  return ["notifications", userId] as const
+/** A pushed row. Read state and the resource link may be left out. */
+type PushedNotification = Pick<
+  NotificationItem,
+  "id" | "notification_id" | "title" | "body" | "created_at" | "source"
+> &
+  Partial<NotificationItem>
+
+type NotificationPage = Awaited<ReturnType<typeof listNotificationsFn>>
+type NotificationPages = InfiniteData<NotificationPage, number>
+
+export const notificationKeys = {
+  all: (userId: EntityId) => ["notifications", userId] as const,
+  lists: (userId: EntityId) =>
+    [...notificationKeys.all(userId), "list"] as const,
+  list: (userId: EntityId, unreadOnly: boolean) =>
+    [...notificationKeys.lists(userId), { unreadOnly }] as const,
+  unreadCount: (userId: EntityId) =>
+    [...notificationKeys.all(userId), "unread-count"] as const,
+}
+
+export const notificationListOptions = (
+  userId: EntityId,
+  unreadOnly: boolean
+) =>
+  infiniteQueryOptions({
+    queryKey: notificationKeys.list(userId, unreadOnly),
+    queryFn: async ({ pageParam }) => {
+      const page = await listNotificationsFn({
+        data: { page: pageParam, perPage: NOTIFICATIONS_PER_PAGE, unreadOnly },
+      })
+      // A server-side redirect to /login resolves the call with nothing.
+      // Fail the query so the global 401 handler runs instead of caching
+      // an undefined page.
+      if (!page) throw new ApiError("Not authenticated", 401)
+      return page
+    },
+    initialPageParam: 1,
+    getNextPageParam: (last) => {
+      const meta = last?.pagination
+      if (!meta) return undefined
+      return meta.page * meta.per_page < meta.total ? meta.page + 1 : undefined
+    },
+  })
+
+export const unreadCountOptions = (userId: EntityId) =>
+  queryOptions({
+    queryKey: notificationKeys.unreadCount(userId),
+    queryFn: () => getUnreadNotificationCountFn(),
+  })
+
+/** One page-by-page list of the user's notifications, newest first. */
+export function useNotificationList(
+  userId: EntityId | undefined,
+  unreadOnly = false
+) {
+  const query = useInfiniteQuery({
+    ...notificationListOptions(userId as EntityId, unreadOnly),
+    enabled: !!userId,
+  })
+
+  const notifications = useMemo(
+    () => query.data?.pages.flatMap((page) => page.data) ?? [],
+    [query.data]
+  )
+
+  return {
+    notifications,
+    total: query.data?.pages[0]?.pagination?.total ?? 0,
+    isLoading: query.isLoading,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    fetchNextPage: query.fetchNextPage,
+    refetch: query.refetch,
+  }
+}
+
+/** Apply `change` to every cached notification, in every cached list. */
+function patchLists(
+  queryClient: QueryClient,
+  userId: EntityId,
+  change: (n: NotificationItem) => NotificationItem
+) {
+  queryClient.setQueriesData<NotificationPages>(
+    { queryKey: notificationKeys.lists(userId) },
+    (old) =>
+      old && {
+        ...old,
+        pages: old.pages.map((page) => ({
+          ...page,
+          data: page.data.map(change),
+        })),
+      }
+  )
+}
+
+/** Put a notification that just arrived at the top of every cached list. */
+function prependToLists(
+  queryClient: QueryClient,
+  userId: EntityId,
+  incoming: NotificationItem
+) {
+  queryClient.setQueriesData<NotificationPages>(
+    { queryKey: notificationKeys.lists(userId) },
+    (old) => {
+      if (!old?.pages.length) return old
+      const known = old.pages.some((page) =>
+        page.data.some((n) => n.id === incoming.id)
+      )
+      if (known) return old
+      const [first, ...rest] = old.pages
+      if (!first?.pagination) return old
+      return {
+        ...old,
+        pages: [
+          {
+            ...first,
+            data: [incoming, ...first.data],
+            pagination: {
+              ...first.pagination,
+              total: first.pagination.total + 1,
+            },
+          },
+          ...rest,
+        ],
+      }
+    }
+  )
 }
 
 /**
- * Subscribes to live notifications for `userId` over WebSocket and keeps
- * them merged into the TanStack Query cache.
+ * The user's notifications: the latest ones, how many are unread, and a live
+ * WebSocket subscription that keeps both up to date.
+ *
+ * Mount it once (see NotificationsProvider) so the app holds one socket.
  *
  * No access token ever touches this hook or the browser. Every REST call
- * and the WebSocket connection itself go through TanStack Start server
- * functions, which read the real token out of the encrypted, httpOnly
- * session cookie server-side. The only thing that reaches the client is
- * a 30-second, single-use ticket used solely to open the socket.
+ * and the WebSocket ticket go through TanStack Start server functions, which
+ * read the real token out of the encrypted, httpOnly session cookie. The only
+ * thing that reaches the client is a 30-second, single-use ticket used solely
+ * to open the socket.
  *
  * Reconnects with exponential backoff (capped at 30s) if the socket drops,
  * fetching a brand new ticket on every attempt since each one is single-use.
@@ -41,40 +180,60 @@ export function useNotifications(userId: EntityId | undefined) {
   const [authError, setAuthError] = useState(false)
   const retryDelay = useRef(WEBSOCKET_CONECTION_RETRY_DELAY)
   const socketRef = useRef<WebSocket | null>(null)
-  const retryTimeout = useRef<ReturnType<typeof setTimeout>>()
+  const retryTimeout = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const query = useQuery({
-    queryKey: userId ? notificationsKey(userId) : ["notifications", "disabled"],
-    queryFn: () => listNotificationsFn({ data: { userId: userId! } }),
+  const list = useNotificationList(userId)
+
+  // Zero until the first count arrives
+  const { data: unreadCount = 0 } = useQuery({
+    ...unreadCountOptions(userId as EntityId),
     enabled: !!userId,
   })
 
-  const markReadMutation = useMutation({
-    mutationFn: (notificationId: EntityId) =>
-      markNotificationReadFn({
-        data: { userId: userId as EntityId, notificationId },
-      }),
-    onSuccess: (_data, notificationId) => {
+  const setUnreadCount = useCallback(
+    (update: (count: number) => number) => {
       if (!userId) return
-      queryClient.setQueryData<NotificationItem[]>(
-        notificationsKey(userId),
-        (old) =>
-          old?.map((n) =>
-            n.notification_id === notificationId ? { ...n, is_read: true } : n
-          ) ?? old
+      queryClient.setQueryData<number>(
+        notificationKeys.unreadCount(userId),
+        (old) => Math.max(0, update(old ?? 0))
       )
     },
+    [queryClient, userId]
+  )
+
+  const refreshAll = useCallback(() => {
+    if (!userId) return
+    queryClient.invalidateQueries({ queryKey: notificationKeys.all(userId) })
+  }, [queryClient, userId])
+
+  const markReadMutation = useMutation({
+    mutationFn: (notification: NotificationItem) =>
+      markNotificationReadFn({ data: { id: notification.id } }),
+    onMutate: (notification) => {
+      if (!userId || notification.is_read) return
+      const readAt = new Date().toISOString()
+      patchLists(queryClient, userId, (n) =>
+        n.id === notification.id ? { ...n, is_read: true, read_at: readAt } : n
+      )
+      setUnreadCount((count) => count - 1)
+    },
+    // The optimistic update may be wrong; the server has the truth
+    onError: refreshAll,
   })
 
   const markAllReadMutation = useMutation({
-    mutationFn: () => markAllNotificationsReadFn({ data: { userId: userId! } }),
-    onSuccess: () => {
+    mutationFn: () => markAllNotificationsReadFn(),
+    onMutate: () => {
       if (!userId) return
-      queryClient.setQueryData<NotificationItem[]>(
-        notificationsKey(userId),
-        (old) => old?.map((n) => ({ ...n, is_read: true })) ?? old
+      const readAt = new Date().toISOString()
+      patchLists(queryClient, userId, (n) =>
+        n.is_read ? n : { ...n, is_read: true, read_at: readAt }
       )
+      setUnreadCount(() => 0)
     },
+    onError: refreshAll,
+    // An unread-only list is now empty
+    onSuccess: refreshAll,
   })
 
   useEffect(() => {
@@ -87,15 +246,13 @@ export function useNotifications(userId: EntityId | undefined) {
       try {
         const result = await getWsTicketFn()
         ticket = result.ticket
-      } catch (error){
+      } catch {
         // Session cookie missing/expired server-side — no point retrying
         // with the same (non-existent) session. Surface it and stop.
-        console.log("WS_BASE_Error", WS_BASE, "error", error?.toString())
         if (!cancelled) setAuthError(true)
         return
       }
       if (cancelled) return
-      console.log("Connecting to socket...")
 
       const ws = new WebSocket(
         `${WS_BASE}/v1/ws/${userId}?ticket=${encodeURIComponent(ticket)}`
@@ -107,37 +264,35 @@ export function useNotifications(userId: EntityId | undefined) {
         setIsConnected(true)
         setAuthError(false)
         retryDelay.current = WEBSOCKET_CONECTION_RETRY_DELAY // reset backoff on a healthy connection
+        // Catch up on anything stored while the socket was down
+        queryClient.invalidateQueries({
+          queryKey: notificationKeys.all(userId),
+        })
       }
 
       ws.onmessage = (event) => {
-        const payload = JSON.parse(event.data)
-        if (payload.type !== "notification") return
-        console.log("payload", payload)
-        const data = payload.data
+        let payload: { type?: string; data?: PushedNotification }
+        try {
+          payload = JSON.parse(event.data)
+        } catch {
+          return
+        }
+        if (payload.type !== "notification" || !payload.data) return
 
-        // Prepend the new notification into the cached list without
-        // waiting for a refetch. Server sends the Notification, not the
-        // per-recipient row, so we synthesize a temporary row id until
-        // the next refetch reconciles it with the real recipient id.
-        queryClient.setQueryData<NotificationItem[]>(
-          notificationsKey(userId),
-          (old = []) => [
-            {
-              id: -Number(data.id), // placeholder, replaced on next refetch
-              notification_id: data.id,
-              title: data.title,
-              body: data.body,
-              created_at: data.created_at,
-              source: data.source,
-              is_read: false,
-              read_at: null,
-            },
-            ...old,
-          ]
-        )
+        // The server pushes the same row the list returns, so it goes
+        // straight into the cache without waiting for a refetch.
+        const incoming: NotificationItem = {
+          ...payload.data,
+          is_read: payload.data.is_read ?? false,
+          read_at: payload.data.read_at ?? null,
+          resource_type: payload.data.resource_type ?? null,
+          resource_id: payload.data.resource_id ?? null,
+        }
+        prependToLists(queryClient, userId, incoming)
+        if (!incoming.is_read) setUnreadCount((count) => count + 1)
       }
 
-      ws.onclose = (event) => {
+      ws.onclose = () => {
         if (cancelled) return
         setIsConnected(false)
 
@@ -163,29 +318,35 @@ export function useNotifications(userId: EntityId | undefined) {
       clearTimeout(retryTimeout.current)
       socketRef.current?.close()
     }
-  }, [userId, queryClient])
+  }, [userId, queryClient, setUnreadCount])
+
+  const { mutate: markReadMutate } = markReadMutation
+  const { mutate: markAllReadMutate } = markAllReadMutation
 
   const markRead = useCallback(
-    (notificationId: EntityId) => markReadMutation.mutate(notificationId),
-    [markReadMutation]
+    (notification: NotificationItem) => {
+      if (!notification.is_read) markReadMutate(notification)
+    },
+    [markReadMutate]
   )
 
   const markAllRead = useCallback(
-    () => markAllReadMutation.mutate(),
-    [markAllReadMutation]
+    () => markAllReadMutate(),
+    [markAllReadMutate]
   )
 
-  const notifications = query.data ?? []
-  const unreadCount = notifications.filter((n) => !n.is_read).length
-
   return {
-    notifications,
+    userId,
+    notifications: list.notifications,
     unreadCount,
-    isLoading: query.isLoading,
+    isLoading: list.isLoading,
+    hasNextPage: list.hasNextPage,
+    isFetchingNextPage: list.isFetchingNextPage,
+    fetchNextPage: list.fetchNextPage,
     isConnected,
     authError,
     markRead,
     markAllRead,
-    refetch: query.refetch,
+    refetch: refreshAll,
   }
 }

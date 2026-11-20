@@ -19,13 +19,16 @@ export function generateServiceEmptyLineItem() {
     vehicle_addons: [],
     item_type: "small",
     quantity: 1,
-    discount: null,
+    discount: "",
     source: "service",
     car_model_id: "",
     service_id: "",
     with_driver: false,
     estimated_consumption_rate_km: undefined,
     engine_mode: "wet",
+    is_truck: false,
+    tonnage: null,
+    with_loaders: false,
   }
   return emptyLineItem
 }
@@ -42,7 +45,7 @@ export function generateRouteEmptyLineItem() {
     source: "route",
     quantity: 1,
     route_id: "",
-    discount: null,
+    discount: "",
     with_driver: false,
     estimated_consumption_rate_km: 0,
     engine_mode: "wet",
@@ -63,7 +66,7 @@ export function generateDistanceEmptyLineItem() {
     item_type: "truck",
     source: "distance",
     quantity: 1,
-    discount: null,
+    discount: "",
     with_driver: false,
     estimated_consumption_rate_km: 0,
     engine_mode: "wet",
@@ -91,6 +94,7 @@ export function getEditableQuotation(quotation: Quotation) {
   const activeVersion = quotation.activeRevision
   return {
     client_id: quotation.client.id,
+    contact_id: quotation.contact?.id ?? null,
     line_items: validateLineItem(activeVersion.line_items),
     tax_rates: activeVersion.tax_rates.map((tax) => ({
       ...tax,

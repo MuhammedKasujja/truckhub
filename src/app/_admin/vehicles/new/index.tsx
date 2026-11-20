@@ -1,4 +1,9 @@
-import { PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
+import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { createVehicleConfigurationsQueryOptions } from "@/features/settings/query-options"
 import { VehicleForm } from "@/features/vehicles/components/vehicle-form"
 import { requirePermission } from "@/lib/auth"
@@ -13,12 +18,16 @@ export const Route = createFileRoute("/_admin/vehicles/new/")({
 })
 
 function RouteComponent() {
+  const back = useBackNavigation()
   return (
     <>
       <PageHeader>
-        <PageTitle>New Vehicle</PageTitle>
+        <PageTitle>New vehicle</PageTitle>
+        <PageDescription>
+          Register a car or truck to the fleet. The preview updates as you go.
+        </PageDescription>
       </PageHeader>
-      <VehicleForm />
+      <VehicleForm onCancel={back} />
     </>
   )
 }

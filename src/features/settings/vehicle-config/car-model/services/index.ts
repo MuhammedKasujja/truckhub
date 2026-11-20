@@ -16,31 +16,31 @@ import { formInput } from "@/lib/form-utils"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getCarModelsFn = createServerFn()
-  .inputValidator(CarModelSearchParamsCache)
+  .validator(CarModelSearchParamsCache)
   .handler(async ({ data }) => {
     return await getCarModels(data)
   })
 
 export const getCarModelFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getCarModelById(data.id)
   })
 
 export const deleteCarModelFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteCarModelById(data.id)
   })
 
 export const updateCarModelFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(CarModelUpdateSchema))
+  .validator(formInput(CarModelUpdateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(updateCarModel(data))
   })
 
 export const createCarModelFn = createServerFn({ method: "POST" })
-  .inputValidator(formInput(CarModelCreateSchema))
+  .validator(formInput(CarModelCreateSchema))
   .handler(async ({ data }) => {
     return apiResponseTransform(createCarModel(data))
   })

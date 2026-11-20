@@ -1,11 +1,11 @@
-import { toast } from "sonner"
-import {
-  LoadingOffloadingPricingRequest,
-  PricingSearchParams,
-} from "../../schemas"
-import { createBatchLoadingPricingFn } from "../../services"
+import { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { Forklift, History } from "lucide-react"
+import { useCreateCompanyLoadingPricing } from "../../hooks/use-loading-offloading-pricing"
+import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
+import { createCompanyLoadingFreesQueryOptions } from "../../query-options"
+import { LoadingFeesManager } from "./loading-fees-manager"
 import { Button } from "@/components/ui/button"
-import { CreditCardIcon } from "lucide-react"
 import {
   Sheet,
   SheetContent,
@@ -14,142 +14,64 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { useCompanyPricingDates } from "../../hooks/use-company-pricing-dates"
-import { createCompanyLoadingFreesQueryOptions } from "../../query-options"
-import { useQuery } from "@tanstack/react-query"
-import { Activity, useState } from "react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { ActionIcon } from "@/components/icons"
-import { FieldLabel } from "@/components/ui/field"
-import { Badge } from "@/components/ui/badge"
 import { useActivateLoadingPricing } from "@/features/settings/pricing/hooks/use-activate-pricings"
-import { LoadingOffloadingPricingForm } from "./loading-offloading-pricing-form"
-import { LoadingOffloadingPricingTable } from "./loading-offloading-pricing-table"
-import { Can } from "@/components/has-permission"
+import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
 export function CompanyLoadingPricingConfigurationDialog() {
-  const { data } = useCompanyPricingDates()
-  const { activateLoadingPricing, isPending } = useActivateLoadingPricing()
-  const [search, setSearch] = useState<PricingSearchParams>()
-  const [view, setView] = useState<"list" | "edit">("list")
+  const { hasPermission } = usePermissions()
+  const { data: dates } = useCompanyPricingDates()
+  const { activateLoadingPricing, isPending: isActivating } =
+    useActivateLoadingPricing()
+  const { createLoadingPricing, isPending: isCreating } =
+    useCreateCompanyLoadingPricing()
+  const [selectedDate, setSelectedDate] = useState<string>()
 
-  const { data: companyPricings } = useQuery(
-    createCompanyLoadingFreesQueryOptions(search)
+  const versions = dates?.loading_offloading
+  // Fall back to the active date so the sheet opens on the current pricing
+  const referenceDate = selectedDate ?? versions?.active_date
+
+  const { data, isLoading } = useQuery(
+    createCompanyLoadingFreesQueryOptions({ referenceDate })
   )
-  const referenceDate =
-    search?.referenceDate ?? companyPricings?.data?.effective_date
-
-  async function handleSubmit(data: LoadingOffloadingPricingRequest) {
-    const { message, error } = await createBatchLoadingPricingFn({ data })
-    if (error) {
-      toast.error(error.message)
-    } else {
-      toast.success(message)
-    }
-  }
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant={"secondary"} type="button">
-          <CreditCardIcon />
-          View Configurations
+        <Button variant="outline" type="button">
+          <History />
+          Manage versions
         </Button>
       </SheetTrigger>
-      <SheetContent className="min-w-[80vw] sm:max-w-none">
-        <SheetHeader className="border-b">
-          <SheetTitle>Configure Loading and offloading fees</SheetTitle>
-          <SheetDescription>
-            Define tonnage ranges and CBM with prices.
-          </SheetDescription>
-        </SheetHeader>
-        <div className="no-scrollbar overflow-y-auto px-4 pb-5">
-          <div className="space-y-4">
-            <Activity mode={view == "list" ? "visible" : "hidden"}>
-              <div className="flex items-baseline-last justify-between">
-                <div className="grid grid-flow-col items-baseline-last gap-1.5">
-                  <div className="space-y-2">
-                    <FieldLabel htmlFor="date">
-                      Select pricing date{" "}
-                      {data?.loading_offloading.active_date ===
-                        referenceDate && <Badge>Current</Badge>}
-                    </FieldLabel>
-                    <Select
-                      value={referenceDate}
-                      onValueChange={(date) => {
-                        setSearch({ ...search, referenceDate: date })
-                      }}
-                    >
-                      <SelectTrigger className="min-w-48" id="date">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {data?.loading_offloading.dates.map((date) => (
-                          <SelectItem key={date} value={date}>
-                            {date}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Can permission="config:pricing:activate">
-                    {data?.loading_offloading.active_date !== referenceDate && (
-                      <Button
-                        type="button"
-                        disabled={isPending}
-                        onClick={() => {
-                          if (search?.referenceDate)
-                            activateLoadingPricing({
-                              effectiveDate: search?.referenceDate,
-                            })
-                        }}
-                      >
-                        Set Active
-                      </Button>
-                    )}
-                  </Can>
-                </div>
-                <Button
-                  variant={"secondary"}
-                  type="button"
-                  onClick={() => setView("edit")}
-                >
-                  <ActionIcon action="create" />
-                  New Pricing
-                </Button>
-              </div>
-              <LoadingOffloadingPricingTable
-                key={companyPricings?.data?.effective_date}
-                pricings={{
-                  pricings: companyPricings?.data?.pricings,
-                  effective_date:
-                    companyPricings?.data?.effective_date ??
-                    new Date().toDateString(),
-                }}
-                title={
-                  data?.route_tonnage.active_date === referenceDate
-                    ? "Current Company Pricing"
-                    : "Company Pricing"
-                }
-              />
-            </Activity>
-            <Activity mode={view == "edit" ? "visible" : "hidden"}>
-              <LoadingOffloadingPricingForm
-                initialData={{
-                  pricings: [],
-                  effective_date: new Date().toDateString(),
-                }}
-                onSubmit={handleSubmit}
-                onCancel={() => setView("list")}
-              />
-            </Activity>
+      <SheetContent className="min-w-[80vw] gap-0 sm:max-w-none">
+        <SheetHeader className="flex-row items-center gap-3.5 border-b px-5 py-4 pr-12">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+            <Forklift className="size-5" />
           </div>
+          <div className="min-w-0 space-y-0.5">
+            <SheetTitle className="text-base font-bold tracking-tight">
+              Loading &amp; offloading fees
+            </SheetTitle>
+            <SheetDescription>
+              Fee tiers by tonnage and volume. Browse saved versions, set one
+              active, or create a new one.
+            </SheetDescription>
+          </div>
+        </SheetHeader>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pt-5 pb-5">
+          <LoadingFeesManager
+            versions={versions}
+            selectedDate={referenceDate}
+            onSelectDate={setSelectedDate}
+            pricing={data?.data}
+            isLoading={isLoading}
+            canActivate={hasPermission("config:pricing:activate")}
+            isActivating={isActivating}
+            onActivate={(effectiveDate) =>
+              activateLoadingPricing({ effectiveDate })
+            }
+            isCreating={isCreating}
+            onCreate={createLoadingPricing}
+          />
         </div>
       </SheetContent>
     </Sheet>

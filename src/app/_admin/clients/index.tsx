@@ -1,92 +1,54 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
-import {
-  CustomerTable,
-  CustomerTableSkeleton,
-} from "@/features/clients/components/customer-table"
-import { requirePermission } from "@/lib/auth"
+import { Link, createFileRoute } from "@tanstack/react-router"
+import { Can } from "@/components/has-permission"
+import { ActionIcon } from "@/components/icons"
 import {
   PageAction,
-  PageBackButton,
+  PageDescription,
   PageHeader,
   PageTitle,
 } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
-import { Can } from "@/components/has-permission"
-import { useTranslation } from "@/i18n"
+import {
+  ClientList,
+  ClientListSkeleton,
+} from "@/features/clients/components/client-list"
 import { clientsQueryOptions } from "@/features/clients/query-options"
 import { ClientSearchParamsCache } from "@/features/clients/schemas"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { ClientType, ClientTypeListOptions } from "@/config/constants"
-import { ActionIcon } from "@/components/icons"
+import { useTranslation } from "@/i18n"
+import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute("/_admin/clients/")({
   validateSearch: ClientSearchParamsCache,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("clients:module"),
-  pendingComponent: CustomerTableSkeleton,
+  pendingComponent: ClientListSkeleton,
   loader: ({ context, deps: { search } }) =>
     context.queryClient.ensureQueryData(clientsQueryOptions(search)),
 })
 
 function RouteComponent() {
   const tr = useTranslation()
-  const navigate = useNavigate({ from: "/clients/" })
-  const { client_type } = Route.useSearch()
-
-  function updateClientType(value: ClientType | undefined) {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        client_type: value,
-        page: 1,
-      }),
-    })
-  }
 
   return (
     <>
       <PageHeader>
-        <PageTitle>
-          <PageBackButton />
-          {tr("common.clients")}
-        </PageTitle>
-        {/* <PageDescription>Manage your projects and team members</PageDescription> */}
-        <PageAction className="flex flex-row gap-4">
-          <Select
-            value={client_type}
-            onValueChange={(v) => {
-              updateClientType(v as ClientType)
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              {ClientTypeListOptions.map((b) => (
-                <SelectItem key={b.value} value={b.value}>
-                  {b.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Can permission={"clients:create"}>
+        <PageTitle>{tr("common.clients")}</PageTitle>
+        <PageDescription>
+          The companies you quote, book and invoice.
+        </PageDescription>
+        <PageAction>
+          <Can permission="clients:create">
             <Button asChild>
-              <Link to={"/clients/new"}>
-                <ActionIcon action="create"/>
-                Add Client
+              <Link to="/clients/new">
+                <ActionIcon action="create" />
+                New client
               </Link>
             </Button>
           </Can>
         </PageAction>
       </PageHeader>
-      <CustomerTable />
+      <ClientList />
     </>
   )
 }

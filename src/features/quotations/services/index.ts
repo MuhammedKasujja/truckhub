@@ -18,12 +18,13 @@ import {
   markQuotationRejected,
   getQuotationReportPdf,
   getQuotationShipments,
+  getQuotationActivities,
   markQuotationCancelled,
 } from "./server"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getQuotationsFn = createServerFn()
-  .inputValidator(QuotationSearchParams)
+  .validator(QuotationSearchParams)
   .handler(async ({ data }) => {
     const response = await getQuotations(data)
     if (response.error) {
@@ -34,55 +35,55 @@ export const getQuotationsFn = createServerFn()
   })
 
 export const createQuotationFn = createServerFn({ method: "POST" })
-  .inputValidator(createQuotationSchema)
+  .validator(createQuotationSchema)
   .handler(async ({ data }) => {
-    return createQuotation(data)
+    return apiResponseTransform(createQuotation(data))
   })
 
 export const updateQuotationFn = createServerFn({ method: "POST" })
-  .inputValidator(updateQuotationSchema)
+  .validator(updateQuotationSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(updateQuotation(data))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationAcceptedFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(markQuotationAccepted(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationRejectedFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(markQuotationRejected(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const sendQuotationEmailFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(sendQuotationEmail(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationCancelledFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(markQuotationCancelled(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const markQuotationExpiredFn = createServerFn({ method: "POST" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(markQuotationExpired(data.id))
     return { data: result.data, message: result.message }
   })
 
 export const getQuotationDetailsFn = createServerFn({ method: "GET" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     const result = await apiResponseTransform(getQuotationDetails(data.id))
 
@@ -96,8 +97,15 @@ export const getQuotationDetailsFn = createServerFn({ method: "GET" })
     }
   })
 
+export const getQuotationActivitiesFn = createServerFn({ method: "GET" })
+  .validator(EntityIdSchema)
+  .handler(async ({ data }) => {
+    const result = await apiResponseTransform(getQuotationActivities(data.id))
+    return result.data ?? []
+  })
+
 export const getQuotationReportPdfFn = createServerFn({ method: "GET" })
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     try {
       const response = await getQuotationReportPdf(data.id)
@@ -116,7 +124,7 @@ export const getQuotationReportPdfFn = createServerFn({ method: "GET" })
   })
 
 export const getQuotationShipmentsFn = createServerFn()
-  .inputValidator(quotationShipmentParams)
+  .validator(quotationShipmentParams)
   .handler(async ({ data }) => {
     const response = await getQuotationShipments(data)
     if (response.error) {

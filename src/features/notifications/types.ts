@@ -1,6 +1,6 @@
-import { EntityId } from "@/schemas"
+import type { EntityId } from "@/schemas"
 
-type NotificationSource =
+export type NotificationSource =
   | "invoice_created"
   | "invoice_emailed"
   | "quotation_accepted"
@@ -10,9 +10,19 @@ type NotificationSource =
   | "trip_created"
   | "trip_started"
   | "trip_ended"
+  | "trip_delayed"
+
+/** What a notification is about, when a business event raised it. */
+export type NotificationResourceType =
+  | "invoice"
+  | "quotation"
+  | "payment"
+  | "trip"
+  | "booking"
 
 export type NotificationItem = {
-  id: number
+  /** The recipient row: the id used to mark the notification read. */
+  id: EntityId
   notification_id: EntityId
   title: string
   body: string
@@ -20,4 +30,6 @@ export type NotificationItem = {
   source: NotificationSource
   is_read: boolean
   read_at: string | null
+  resource_type: NotificationResourceType | (string & {}) | null
+  resource_id: EntityId | null
 }

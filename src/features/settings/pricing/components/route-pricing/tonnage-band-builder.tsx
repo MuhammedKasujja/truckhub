@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { uuid } from "@/lib/id"
 import { Plus, Trash2, AlertCircle, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -89,7 +90,7 @@ export function TonnageBandBuilder({
   function addBand() {
     onChange([
       ...bands,
-      { id: crypto.randomUUID(), min_tons: undefined, max_tons: undefined },
+      { id: uuid(), min_tons: undefined, max_tons: undefined },
     ])
   }
 

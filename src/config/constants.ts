@@ -1,5 +1,7 @@
 export const DEFAULT_FITER_QUERY_PER_PAGE = 10
 
+export const PAGINATION_SIZES = [DEFAULT_FITER_QUERY_PER_PAGE, 25, 50, 100]
+
 export const DEFAULT_ROUTE_TABLE_PRICING_ROWS = 10
 
 export const CURRENCY_CODE = "UGX"
@@ -30,7 +32,7 @@ export const PaymentStatuses = [
 
 export const AuditLogSource = ["system", "user"] as const
 
-export const ClientTypeList = ["normal", "premium"] as const
+export const ClientTypeList = ["standard", "premium"] as const
 
 export const ClientTypeListOptions = [undefined, ...ClientTypeList].map(
   (p) => ({ label: p ? p : "Select client", value: p })
@@ -53,6 +55,10 @@ export const MAP_LIGHT_STYLE_URL = "https://tiles.openfreemap.org/styles/bright"
 
 export const MAP_DARK_STYLE_URL = "https://tiles.openfreemap.org/styles/dark"
 
-export const SUPPORTED_IMAGE_EXTENSIONS = ["image/jpeg", "image/png", "image/webp"];
+export const SUPPORTED_IMAGE_EXTENSIONS = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]
 
 export const SUPPORTED_DOC_EXTENSIONS = ["application/pdf"]

@@ -23,10 +23,14 @@ export function VehicleCategoryPicker({
       onChange={(cat) => {
         onSelected?.(cat)
       }}
-      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(u, q) =>
+        u.name.toLowerCase().includes(q.toLowerCase()) ||
+        (u.display_name &&
+          u.display_name.toLowerCase().includes(q.toLowerCase()))
+      }
       label="Vehicle Category"
       getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      renderOption={(u) => <span>{u.display_name ?? u.name}</span>}
     />
   )
 }
@@ -52,15 +56,18 @@ export function VehicleCategoryPickerField<TFieldValues extends FieldValues>({
       label={label}
       remote={remote}
       //   onSearch={(q) => setQuery(q)}
-      filterFn={(u, q) => u.name.toLowerCase().includes(q.toLowerCase())}
+      filterFn={(u, q) =>
+        u.name.toLowerCase().includes(q.toLowerCase()) ||
+        (u.display_name &&
+          u.display_name.toLowerCase().includes(q.toLowerCase()))
+      }
       getOptionValue={(u) => u.id}
-      renderOption={(u) => <span>{u.name}</span>}
+      renderOption={(u) => <span>{u.display_name ?? u.name}</span>}
       onSelected={onSelected}
       {...props}
     />
   )
 }
-
 
 export function VehicleSubCategoryPicker({
   value,
@@ -85,7 +92,9 @@ export function VehicleSubCategoryPicker({
   )
 }
 
-export function VehicleSubCategoryPickerField<TFieldValues extends FieldValues>({
+export function VehicleSubCategoryPickerField<
+  TFieldValues extends FieldValues,
+>({
   name,
   onSelected,
   label,

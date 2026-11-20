@@ -1,12 +1,12 @@
 import { toast } from "sonner"
-import { objectToFormData } from "@/lib/form-utils"
 import { useMutation } from "@tanstack/react-query"
-import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import {
+import { createCarModelFn, updateCarModelFn } from "../car-model/services"
+import type {
   CarModelCreateSchemaType,
   CarModelUpdateSchemaType,
 } from "../car-model/schemas"
-import { createCarModelFn, updateCarModelFn } from "../car-model/services"
+import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
+import { objectToFormData } from "@/lib/form-utils"
 
 export function useCreateCarModel() {
   const invalidator = useQueryInvalidator()
@@ -16,8 +16,8 @@ export function useCreateCarModel() {
     },
     onSuccess: () => {
       toast.success("Car Model created successfully")
-      invalidator.settings.vehiclesTypes.list()
-      invalidator.settings.vehicleConfig()
+      // Also refreshes the cached vehicle configuration.
+      invalidator.settings.carModels.list()
     },
     onError: (error) => {
       toast.error(error.message)
@@ -34,8 +34,8 @@ export function useEditCarModel() {
     },
     onSuccess: () => {
       toast.success("Car Model updated successfully")
-      invalidator.settings.vehiclesTypes.list()
-      invalidator.settings.vehicleConfig()
+      // Also refreshes the cached vehicle configuration.
+      invalidator.settings.carModels.list()
     },
     onError: (error) => {
       toast.error(error.message)

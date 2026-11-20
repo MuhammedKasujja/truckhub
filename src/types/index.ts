@@ -34,7 +34,20 @@ export type AppErrorDetails = {
   code: string | undefined
   status?: ErrorStatusCode
   statusCode: StatusCode
+  /** Whatever the API attached to the error, e.g. the conflicting windows. */
+  details?: ApiErrorDetails | null
 }
+
+type ApiErrorScalar = string | number | boolean | null
+
+/**
+ * Kept to plain JSON shapes (no `unknown`): server functions return this type,
+ * and their results must be serializable.
+ */
+export type ApiErrorDetails = Record<
+  string,
+  ApiErrorScalar | ApiErrorScalar[] | Record<string, ApiErrorScalar>[]
+>
 
 export type SuccessResponse<T> = {
   success: true

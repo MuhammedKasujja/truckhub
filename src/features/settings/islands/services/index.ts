@@ -15,25 +15,25 @@ export const getIslandListFn = createServerFn().handler(async () => {
 })
 
 export const getIslandDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(getIslandDetails(data.id))
   })
 
 export const deleteIslandByIdFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteIslandById(data.id)
   })
 
 export const updateIslandFn = createServerFn()
-  .inputValidator(islandUpdateSchema)
+  .validator(islandUpdateSchema)
   .handler(async ({ data }) => {
     return updateIsland(data)
   })
 
 export const createIslandFn = createServerFn()
-  .inputValidator(islandCreateSchema)
+  .validator(islandCreateSchema)
   .handler(async ({ data }) => {
     return createIsland(data)
   })

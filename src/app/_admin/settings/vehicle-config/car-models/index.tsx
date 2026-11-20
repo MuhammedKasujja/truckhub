@@ -1,13 +1,14 @@
-import { CarModelTable, CarModelTableSkeleton } from "@/features/settings/vehicle-config/car-model/components"
+import { createFileRoute } from "@tanstack/react-router"
+import { CarModelList } from "@/features/settings/vehicle-config/car-model/components"
 import { createCarModelsListQueryOptions } from "@/features/settings/vehicle-config/car-model/query-options"
 import { CarModelSearchParamsCache } from "@/features/settings/vehicle-config/car-model/schemas"
-import { createFileRoute } from "@tanstack/react-router"
+import { ConfigGridSkeleton } from "@/features/settings/vehicle-config/_components/config-ui"
 
 export const Route = createFileRoute(
   "/_admin/settings/vehicle-config/car-models/"
 )({
-  component: RouteComponent,
-  pendingComponent: CarModelTableSkeleton,
+  component: CarModelList,
+  pendingComponent: ConfigGridSkeleton,
   validateSearch: CarModelSearchParamsCache,
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps: search }) =>
@@ -15,7 +16,3 @@ export const Route = createFileRoute(
       createCarModelsListQueryOptions(search)
     ),
 })
-
-function RouteComponent() {
-  return <CarModelTable />
-}

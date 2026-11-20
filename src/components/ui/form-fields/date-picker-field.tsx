@@ -27,6 +27,7 @@ type DatePickerFieldProps<F extends FieldValues> = {
   required?: boolean
   startDate?: Date
   endDate?: Date
+  format?: "dd/MM/yyyy" | "PPP"
 }
 
 export function DatePickerField<T extends FieldValues>({
@@ -38,12 +39,13 @@ export function DatePickerField<T extends FieldValues>({
   description,
   startDate,
   endDate,
+  format = "PPP",
 }: Readonly<DatePickerFieldProps<T>>) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const newStartDate = React.useMemo(() => {
     if (startDate) return startDate
-
+    console.log("Not applicable")
     const date = new Date()
     return new Date(date.getFullYear(), date.getMonth(), date.getDate())
   }, [startDate])
@@ -71,7 +73,7 @@ export function DatePickerField<T extends FieldValues>({
                 )}
               >
                 {field.value ? (
-                  `${formatFn(field.value, "PPP")}`
+                  `${formatFn(field.value, format)}`
                 ) : (
                   <span>{placeholder}</span>
                 )}
@@ -113,6 +115,13 @@ interface DatePickerProps {
   startDate?: Date
   endDate?: Date
   initialDate?: Date
+  /** Controls the selected date from outside; omit to let the picker own it. */
+  value?: Date
+  /** Days before this one cannot be picked. */
+  minDate?: Date
+  /** Days after this one cannot be picked. */
+  maxDate?: Date
+  "aria-invalid"?: boolean
   format?: "PPP" | "P"
   onDateChanged: (date: Date | undefined) => void
 }
@@ -124,12 +133,17 @@ export function DatePicker({
   placeholder,
   onDateChanged,
   initialDate,
+  value,
+  minDate,
+  maxDate,
+  "aria-invalid": ariaInvalid,
   format = "PPP",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
-  const [activeDate, setActiveDate] = React.useState<Date | undefined>(
+  const [pickedDate, setActiveDate] = React.useState<Date | undefined>(
     initialDate
   )
+  const activeDate = value ?? pickedDate
 
   const newStartDate = React.useMemo(() => {
     if (startDate) return startDate
@@ -143,6 +157,7 @@ export function DatePicker({
       <PopoverTrigger asChild>
         <Button
           id={id}
+          aria-invalid={ariaInvalid}
           variant={"outline"}
           className={cn(
             "w-full font-normal",
@@ -169,10 +184,10 @@ export function DatePicker({
           onDayClick={() => setIsOpen(false)}
           startMonth={newStartDate}
           endMonth={endDate}
-          // disabled={(date) =>
-          //   Number(date) < Date.now() - 1000 * 60 * 60 * 24 ||
-          //   Number(date) > Date.now() + 1000 * 60 * 60 * 24 * 30
-          // }
+          disabled={[
+            ...(minDate ? [{ before: minDate }] : []),
+            ...(maxDate ? [{ after: maxDate }] : []),
+          ]}
           defaultMonth={activeDate}
         />
       </PopoverContent>

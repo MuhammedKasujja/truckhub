@@ -1,16 +1,17 @@
 import z from "zod"
 import { IDSchema } from "@/schemas"
 
-export const fetchNotificationSchema = z.object({
-  userId: IDSchema,
-})
+export const NOTIFICATIONS_PER_PAGE = 20
 
 export const listNotificationSchema = z.object({
+  page: z.number().int().min(1).default(1),
+  perPage: z.number().int().min(10).max(100).default(NOTIFICATIONS_PER_PAGE),
   unreadOnly: z.boolean().default(false),
-  ...fetchNotificationSchema.shape
 })
 
+export type ListNotificationsInput = z.input<typeof listNotificationSchema>
+
 export const markNotificationReadSchema = z.object({
-  notificationId: IDSchema,
-  ...fetchNotificationSchema.shape
+  /** The recipient row id (`NotificationItem.id`), not `notification_id`. */
+  id: IDSchema,
 })

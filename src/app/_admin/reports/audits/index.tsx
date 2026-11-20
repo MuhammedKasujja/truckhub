@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { requirePermission } from "@/lib/auth"
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageBackButton,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
 import {
   AuditLogTable,
   AuditLogTableSkeleton,
 } from "@/features/audit_logs/components/audit-log-table"
-import { PageBackButton } from "@/components/page-header"
 import { createAuditLogsQueryOptions } from "@/features/audit_logs/query-options"
 import { AuditLogSearchParamsCache } from "@/features/audit_logs/schemas"
 
@@ -22,17 +26,20 @@ export const Route = createFileRoute("/_admin/reports/audits/")({
 
 function RouteComponent() {
   return (
-    <>
-      <PageHeader>
-        <PageTitle>
+    <div className="flex flex-col gap-5">
+      <PageHeader className="pb-0">
+        <div className="flex items-start gap-1">
           <PageBackButton />
-          Audit Logs
-        </PageTitle>
-        <PageAction>
-          <PageBackButton />
-        </PageAction>
+          <div>
+            <PageTitle>Audit logs</PageTitle>
+            <PageDescription>
+              Every create, edit, delete and approval across the system. Open an
+              entry to see exactly which fields changed.
+            </PageDescription>
+          </div>
+        </div>
       </PageHeader>
       <AuditLogTable />
-    </>
+    </div>
   )
 }

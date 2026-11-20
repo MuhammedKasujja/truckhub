@@ -64,6 +64,14 @@ function validate(
   const filled = rows.filter((r) => r.route_name.trim())
   if (filled.length === 0) return "Add at least one route."
 
+  // The picker blocks duplicates, but paste / undo can still create them
+  const seen = new Set<string>()
+  for (const row of filled) {
+    if (seen.has(row.route_name))
+      return `${row.origin} → ${row.destination} is added more than once.`
+    seen.add(row.route_name)
+  }
+
   for (const row of filled) {
     if (!row.origin.trim()) return `"${row.route_name}" is missing an origin.`
     if (!row.destination.trim())
@@ -103,8 +111,10 @@ export function RoutePricingDataGridForm({
   const { routes } = useBookingRoutes()
   const [isOpen, setOpen] = useState(true)
 
+  // en-CA formats the *local* date as YYYY-MM-DD; toISOString() would shift it
+  // to UTC and send the previous day in timezones ahead of UTC.
   const [validFrom, setValidFrom] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toLocaleDateString("en-CA")
   )
   const [bands, setBands] = useState<TonnageBand[]>(INITIAL_BANDS)
   const [rows, setRows] = useState<RoutePricingRow[]>(() =>
@@ -166,7 +176,7 @@ export function RoutePricingDataGridForm({
             format="P"
             initialDate={new Date()}
             onDateChanged={(date) => {
-              if (date) setValidFrom(date?.toISOString().split("T")[0])
+              if (date) setValidFrom(date.toLocaleDateString("en-CA"))
             }}
           />
         </div>

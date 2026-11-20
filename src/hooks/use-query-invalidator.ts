@@ -23,6 +23,22 @@ export class QueryInvalidator {
     refresh: () => this.queryClient.clear(),
   }
 
+  documents = {
+    /** Types, every owner's documents and the expiring lists */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.documents.all(),
+        }),
+    },
+    types: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.documents.types(),
+        }),
+    },
+  }
+
   dashboard = {
     app: () =>
       this.queryClient.invalidateQueries({
@@ -55,6 +71,13 @@ export class QueryInvalidator {
   }
 
   quotations = {
+    /** Lists, details and each quotation's shipments */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.quotations.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({
@@ -85,6 +108,13 @@ export class QueryInvalidator {
   } as const
 
   invoices = {
+    /** Lists, statistics, details and each invoice's activity */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.invoices.all(),
+        }),
+    },
     list: {
       invalidate: () => {
         this.queryClient.invalidateQueries({
@@ -187,11 +217,18 @@ export class QueryInvalidator {
     },
 
     routes: {
-      all: () => this.queryClient.invalidateQueries({ queryKey: [""] }),
+      all: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.all(),
+        }),
       list: () =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "list"] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.list(),
+        }),
       details: (id: EntityId) =>
-        this.queryClient.invalidateQueries({ queryKey: ["", "detail", id] }),
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.routes.detail(id.toString()),
+        }),
     },
     taxRates: {
       all: () =>
@@ -320,6 +357,12 @@ export class QueryInvalidator {
     },
   }
 
+  hr = {
+    /** HR data is closely linked (leave, balances, payslips), so refresh it together. */
+    refresh: () =>
+      this.queryClient.invalidateQueries({ queryKey: queryKeys.hr.all() }),
+  }
+
   drivers = {
     list: {
       invalidate: () =>
@@ -352,16 +395,17 @@ export class QueryInvalidator {
         this.queryClient.invalidateQueries({
           queryKey: queryKeys.clients.detail(id),
         }),
-      routePricing: {
-        invalidate: (clientId: EntityId) =>
-          this.queryClient.invalidateQueries({
-            queryKey: queryKeys.clients.routePricing({ clientId }),
-          }),
-      },
     }),
   }
 
   shipments = {
+    /** Lists, details and per-quotation shipments */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.shipments.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({
@@ -422,6 +466,13 @@ export class QueryInvalidator {
   }
 
   vehicles = {
+    /** Lists, statistics and every vehicle's details */
+    all: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.vehicles.all(),
+        }),
+    },
     list: {
       invalidate: () =>
         this.queryClient.invalidateQueries({

@@ -1,13 +1,23 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { addMonths, endOfMonth, startOfDay, startOfMonth } from "date-fns"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
+import { ShipmentDetailsDialog } from "../shipment-details-dialog"
+import { CalendarDayPanel } from "./calendar-day-panel"
+import {
+  DEFAULT_WEEK_ROWS,
+  monthWeeks,
+  overlapsRange,
+  spansOnDay,
+  toShipmentSpans,
+  weekRowsForHeight,
+} from "./calendar-layout"
+import { CalendarWeekRow } from "./calendar-week-row"
+import { toDateString } from "./sample-data"
+import type { RefObject } from "react"
+import type { Shipment } from "@/features/shipments/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import { type Shipment } from "@/features/shipments/types"
-
-import { CalendarDayPanel } from "./calendar-day-panel"
-import { toDateString } from "./sample-data"
 
 const monthFormat = new Intl.DateTimeFormat("en-US", {
   month: "long",
@@ -16,33 +26,33 @@ const monthFormat = new Intl.DateTimeFormat("en-US", {
 
 const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-/** Two chips is what a cell this size holds; the rest roll into a "+n more" line. */
-const MAX_CHIPS = 2
-
-const startOfDay = (date: Date) =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate())
-
-const addDays = (date: Date, days: number) => {
-  const next = new Date(date)
-  next.setDate(next.getDate() + days)
-  return next
-}
-
 /**
- * Weeks start on Monday, which is what most of the world outside the US expects. The row count is
- * derived rather than fixed at six, so a short month never renders a whole empty trailing week.
+ * From `xl` the grid fills a fixed height, so the rows per week follow from what each week is given.
+ * Below that the weeks size themselves from their content, and measuring them would chase its tail.
  */
-function monthGrid(anchor: Date) {
-  const first = new Date(anchor.getFullYear(), anchor.getMonth(), 1)
-  const offset = (first.getDay() + 6) % 7
-  const dayCount = new Date(
-    anchor.getFullYear(),
-    anchor.getMonth() + 1,
-    0
-  ).getDate()
-  const weeks = Math.ceil((offset + dayCount) / 7)
-  const start = addDays(first, -offset)
-  return Array.from({ length: weeks * 7 }, (_, index) => addDays(start, index))
+function useFittedWeekRows(
+  weeksRef: RefObject<HTMLDivElement | null>,
+  weekCount: number
+) {
+  const [rows, setRows] = useState(DEFAULT_WEEK_ROWS)
+
+  useEffect(() => {
+    const element = weeksRef.current
+    if (!element) return
+
+    const fillsHeight = window.matchMedia("(min-width: 80rem)")
+    const observer = new ResizeObserver(() =>
+      setRows(
+        fillsHeight.matches
+          ? weekRowsForHeight(element.clientHeight / weekCount)
+          : DEFAULT_WEEK_ROWS
+      )
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [weeksRef, weekCount])
+
+  return rows
 }
 
 /**
@@ -54,198 +64,116 @@ function monthGrid(anchor: Date) {
  */
 export function CalendarSchedule({ shipments }: { shipments: Shipment[] }) {
   const today = useMemo(() => startOfDay(new Date()), [])
-  const [anchor, setAnchor] = useState(
-    () => new Date(today.getFullYear(), today.getMonth(), 1)
-  )
+  const [anchor, setAnchor] = useState(() => startOfMonth(today))
   const [selected, setSelected] = useState(today)
+  const [openShipment, setOpenShipment] = useState<Shipment>()
+  const [dialogOpen, setDialogOpen] = useState(false)
 
-  const events = useMemo(() => {
-    const map = new Map<string, Shipment[]>()
-
-    for (const shipment of shipments) {
-      const start = new Date(shipment.item.scheduled_start)
-      const scheduledEnd = new Date(shipment.item.scheduled_end)
-      if (Number.isNaN(start.getTime())) continue
-
-      const startDay = startOfDay(start)
-      const endDay =
-        Number.isNaN(scheduledEnd.getTime()) || scheduledEnd < startDay
-          ? startDay
-          : startOfDay(scheduledEnd)
-
-      for (let day = startDay; day <= endDay; day = addDays(day, 1)) {
-        const key = toDateString(day)
-        const list = map.get(key) ?? []
-        list.push(shipment)
-        map.set(key, list)
-      }
-    }
-
-    for (const list of map.values()) {
-      list.sort(
-        (left, right) =>
-          new Date(left.item.scheduled_start).getTime() -
-          new Date(right.item.scheduled_start).getTime()
-      )
-    }
-
-    return map
-  }, [shipments])
-
-  const days = useMemo(() => monthGrid(anchor), [anchor])
-  const todayStr = toDateString(today)
-  const selectedStr = toDateString(selected)
-
-  const shiftMonth = (delta: number) =>
-    setAnchor(new Date(anchor.getFullYear(), anchor.getMonth() + delta, 1))
+  const spans = useMemo(() => toShipmentSpans(shipments), [shipments])
+  const weeks = useMemo(() => monthWeeks(anchor), [anchor])
+  const weeksRef = useRef<HTMLDivElement>(null)
+  const weekRows = useFittedWeekRows(weeksRef, weeks.length)
+  const monthCount = useMemo(
+    () =>
+      spans.filter((span) => overlapsRange(span, anchor, endOfMonth(anchor)))
+        .length,
+    [spans, anchor]
+  )
 
   const goToToday = () => {
-    setAnchor(new Date(today.getFullYear(), today.getMonth(), 1))
+    setAnchor(startOfMonth(today))
     setSelected(today)
   }
 
+  const showShipment = (shipment: Shipment) => {
+    setOpenShipment(shipment)
+    setDialogOpen(true)
+  }
+
   return (
-    <div className="grid grid-cols-7 gap-6">
-      <Card className="col-span-2">
-        <CardContent>
+    <div className="grid gap-6 xl:h-[calc(100vh-9.125rem)] xl:grid-cols-[20rem_minmax(0,1fr)] xl:grid-rows-[minmax(0,1fr)]">
+      <Card className="order-2 xl:order-1">
+        <CardContent className="flex min-h-0 flex-1 flex-col">
           <CalendarDayPanel
             date={selected}
-            events={events.get(selectedStr) ?? []}
+            spans={spansOnDay(spans, selected)}
+            onOpenShipment={showShipment}
           />
         </CardContent>
       </Card>
-      <div className="col-span-5 w-full bg-background">
-        <div className="w-full">
-          <Card>
-            <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-              <CardTitle className="text-xl tracking-tight">
-                {monthFormat.format(anchor)}
-              </CardTitle>
 
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Previous month"
-                  onClick={() => shiftMonth(-1)}
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button variant="outline" onClick={goToToday} className="h-8">
-                  Today
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label="Next month"
-                  onClick={() => shiftMonth(1)}
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
-            </CardHeader>
+      <Card className="order-1 xl:order-2">
+        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+          <div>
+            <CardTitle className="text-xl tracking-tight">
+              {monthFormat.format(anchor)}
+            </CardTitle>
+            <p className="text-xs text-muted-foreground tabular-nums">
+              {`${monthCount} shipment${monthCount === 1 ? "" : "s"}`}
+            </p>
+          </div>
 
-            <CardContent className="flex flex-col gap-4">
-              <div className="overflow-hidden rounded-xl border bg-border">
-                <div className="grid grid-cols-7 bg-card text-xs font-medium text-muted-foreground">
-                  {dayNames.map((name) => (
-                    <div key={name} className="px-2 py-2.5 text-center">
-                      <span className="hidden sm:inline">{name}</span>
-                      <span className="sm:hidden">{name.slice(0, 1)}</span>
-                    </div>
-                  ))}
+          <div className="flex items-center gap-1">
+            <Button variant="outline" onClick={goToToday} className="h-8">
+              Today
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Previous month"
+              onClick={() => setAnchor(addMonths(anchor, -1))}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Next month"
+              onClick={() => setAnchor(addMonths(anchor, 1))}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex min-h-0 flex-1 flex-col">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
+            <div className="grid shrink-0 grid-cols-7 bg-muted/40 text-xs font-medium text-muted-foreground">
+              {dayNames.map((name) => (
+                <div key={name} className="px-2 py-2 text-center">
+                  <span className="hidden sm:inline">{name}</span>
+                  <span className="sm:hidden">{name.slice(0, 1)}</span>
                 </div>
+              ))}
+            </div>
 
-                <div className="grid grid-cols-7 gap-px border-t pt-px">
-                  {days.map((day) => {
-                    const dateStr = toDateString(day)
-                    const inMonth = day.getMonth() === anchor.getMonth()
-                    const isToday = dateStr === todayStr
-                    const isSelected = dateStr === selectedStr
-                    const dayEvents = events.get(dateStr) ?? []
-                    const shown = dayEvents.slice(0, MAX_CHIPS)
-                    const overflow = dayEvents.length - shown.length
+            <div
+              ref={weeksRef}
+              className="grid min-h-0 flex-1 auto-rows-fr grid-cols-1 xl:overflow-y-auto"
+            >
+              {weeks.map((week) => (
+                <CalendarWeekRow
+                  key={toDateString(week[0])}
+                  week={week}
+                  spans={spans}
+                  rows={weekRows}
+                  month={anchor}
+                  today={today}
+                  selected={selected}
+                  onSelectDay={setSelected}
+                  onOpenShipment={showShipment}
+                />
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-                    return (
-                      <button
-                        key={dateStr}
-                        type="button"
-                        onClick={() => setSelected(day)}
-                        aria-pressed={isSelected}
-                        aria-label={`${day.toDateString()}, ${dayEvents.length} events`}
-                        className={cn(
-                          "relative flex min-h-16 flex-col gap-1 p-1.5 text-left transition-colors focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none sm:min-h-24",
-                          inMonth
-                            ? "bg-card hover:bg-accent/50"
-                            : "bg-muted/40 hover:bg-accent/40",
-                          isSelected && "z-10 ring-2 ring-ring/60 ring-inset"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "flex size-6 shrink-0 items-center justify-center rounded-full text-xs tabular-nums",
-                            isToday
-                              ? "bg-primary font-semibold text-primary-foreground"
-                              : inMonth
-                                ? "font-medium"
-                                : "text-muted-foreground"
-                          )}
-                        >
-                          {day.getDate()}
-                        </span>
-
-                        {/* A seven-column month at 390px gives each cell about 50px — too narrow for a
-                          chip, so phones get a dot per event and the panel below carries the detail. */}
-                        <span className="flex min-h-2 flex-wrap items-start gap-1 sm:hidden">
-                          {dayEvents.slice(0, 4).map((event) => (
-                            <span
-                              key={event.id}
-                              aria-hidden="true"
-                              className={cn(
-                                "size-1.5 rounded-full bg-foreground",
-                                inMonth ? undefined : "opacity-50"
-                              )}
-                            />
-                          ))}
-                        </span>
-
-                        <span className="hidden min-w-0 flex-col gap-0.5 sm:flex">
-                          {shown.map((event) => (
-                            <span
-                              key={event.id}
-                              className={cn(
-                                "flex w-full min-w-0 items-center gap-1.5 rounded bg-muted px-1.5 py-0.5 text-xs leading-5",
-                                inMonth ? undefined : "opacity-60"
-                              )}
-                            >
-                              {/* {toDateString(
-                              new Date(event.item.scheduled_start)
-                            ) === dateStr ? (
-                              <span className="shrink-0 text-[0.6875rem] tabular-nums opacity-70">
-                                {compactTime(
-                                  new Date(event.item.scheduled_start)
-                                )}
-                              </span>
-                            ) : null} */}
-                              <span className="min-w-0 flex-1 truncate font-medium">
-                                {event.number ?? event.item.display_name}
-                              </span>
-                            </span>
-                          ))}
-
-                          {overflow > 0 ? (
-                            <span className="px-1.5 text-xs text-muted-foreground">{`+${overflow} more`}</span>
-                          ) : null}
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      <ShipmentDetailsDialog
+        shipment={openShipment}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   )
 }

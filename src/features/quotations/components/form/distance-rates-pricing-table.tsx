@@ -8,7 +8,8 @@ import {
   type ColumnFiltersState,
   type FilterFn,
 } from "@tanstack/react-table"
-import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types";
+import { DistanceTonnagePricingItem } from "@/features/settings/pricing/types"
+import { cn } from "@/lib/utils"
 
 /* ---------- Types ---------- */
 
@@ -120,9 +121,7 @@ export function DistanceRatePricingTable({
         id: "distance",
         header: "Distance",
         filterFn: containsDistance,
-        cell: (c) => (
-          <span className="font-medium">{c.getValue()}</span>
-        ),
+        cell: (c) => <span className="font-medium">{c.getValue()}</span>,
       }),
       // One column per tonnage tier, built from the data
       ...tiers.map((tier) =>
@@ -133,7 +132,9 @@ export function DistanceRatePricingTable({
             const price = row.original.cells[tier.key]
             if (!price) {
               return (
-                <span className="px-3 text-sm text-muted-foreground">No rate</span>
+                <span className="flex min-h-11 items-center justify-center rounded-lg border border-dashed text-xs text-muted-foreground/70">
+                  —
+                </span>
               )
             }
             const isSelected = selectedId === price.id
@@ -142,13 +143,13 @@ export function DistanceRatePricingTable({
                 type="button"
                 aria-pressed={isSelected}
                 onClick={() => onSelect(price)}
-                className={[
-                  "min-h-11 w-full rounded-lg border px-3 text-left text-sm transition-colors",
+                className={cn(
+                  "min-h-11 w-full rounded-lg border px-3 text-left text-sm whitespace-nowrap tabular-nums shadow-xs transition-all",
                   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
                   isSelected
-                    ? "border-2 border-primary bg-primary/5 font-semibold text-primary/95"
-                    : "bg-card text-muted-foreground hover:border-primary dark:text-accent-foreground",
-                ].join(" ")}
+                    ? "border-primary bg-primary font-semibold text-primary-foreground shadow-sm"
+                    : "bg-card text-foreground/80 hover:border-primary/50 hover:bg-primary/5"
+                )}
               >
                 {num(price.min_price)} – {num(price.max_price)}
               </button>
@@ -171,12 +172,8 @@ export function DistanceRatePricingTable({
   })
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3.5">
-      <p className="text-sm text-muted-foreground">
-        Select a distance bands to prefill distance and tonnage.
-      </p>
-
-      <div className="min-h-0 flex-1 overflow-auto rounded-xl border">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-auto rounded-xl border bg-card shadow-xs">
         <table className="w-full table-fixed border-collapse">
           <colgroup>
             <col className="w-36" />
@@ -184,19 +181,19 @@ export function DistanceRatePricingTable({
               <col key={t.key} />
             ))}
           </colgroup>
-          <thead className="sticky top-0 z-10 ">
+          <thead className="sticky top-0 z-10 bg-muted/90 backdrop-blur">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
                 {hg.headers.map((h) => (
                   <th
                     key={h.id}
                     scope="col"
-                    className={[
-                      "border-b px-3 py-2.5 text-left text-xs font-semibold",
+                    className={cn(
+                      "border-b px-3 py-2.5 text-left text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase",
                       matchedTier?.key === h.column.id
-                        ? "text-[#0b5a4d]"
-                        : "text-muted-foreground",
-                    ].join(" ")}
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    )}
                   >
                     {flexRender(h.column.columnDef.header, h.getContext())}
                   </th>
@@ -221,12 +218,15 @@ export function DistanceRatePricingTable({
               return (
                 <tr
                   key={row.id}
-                  className={isMatch ? "bg-primary/10" : undefined}
+                  className={cn(
+                    "border-b last:border-0",
+                    isMatch && "bg-primary/5"
+                  )}
                 >
                   {row.getVisibleCells().map((cell, i) => (
-                    <td key={cell.id} className="p-1">
+                    <td key={cell.id} className="p-1.5">
                       {i === 0 ? (
-                        <div className="px-2 text-sm">
+                        <div className="px-2 text-sm tabular-nums">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

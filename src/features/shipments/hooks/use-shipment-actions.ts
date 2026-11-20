@@ -6,6 +6,7 @@ import {
   RecordShipmentDetailsInput,
   AssignShipmentVehicleInput,
   ChangeShipmentVehicleInput,
+  ReportShipmentDelayInput,
 } from "../schemas"
 import {
   endShipmentFn,
@@ -14,6 +15,7 @@ import {
   recordShipmentDetailsFn,
   shipmentAssignVehicleFn,
   changeShipmentVehicleFn,
+  reportShipmentDelayFn,
 } from "../services"
 import { Shipment } from "../types"
 import { EntityId } from "@/schemas"
@@ -24,7 +26,9 @@ const useDispatchShipmentBase = createEntityActionHook(
   dispatchShipmentFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
+    // The trip's vehicle goes on the road, or comes back
+    invalidator.vehicles.all.invalidate()
   }
 )
 
@@ -50,7 +54,9 @@ const useEndShipmentBase = createEntityActionHook(
   endShipmentFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
+    // The trip's vehicle goes on the road, or comes back
+    invalidator.vehicles.all.invalidate()
   }
 )
 
@@ -76,7 +82,9 @@ const useRecordShipmentDetailsBase = createEntityActionHook(
   recordShipmentDetailsFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
+    // The trip's vehicle goes on the road, or comes back
+    invalidator.vehicles.all.invalidate()
   }
 )
 
@@ -101,9 +109,9 @@ const useAssignShipmentDriverBase = createEntityActionHook(
   shipmentAssignDriverFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
     invalidator.drivers.list.invalidate()
-    invalidator.drivers.details(input.data.driverId)
+    invalidator.drivers.details(input.data.driverId).invalidate()
   }
 )
 
@@ -128,9 +136,9 @@ const useAssignShipmentVehicleBase = createEntityActionHook(
   shipmentAssignVehicleFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
     invalidator.vehicles.list.invalidate()
-    invalidator.vehicles.details(input.data.vehicleId)
+    invalidator.vehicles.details(input.data.vehicleId).invalidate()
   }
 )
 
@@ -156,9 +164,9 @@ const useChangeShipmentVehicleBase = createEntityActionHook(
   changeShipmentVehicleFn,
   (invalidator, input) => {
     invalidator.shipments.list.invalidate()
-    invalidator.shipments.details(input.data.unitId)
+    invalidator.shipments.details(input.data.unitId).invalidate()
     invalidator.vehicles.list.invalidate()
-    invalidator.vehicles.details(input.data.newVehicleId)
+    invalidator.vehicles.details(input.data.newVehicleId).invalidate()
   }
 )
 
@@ -189,16 +197,48 @@ export function useChangeShipmentVehicle() {
   return { isPending, changeShipmentVehicle, ...reset }
 }
 
+const useReportShipmentDelayBase = createEntityActionHook(
+  reportShipmentDelayFn,
+  (invalidator, input) => {
+    // A trip moves in or out of the delayed list, and the dashboard counts it
+    invalidator.shipments.list.invalidate()
+    invalidator.shipments.details(input.data.unitId).invalidate()
+    invalidator.dashboard.app()
+  }
+)
+
+export function useReportShipmentDelay() {
+  const queryClient = useQueryClient()
+  const { isPending, execute } = useReportShipmentDelayBase()
+
+  /** Resolves to the other trips the delay collides with on the same vehicle. */
+  async function reportShipmentDelay(data: ReportShipmentDelayInput) {
+    const result = await execute({ data })
+    refreshShipmentDetails(queryClient, data.unitId, result.data?.trip)
+    return result.data?.affected_trips ?? []
+  }
+  return { isPending, reportShipmentDelay }
+}
+
 function refreshShipmentDetails(
   queryClient: QueryClient,
   unitId: EntityId,
   shipment: Shipment | undefined
 ) {
+  // Without the updated trip there is nothing to write: the invalidation that
+  // every action also runs refetches it instead
+  if (!shipment) return
   queryClient.setQueryData(queryKeys.shipments.detail(unitId), shipment)
   // patch the item inside the cached list too, so the table updates immediately
   queryClient.setQueriesData(
     { queryKey: queryKeys.shipments.list() },
-    (old: Shipment[] | undefined) =>
-      old?.map((s) => (s.id === shipment?.id ? shipment : s))
+    // A cached list is a page: { data, pagination }
+    (old: { data?: Shipment[] } | undefined) =>
+      old && Array.isArray(old.data)
+        ? {
+            ...old,
+            data: old.data.map((s) => (s.id === shipment.id ? shipment : s)),
+          }
+        : old
   )
 }

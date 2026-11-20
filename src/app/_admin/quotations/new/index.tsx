@@ -1,4 +1,9 @@
-import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
+import {
+  PageAction,
+  PageDescription,
+  PageHeader,
+  PageTitle,
+} from "@/components/page-header"
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { QuotationForm } from "@/features/quotations/components"
@@ -25,7 +30,10 @@ function RouteComponent() {
   return (
     <div>
       <PageHeader>
-        <PageTitle>New Quotation</PageTitle>
+        <PageTitle>New quotation</PageTitle>
+        <PageDescription>
+          Pick a client, add vehicles or haulage lines, then create the quote.
+        </PageDescription>
         <PageAction className="flex gap-2">
           <Button variant={"outline"} onClick={handleBack}>
             Cancel

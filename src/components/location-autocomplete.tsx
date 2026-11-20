@@ -1,4 +1,5 @@
 import { AutoComplete } from "@/components/ui/autocomplete"
+import { uuid } from "@/lib/id"
 import {
   LocationSuggestion,
   PlaceDetails,
@@ -23,7 +24,7 @@ export function LocationAutoComplete({
   const [selectedPlaceId, setSelectedPlaceId] = React.useState<
     string | undefined
   >()
-  const [sessionId, setSessionId] = React.useState<string>(crypto.randomUUID())
+  const [sessionId, setSessionId] = React.useState<string>(uuid())
 
   return (
     <Field>
@@ -74,7 +75,7 @@ export function LocationAutoComplete({
             // create a new session id for the next autocomplete or place details request
             //  because after getting place details the session id becomes invalid
             // TODO: use new session only when the pickup-location changes
-            const session = crypto.randomUUID()
+            const session = uuid()
             setSessionId(session)
           } else {
             onPlaceLoaded()

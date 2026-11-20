@@ -1,1 +1,1 @@
-export * from "./entity_numbers_wrapper"
+export * from "./entity-numbers-editor"

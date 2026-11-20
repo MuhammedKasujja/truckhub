@@ -18,7 +18,7 @@ import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const getPaymentsFn = createServerFn()
-  .inputValidator(PaymentSearchParamsCache)
+  .validator(PaymentSearchParamsCache)
   .handler(async ({ data }) => {
     const response = await getPayments(data)
     if (response.error) {
@@ -29,25 +29,25 @@ export const getPaymentsFn = createServerFn()
   })
 
 export const getPaymentsByQueryFn = createServerFn()
-  .inputValidator(SearchQuerySchema)
+  .validator(SearchQuerySchema)
   .handler(async ({ data }) => {
     return getPaymentsByQuery(data)
   })
 
 export const getPaymentDetailsFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getPaymentById(data.id)
   })
 
 export const deletePaymentFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deletePaymentById(data.id)
   })
 
 export const createPaymentFn = createServerFn()
-  .inputValidator(paymentRequestSchema)
+  .validator(paymentRequestSchema)
   .handler(async ({ data }) => {
     return createPayment(data)
   })
@@ -57,7 +57,7 @@ export const getPaymentsStatisticsFn = createServerFn().handler(async () => {
 })
 
 export const reversePaymentFn = createServerFn()
-  .inputValidator(reversePaymentSchema)
+  .validator(reversePaymentSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(reversePayment(data))
   })

@@ -1,6 +1,6 @@
-import { EntityId } from "@/schemas"
+import type { BookingRoute, RouteCreateType, RouteUpdateType } from "../schemas"
+import type { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
-import { BookingRoute, RouteCreateType, RouteUpdateType } from "../schemas"
 
 const endpoint = "/v1/routes"
 
@@ -12,7 +12,7 @@ export async function getBookingRoutes() {
 }
 
 export async function deleteRoute(routeId: EntityId) {
-  return await apiClient.deleteFn(`${endpoint}}/${routeId}`)
+  return await apiClient.deleteFn(`${endpoint}/${routeId}`)
 }
 
 export async function updateRoute(data: RouteUpdateType) {

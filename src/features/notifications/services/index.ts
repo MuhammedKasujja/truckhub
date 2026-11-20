@@ -1,50 +1,44 @@
-import { ApiError } from "@/types"
 import { createServerFn } from "@tanstack/react-start"
+import { listNotificationSchema, markNotificationReadSchema } from "../schemas"
 import {
   getNotifications,
-  websocketConnect,
-  markNotificationRead,
+  getUnreadNotificationCount,
   markAllNotificationsRead,
+  markNotificationRead,
+  websocketConnect,
 } from "./server"
-import {
-  listNotificationSchema,
-  fetchNotificationSchema,
-  markNotificationReadSchema,
-} from "../schemas"
+import { ApiError } from "@/types"
+import { apiResponseTransform } from "@/lib/api-response-serializer"
 
 export const listNotificationsFn = createServerFn({ method: "GET" })
-  .inputValidator(listNotificationSchema)
+  .validator(listNotificationSchema)
   .handler(async ({ data }) => {
-    const { isSuccess, ...res } = await getNotifications(
-      data.userId,
-      data.unreadOnly
-    )
-    if (isSuccess) {
-      return res.data
+    const response = await getNotifications(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
     }
-    throw new ApiError(
-      res.error?.message ?? "Could not fetch notification",
-      400
-    )
+    return { data: response.data, pagination: response.pagination }
   })
 
+export const getUnreadNotificationCountFn = createServerFn({
+  method: "GET",
+}).handler(async () => {
+  const result = await apiResponseTransform(getUnreadNotificationCount())
+  return result.data?.count ?? 0
+})
+
 export const markNotificationReadFn = createServerFn({ method: "POST" })
-  .inputValidator(markNotificationReadSchema)
+  .validator(markNotificationReadSchema)
   .handler(async ({ data }) => {
-    // const user = await getCurrentUser()
-    const res = await markNotificationRead(data.userId, data.notificationId)
-    return res
+    return await apiResponseTransform(markNotificationRead(data.id))
   })
 
 export const markAllNotificationsReadFn = createServerFn({
   method: "POST",
+}).handler(async () => {
+  return await apiResponseTransform(markAllNotificationsRead())
 })
-  .inputValidator(fetchNotificationSchema)
-  .handler(async ({ data }) => {
-    // const user = await getCurrentUser()
-    const res = await markAllNotificationsRead(data.userId)
-    return res
-  })
 
 export const getWsTicketFn = createServerFn({ method: "POST" }).handler(
   async () => {

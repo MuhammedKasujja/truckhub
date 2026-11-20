@@ -39,41 +39,38 @@ export function ClientPricingConfigDialog({
             Client Pricing<span className="mx-1 text-muted-foreground">•</span>
             {data?.name}
           </DialogTitle>
-          <DialogDescription className="flex items-center gap-4">
-            <Toolbar>
-              <ToolbarGroup>
-                <ToolbarButton
-                  render={
-                    <Button
-                      size={"sm"}
-                      variant={pricing === "route" ? 'default' : "ghost"}
-                      onClick={() => setPricing("route")}
-                    >
-                      Route Pricing
-                    </Button>
-                  }
-                >
-                  Save
-                </ToolbarButton>
-              </ToolbarGroup>
-              <ToolbarSeparator />
-              <ToolbarGroup>
-                <ToolbarButton
-                  render={
-                    <Button
-                      size={"sm"}
-                      variant={pricing === "loading" ? "default" : "ghost"}
-                      onClick={() => setPricing("loading")}
-                    >
-                      Loading Fees
-                    </Button>
-                  }
-                >
-                  Save
-                </ToolbarButton>
-              </ToolbarGroup>
-            </Toolbar>
+          <DialogDescription className="sr-only">
+            Configure route and loading fee pricing for this client
           </DialogDescription>
+          <Toolbar>
+            <ToolbarGroup>
+              <ToolbarButton
+                render={
+                  <Button
+                    size={"sm"}
+                    variant={pricing === "route" ? "default" : "ghost"}
+                    onClick={() => setPricing("route")}
+                  />
+                }
+              >
+                Route Pricing
+              </ToolbarButton>
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              <ToolbarButton
+                render={
+                  <Button
+                    size={"sm"}
+                    variant={pricing === "loading" ? "default" : "ghost"}
+                    onClick={() => setPricing("loading")}
+                  />
+                }
+              >
+                Loading Fees
+              </ToolbarButton>
+            </ToolbarGroup>
+          </Toolbar>
         </DialogHeader>
         <div className="grid flex-1 gap-0 overflow-hidden">
           <div className="no-scrollbar overflow-y-auto px-6 pb-6">

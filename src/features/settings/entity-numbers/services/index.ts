@@ -1,7 +1,8 @@
-import { EntityNumberPattern } from "../types"
 import { createServerFn } from "@tanstack/react-start"
-import { NumberingPatternSchema, NumberingPatternType } from "../schemas"
+import { NumberingPatternSchema } from "../schemas"
 import { getEntityNumberPatterns, updateEntityNumberPatterns } from "./server"
+import type { EntityNumberPattern } from "../types"
+import type { NumberingPatternType } from "../schemas"
 
 function transformResponseData(data: EntityNumberPattern[] | undefined) {
   const transformedData: NumberingPatternType = {
@@ -28,7 +29,7 @@ export const getEntityNumberPatternsFn = createServerFn().handler(async () => {
 })
 
 export const updateEntityNumberPatternsFn = createServerFn({ method: "POST" })
-  .inputValidator(NumberingPatternSchema)
+  .validator(NumberingPatternSchema)
   .handler(async ({ data }) => {
     const patterns = Object.entries(data.entities).map(
       ([entity_name, configItem]) => ({
@@ -37,8 +38,11 @@ export const updateEntityNumberPatternsFn = createServerFn({ method: "POST" })
         counter_padding: configItem.counter_padding,
       })
     )
-    const { data: reseponse, error, message } =
-      await updateEntityNumberPatterns(patterns)
+    const {
+      data: reseponse,
+      error,
+      message,
+    } = await updateEntityNumberPatterns(patterns)
 
     const transformedData = transformResponseData(reseponse)
     return { data: transformedData, error, message }

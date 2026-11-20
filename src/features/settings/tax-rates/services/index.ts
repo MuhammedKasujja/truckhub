@@ -18,25 +18,25 @@ export const getTaxRatesFn = createServerFn()
   })
 
 export const getTaxRateFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getTaxRateById(data.id)
   })
 
 export const deleteTaxRateFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteTaxRateById(data.id)
   })
 
 export const updateTaxRateFn = createServerFn()
-  .inputValidator(TaxRateUpdateSchema)
+  .validator(TaxRateUpdateSchema)
   .handler(async ({ data }) => {
     return updateTaxRate(data)
   })
 
 export const createTaxRateFn = createServerFn()
-  .inputValidator(TaxRateCreateSchema)
+  .validator(TaxRateCreateSchema)
   .handler(async ({ data }) => {
     return createTaxRate(data)
   })

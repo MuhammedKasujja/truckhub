@@ -1,15 +1,24 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
 import { maintanenceStatuses, maintanenceTypes } from "./enums"
+import { IDSchema } from "@/schemas"
 
-export const maintenanceCreateSchema = z.object({
-  vehicle_id: IDSchema,
-  type: z.enum(maintanenceTypes),
-  reason: z.string("Required").trim().min(3, "Too short"),
-  start: z.date("Required"),
-  end: z.date().nullable().optional(),
-  expected_end: z.date().nullable().optional(),
-})
+export const maintenanceCreateSchema = z
+  .object({
+    vehicle_id: IDSchema,
+    type: z.enum(maintanenceTypes),
+    reason: z.string("Required").trim().min(3, "Too short"),
+    start: z.date("Required"),
+    end: z.date().nullable().optional(),
+    expected_end: z.date().nullable().optional(),
+  })
+  .refine((data) => !data.end || data.end >= data.start, {
+    path: ["end"],
+    message: "Must be after the start",
+  })
+  .refine((data) => !data.expected_end || data.expected_end >= data.start, {
+    path: ["expected_end"],
+    message: "Must be after the start",
+  })
 
 export const maintenanceUpdateSchema = z.object({
   maintanence_id: IDSchema,

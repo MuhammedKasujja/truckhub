@@ -13,7 +13,7 @@ export const getTranslationsData = createServerFn({ method: "GET" }).handler(
 )
 
 export const setAppLocale = createServerFn({ method: "POST" })
-  .inputValidator((data) => LocaleSchema.parse(data))
+  .validator((data) => LocaleSchema.parse(data))
   .handler(({ data }) => {
     setCookie(COOKIE_LOCALE, data.locale)
   })

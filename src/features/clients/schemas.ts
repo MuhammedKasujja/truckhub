@@ -1,12 +1,35 @@
 import z from "zod"
-import { IDSchema } from "@/schemas"
+import { PricingSearchParamsCache } from "../settings/pricing/schemas"
+import { ServiceCreateSchema, ServiceUpdateSchema } from "../services/schemas"
 import { CLIENT_PRICING_TYPES } from "./enums"
-import { Client } from "@/features/clients/types"
+import type { Client } from "@/features/clients/types"
+import { IDSchema } from "@/schemas"
 import { ClientTypeList } from "@/config/constants"
 import { DefaultSearchParamsSchema } from "@/common/schemas"
-import { PricingSearchParamsCache } from "../settings/pricing/schemas"
+import { LIST_VIEWS } from "@/components/view-toggle"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
-import { ServiceCreateSchema, ServiceUpdateSchema } from "../services/schemas"
+
+export const ClientContactSchema = z.object({
+  id: IDSchema.optional(),
+  name: z.string().trim().min(1, "Required"),
+  phone: z.string().trim().min(3, "Required"),
+  // A blank input submits "" and the API can return null
+  email: z
+    .union([z.email(), z.literal("")])
+    .optional()
+    .nullable(),
+  is_primary: z.boolean(),
+})
+
+export type ClientContactInput = z.infer<typeof ClientContactSchema>
+
+export const ClientContactsSchema = z
+  .array(ClientContactSchema)
+  .min(1, "Add at least one contact")
+  .refine(
+    (contacts) => contacts.filter((c) => c.is_primary).length === 1,
+    "Choose exactly one primary contact"
+  )
 
 export const ClientCreateSchema = z.object({
   name: z.string().trim().min(3, "Required"),
@@ -19,11 +42,13 @@ export const ClientCreateSchema = z.object({
   email: z.email().trim().min(3, "Required"),
   tin_number: z.string().trim().min(3, "Required"),
   asssigned_user_id: IDSchema.optional().nullable(),
+  contacts: ClientContactsSchema,
 })
 
 export const ClientUpdateSchema = z.object({
   id: IDSchema,
   ...ClientCreateSchema.partial().shape,
+  contacts: ClientContactsSchema,
 })
 
 export type ClientCreateInput = z.infer<typeof ClientCreateSchema>
@@ -37,6 +62,8 @@ export const ClientSearchParamsCache = z.object({
   client_type: z.enum(ClientTypeList).optional(),
   // advanced filter
   filters: getFiltersStateSchema<Client>().optional(),
+  /** List layout; UI only, never sent to the API. Cards when absent. */
+  view: z.enum(LIST_VIEWS).optional(),
   ...DefaultSearchParamsSchema.shape,
 })
 
@@ -82,9 +109,7 @@ export type ClientPricingSearchParam = z.infer<typeof clientPricingSearchParams>
 export const ActivateClientPricingSchema = z.object({
   effectiveDate: z.string(),
   source: z.enum(CLIENT_PRICING_TYPES),
-  clientId: IDSchema
+  clientId: IDSchema,
 })
 
 export type ActivateClientPricing = z.infer<typeof ActivateClientPricingSchema>
-
-

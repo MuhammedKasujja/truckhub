@@ -1,8 +1,8 @@
+import { useEffect, useState } from "react"
+import { getQuotationReportPdfFn } from "../services"
+import type { EntityId } from "@/schemas"
 import { PdfViewer } from "@/components/pdf-viewer"
 import { logger } from "@/lib/logger"
-import { EntityId } from "@/schemas"
-import { useState, useEffect } from "react"
-import { getQuotationReportPdfFn } from "../services"
 
 type QuotationPdfProps = {
   quotationId: EntityId
@@ -27,5 +27,5 @@ export function QuotationPdf({ quotationId }: QuotationPdfProps) {
     loadPdf()
   }, [])
 
-  return <PdfViewer pdfUrl={pdfData} />
+  return <PdfViewer file={pdfData} fileName={`quotation-${quotationId}.pdf`} />
 }

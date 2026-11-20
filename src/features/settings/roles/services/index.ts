@@ -21,25 +21,25 @@ export const getRolesFn = createServerFn().handler(async () => {
 })
 
 export const getRoleFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return getRoleById(data.id)
   })
 
 export const deleteRoleFn = createServerFn()
-  .inputValidator(EntityIdSchema)
+  .validator(EntityIdSchema)
   .handler(async ({ data }) => {
     return deleteRoleById(data.id)
   })
 
 export const updateRoleFn = createServerFn()
-  .inputValidator(RoleUpdateSchema)
+  .validator(RoleUpdateSchema)
   .handler(async ({ data }) => {
     return updateRole(data)
   })
 
 export const createRoleFn = createServerFn()
-  .inputValidator(RoleCreateSchema)
+  .validator(RoleCreateSchema)
   .handler(async ({ data }) => {
     return createRole(data)
   })

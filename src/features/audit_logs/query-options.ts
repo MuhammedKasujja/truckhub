@@ -1,7 +1,7 @@
-import { EntityId } from "@/schemas"
-import { AuditLogSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
 import { getAuditLogDetailsFn, getAuditLogsFn } from "./services"
+import type { AuditLogSearchParams } from "./schemas"
+import type { EntityId } from "@/schemas"
 
 export const auditLogsQueryKeys = {
   list: () => ["audit-logs"],

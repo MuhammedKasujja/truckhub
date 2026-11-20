@@ -11,7 +11,7 @@ import {
 } from "@/features/auth/schemas"
 
 export const loginFn = createServerFn({ method: "POST" })
-  .inputValidator(LoginSchema)
+  .validator(LoginSchema)
   .handler(async ({ data }) => {
     const response = await login(data)
 
@@ -42,11 +42,11 @@ export const getSession = createServerFn().handler(async () => {
 
 export const clearSession = createServerFn().handler(async () => {
   const session = await useAppSession()
-  session.clear()
+  await session.clear()
 })
 
 export const updateSession = createServerFn()
-  .inputValidator(TokenResponseSchema)
+  .validator(TokenResponseSchema)
   .handler(async ({ data }) => {
     const session = await useAppSession()
     const updated = {
@@ -59,14 +59,14 @@ export const updateSession = createServerFn()
   })
 
 export const refreshAuthTokenFn = createServerFn({ method: "POST" })
-  .inputValidator(RefreshTokenSchema)
+  .validator(RefreshTokenSchema)
   .handler(async ({ data }) => {
     const response = await refreshAuthToken(data.refreshToken)
     return response
   })
 
 export const changePasswordFn = createServerFn({ method: "POST" })
-  .inputValidator(ChangePasswordSchema)
+  .validator(ChangePasswordSchema)
   .handler(async ({ data }) => {
     const response = await changePassword(data)
     return response

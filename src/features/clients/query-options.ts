@@ -1,21 +1,24 @@
-import { EntityId } from "@/schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { ClientListSearchParams, ClientPricingSearchParam } from "./schemas"
+import { getClientPricingDatesFn } from "../settings/pricing/services"
 import {
-  getCustomersFn,
+  getClientActiveLoadingOffloadingFreesFn,
+  getClientActiveRoutePricingFn,
   getClientByIdFn,
-  getClientProfileFn,
-  getClientPaymentsFn,
-  getClientsByQueryFn,
   getClientInvoicesFn,
-  getClientServicesFn,
+  getClientLoadingOffloadingFreesFn,
+  getClientPaymentsFn,
+  getClientProfileFn,
   getClientQuotationsFn,
   getClientRoutePricingFn,
-  getClientActiveRoutePricingFn,
-  getClientLoadingOffloadingFreesFn,
-  getClientActiveLoadingOffloadingFreesFn,
+  getClientServicesFn,
+  getClientsByQueryFn,
+  getCustomersFn,
 } from "./services"
-import { getClientPricingDatesFn } from "../settings/pricing/services"
+import type {
+  ClientListSearchParams,
+  ClientPricingSearchParam,
+} from "./schemas"
+import type { EntityId } from "@/schemas"
 
 export interface ClientSearchParams {
   search: string
@@ -70,10 +73,14 @@ export const clientQueryKeys = {
   refreshSingle: (id: EntityId) => [...clientQueryKeys.details(), id],
 } as const
 
-export const clientsQueryOptions = (input: ClientListSearchParams) =>
+export const clientsQueryOptions = ({
+  // The layout doesn't change the data, so it stays out of the key and the request.
+  view: _view,
+  ...params
+}: ClientListSearchParams) =>
   queryOptions({
-    queryKey: [...clientQueryKeys.list(), input],
-    queryFn: () => getCustomersFn({ data: input }),
+    queryKey: [...clientQueryKeys.list(), params],
+    queryFn: () => getCustomersFn({ data: params }),
   })
 
 export const clientProfileQueryOptions = (clientId: EntityId) =>
