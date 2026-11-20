@@ -4,14 +4,16 @@
   "version": "0.1.0",
   "identifier": "com.bluepearls.com",
   "build": {
-    "frontendDist": "../.output/public",
+    "frontendDist": "splash",
     "devUrl": "http://localhost:3000",
     "beforeDevCommand": "pnpm run dev",
-    "beforeBuildCommand": "pnpm run build"
+    "beforeBuildCommand": "pnpm run build && bash scripts/prepare-sidecar.sh"
   },
   "app": {
     "windows": [
       {
+        "label": "main",
+        "create": false,
         "title": "Truckhub",
         "width": 800,
         "height": 600,
@@ -37,6 +39,12 @@
     ],
     "android": {
       "debugApplicationIdSuffix": ".debug"
+    },
+    "externalBin": [
+      "binaries/bun"
+    ],
+    "resources": {
+      "../.output": "server-bundle"
     }
   }
 }

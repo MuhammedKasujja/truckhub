@@ -12,10 +12,12 @@ import {
   createBookingStatisticsQueryOptions,
 } from "@/features/bookings/queries-options"
 import { BookingSearchParamsSchema } from "@/features/bookings/schemas"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/bookings/")({
   component: RouteComponent,
   validateSearch: BookingSearchParamsSchema,
+  search: { middlewares: [stripSchemaDefaults(BookingSearchParamsSchema)] },
   loaderDeps: ({ search }) => ({ search }),
   beforeLoad: async () => requirePermission("bookings:module"),
   loader: async ({ context, deps: { search } }) => {

@@ -12,9 +12,11 @@ import {
 } from "@/features/audit_logs/components/audit-log-table"
 import { createAuditLogsQueryOptions } from "@/features/audit_logs/query-options"
 import { AuditLogSearchParamsCache } from "@/features/audit_logs/schemas"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/reports/audits/")({
   validateSearch: AuditLogSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(AuditLogSearchParamsCache)] },
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("reports:audit_logs:view"),

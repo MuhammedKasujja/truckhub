@@ -23,9 +23,11 @@ import {
 } from "@/features/payments/components"
 import { useQuery } from "@tanstack/react-query"
 import { ActionIcon } from "@/components/icons"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/payments/")({
   validateSearch: PaymentSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(PaymentSearchParamsCache)] },
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   pendingComponent: PaymentTableSkeleton,

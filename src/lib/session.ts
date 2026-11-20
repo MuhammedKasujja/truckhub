@@ -33,7 +33,11 @@ export async function useAppSession() {
       password,
       ttl: SESSION_TTL_SECONDS,
       cookieOptions: {
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
+        // HTTPS only in production. The desktop app serves over plain
+        // http://127.0.0.1, where WebKit would drop a Secure cookie.
+        secure:
+          process.env.NODE_ENV === "production" &&
+          !process.env.TRUCKHUB_DESKTOP,
         sameSite: "lax",
         httpOnly: true,
         path: "/",

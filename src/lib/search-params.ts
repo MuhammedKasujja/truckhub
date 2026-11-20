@@ -1,4 +1,7 @@
 import qs from "query-string"
+import { stripSearchParams } from "@tanstack/react-router"
+import type { SearchMiddleware } from "@tanstack/react-router"
+import type { z } from "zod"
 import type { ParserMap } from "nuqs/server"
 import { getValidFilters } from "@/lib/data-table"
 import { createSearchParamsCache } from "nuqs/server"
@@ -66,4 +69,24 @@ const generateParams = (sortArray: Array<{ id: string; desc: boolean }>) => {
     return sortArray.map((s) => (s.desc ? `-${s.id}` : s.id))
   }
   return undefined
+}
+
+/**
+ * Search middleware that keeps a route's default search values out of the URL,
+ * like nuqs' `clearOnDefault`. Defaults are read from the zod schema itself
+ * (any field that parses `undefined` to a value), so they can't drift.
+ *
+ * Usage: `search: { middlewares: [stripSchemaDefaults(MySearchSchema)] }`
+ */
+export function stripSchemaDefaults<TSchema extends z.ZodObject>(
+  schema: TSchema
+): SearchMiddleware<z.output<TSchema>> {
+  const defaults: Record<string, unknown> = {}
+  for (const [key, field] of Object.entries(schema.shape)) {
+    const result = (field as z.ZodType).safeParse(undefined)
+    if (result.success && result.data !== undefined) {
+      defaults[key] = result.data
+    }
+  }
+  return stripSearchParams(defaults as never)
 }

@@ -46,6 +46,7 @@ import { Route as AdminSettingsPricingConfigRouteRouteImport } from './app/_admi
 import { Route as AdminSettingsUserManagementRouteRouteImport } from './app/_admin/settings/user-management/route'
 import { Route as AdminSettingsVehicleConfigRouteRouteImport } from './app/_admin/settings/vehicle-config/route'
 import { Route as AdminVehiclesIndexRouteImport } from './app/_admin/vehicles/index'
+import { Route as ApiCaptureIdRouteImport } from './app/api/capture.$id'
 import { Route as AdminBillingOverviewIndexRouteImport } from './app/_admin/billing/overview/index'
 import { Route as AdminBillingQuotationsIndexRouteImport } from './app/_admin/billing/quotations/index'
 import { Route as AdminBookingsBookingIdEditRouteImport } from './app/_admin/bookings/$bookingId.edit'
@@ -304,6 +305,11 @@ const AdminVehiclesIndexRoute = AdminVehiclesIndexRouteImport.update({
   id: '/vehicles/',
   path: '/vehicles/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const ApiCaptureIdRoute = ApiCaptureIdRouteImport.update({
+  id: '/api/capture/$id',
+  path: '/api/capture/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBillingOverviewIndexRoute =
   AdminBillingOverviewIndexRouteImport.update({
@@ -733,6 +739,7 @@ export interface FileRoutesByFullPath {
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
+  '/api/capture/$id': typeof ApiCaptureIdRoute
   '/bookings/': typeof AdminBookingsIndexRoute
   '/calendar/': typeof AdminCalendarIndexRoute
   '/clients/': typeof AdminClientsIndexRoute
@@ -842,6 +849,7 @@ export interface FileRoutesByTo {
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
+  '/api/capture/$id': typeof ApiCaptureIdRoute
   '/bookings': typeof AdminBookingsIndexRoute
   '/calendar': typeof AdminCalendarIndexRoute
   '/clients': typeof AdminClientsIndexRoute
@@ -953,6 +961,7 @@ export interface FileRoutesById {
   '/_admin/invoices/create': typeof AdminInvoicesCreateRoute
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
+  '/api/capture/$id': typeof ApiCaptureIdRoute
   '/_admin/bookings/': typeof AdminBookingsIndexRoute
   '/_admin/calendar/': typeof AdminCalendarIndexRoute
   '/_admin/clients/': typeof AdminClientsIndexRoute
@@ -1064,6 +1073,7 @@ export interface FileRouteTypes {
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
+    | '/api/capture/$id'
     | '/bookings/'
     | '/calendar/'
     | '/clients/'
@@ -1173,6 +1183,7 @@ export interface FileRouteTypes {
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
+    | '/api/capture/$id'
     | '/bookings'
     | '/calendar'
     | '/clients'
@@ -1283,6 +1294,7 @@ export interface FileRouteTypes {
     | '/_admin/invoices/create'
     | '/_admin/rides/live'
     | '/_admin/rides/new'
+    | '/api/capture/$id'
     | '/_admin/bookings/'
     | '/_admin/calendar/'
     | '/_admin/clients/'
@@ -1382,6 +1394,7 @@ export interface RootRouteChildren {
   AuthUnauthorizedRoute: typeof AuthUnauthorizedRoute
   AuthUnauthorizedModuleRoute: typeof AuthUnauthorizedModuleRoute
   CaptureIdRoute: typeof CaptureIdRoute
+  ApiCaptureIdRoute: typeof ApiCaptureIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1644,6 +1657,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/vehicles/'
       preLoaderRoute: typeof AdminVehiclesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/api/capture/$id': {
+      id: '/api/capture/$id'
+      path: '/api/capture/$id'
+      fullPath: '/api/capture/$id'
+      preLoaderRoute: typeof ApiCaptureIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_admin/billing/overview/': {
       id: '/_admin/billing/overview/'
@@ -2457,6 +2477,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthUnauthorizedRoute: AuthUnauthorizedRoute,
   AuthUnauthorizedModuleRoute: AuthUnauthorizedModuleRoute,
   CaptureIdRoute: CaptureIdRoute,
+  ApiCaptureIdRoute: ApiCaptureIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -8,6 +8,7 @@ import {
 import { shipmentsRequestsQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { requirePermission } from "@/lib/auth"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/shipments/requests/")({
   component: RouteComponent,
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/_admin/shipments/requests/")({
   pendingComponent: ShipmentTableSkeleton,
   beforeLoad: () => requirePermission("shipments:module"),
   validateSearch: ShipmentSearchParams,
+  search: { middlewares: [stripSchemaDefaults(ShipmentSearchParams)] },
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
     context.queryClient.prefetchQuery(shipmentsRequestsQueryOptions(search)),

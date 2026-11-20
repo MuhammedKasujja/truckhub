@@ -1,24 +1,22 @@
 import { createServerFn } from "@tanstack/react-start"
 import { getRequestUrl } from "@tanstack/react-start/server"
 import { z } from "zod"
-import { matchesAccept } from "../lib/accept"
+import { readCaptureInfo } from "../server/capture-api"
+import { lanIp } from "../server/lan-ip"
 import {
-  CAPTURE_MAX_BYTES,
   DEFAULT_ACCEPT,
-  attachFile,
   createSession,
   deleteSession,
   getForOwner,
-  getForUpload,
   takeFile,
 } from "../server/store"
-import { formInput } from "@/lib/form-utils"
 import { useAppSession } from "@/lib/session"
 import { ApiError } from "@/types"
 
 /*
- * None of these call the FastAPI backend. The phone has no login session, so
- * the upload is checked against the session's one-time token instead.
+ * None of these call the FastAPI backend. The phone's calls live in
+ * ../server/capture-api.ts, served at /api/capture/$id, and are checked
+ * against the session's one-time token since the phone has no login.
  */
 
 async function requireUserId() {
@@ -31,6 +29,16 @@ async function requireUserId() {
 }
 
 function appOrigin() {
+  // Desktop app: the phone reaches this computer directly over Wi-Fi through
+  // the LAN gate (scripts/desktop-entry.mjs), not the hosted site
+  const capturePort = process.env.CAPTURE_PORT
+  if (process.env.TRUCKHUB_DESKTOP && capturePort) {
+    const ip = lanIp()
+    if (!ip) {
+      throw new ApiError("Connect this computer to Wi-Fi to use your phone", 409)
+    }
+    return `http://${ip}:${capturePort}`
+  }
   const configured = process.env.PUBLIC_APP_URL
   if (configured) return configured.replace(/\/+$/, "")
   return getRequestUrl({ xForwardedHost: true }).origin
@@ -42,10 +50,17 @@ export const createCaptureSessionFn = createServerFn({ method: "POST" })
   .validator(z.object({ accept: z.string().max(500).optional() }))
   .handler(async ({ data }) => {
     const userId = await requireUserId()
+    // Before creating the session, so a missing network leaves nothing behind
+    const origin = appOrigin()
     const session = createSession(userId, data.accept || DEFAULT_ACCEPT)
-    const url = new URL(`/capture/${session.id}`, appOrigin())
+    const url = new URL(`/capture/${session.id}`, origin)
     url.searchParams.set("t", session.uploadToken)
-    return { id: session.id, url: url.toString(), expiresAt: session.expiresAt }
+    return {
+      id: session.id,
+      url: url.toString(),
+      expiresAt: session.expiresAt,
+      sameWifi: !!process.env.TRUCKHUB_DESKTOP,
+    }
   })
 
 export type CaptureStatus = "pending" | "ready" | "expired"
@@ -87,45 +102,7 @@ export const cancelCaptureSessionFn = createServerFn({ method: "POST" })
 
 const tokenSchema = sessionIdSchema.extend({ token: z.string().min(20).max(200) })
 
-/** For the phone page: what it may upload, or null when the link is dead. */
+/** For the phone page's server render. The browser uses /api/capture/$id. */
 export const getCaptureInfoFn = createServerFn({ method: "GET" })
   .validator(tokenSchema)
-  .handler(({ data }) => {
-    const session = getForUpload(data.id, data.token)
-    if (!session) return null
-    return { accept: session.accept, expiresAt: session.expiresAt }
-  })
-
-const uploadSchema = z.object({
-  id: z.uuid(),
-  token: z.string().min(20).max(200),
-  file: z
-    .instanceof(File, { message: "Choose a file" })
-    .refine((file) => file.size > 0, "The file is empty")
-    .refine(
-      (file) => file.size <= CAPTURE_MAX_BYTES,
-      `The file must be ${CAPTURE_MAX_BYTES / 1024 / 1024} MB or smaller`
-    ),
-})
-
-/** Public: the phone sends FormData { id, token, file }. */
-export const uploadCaptureFn = createServerFn({ method: "POST" })
-  .validator(formInput(uploadSchema))
-  .handler(async ({ data }) => {
-    const session = getForUpload(data.id, data.token)
-    if (!session) {
-      throw new ApiError("This link has expired. Make a new code on your computer.", 404)
-    }
-    if (!matchesAccept(data.file, session.accept)) {
-      throw new ApiError("This type of file is not allowed here", 415)
-    }
-    const attached = attachFile(data.id, data.token, {
-      name: data.file.name || "capture",
-      type: data.file.type,
-      bytes: await data.file.arrayBuffer(),
-    })
-    if (!attached) {
-      throw new ApiError("This link has expired. Make a new code on your computer.", 404)
-    }
-    return { ok: true }
-  })
+  .handler(({ data }) => readCaptureInfo(data.id, data.token))

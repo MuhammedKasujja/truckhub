@@ -5,11 +5,13 @@ import {
 } from "@/features/users/components/user-list"
 import { usersQueryOprions } from "@/features/users/query-options"
 import { UserSearchParamsCache } from "@/features/users/schemas"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/settings/user-management/users/")(
   {
     pendingComponent: UserListSkeleton,
     validateSearch: UserSearchParamsCache,
+    search: { middlewares: [stripSchemaDefaults(UserSearchParamsCache)] },
     loaderDeps: ({ search }) => ({ search }),
     component: UserList,
     loader: ({ context, deps: { search } }) => {

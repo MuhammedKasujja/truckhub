@@ -49,12 +49,14 @@ import { shipmentsActiveQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { formatDateTime, generateAvatorFallback } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/live-map/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   pendingComponent: LiveMapSkeleton,
   validateSearch: ShipmentSearchParams,
+  search: { middlewares: [stripSchemaDefaults(ShipmentSearchParams)] },
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
     context.queryClient.prefetchQuery(shipmentsActiveQueryOptions(search)),

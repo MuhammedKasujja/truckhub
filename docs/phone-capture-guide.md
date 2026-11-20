@@ -63,18 +63,25 @@ src/features/phone-capture/
 ├── index.ts                         public export: PhoneCaptureButton
 ├── components/phone-capture-button.tsx
 ├── hooks/use-phone-capture.ts       session lifecycle + polling
-├── services/index.ts                server functions
+├── services/index.ts                server functions (desktop side)
+├── server/capture-api.ts            phone-side logic behind /api/capture/$id
+├── server/lan-ip.ts                 this computer's Wi-Fi address (desktop app)
 ├── server/store.ts                  in-memory session store (server only)
-├── server/store.test.ts
+├── server/*.test.ts
 └── lib/
     ├── accept.ts                    matchesAccept(), acceptsImages()
     └── compress-image.ts            client-side photo resize
 src/app/capture.$id.tsx              public page the phone opens
+src/app/api/capture.$id.ts           GET info / POST upload for the phone
+scripts/desktop-entry.mjs            desktop app: Nitro + phone LAN gate
 ```
 
 ### `usePhoneCapture({ accept, onFile })`
 
-Returns `{ state, url, expiresAt, start, cancel }`.
+Returns `{ state, url, expiresAt, sameWifi, error, start, cancel }`.
+`sameWifi` is true in the desktop app, where the dialog tells the user the
+phone must be on the same Wi-Fi. `error` is the server's message when a code
+can't be made (e.g. the computer isn't on a network).
 
 `state` is one of `idle | creating | waiting | receiving | expired | error`.
 Status is polled with react-query (`refetchInterval: 1500`) only while
@@ -84,15 +91,22 @@ Status is polled with react-query (`refetchInterval: 1500`) only while
 
 | Function                 | Who calls it | Auth                        | Does                                                                 |
 | ------------------------ | ------------ | --------------------------- | -------------------------------------------------------------------- |
-| `createCaptureSessionFn` | desktop      | signed-in user (session)    | Creates a session and returns `{ id, url, expiresAt }`.              |
+| `createCaptureSessionFn` | desktop      | signed-in user (session)    | Creates a session and returns `{ id, url, expiresAt, sameWifi }`.    |
 | `getCaptureStatusFn`     | desktop      | session owner only          | Returns `pending`, `ready` or `expired`.                             |
 | `takeCaptureFileFn`      | desktop      | session owner only          | Returns the bytes as a `Response` once, then deletes the session.    |
 | `cancelCaptureSessionFn` | desktop      | session owner only          | Deletes the session when the dialog is closed.                       |
-| `getCaptureInfoFn`       | phone        | upload token                | Returns `{ accept, expiresAt }`, or `null` when the link is dead.    |
-| `uploadCaptureFn`        | phone        | upload token                | FormData `{ id, token, file }`. Checks type and size, then stores it.|
+| `getCaptureInfoFn`       | phone page's server render | upload token  | Returns `{ accept, expiresAt }`, or `null` when the link is dead.    |
 
-> These functions must **not** use `apiClient`. Its interceptor adds the
-> signed-in user's FastAPI token, and the phone has no session.
+The phone's own browser never calls server functions. It uses a fixed-path
+server route, so the desktop app's LAN gate can allow exactly these paths:
+
+| Route                         | Does                                                                         |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `GET /api/capture/$id?t=`     | `{ accept, expiresAt }`, or 404 when the link is dead.                       |
+| `POST /api/capture/$id`       | FormData `{ token, file }`. Checks type and size, then stores it. Errors are `{ message }` with 400/404/415. |
+
+> None of these may use `apiClient`. Its interceptor adds the signed-in
+> user's FastAPI token, and the phone has no session.
 
 ### The phone page (`/capture/$id?t=<token>`)
 
@@ -132,7 +146,41 @@ expired".
 
 | Env var          | Needed when                                                                  |
 | ---------------- | ---------------------------------------------------------------------------- |
-| `PUBLIC_APP_URL` | The app runs behind a proxy, or in the Tauri desktop build. The QR URL must point at an address the phone can reach. If unset, the URL is built from the request (respecting `x-forwarded-host`). |
+| `PUBLIC_APP_URL` | The web app runs behind a proxy. The QR URL must point at an address the phone can reach. If unset, the URL is built from the request (respecting `x-forwarded-host`). Not used by the desktop app. |
+| `CAPTURE_PORT`   | Set by the desktop app only (see below). |
+
+---
+
+## Desktop app (Tauri)
+
+The desktop app runs its own server on `127.0.0.1`, which a phone can't reach,
+and the hosted site doesn't share its sessions. So the phone talks to the
+desktop directly over Wi-Fi:
+
+```
+phone ── http://192.168.x.y:CAPTURE_PORT ──▶ LAN gate (Bun.serve on 0.0.0.0)
+                                               │ only /capture/*, /api/capture/*,
+                                               │ /assets/*, favicon, manifest
+                                               ▼
+                                 Nitro app on 127.0.0.1:PORT (same process, same store)
+```
+
+- `src-tauri/src/lib.rs` picks both ports and starts `desktop-entry.mjs`,
+  which `scripts/prepare-sidecar.sh` copies into `.output/server/`.
+- The gate drops cookies both ways and returns 404 for every other path, so
+  the rest of the app is never exposed to the network.
+- The QR uses the computer's private IPv4 (`server/lan-ip.ts`, Wi-Fi and
+  Ethernet first, VPN/Docker/VM adapters skipped). If there is none, the
+  dialog shows "Connect this computer to Wi-Fi to use your phone".
+
+Caveats:
+
+- The phone must be on the **same network**. Mobile data won't work.
+- Guest, hotel and many office networks block devices from reaching each
+  other. Capture can't work there.
+- macOS/Windows ask once to allow incoming connections. The user must allow.
+- Plain HTTP is fine: the camera opens through a file input, which needs no
+  secure context.
 
 ---
 
