@@ -3,6 +3,7 @@ import { CarModelList } from "@/features/settings/vehicle-config/car-model/compo
 import { createCarModelsListQueryOptions } from "@/features/settings/vehicle-config/car-model/query-options"
 import { CarModelSearchParamsCache } from "@/features/settings/vehicle-config/car-model/schemas"
 import { ConfigGridSkeleton } from "@/features/settings/vehicle-config/_components/config-ui"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute(
   "/_admin/settings/vehicle-config/car-models/"
@@ -10,6 +11,7 @@ export const Route = createFileRoute(
   component: CarModelList,
   pendingComponent: ConfigGridSkeleton,
   validateSearch: CarModelSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(CarModelSearchParamsCache)] },
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps: search }) =>
     context.queryClient.ensureQueryData(

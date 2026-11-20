@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { createRidesQueryOptions } from "@/features/ride-requests/query-options"
 import { RideRequestSearchParamsCache } from "@/features/ride-requests/schemas"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/rides/")({
   validateSearch: RideRequestSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(RideRequestSearchParamsCache)] },
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   beforeLoad: () => requirePermission("rides:module"),

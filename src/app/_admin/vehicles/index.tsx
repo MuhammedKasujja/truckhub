@@ -23,9 +23,11 @@ import React, { Activity } from "react"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { cn } from "cn"
 import { Grid3X3Icon, ListIcon } from "lucide-react"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/vehicles/")({
   validateSearch: VehicleSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(VehicleSearchParamsCache)] },
   pendingComponent: VehicleTableSkeleton,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,

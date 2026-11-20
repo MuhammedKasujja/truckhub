@@ -12,9 +12,11 @@ import { InvoiceSearchParams } from "@/features/invoices/schemas"
 import { requirePermission } from "@/lib/auth"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PlusIcon } from "lucide-react"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/invoices/")({
   validateSearch: InvoiceSearchParams,
+  search: { middlewares: [stripSchemaDefaults(InvoiceSearchParams)] },
   loaderDeps: ({ search }) => ({ search }),
   pendingComponent: InvoiceTableSkeleton,
   beforeLoad: () => requirePermission("invoices:module"),

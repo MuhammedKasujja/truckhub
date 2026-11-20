@@ -11,9 +11,11 @@ import { requirePermission } from "@/lib/auth"
 import { DriverSearchParamsCache } from "@/features/drivers/schemas"
 import { ActionIcon } from "@/components/icons"
 import { ExpiringDriverDocumentsCard } from "@/features/documents/components/expiring-documents-card"
+import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/drivers/")({
   validateSearch: DriverSearchParamsCache,
+  search: { middlewares: [stripSchemaDefaults(DriverSearchParamsCache)] },
   loaderDeps: ({ search }) => ({ search }),
   pendingComponent: DriverListSkeleton,
   component: RouteComponent,
