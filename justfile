@@ -25,3 +25,7 @@ build-web:
 preview:
     #!/usr/bin/env bash
     npx vite preview --host 0.0.0.0 --port 4173 --strictPort
+
+# Open the desktop app produced by `just build` (macOS)
+run-built:
+    open src-tauri/target/release/bundle/macos/Truckhub.app
