@@ -17,8 +17,10 @@ type Retriable = InternalAxiosRequestConfig & { _retry?: boolean }
 
 type RefreshEnvelope = { data: TokenRefreshResponse } | TokenRefreshResponse
 
-// Dedupe concurrent refreshes (important as refresh tokens rotate)
-let refreshing: Promise<TokenRefreshResponse> | null = null
+// In-flight refreshes, keyed by refresh token. Keying by token keeps users
+// apart: on a long-running server every user shares this module, and one
+// user must never await (and save) another user's tokens.
+const refreshing = new Map<string, Promise<TokenRefreshResponse>>()
 
 const PUBLIC_PATHS = ["/v1/auth/login", "/v1/auth/refresh"]
 
@@ -31,6 +33,15 @@ const expiredSessionErrors = new WeakSet<object>()
 /** True when the request failed with a 401 and the token refresh failed too. */
 export const isSessionExpired = (error: unknown) =>
   typeof error === "object" && error !== null && expiredSessionErrors.has(error)
+
+/**
+ * True when the backend rejected the refresh token itself. Every rejection
+ * (not found, revoked, expired, reused, user inactive) comes back as 401.
+ * Any other failure (timeout, network, 4xx/5xx) says nothing about the
+ * session, so callers must not log the user out for it.
+ */
+export const isRefreshRejected = (error: unknown) =>
+  (error as AxiosError | undefined)?.response?.status === 401
 
 const apiOptions = {
   baseURL: `${process.env.BACKEND_URL}`,
@@ -166,22 +177,15 @@ api.interceptors.response.use(
     logger.info("Refreshing auth token")
 
     try {
-      refreshing ??= authApi
-        .post<RefreshEnvelope>("/v1/auth/refresh", {
-          refresh_token: session.refreshToken,
-        })
-        // The backend wraps payloads as `{ data, message }`
-        .then((r) => ("data" in r.data ? r.data.data : r.data))
-        .finally(() => {
-          refreshing = null
-        })
-
-      const tokens = await refreshing
+      const tokens = await refreshTokens(session.refreshToken)
       await updateSession({ data: tokens })
       original.headers.Authorization = `Bearer ${tokens.access_token}`
     } catch (refreshError) {
       logger.error(`Token refresh failed: ${(refreshError as Error)?.message}`)
-      await clearSession() // refresh failed, so log out
+      // A timeout or backend blip says nothing about the session: keep it and
+      // fail just this request. Only a rejected refresh token logs out.
+      if (!isRefreshRejected(refreshError)) return Promise.reject(error)
+      await clearSession()
       expiredSessionErrors.add(error)
       return Promise.reject(error)
     }
@@ -189,5 +193,28 @@ api.interceptors.response.use(
     return api(original) // retry once
   }
 )
+
+/**
+ * Exchange a refresh token for a new pair. Parallel calls with the same token
+ * share one request, since the backend rotates the token on each use.
+ */
+export function refreshTokens(
+  refreshToken: string
+): Promise<TokenRefreshResponse> {
+  let pending = refreshing.get(refreshToken)
+  if (!pending) {
+    pending = authApi
+      .post<RefreshEnvelope>("/v1/auth/refresh", {
+        refresh_token: refreshToken,
+      })
+      // The backend wraps payloads as `{ data, message }`
+      .then((r) => ("data" in r.data ? r.data.data : r.data))
+      .finally(() => {
+        refreshing.delete(refreshToken)
+      })
+    refreshing.set(refreshToken, pending)
+  }
+  return pending
+}
 
 export { api }

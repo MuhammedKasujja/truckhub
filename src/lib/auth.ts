@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start"
 import { checkUserPermission } from "@/lib/permissions"
 import { isExpiringSoon, useAppSession } from "./session"
 import { isRedirect, redirect } from "@tanstack/react-router"
-import { refreshAuthTokenFn } from "@/features/auth/services"
+import { isRefreshRejected, refreshTokens } from "@/lib/api"
 import type { UserPermission } from "@/features/auth/permissions"
 
 export async function requirePermission(permission: UserPermission) {
@@ -44,16 +44,20 @@ export const getCurrentUser = createServerFn({ method: "GET" }).handler(
       if (data.accessToken && !isExpiringSoon(data.accessTokenExpiresAtMs)) {
         return data.user
       }
-      // Refresh Auth token it about to expire
+      // Refresh the access token when it is about to expire
       logger.info("Refreshing User auth token")
-      const { error, data: token } = await refreshAuthTokenFn({
-        data: { refreshToken: data.refreshToken },
-      })
-
-      if (error || !token) {
-        logger.error(`Refreshing auth token failed ${error?.message}`)
-        await session.clear()
-        return null
+      let token: Awaited<ReturnType<typeof refreshTokens>>
+      try {
+        token = await refreshTokens(data.refreshToken)
+      } catch (error) {
+        logger.error(`Refreshing auth token failed ${String(error)}`)
+        if (isRefreshRejected(error)) {
+          await session.clear()
+          return null
+        }
+        // Timeout or backend blip: stay signed in. The next API call retries
+        // the refresh through the axios interceptor.
+        return data.user
       }
       logger.info(`Token Refresh Done`)
       await session.update({
