@@ -63,3 +63,9 @@ export const ServiceSearchParamsCache = z.object({
 })
 
 export type ServiceListSearchParams = z.infer<typeof ServiceSearchParamsCache>
+
+// Search params of the services page.
+export const ServiceListPageSearchSchema = z.object({
+  // Show this client's services instead of the general ones.
+  client: IDSchema.optional().catch(undefined),
+})

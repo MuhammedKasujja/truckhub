@@ -12,7 +12,9 @@ import { ServiceList } from "./service-list"
 import { vehicleTypeMeta } from "./service-card"
 import type { Service } from "@/features/services/types"
 import type { VehicleType } from "@/features/settings/vehicle-config/vehicle-categories/enums"
+import type { EntityId } from "@/schemas"
 import { vehicleTypesList } from "@/features/settings/vehicle-config/vehicle-categories/enums"
+import { ClientPicker } from "@/features/clients/components/client-pickers"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 import {
@@ -31,14 +33,20 @@ import { formatPlural } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
 const sortOptions = {
-  name: { label: "Name", compare: (a: Service, b: Service) => a.display_name.localeCompare(b.display_name) },
+  name: {
+    label: "Name",
+    compare: (a: Service, b: Service) =>
+      a.display_name.localeCompare(b.display_name),
+  },
   price_asc: {
     label: "Price: low to high",
-    compare: (a: Service, b: Service) => Number(a.base_fare) - Number(b.base_fare),
+    compare: (a: Service, b: Service) =>
+      Number(a.base_fare) - Number(b.base_fare),
   },
   price_desc: {
     label: "Price: high to low",
-    compare: (a: Service, b: Service) => Number(b.base_fare) - Number(a.base_fare),
+    compare: (a: Service, b: Service) =>
+      Number(b.base_fare) - Number(a.base_fare),
   },
   newest: {
     label: "Newest first",
@@ -51,9 +59,16 @@ type SortKey = keyof typeof sortOptions
 
 type ServiceListWrapperProps = {
   services: Service[]
+  /** When set, `services` are this client's services. */
+  clientId?: EntityId
+  onClientChange: (clientId: EntityId | undefined) => void
 }
 
-export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
+export function ServiceListWrapper({
+  services,
+  clientId,
+  onClientChange,
+}: ServiceListWrapperProps) {
   const [search, setSearch] = useState("")
   const [vehicleType, setVehicleType] = useState<VehicleType>()
   const [sort, setSort] = useState<SortKey>("name")
@@ -88,11 +103,12 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
       .sort(sortOptions[sort].compare)
   }, [services, search, vehicleType, sort])
 
-  const hasActiveFilters = search.trim() !== "" || !!vehicleType
+  const hasActiveFilters = search.trim() !== "" || !!vehicleType || !!clientId
 
   function clearFilters() {
     setSearch("")
     setVehicleType(undefined)
+    onClientChange(undefined)
   }
 
   return (
@@ -106,8 +122,8 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
           <div className="min-w-0 space-y-0.5">
             <h1 className="text-2xl font-bold tracking-tight">Services</h1>
             <p className="text-sm text-muted-foreground">
-              The vehicles you hire out and what they cost, used when you
-              build quotations.
+              The vehicles you hire out and what they cost, used when you build
+              quotations.
             </p>
           </div>
         </div>
@@ -175,9 +191,20 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
           })}
         </div>
 
-        <div className="flex items-center gap-2 lg:ml-auto">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center lg:ml-auto">
+          <div className="w-full sm:w-56">
+            <ClientPicker
+              value={clientId}
+              placeholder="All clients"
+              allowCreate={false}
+              onChange={(client) => onClientChange(client?.id)}
+            />
+          </div>
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-            <SelectTrigger className="w-full lg:w-48" aria-label="Sort services">
+            <SelectTrigger
+              className="w-full lg:w-48"
+              aria-label="Sort services"
+            >
               <ArrowDownUp className="size-4 text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>
@@ -197,7 +224,10 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
           <p className="text-muted-foreground">
             {hasActiveFilters
               ? `${filteredServices.length} of ${formatPlural(services.length, { singular: "service", plural: "services" })}`
-              : formatPlural(services.length, { singular: "service", plural: "services" })}
+              : formatPlural(services.length, {
+                  singular: "service",
+                  plural: "services",
+                })}
           </p>
           {hasActiveFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
@@ -220,11 +250,15 @@ export function ServiceListWrapper({ services }: ServiceListWrapperProps) {
             )}
           </span>
           <p className="text-sm font-medium">
-            {hasActiveFilters ? "No services match" : "No services yet"}
+            {hasActiveFilters
+              ? clientId && !search.trim() && !vehicleType
+                ? "This client has no services"
+                : "No services match"
+              : "No services yet"}
           </p>
           <p className="max-w-sm text-xs text-muted-foreground">
             {hasActiveFilters
-              ? "Try a different search or vehicle type."
+              ? "Try a different client, search or vehicle type."
               : "Add the vehicles you hire out with their base and minimum fares."}
           </p>
           <div className="mt-2">
@@ -278,7 +312,7 @@ function FilterChip({
       {label}
       <span
         className={cn(
-          "rounded-md bg-muted px-1.5 text-xs tabular-nums text-muted-foreground",
+          "rounded-md bg-muted px-1.5 text-xs text-muted-foreground tabular-nums",
           active && "bg-primary/15 text-primary"
         )}
       >
