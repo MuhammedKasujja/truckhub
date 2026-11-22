@@ -27,6 +27,7 @@ import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import { useTranslation } from "@/i18n"
 import { formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { ImageZoom } from "@/components/ui/image-zoom"
 
 export { vehicleTypeMeta }
 
@@ -84,7 +85,7 @@ export function ServiceCard({ service, showActions = true }: ServiceCardProps) {
       {/* Image */}
       <div className="relative aspect-16/10 border-b bg-muted/40">
         {showImage ? (
-          <img
+          <ImageZoom
             src={service.image_url}
             alt={service.display_name}
             loading="lazy"

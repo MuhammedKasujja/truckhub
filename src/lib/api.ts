@@ -20,7 +20,9 @@ type RefreshEnvelope = { data: TokenRefreshResponse } | TokenRefreshResponse
 // In-flight refreshes, keyed by refresh token. Keying by token keeps users
 // apart: on a long-running server every user shares this module, and one
 // user must never await (and save) another user's tokens.
+// Resolved entries stay for ROTATED_TOKEN_TTL_MS after the refresh.
 const refreshing = new Map<string, Promise<TokenRefreshResponse>>()
+const ROTATED_TOKEN_TTL_MS = 60_000
 
 const PUBLIC_PATHS = ["/v1/auth/login", "/v1/auth/refresh"]
 
@@ -68,8 +70,12 @@ api.interceptors.request.use(async (config: Retriable) => {
   // Don't overwrite on retry. The new cookie isn't readable from the incoming request yet.
   if (!config.headers.Authorization) {
     const session = await getSession()
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`
+    // The cookie may still hold tokens that were just rotated by another
+    // call on this server; prefer the fresh access token in that case.
+    const accessToken =
+      (await rotatedAccessToken(session?.refreshToken)) ?? session?.accessToken
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`
     }
   }
   return config
@@ -209,12 +215,40 @@ export function refreshTokens(
       })
       // The backend wraps payloads as `{ data, message }`
       .then((r) => ("data" in r.data ? r.data.data : r.data))
-      .finally(() => {
-        refreshing.delete(refreshToken)
-      })
+      .then(
+        (tokens) => {
+          // Keep the result for a while: requests that still carry the old
+          // cookie (browser hasn't applied Set-Cookie yet, or later loaders
+          // in the same SSR render) reuse the new pair instead of sending a
+          // rotated token, which the backend rejects with a 401.
+          setTimeout(
+            () => refreshing.delete(refreshToken),
+            ROTATED_TOKEN_TTL_MS
+          )
+          return tokens
+        },
+        (error) => {
+          refreshing.delete(refreshToken)
+          throw error
+        }
+      )
     refreshing.set(refreshToken, pending)
   }
   return pending
+}
+
+/**
+ * The access token from a refresh of `refreshToken` that is in flight or
+ * finished within the last minute, if any.
+ */
+async function rotatedAccessToken(refreshToken: string | undefined) {
+  const pending = refreshToken ? refreshing.get(refreshToken) : undefined
+  if (!pending) return undefined
+  try {
+    return (await pending).access_token
+  } catch {
+    return undefined
+  }
 }
 
 export { api }
