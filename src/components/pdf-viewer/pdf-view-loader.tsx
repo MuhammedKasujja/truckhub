@@ -22,6 +22,9 @@ import {
 import "@react-pdf-viewer/core/lib/styles/index.css"
 import "./pdf-viewer.css"
 
+/** Zoom a document opens at, and what the "0" shortcut resets to. */
+const DEFAULT_ZOOM: ZoomLevel = 1.25
+
 export default function PdfViewLoader({
   file,
   fileName,
@@ -42,10 +45,11 @@ export default function PdfViewLoader({
   const [currentPage, setCurrentPage] = useState(0)
   // What the reader asked for (kept across documents) and the scale it
   // works out to for the current document.
-  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>(
-    SpecialZoomLevel.PageWidth
-  )
-  const [scale, setScale] = useState(1)
+  const [zoomLevel, setZoomLevel] = useState<ZoomLevel>(DEFAULT_ZOOM)
+  const [fitScale, setFitScale] = useState(1)
+  // The viewer reports no zoom event for its starting scale, so a numeric
+  // level is its own scale. Only fit modes need the reported value.
+  const scale = typeof zoomLevel === "number" ? zoomLevel : fitScale
   const isFullscreen = useIsFullscreen(frameRef)
 
   const showError = Boolean(error) && !isLoading && !file
@@ -107,7 +111,7 @@ export default function PdfViewLoader({
       "=": () => step(1),
       "+": () => step(1),
       "-": () => step(-1),
-      "0": () => zoomTo(SpecialZoomLevel.PageWidth),
+      "0": () => zoomTo(DEFAULT_ZOOM),
       s: download,
       p: print.print,
     }
@@ -172,7 +176,7 @@ export default function PdfViewLoader({
                 setCurrentPage(0)
               }}
               onPageChange={(e) => setCurrentPage(e.currentPage)}
-              onZoom={(e) => setScale(e.scale)}
+              onZoom={(e) => setFitScale(e.scale)}
             />
           </Worker>
           {isLoading && (
