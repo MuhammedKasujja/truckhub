@@ -8,7 +8,8 @@ import {
   WrenchIcon,
 } from "lucide-react"
 import type { LinkProps } from "@tanstack/react-router"
-import type { UserPermission } from "@/features/auth/permissions"
+import type { PermissionCheck } from "@/lib/permissions"
+import { ModuleAccess } from "@/features/auth/permissions"
 import type { DashboardAlerts } from "../types"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
 import { cn } from "@/lib/utils"
@@ -18,7 +19,7 @@ type AlertItem = {
   label: (count: number) => string
   icon: React.ReactNode
   tone: "danger" | "warning"
-  permission: UserPermission
+  permission: PermissionCheck
   to: LinkProps["to"]
   search?: LinkProps["search"]
 }
@@ -29,7 +30,7 @@ const items: AlertItem[] = [
     label: (n) => `${n} shipment${n === 1 ? "" : "s"} delayed`,
     icon: <ClockAlertIcon />,
     tone: "danger",
-    permission: "shipments:module",
+    permission: ModuleAccess.shipments,
     to: "/shipments/delayed",
   },
   {
@@ -37,7 +38,7 @@ const items: AlertItem[] = [
     label: (n) => `${n} unassigned`,
     icon: <AlertTriangleIcon />,
     tone: "warning",
-    permission: "shipments:module",
+    permission: ModuleAccess.shipments,
     to: "/shipments/requests",
     search: { status: ["unassigned"] },
   },

@@ -28,11 +28,12 @@ import {
 import { maintenanceBoardQueryOptions } from "@/features/maintanence/query-options"
 import { maintenanceSearchParams } from "@/features/maintanence/schemas"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 
 export const Route = createFileRoute("/_admin/maintenance/")({
   validateSearch: maintenanceSearchParams,
   loaderDeps: ({ search }) => ({ search }),
-  beforeLoad: () => requirePermission("maintenance:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.maintenance),
   component: RouteComponent,
   loader: ({ context, deps: { search } }) => {
     context.queryClient.prefetchQuery(maintenanceBoardQueryOptions(search))

@@ -42,6 +42,28 @@ export const KeyNamedPermissions = {
 
 export type UserPermission = keyof typeof KeyNamedPermissions;
 
+/**
+ * What opening a module needs: its `*:module` key (frontend-only: shows the
+ * module in the menu, grants no API permission) plus the key that grants its
+ * data, at "any" or "own" scope. Used by the list pages, their sidebar items
+ * and the widgets that show the module's records, so they always agree.
+ *
+ * Detail and edit pages check only their data key, so a permitted record
+ * still opens from a link elsewhere when the module is off.
+ */
+export const ModuleAccess = {
+  quotations: ["quotations:module", "quotations:view"],
+  invoices: ["invoices:module", "invoices:view"],
+  payments: ["payments:module", "payments:view"],
+  clients: ["clients:module", "clients:view"],
+  drivers: ["drivers:module", "drivers:view"],
+  vehicles: ["vehicles:module", "vehicles:view"],
+  services: ["services:module", "services:view"],
+  billing: ["billing:module", "billing:view"],
+  shipments: ["shipments:module", "shipments:view"],
+  maintenance: ["maintenance:module", "maintenance:view"],
+} as const satisfies Record<string, readonly UserPermission[]>;
+
 export const SystemPermissions = {
   dashboard: DashboardModulePermissions,
   quotations: QuotationModulePermissions,

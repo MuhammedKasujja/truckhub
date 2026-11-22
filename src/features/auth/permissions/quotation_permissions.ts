@@ -1,5 +1,5 @@
 export const QuotationModulePermissions = {
-  "quotations:module": ["quotations:module", "quotations:read"],
+  "quotations:module": ["quotations:module"],
   "quotations:create": ["quotations:create"],
   "quotations:view": ["quotations:view", "quotations:read"],
   "quotations:delete": ["quotations:delete"],

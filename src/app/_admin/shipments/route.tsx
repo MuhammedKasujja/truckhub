@@ -18,6 +18,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageBackButton } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { Button } from "@/components/ui/button"
 import { Can } from "@/components/has-permission"
 
@@ -58,7 +59,7 @@ const shipmentTabs = [
 
 export const Route = createFileRoute("/_admin/shipments")({
   component: RouteComponent,
-  beforeLoad: () => requirePermission("shipments:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.shipments),
 })
 
 function RouteComponent() {
@@ -83,7 +84,7 @@ function RouteComponent() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Can permission="shipments:module">
+          <Can permission={ModuleAccess.shipments}>
             <Button variant="outline" asChild>
               <Link to={"/calendar"}>
                 <CalendarIcon />

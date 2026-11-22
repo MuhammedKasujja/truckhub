@@ -40,26 +40,44 @@ export function scopeOfGrants(
 }
 
 /**
+ * One named permission, or several that are all required, e.g.
+ * `ModuleAccess.quotations` = `["quotations:module", "quotations:view"]`.
+ */
+export type PermissionCheck = UserPermission | readonly UserPermission[]
+
+/**
  * `"any"` when the user holds every API permission the key grants,
  * `"own"` when each one is held either as-is or as its `:own` form,
  * `null` when the user can't use the feature at all.
+ *
+ * For several keys: `null` if any key is `null`, else `"own"` if any key
+ * is only "own", else `"any"`.
  */
 export function getPermissionScope(
   user: User,
-  permission: UserPermission
+  permission: PermissionCheck
 ): PermissionScope | null {
   if (user.is_admin) return "any"
 
-  // Lookup the named permissions with the backend corresponding permission names
-  const required: readonly string[] = KeyNamedPermissions[permission]
-
+  const keys: readonly UserPermission[] =
+    typeof permission === "string" ? [permission] : permission
   // using set for 0(1) lookups
-  return scopeOfGrants(new Set(user.permissions), required)
+  const held = new Set(user.permissions)
+
+  let scope: PermissionScope = "any"
+  for (const key of keys) {
+    // Lookup the named permissions with the backend corresponding permission names
+    const required: readonly string[] = KeyNamedPermissions[key]
+    const keyScope = scopeOfGrants(held, required)
+    if (keyScope === null) return null
+    if (keyScope === "own") scope = "own"
+  }
+  return scope
 }
 
 /** Page / menu level: can the user use this feature at all (any or own)? */
 export function checkUserPermission(user: User) {
-  return (permission: UserPermission) =>
+  return (permission: PermissionCheck) =>
     getPermissionScope(user, permission) !== null
 }
 

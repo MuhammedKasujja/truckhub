@@ -41,6 +41,7 @@ export const en = {
   "invoices:activities": "View Invoice Activity",
   "invoices:void": "Void Invoices",
   "shipments:module": "Shipments",
+  "shipments:view": "View Shipments",
   "shipments:dispatch": "Dispatch Shipments",
   "shipments:complete": "Complete Shipments",
   "shipments:capture_details": "Capture Shipment Details",

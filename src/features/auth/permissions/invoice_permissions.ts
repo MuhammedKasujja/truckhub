@@ -1,5 +1,5 @@
 export const InvoiceModulePermissions = {
-  "invoices:module": ["invoices:module", "invoices:read"],
+  "invoices:module": ["invoices:module"],
   "invoices:create": ["invoices:create"],
   "invoices:view": ["invoices:view", "invoices:read"],
   "invoices:delete": ["invoices:delete"],

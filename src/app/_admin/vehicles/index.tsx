@@ -3,6 +3,7 @@ import {
   VehicleTableSkeleton,
 } from "@/features/vehicles/components/vehicle-table"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 
 import {
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/_admin/vehicles/")({
   pendingComponent: VehicleTableSkeleton,
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
-  beforeLoad: () => requirePermission("vehicles:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.vehicles),
   loader: ({ context, deps: { search } }) => {
     context.queryClient.prefetchQuery(vehicleStatisticsQueryOptions())
     context.queryClient.prefetchQuery(createVehiclesListQueryOptions(search))

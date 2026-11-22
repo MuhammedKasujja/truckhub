@@ -5,6 +5,7 @@ import {
   checkUserPermission,
   getPermissionScope,
 } from "@/lib/permissions"
+import { ModuleAccess } from "@/features/auth/permissions"
 
 const ME = "user-me"
 const OTHER = "user-other"
@@ -98,5 +99,38 @@ describe("checkResourcePermission", () => {
     expect(can("quotations:edit", {})).toBe(false)
     const full = user(["quotations:update", "quotations:view"])
     expect(checkResourcePermission(full)("quotations:edit", {})).toBe(true)
+  })
+})
+
+describe("several keys (ModuleAccess)", () => {
+  it("needs every key: the module flag and its data key", () => {
+    expect(
+      checkUserPermission(user(["quotations:module"]))(ModuleAccess.quotations)
+    ).toBe(false)
+    expect(
+      checkUserPermission(user(["quotations:view", "quotations:read"]))(
+        ModuleAccess.quotations
+      )
+    ).toBe(false)
+  })
+
+  it("is any when every key is any", () => {
+    const u = user(["quotations:module", "quotations:view", "quotations:read"])
+    expect(getPermissionScope(u, ModuleAccess.quotations)).toBe("any")
+  })
+
+  it("is own when any key is only own", () => {
+    const u = user([
+      "quotations:module",
+      "quotations:view:own",
+      "quotations:read:own",
+    ])
+    expect(getPermissionScope(u, ModuleAccess.quotations)).toBe("own")
+  })
+
+  it("lets admins in", () => {
+    expect(getPermissionScope(user([], true), ModuleAccess.quotations)).toBe(
+      "any"
+    )
   })
 })

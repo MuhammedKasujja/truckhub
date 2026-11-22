@@ -1,7 +1,7 @@
 // +++++++++++++++++++++++++++
 // bookings permissions
 export const BookingModulePermissions = {
-  "bookings:module": ["bookings:module", "bookings:read"],
+  "bookings:module": ["bookings:module"],
   "bookings:create": [
     "bookings:create",
     "clients:read",

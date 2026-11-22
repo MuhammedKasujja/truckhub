@@ -1,9 +1,10 @@
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/billing/overview/")({
   component: RouteComponent,
-  beforeLoad: () => requirePermission("billing:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.billing),
 })
 
 function RouteComponent() {

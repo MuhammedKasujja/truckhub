@@ -7,6 +7,7 @@ import {
 import { quotationQueryOptions } from "@/features/quotations/query-options"
 import { QuotationSearchParams } from "@/features/quotations/schemas"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { stripSchemaDefaults } from "@/lib/search-params"
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/_admin/quotations/")({
   pendingComponent: QuotationTableSkeleton,
   validateSearch: QuotationSearchParams,
   search: { middlewares: [stripSchemaDefaults(QuotationSearchParams)] },
-  beforeLoad: () => requirePermission("quotations:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.quotations),
   loaderDeps: ({ search }) => search,
   loader: async ({ context: { queryClient }, deps: search }) => {
     return queryClient.ensureQueryData(quotationQueryOptions(search))

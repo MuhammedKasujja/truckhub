@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 
 import type { GlobalKeys} from "@/i18n";
-import type { UserPermission } from "@/features/auth/permissions"
+import type { PermissionCheck } from "@/lib/permissions"
 import type { FileRouteTypes } from "@/routeTree.gen"
 import type { IconComponent } from "@/components/icons";
 import {
@@ -42,6 +42,7 @@ import { useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 import { generateAvatorFallback } from "@/lib/format"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { logoutFn } from "@/features/auth/services"
 import { useAuth } from "@/components/providers/auth-context"
 import { getModuleIcon } from "@/components/icons"
@@ -60,7 +61,8 @@ type SidebarItem = {
   /** Path prefix that marks this item active. Defaults to `url`. */
   match?: string
   icon?: IconComponent
-  permission: UserPermission
+  /** Module list pages use `ModuleAccess.<module>`, the same check as their route */
+  permission: PermissionCheck
 }
 
 type SidebarSection = {
@@ -97,13 +99,13 @@ export const sidebarSections: SidebarSection[] = [
         url: "/shipments/requests",
         match: "/shipments",
         icon: getModuleIcon("Shipments"),
-        permission: "shipments:module",
+        permission: ModuleAccess.shipments,
       },
       {
         title: "routes.quotations",
         url: "/quotations",
         icon: getModuleIcon("Quotations"),
-        permission: "quotations:module",
+        permission: ModuleAccess.quotations,
       },
     ],
   },
@@ -114,19 +116,19 @@ export const sidebarSections: SidebarSection[] = [
         title: "routes.drivers",
         url: "/drivers",
         icon: getModuleIcon("Drivers"),
-        permission: "drivers:module",
+        permission: ModuleAccess.drivers,
       },
       {
         title: "routes.vehicles",
         url: "/vehicles",
         icon: getModuleIcon("Vehicles"),
-        permission: "vehicles:module",
+        permission: ModuleAccess.vehicles,
       },
       {
         title: "routes.maintenance",
         url: "/maintenance",
         icon: getModuleIcon("Maintenance"),
-        permission: "maintenance:module",
+        permission: ModuleAccess.maintenance,
       },
     ],
   },
@@ -137,13 +139,13 @@ export const sidebarSections: SidebarSection[] = [
         title: "routes.clients",
         url: "/clients",
         icon: getModuleIcon("Clients"),
-        permission: "clients:module",
+        permission: ModuleAccess.clients,
       },
       {
         title: "routes.services",
         url: "/services",
         icon: getModuleIcon("Services"),
-        permission: "services:module",
+        permission: ModuleAccess.services,
       },
     ],
   },
@@ -172,13 +174,13 @@ export const sidebarSections: SidebarSection[] = [
         title: "routes.payments",
         url: "/payments",
         icon: getModuleIcon("Payments"),
-        permission: "payments:module",
+        permission: ModuleAccess.payments,
       },
       {
         title: "routes.invoices",
         url: "/invoices",
         icon: getModuleIcon("Invoices"),
-        permission: "invoices:module",
+        permission: ModuleAccess.invoices,
       },
       {
         title: "routes.reports",

@@ -1,7 +1,7 @@
 // +++++++++++++++++++++++++++
 // vehicles permissions
 export const VehicleModulePermissions = {
-  "vehicles:module": ["vehicles:module", "vehicles:read"],
+  "vehicles:module": ["vehicles:module"],
   "vehicles:create": ["vehicles:create"],
   "vehicles:view": ["vehicles:view", "vehicles:read"],
   "vehicles:delete": ["vehicles:delete"],

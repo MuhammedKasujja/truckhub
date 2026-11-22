@@ -4,7 +4,7 @@ import { RecentInvoicesTable } from "./recent-invoices-table"
 import { RecentPaymentsTable } from "./recent-payments-table"
 import { RecentQuotationsTable } from "./recent-quotations-table"
 import { WidgetEmpty } from "./widget-empty"
-import type { UserPermission } from "@/features/auth/permissions"
+import type { PermissionCheck } from "@/lib/permissions"
 import type { Shipment } from "@/features/shipments/types"
 import type { DashboardStatistics } from "../types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { ShipmentStatusIndicator } from "@/features/shipments/components"
 import { formatDate } from "@/lib/format"
 
@@ -29,7 +30,7 @@ type TabKey = "shipments" | "quotations" | "invoices" | "payments"
 type TabDef = {
   key: TabKey
   label: string
-  permission: UserPermission
+  permission: PermissionCheck
   to: "/shipments/active" | "/quotations" | "/invoices" | "/payments"
   render: () => React.ReactNode
 }
@@ -73,7 +74,7 @@ export function RecentActivityTabs({ data }: { data: DashboardStatistics }) {
     {
       key: "shipments",
       label: "Shipments",
-      permission: "shipments:module",
+      permission: ModuleAccess.shipments,
       to: "/shipments/active",
       render: () => (
         <RecentShipments shipments={data.recent_shipments.slice(0, ROWS)} />

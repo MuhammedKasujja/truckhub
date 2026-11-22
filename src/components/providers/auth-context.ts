@@ -1,10 +1,10 @@
 import { User } from "@/features/auth/types"
 import { createContext, useContext } from "react"
-import { UserPermission } from "@/features/auth/permissions"
+import type { PermissionCheck } from "@/lib/permissions"
 
 export const AuthContext = createContext<{
   user: User | null | undefined
-  hasPermission: (permission: UserPermission) => boolean
+  hasPermission: (permission: PermissionCheck) => boolean
   refresh: () => void
 } | null>(null)
 

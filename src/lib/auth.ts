@@ -1,7 +1,7 @@
 import { logger } from "@/lib/logger"
 import { createServerFn } from "@tanstack/react-start"
 import { checkResourcePermission, getPermissionScope } from "@/lib/permissions"
-import type { OwnedResource } from "@/lib/permissions"
+import type { OwnedResource, PermissionCheck } from "@/lib/permissions"
 import { isExpiringSoon, useAppSession } from "./session"
 import { isRedirect, redirect } from "@tanstack/react-router"
 import { isRefreshRejected, refreshTokens } from "@/lib/api"
@@ -16,7 +16,7 @@ import type { UserPermission } from "@/features/auth/permissions"
  * It runs before the record is fetched, so for routes about one record,
  * also call `requireResourcePermission` in the loader.
  */
-export async function requirePermission(permission: UserPermission) {
+export async function requirePermission(permission: PermissionCheck) {
   const user = await requireAuth({ redirectTo: "/login" })
 
   const permissionScope = getPermissionScope(user, permission)

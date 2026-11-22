@@ -14,6 +14,7 @@ import {
 } from "@/features/payments/query-options"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { PaymentSearchParamsCache } from "@/features/payments/schemas"
 import {
   PaymentStatisticsCard,
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/_admin/payments/")({
   loaderDeps: ({ search }) => ({ search }),
   component: RouteComponent,
   pendingComponent: PaymentTableSkeleton,
-  beforeLoad: () => requirePermission("payments:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.payments),
   loader: async ({ context: { queryClient }, deps: { search } }) => {
     await queryClient.ensureQueryData(paymentsQueryOptions(search))
     // return queryClient.ensureQueryData(paymentStatisticsQueryOptions())

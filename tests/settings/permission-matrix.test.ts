@@ -70,7 +70,8 @@ describe("permission matrix", () => {
 })
 
 // Real keys: quotations:edit = update + view, quotations:view = view + read,
-// quotations:module = module + read (module has no ":own" form)
+// reports:quotations:view = reports:module + quotations:read (reports:module
+// has no ":own" form). Module keys grant only their *:module flag.
 describe("permission matrix: own vs any", () => {
   const ownable = ownableFrom([
     "quotations:module",
@@ -93,8 +94,10 @@ describe("permission matrix: own vs any", () => {
 
   it("offers own only for keys with an ownable grant", () => {
     expect(isScopable(key("quotations:edit"), ownable)).toBe(true)
-    expect(isScopable(key("quotations:module"), ownable)).toBe(true)
+    expect(isScopable(key("reports:quotations:view"), ownable)).toBe(true)
     expect(isScopable(key("users:view"), ownable)).toBe(false)
+    // Module keys are frontend-only flags, so always a plain switch
+    expect(isScopable(key("quotations:module"), ownable)).toBe(false)
   })
 
   it("sets a key to own with the :own form of each grant", () => {
@@ -116,12 +119,12 @@ describe("permission matrix: own vs any", () => {
   it("keeps grants with no :own form as-is on an own key", () => {
     const next = setKeyScope(
       new Set(),
-      key("quotations:module"),
+      key("reports:quotations:view"),
       "own",
       ownable
     )
-    expect(sorted(next)).toEqual(["quotations:module", "quotations:read:own"])
-    expect(keyScope(next, key("quotations:module"))).toBe("own")
+    expect(sorted(next)).toEqual(["quotations:read:own", "reports:module"])
+    expect(keyScope(next, key("reports:quotations:view"))).toBe("own")
   })
 
   it("doesn't narrow a grant another key needs at any", () => {
@@ -147,10 +150,10 @@ describe("permission matrix: own vs any", () => {
   })
 
   it("can't narrow a key to own while any keys hold all its ownable grants", () => {
-    // view = view + read: edit (any) needs view, module (any) needs read
+    // view = view + read: edit (any) needs view, the quotations report (any) needs read
     const set = enableKeys(new Set(), [
       key("quotations:edit"),
-      key("quotations:module"),
+      key("reports:quotations:view"),
       key("quotations:view"),
     ])
     expect(canSetKeyScope(set, key("quotations:view"), "own", ownable)).toBe(
@@ -161,10 +164,33 @@ describe("permission matrix: own vs any", () => {
     )
   })
 
+  it("narrows View to own with the quotations module on", () => {
+    // The module key used to grant quotations:read too, which kept it as-is
+    // (every quotation) while View showed Own
+    const moduleOn = enableKeys(new Set(), [key("quotations:module")])
+    const next = setKeyScope(moduleOn, key("quotations:view"), "own", ownable)
+    expect(sorted(next)).toEqual([
+      "quotations:module",
+      "quotations:read:own",
+      "quotations:view:own",
+    ])
+    expect(next.has("quotations:read")).toBe(false)
+  })
+
   it("counts own keys as on and reports scope changes", () => {
     const own = setKeyScope(new Set(), key("quotations:edit"), "own", ownable)
     const any = setKeyScope(own, key("quotations:edit"), "any", ownable)
     expect(countEnabledKeys(own)).toBe(countEnabledKeys(any))
     expect(changedKeys(any, own).map((k) => k.key)).toContain("quotations:edit")
+  })
+})
+
+describe("module keys", () => {
+  it("grant only *:module flags, never API permissions", () => {
+    const moduleKeys = allPermissionKeys.filter((k) => k.key.endsWith(":module"))
+    expect(moduleKeys.length).toBeGreaterThan(5)
+    for (const k of moduleKeys) {
+      expect(k.grants.every((g) => g.endsWith(":module")), k.key).toBe(true)
+    }
   })
 })

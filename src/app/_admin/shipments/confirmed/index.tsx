@@ -8,13 +8,14 @@ import {
 import { shipmentsConfirmedQueryOptions } from "@/features/shipments/query-options"
 import { ShipmentSearchParams } from "@/features/shipments/schemas"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { stripSchemaDefaults } from "@/lib/search-params"
 
 export const Route = createFileRoute("/_admin/shipments/confirmed/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   pendingComponent: ShipmentTableSkeleton,
-  beforeLoad: () => requirePermission("shipments:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.shipments),
   validateSearch: ShipmentSearchParams,
   search: { middlewares: [stripSchemaDefaults(ShipmentSearchParams)] },
   loaderDeps: ({ search }) => ({ search }),

@@ -1,5 +1,5 @@
 export const PaymentModulePermissions = {
-  "payments:module": ["payments:module", "payments:read"],
+  "payments:module": ["payments:module"],
   "payments:create": ["payments:create"],
   "payments:view": ["payments:read", "payments:view"],
   "payments:delete": ["payments:delete"],

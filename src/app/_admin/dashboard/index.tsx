@@ -12,6 +12,7 @@ import {
 import type { DashboardKpis } from "@/features/dashboard/types"
 import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { requirePermission } from "@/lib/auth"
 import { formatDate, formatMoney } from "@/lib/format"
@@ -111,7 +112,7 @@ function RouteComponent() {
                 />
               </div>
             </Can>
-            <Can permission="shipments:module">
+            <Can permission={ModuleAccess.shipments}>
               <div className="lg:col-span-4">
                 <ShipmentPipeline counts={data.shipments_by_status} />
               </div>
@@ -122,7 +123,7 @@ function RouteComponent() {
             <Can permission="vehicles:view">
               <FleetStatusChart counts={data.vehicles_by_status} />
             </Can>
-            <Can permission="shipments:module">
+            <Can permission={ModuleAccess.shipments}>
               <LiveOperations shipments={data.recent_shipments} />
             </Can>
             <Can permission="maintenance:view">
@@ -160,7 +161,7 @@ function KpiRow({
           to="/billing/overview"
         />
       </Can>
-      <Can permission="shipments:module">
+      <Can permission={ModuleAccess.shipments}>
         <KpiCard
           label="Active shipments"
           value={kpis.active_shipments.value}

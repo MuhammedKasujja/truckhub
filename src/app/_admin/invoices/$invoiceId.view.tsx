@@ -19,6 +19,7 @@ import { toast } from "sonner"
 import type { Invoice } from "@/features/invoices/types"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Can } from "@/components/has-permission"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { ActionIcon } from "@/components/icons"
 import { PageBackButton } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
@@ -548,7 +549,7 @@ function RecordCard({ invoice }: { invoice: Invoice }) {
           <SummaryRow label="Invoice no." value={invoice.number} />
           <SummaryRow label="Issued" value={formatDate(invoice.created_at)} />
           <SummaryRow label="Due" value={formatDate(invoice.due_date)} />
-          <Can permission={"payments:module"}>
+          <Can permission={ModuleAccess.payments}>
             <SummaryRow
               label="Payments"
               value={

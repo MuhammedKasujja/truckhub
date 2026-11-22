@@ -8,6 +8,7 @@ import { PageAction, PageHeader, PageTitle } from "@/components/page-header"
 import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 import { DriverSearchParamsCache } from "@/features/drivers/schemas"
 import { ActionIcon } from "@/components/icons"
 import { ExpiringDriverDocumentsCard } from "@/features/documents/components/expiring-documents-card"
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/_admin/drivers/")({
   loaderDeps: ({ search }) => ({ search }),
   pendingComponent: DriverListSkeleton,
   component: RouteComponent,
-  beforeLoad: () => requirePermission("drivers:module"),
+  beforeLoad: () => requirePermission(ModuleAccess.drivers),
   loader: ({ context, deps: { search } }) =>
     context.queryClient.ensureQueryData(createDriverListQueryOptions(search)),
 })

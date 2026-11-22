@@ -1,5 +1,5 @@
 export const BillingModulePermissions = {
-  "billing:module": ["billing:module", "billing:read"],
+  "billing:module": ["billing:module"],
   "billing:create": ["billing:create"],
   "billing:view": ["billing:view", "billing:read"],
   "billing:delete": ["billing:delete"],

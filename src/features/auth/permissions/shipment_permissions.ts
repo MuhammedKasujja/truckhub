@@ -1,5 +1,7 @@
 export const ShipmentModulePermissions = {
-  "shipments:module": ["shipments:module", "trips:read", "trips:view"],
+  "shipments:module": ["shipments:module"],
+  // The shipments list and its widgets read trips
+  "shipments:view": ["trips:read", "trips:view"],
   "shipments:dispatch": ["trips:dispatch"],
   "shipments:complete": ["trips:end"],
   "shipments:capture_details": ["trips:details"],

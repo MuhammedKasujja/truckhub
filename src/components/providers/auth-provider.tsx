@@ -1,3 +1,4 @@
+import type { PermissionCheck } from "@/lib/permissions"
 import { checkUserPermission } from "@/lib/permissions"
 import { useCallback, useMemo, useState, type ReactNode } from "react"
 import { AuthContext } from "./auth-context"
@@ -6,7 +7,6 @@ import { useIdleTimer } from "@/hooks/use-idle-timer"
 import { SessionIdleWarningDialog } from "../session-warning-dialog"
 import { IDLE_PROMPT_MS, IDLE_TIMEOUT_MS } from "@/common/constants"
 import { logger } from "@/lib/logger"
-import { UserPermission } from "@/features/auth/permissions"
 
 // Derived, so the dialog's displayed countdown can never drift from the real timeout
 const COUNTDOWN_SECONDS = Math.round((IDLE_TIMEOUT_MS - IDLE_PROMPT_MS) / 1000)
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [logout])
 
   const hasPermission = useCallback(
-    (permission: UserPermission): boolean => {
+    (permission: PermissionCheck): boolean => {
       if (!user?.permissions) return false
       const func = checkUserPermission(user)
       return func(permission)

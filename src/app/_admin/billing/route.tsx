@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PageHeader, PageTitle } from "@/components/page-header"
 import { useTranslation } from "@/i18n"
 import { requirePermission } from "@/lib/auth"
+import { ModuleAccess } from "@/features/auth/permissions"
 
 // Literal paths: a route's `.to` isn't set until the router builds the
 // route tree, so reading it at module level can give undefined.
@@ -32,7 +33,7 @@ const biilingTabs = [
 
 export const Route = createFileRoute("/_admin/billing")({
   component: RouteComponent,
-  beforeLoad: ()=> requirePermission("billing:module")
+  beforeLoad: ()=> requirePermission(ModuleAccess.billing)
 })
 
 function RouteComponent() {

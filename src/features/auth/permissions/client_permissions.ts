@@ -1,7 +1,7 @@
 // +++++++++++++++++++++++++++
 // customer permissions
 export const ClientModulePermissions = {
-  "clients:module": ["clients:module", "clients:read"],
+  "clients:module": ["clients:module"],
   "clients:create": ["clients:create"],
   "clients:view": ["clients:view", "clients:read"],
   "clients:delete": ["clients:delete"],

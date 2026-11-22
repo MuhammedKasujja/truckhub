@@ -1,7 +1,7 @@
 "use client"
 
 import { NoPermissionCard } from "./no-permission-card"
-import type { OwnedResource } from "@/lib/permissions"
+import type { OwnedResource, PermissionCheck } from "@/lib/permissions"
 import type { UserPermission } from "@/features/auth/permissions"
 import { usePermissions } from "@/features/auth/hooks/use-permissions"
 
@@ -12,7 +12,8 @@ export function HasPermission({
   fallbackText,
   children,
 }: {
-  permission: UserPermission
+  /** One key, or several that are all required (e.g. `ModuleAccess.quotations`) */
+  permission: PermissionCheck
   /** When given, also checks "own" permissions against this record */
   resource?: OwnedResource
   renderFallback?: boolean
@@ -21,8 +22,10 @@ export function HasPermission({
 }) {
   const { hasPermission, canOn } = usePermissions()
 
+  const keys: readonly UserPermission[] =
+    typeof permission === "string" ? [permission] : permission
   const allowed = resource
-    ? canOn(permission, resource)
+    ? keys.every((key) => canOn(key, resource))
     : hasPermission(permission)
 
   if (allowed) return children
