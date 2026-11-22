@@ -1,6 +1,5 @@
 import { api, isSessionExpired } from "@/lib/api"
 import { redirect } from "@tanstack/react-router"
-import { logoutFn } from "@/features/auth/services"
 import { AxiosError, RawAxiosRequestHeaders } from "axios"
 import type {
   Prettify,
@@ -149,8 +148,7 @@ function _handleApiException<T>(error: unknown): ApiResponse<T> {
 function errorBody(error: unknown) {
   const body = (error as any)?.response?.data?.error
   return {
-    message:
-      body?.message ?? (error as any)?.message ?? "Something went wrong",
+    message: body?.message ?? (error as any)?.message ?? "Something went wrong",
     code: body?.code,
     details: body?.details,
   }
@@ -171,12 +169,9 @@ async function logoutOnServerActions(error: unknown) {
   )
   // The token refresh failed too: the session is already cleared, so send
   // the user to login right away. Loaders and the query cache handle this.
+  // Any other 401 (e.g. the refresh timed out) keeps the session and comes
+  // back as a normal error envelope.
   if (isSessionExpired(error)) {
     throw redirect({ to: "/login", replace: true })
-  }
-  if (statusCode === "NOT_AUTHENTICATED") {
-    try {
-      await logoutFn()
-    } catch {}
   }
 }
