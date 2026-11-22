@@ -4,6 +4,7 @@ import { pageNavigationPlugin } from "@react-pdf-viewer/page-navigation"
 import { printPlugin } from "@react-pdf-viewer/print"
 import { zoomPlugin } from "@react-pdf-viewer/zoom"
 import { FileWarningIcon, Loader2Icon, RefreshCwIcon } from "lucide-react"
+import { toast } from "sonner"
 import { PdfFrame, PdfPaperSkeleton } from "./pdf-frame"
 import { PdfToolbar, ZOOM_STEPS } from "./pdf-toolbar"
 import type { KeyboardEvent } from "react"
@@ -82,7 +83,13 @@ export default function PdfViewLoader({
   }
 
   function download() {
-    if (file) downloadPdf(file, fileName)
+    if (!file) return
+    try {
+      downloadPdf(file, fileName)
+      toast.success("Download started", { description: fileName })
+    } catch {
+      toast.error("Could not download the PDF")
+    }
   }
 
   function toggleFullscreen() {
