@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import z from "zod"
 import { PermissionsWrapper } from "@/features/settings/permissions/components/permissions-wrapper"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
+import { createPermissionsQueryOptions } from "@/features/settings/permissions/query-options"
 import { requirePermission } from "@/lib/auth"
 
 export const Route = createFileRoute(
@@ -12,5 +13,9 @@ export const Route = createFileRoute(
   beforeLoad: () => requirePermission("config:roles:assign_permissions"),
   component: PermissionsWrapper,
   loader: ({ context }) =>
-    context.queryClient.ensureQueryData(createRolesQueryOptions()),
+    Promise.all([
+      context.queryClient.ensureQueryData(createRolesQueryOptions()),
+      // Which permissions also have an ":own" form (None / Own / Any rows)
+      context.queryClient.ensureQueryData(createPermissionsQueryOptions()),
+    ]),
 })

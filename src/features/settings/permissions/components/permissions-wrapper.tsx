@@ -15,17 +15,28 @@ import {
 } from "lucide-react"
 import {
   allPermissionKeys,
+  canSetKeyScope,
   changedKeys,
   countEnabledKeys,
   disableKeys,
   enableKeys,
   isKeyOn,
+  isScopable,
+  keyScope,
+  keysForcingAny,
   keysIncluding,
   modulesWithAccess,
+  ownableFrom,
   permissionModules,
+  setKeyScope,
 } from "../permission-matrix"
 import { usePermissionLabels } from "../use-permission-labels"
-import type { PermissionKey, PermissionModule } from "../permission-matrix"
+import { createPermissionsQueryOptions } from "../query-options"
+import type {
+  KeyScope,
+  PermissionKey,
+  PermissionModule,
+} from "../permission-matrix"
 import type { Role } from "@/features/settings/roles/types"
 import { assignPermissionsToRoleFn } from "@/features/settings/permissions/services"
 import { createRolesQueryOptions } from "@/features/settings/roles/query-options"
@@ -45,6 +56,11 @@ const TOTAL_KEYS = allPermissionKeys.length
 
 export function PermissionsWrapper() {
   const { data: roles } = useSuspenseQuery(createRolesQueryOptions())
+  const { data: permissionNames } = useSuspenseQuery(
+    createPermissionsQueryOptions()
+  )
+  // API permissions that also have an ":own" form, set per row as None / Own / Any
+  const ownable = useMemo(() => ownableFrom(permissionNames), [permissionNames])
   const search = useSearch({
     from: "/_admin/settings/user-management/permissions/",
   })
@@ -162,6 +178,14 @@ export function PermissionsWrapper() {
               {enabledCount} of {TOTAL_KEYS} permissions · {areaCount} of{" "}
               {permissionModules.length} areas
             </p>
+            {ownable.size > 0 && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">Own</span>: only
+                records the user created ·{" "}
+                <span className="font-medium text-foreground">Any</span>: every
+                record in the company
+              </p>
+            )}
           </div>
           <InputGroup className="w-full sm:w-64">
             <InputGroupAddon>
@@ -205,6 +229,7 @@ export function PermissionsWrapper() {
                 label={moduleLabel(m.module)}
                 keyLabel={keyLabel}
                 selected={selected}
+                ownable={ownable}
                 changed={changedSet}
                 onChange={update}
               />
@@ -313,6 +338,7 @@ function ModuleCard({
   label,
   keyLabel,
   selected,
+  ownable,
   changed,
   onChange,
 }: {
@@ -323,6 +349,7 @@ function ModuleCard({
   label: string
   keyLabel: (key: string) => string
   selected: Set<string>
+  ownable: ReadonlySet<string>
   changed: Set<string>
   onChange: (next: Set<string>) => void
 }) {
@@ -356,7 +383,7 @@ function ModuleCard({
           onClick={() =>
             onChange(
               state === "all"
-                ? disableKeys(selected, fullModule.keys)
+                ? disableKeys(selected, fullModule.keys, ownable)
                 : enableKeys(selected, fullModule.keys)
             )
           }
@@ -383,6 +410,7 @@ function ModuleCard({
             label={keyLabel(key.key)}
             keyLabel={keyLabel}
             selected={selected}
+            ownable={ownable}
             changed={changed.has(key.key)}
             onChange={onChange}
           />
@@ -397,6 +425,7 @@ function PermissionRow({
   label,
   keyLabel,
   selected,
+  ownable,
   changed,
   onChange,
 }: {
@@ -404,13 +433,37 @@ function PermissionRow({
   label: string
   keyLabel: (key: string) => string
   selected: Set<string>
+  ownable: ReadonlySet<string>
   changed: boolean
   onChange: (next: Set<string>) => void
 }) {
-  const on = isKeyOn(selected, permission)
-  const includedBy = on ? keysIncluding(selected, permission) : []
-  const locked = includedBy.length > 0
+  const scopable = isScopable(permission, ownable)
+  const scope = keyScope(selected, permission)
+  const on = scope !== "none"
   const id = `perm-${permission.key}`
+
+  // Options other keys hold this one away from, and why
+  const blocked = scopable
+    ? SCOPE_OPTIONS.map((o) => o.value).filter(
+        (s) => s !== scope && !canSetKeyScope(selected, permission, s, ownable)
+      )
+    : []
+  const includedBy =
+    on && (!scopable || blocked.includes("none"))
+      ? keysIncluding(selected, permission)
+      : []
+  const forcingAny =
+    scopable && scope === "any" && blocked.includes("own")
+      ? keysForcingAny(selected, permission, ownable)
+      : []
+  const locked = includedBy.length > 0
+
+  const notes = [
+    includedBy.length > 0 &&
+      `Included with ${includedBy.map((k) => keyLabel(k.key)).join(", ")}`,
+    forcingAny.length > 0 &&
+      `Any, because of ${forcingAny.map((k) => keyLabel(k.key)).join(", ")}`,
+  ].filter((note): note is string => typeof note === "string")
 
   return (
     <li
@@ -419,7 +472,11 @@ function PermissionRow({
         changed && "bg-primary/5"
       )}
     >
-      <label htmlFor={id} className="min-w-0 flex-1 cursor-pointer">
+      <label
+        id={`${id}-label`}
+        htmlFor={scopable ? undefined : id}
+        className={cn("min-w-0 flex-1", !scopable && "cursor-pointer")}
+      >
         <span className="flex items-center gap-2 text-sm">
           {label}
           {changed && (
@@ -428,24 +485,86 @@ function PermissionRow({
             </span>
           )}
         </span>
-        {locked && (
-          <span className="block text-xs text-muted-foreground">
-            Included with {includedBy.map((k) => keyLabel(k.key)).join(", ")}
+        {notes.map((note) => (
+          <span key={note} className="block text-xs text-muted-foreground">
+            {note}
           </span>
-        )}
+        ))}
       </label>
-      <Switch
-        id={id}
-        checked={on}
-        disabled={locked}
-        onCheckedChange={(checked) =>
-          onChange(
-            checked
-              ? enableKeys(selected, [permission])
-              : disableKeys(selected, [permission])
-          )
-        }
-      />
+      {scopable ? (
+        <ScopeControl
+          labelledBy={`${id}-label`}
+          value={scope}
+          disabled={blocked}
+          onChange={(next) =>
+            onChange(setKeyScope(selected, permission, next, ownable))
+          }
+        />
+      ) : (
+        <Switch
+          id={id}
+          checked={on}
+          disabled={locked}
+          onCheckedChange={(checked) =>
+            onChange(
+              checked
+                ? enableKeys(selected, [permission])
+                : disableKeys(selected, [permission], ownable)
+            )
+          }
+        />
+      )}
     </li>
+  )
+}
+
+const SCOPE_OPTIONS: { value: KeyScope; label: string; hint: string }[] = [
+  { value: "none", label: "None", hint: "No access" },
+  { value: "own", label: "Own", hint: "Only records the user created" },
+  { value: "any", label: "Any", hint: "Every record in the company" },
+]
+
+/** None / Own / Any for a permission that can be limited to the user's own records. */
+function ScopeControl({
+  labelledBy,
+  value,
+  disabled,
+  onChange,
+}: {
+  labelledBy: string
+  value: KeyScope
+  disabled: KeyScope[]
+  onChange: (scope: KeyScope) => void
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-labelledby={labelledBy}
+      className="inline-flex shrink-0 rounded-md border bg-muted p-0.5"
+    >
+      {SCOPE_OPTIONS.map((option) => {
+        const checked = option.value === value
+        return (
+          <button
+            key={option.value}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            title={option.hint}
+            disabled={disabled.includes(option.value)}
+            onClick={() => !checked && onChange(option.value)}
+            className={cn(
+              "rounded px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-muted-foreground",
+              checked &&
+                "bg-background text-foreground shadow-xs hover:text-foreground",
+              checked && option.value === "own" && "text-primary",
+              checked && option.value === "any" && "bg-primary text-primary-foreground hover:text-primary-foreground"
+            )}
+          >
+            {option.label}
+          </button>
+        )
+      })}
+    </div>
   )
 }

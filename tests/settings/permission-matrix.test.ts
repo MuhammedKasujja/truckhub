@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest"
 import {
   allPermissionKeys,
+  canSetKeyScope,
   changedKeys,
+  countEnabledKeys,
   disableKeys,
   enableKeys,
   isKeyOn,
+  isScopable,
+  keyScope,
   keysIncluding,
+  ownableFrom,
+  setKeyScope,
 } from "@/features/settings/permissions/permission-matrix"
 
 const key = (name: string) => {
@@ -60,5 +66,105 @@ describe("permission matrix", () => {
     expect(changedKeys(draft, saved).map((k) => k.key)).toEqual([
       "users:delete",
     ])
+  })
+})
+
+// Real keys: quotations:edit = update + view, quotations:view = view + read,
+// quotations:module = module + read (module has no ":own" form)
+describe("permission matrix: own vs any", () => {
+  const ownable = ownableFrom([
+    "quotations:module",
+    "quotations:read",
+    "quotations:read:own",
+    "quotations:view",
+    "quotations:view:own",
+    "quotations:update",
+    "quotations:update:own",
+  ])
+  const sorted = (set: ReadonlySet<string>) => [...set].sort()
+
+  it("reads ownable API permissions from the backend list", () => {
+    expect(sorted(ownable)).toEqual([
+      "quotations:read",
+      "quotations:update",
+      "quotations:view",
+    ])
+  })
+
+  it("offers own only for keys with an ownable grant", () => {
+    expect(isScopable(key("quotations:edit"), ownable)).toBe(true)
+    expect(isScopable(key("quotations:module"), ownable)).toBe(true)
+    expect(isScopable(key("users:view"), ownable)).toBe(false)
+  })
+
+  it("sets a key to own with the :own form of each grant", () => {
+    const next = setKeyScope(new Set(), key("quotations:edit"), "own", ownable)
+    expect(sorted(next)).toEqual([
+      "quotations:update:own",
+      "quotations:view:own",
+    ])
+    expect(keyScope(next, key("quotations:edit"))).toBe("own")
+    expect(isKeyOn(next, key("quotations:edit"))).toBe(true)
+  })
+
+  it("replaces the :own forms when widening to any", () => {
+    const own = setKeyScope(new Set(), key("quotations:edit"), "own", ownable)
+    const any = setKeyScope(own, key("quotations:edit"), "any", ownable)
+    expect(sorted(any)).toEqual(["quotations:update", "quotations:view"])
+  })
+
+  it("keeps grants with no :own form as-is on an own key", () => {
+    const next = setKeyScope(
+      new Set(),
+      key("quotations:module"),
+      "own",
+      ownable
+    )
+    expect(sorted(next)).toEqual(["quotations:module", "quotations:read:own"])
+    expect(keyScope(next, key("quotations:module"))).toBe("own")
+  })
+
+  it("doesn't narrow a grant another key needs at any", () => {
+    const viewAny = enableKeys(new Set(), [key("quotations:view")])
+    const next = setKeyScope(viewAny, key("quotations:edit"), "own", ownable)
+    expect(next.has("quotations:view")).toBe(true)
+    expect(next.has("quotations:update:own")).toBe(true)
+    expect(keyScope(next, key("quotations:edit"))).toBe("own")
+    expect(keyScope(next, key("quotations:view"))).toBe("any")
+  })
+
+  it("narrows a shared grant to :own when only an own key still needs it", () => {
+    // edit is own (update:own) but shares view, held as-is for the view key
+    const viewAny = enableKeys(new Set(), [key("quotations:view")])
+    const both = setKeyScope(viewAny, key("quotations:edit"), "own", ownable)
+    const next = disableKeys(both, [key("quotations:view")], ownable)
+    expect(sorted(next)).toEqual([
+      "quotations:update:own",
+      "quotations:view:own",
+    ])
+    expect(keyScope(next, key("quotations:edit"))).toBe("own")
+    expect(keyScope(next, key("quotations:view"))).toBe("none")
+  })
+
+  it("can't narrow a key to own while any keys hold all its ownable grants", () => {
+    // view = view + read: edit (any) needs view, module (any) needs read
+    const set = enableKeys(new Set(), [
+      key("quotations:edit"),
+      key("quotations:module"),
+      key("quotations:view"),
+    ])
+    expect(canSetKeyScope(set, key("quotations:view"), "own", ownable)).toBe(
+      false
+    )
+    expect(canSetKeyScope(set, key("quotations:edit"), "own", ownable)).toBe(
+      true
+    )
+  })
+
+  it("counts own keys as on and reports scope changes", () => {
+    const own = setKeyScope(new Set(), key("quotations:edit"), "own", ownable)
+    const any = setKeyScope(own, key("quotations:edit"), "any", ownable)
+    expect(countEnabledKeys(own)).toBe(countEnabledKeys(any))
+    expect(changedKeys(any, own).map((k) => k.key)).toContain("quotations:edit")
   })
 })

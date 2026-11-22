@@ -16,6 +16,29 @@ export type OwnedResource = {
   can?: Record<string, boolean>
 }
 
+export const OWN_SUFFIX = ":own"
+
+/**
+ * The scope a set of held API permissions gives over `grants`:
+ * `"any"` when every grant is held as-is, `"own"` when each one is held
+ * either as-is or as its `:own` form, `null` otherwise.
+ *
+ * No grants at all (e.g. `"me:view": []`) means open to every signed-in
+ * user, so `"any"`.
+ *
+ * Shared by the route guards (a user's permissions) and the role editor
+ * (a role's permissions), so both read scopes the same way.
+ */
+export function scopeOfGrants(
+  held: ReadonlySet<string>,
+  grants: readonly string[]
+): PermissionScope | null {
+  if (grants.every((p) => held.has(p))) return "any"
+  if (grants.every((p) => held.has(p) || held.has(`${p}${OWN_SUFFIX}`)))
+    return "own"
+  return null
+}
+
 /**
  * `"any"` when the user holds every API permission the key grants,
  * `"own"` when each one is held either as-is or as its `:own` form,
@@ -29,15 +52,9 @@ export function getPermissionScope(
 
   // Lookup the named permissions with the backend corresponding permission names
   const required: readonly string[] = KeyNamedPermissions[permission]
-  if (required.length === 0) return null
 
   // using set for 0(1) lookups
-  const userPermSet = new Set(user.permissions)
-
-  if (required.every((p) => userPermSet.has(p))) return "any"
-  if (required.every((p) => userPermSet.has(p) || userPermSet.has(`${p}:own`)))
-    return "own"
-  return null
+  return scopeOfGrants(new Set(user.permissions), required)
 }
 
 /** Page / menu level: can the user use this feature at all (any or own)? */
@@ -54,8 +71,8 @@ export function checkResourcePermission(user: User) {
   return (permission: UserPermission, resource: OwnedResource) => {
     if (user.is_admin) return true
 
+    // No grants (e.g. "me:view") means open to every signed-in user: `every` is true
     const required: readonly string[] = KeyNamedPermissions[permission]
-    if (required.length === 0) return false
 
     const userPermSet = new Set(user.permissions)
     const isOwner =

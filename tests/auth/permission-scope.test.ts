@@ -43,6 +43,17 @@ describe("getPermissionScope", () => {
     expect(getPermissionScope(u, "quotations:edit")).toBeNull()
     expect(checkUserPermission(u)("quotations:edit")).toBe(false)
   })
+
+  it("opens keys with no API permissions to every signed-in user", () => {
+    // "me:view": [] guards self-service (My HR); an early `length === 0`
+    // check once locked every non-admin out of it
+    const u = user([])
+    expect(getPermissionScope(u, "me:view")).toBe("any")
+    expect(checkUserPermission(u)("me:view")).toBe(true)
+    expect(checkResourcePermission(u)("me:view", { created_by: OTHER })).toBe(
+      true
+    )
+  })
 })
 
 describe("checkResourcePermission", () => {

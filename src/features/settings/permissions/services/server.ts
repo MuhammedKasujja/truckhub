@@ -40,14 +40,17 @@ export async function assignPermissionsToRole({
   })
 }
 
-export async function fetchPermissions() {
-  try {
-    const response = await apiClient.postFn<string[]>(
-      "/v1/permissions/generate",
-      {}
-    )
-    return response.data
-  } catch (error) {
-    console.log("Error fetchPermissions")
+/**
+ * Every permission name the backend knows, including the `<name>:own`
+ * variants of ownable actions. Read-only: it used to call
+ * `POST /v1/permissions/generate`, which regenerates (and deletes) rows.
+ */
+export async function fetchPermissions(): Promise<string[]> {
+  const { data, error } = await apiClient.getFn<string[]>("/v1/permissions")
+  if (error) {
+    // The matrix still works without it, just with no "own" options
+    console.error("fetchPermissions failed", error.message)
+    return []
   }
+  return data ?? []
 }
