@@ -92,6 +92,10 @@ export type Quotation = {
     email: string | null
   }
   contact?: ClientContact | null
+  /** User who created the quotation; drives "own" permissions */
+  created_by?: EntityId | null
+  /** Server-computed permissions for this record, keyed by API permission */
+  can?: Record<string, boolean>
 }
 
 export type QuotationActivity = ActivityEntry<QuotationActivityType>

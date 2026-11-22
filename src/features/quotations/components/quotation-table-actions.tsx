@@ -42,7 +42,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
-          <Can permission={"quotations:edit"}>
+          <Can permission={"quotations:edit"} resource={quotation}>
             <DropdownMenuItem asChild>
               <Link
                 to={"/quotations/$quotationId/edit"}
@@ -53,7 +53,7 @@ export function QuotationTableActions({ quotation }: TableActionsProps) {
               </Link>
             </DropdownMenuItem>
           </Can>
-          <Can permission={"clients:view"}>
+          <Can permission={"quotations:view"} resource={quotation}>
             <DropdownMenuItem asChild>
               <Link
                 to={"/quotations/$quotationId/view"}

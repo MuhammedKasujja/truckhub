@@ -16,7 +16,7 @@ import { useBackNavigation } from "@/hooks/use-back-navigation"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { useEditQuotation } from "@/features/quotations/hooks/use-edit-quotation"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
-import { requirePermission } from "@/lib/auth"
+import { requirePermission, requireResourcePermission } from "@/lib/auth"
 import { SubmitButton } from "@/components/ui/submit-button"
 
 export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
@@ -26,10 +26,13 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/edit")({
   validateSearch: z.object({
     clientId: IDSchema.optional(),
   }),
-  loader: ({ context, params }) => {
-    return context.queryClient.ensureQueryData(
+  loader: async ({ context, params }) => {
+    const response = await context.queryClient.ensureQueryData(
       quotationDetailsQueryOptions(params.quotationId)
     )
+    // "own"-only editors may open this page, but not for someone else's quotation
+    requireResourcePermission(context.user, "quotations:edit", response.data)
+    return response
   },
 })
 

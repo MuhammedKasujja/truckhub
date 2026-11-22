@@ -27,7 +27,7 @@ import {
 import { QuotationActivity } from "@/features/quotations/components/details/quotation-activity"
 import { useQuotaionDetailsSuspenseQuery } from "@/features/quotations/hooks/use-quotation"
 import { quotationDetailsQueryOptions } from "@/features/quotations/query-options"
-import { requirePermission } from "@/lib/auth"
+import { requirePermission, requireResourcePermission } from "@/lib/auth"
 import { formatDate, formatMoney } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -35,10 +35,13 @@ export const Route = createFileRoute("/_admin/quotations/$quotationId/view")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
   beforeLoad: () => requirePermission("quotations:view"),
-  loader: ({ context, params }) => {
-    return context.queryClient.ensureQueryData(
+  loader: async ({ context, params }) => {
+    const response = await context.queryClient.ensureQueryData(
       quotationDetailsQueryOptions(params.quotationId)
     )
+    // Safety net: the API already returns 404 for quotations outside the user's scope
+    requireResourcePermission(context.user, "quotations:view", response.data)
+    return response
   },
 })
 

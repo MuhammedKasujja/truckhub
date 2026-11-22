@@ -1,16 +1,43 @@
 import { logger } from "@/lib/logger"
 import { createServerFn } from "@tanstack/react-start"
-import { checkUserPermission } from "@/lib/permissions"
+import { checkResourcePermission, getPermissionScope } from "@/lib/permissions"
+import type { OwnedResource } from "@/lib/permissions"
 import { isExpiringSoon, useAppSession } from "./session"
 import { isRedirect, redirect } from "@tanstack/react-router"
 import { isRefreshRejected, refreshTokens } from "@/lib/api"
+import type { User } from "@/features/auth/types"
 import type { UserPermission } from "@/features/auth/permissions"
 
+/**
+ * Route guard for `beforeLoad`. Lets the user in when they hold the
+ * permission for any record or only their own, and returns the scope so
+ * it lands on the route context (`Route.useRouteContext().permissionScope`).
+ *
+ * It runs before the record is fetched, so for routes about one record,
+ * also call `requireResourcePermission` in the loader.
+ */
 export async function requirePermission(permission: UserPermission) {
   const user = await requireAuth({ redirectTo: "/login" })
 
-  const func = checkUserPermission(user)
-  if (!func(permission)) {
+  const permissionScope = getPermissionScope(user, permission)
+  if (!permissionScope) {
+    throw redirect({ to: "/unauthorized" })
+  }
+  return { permissionScope }
+}
+
+/**
+ * Record-level guard for loaders, after the record is fetched. Stops a user
+ * whose permission only covers their own records from opening someone
+ * else's, e.g. `quotations:view` (any) + `quotations:update:own` on the edit
+ * page. Pass `context.user` from the `_admin` route.
+ */
+export function requireResourcePermission(
+  user: User,
+  permission: UserPermission,
+  resource: OwnedResource
+) {
+  if (!checkResourcePermission(user)(permission, resource)) {
     throw redirect({ to: "/unauthorized" })
   }
 }
