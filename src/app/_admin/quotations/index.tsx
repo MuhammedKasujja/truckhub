@@ -11,6 +11,7 @@ import { ModuleAccess } from "@/features/auth/permissions"
 import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { stripSchemaDefaults } from "@/lib/search-params"
+import { Can } from "@/components/has-permission"
 
 export const Route = createFileRoute("/_admin/quotations/")({
   component: RouteComponent,
@@ -33,9 +34,11 @@ function RouteComponent() {
       <PageHeader>
         <PageTitle>Quotations</PageTitle>
         <PageAction>
-          <Button asChild>
-            <Link to="/quotations/new">New Quotation</Link>
-          </Button>
+          <Can permission={"quotations:create"}>
+            <Button asChild>
+              <Link to="/quotations/new">New Quotation</Link>
+            </Button>
+          </Can>
         </PageAction>
       </PageHeader>
       <QuotationTable data={data?.data} pagination={data?.pagination} />
