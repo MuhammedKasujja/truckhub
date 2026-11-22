@@ -1,21 +1,23 @@
 import * as apiClient from "@/lib/api-client"
 import { Driver, DriverRow } from "@/features/drivers/types"
 import {
+  RecordTestResult,
   DriverCreateSchemaType,
   DriverListSearchParams,
   DriverUpdateSchemaType,
-  RecordTestResult,
 } from "@/features/drivers/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { toDriverApiFormData } from "../driver-form-data"
 import { generateApiSearchParams } from "@/lib/search-params"
 import { DEFAULT_FITER_QUERY_PER_PAGE } from "@/config/constants"
 
+const endpoint = "/v1/drivers"
+
 export async function getDrivers(input: DriverListSearchParams) {
   const params = generateApiSearchParams(input)
 
   const response = await apiClient.getPaginatedFn<DriverRow[]>(
-    `/v1/drivers/?${params}`
+    `${endpoint}?${params}`
   )
 
   if (response.success) {
@@ -38,35 +40,32 @@ export async function getDriversByQuery({ search }: SearchQuery) {
 }
 
 export async function getDriverById(driverId: EntityId) {
-  return await apiClient.getFn<Driver>(`/v1/drivers/${driverId}`)
+  return await apiClient.getFn<Driver>(`${endpoint}/${driverId}`)
 }
 
 export async function getDriverDetailsById(driverId: EntityId) {
-  return await apiClient.getFn<Driver>(`/v1/drivers/${driverId}`)
+  return await apiClient.getFn<Driver>(`${endpoint}/${driverId}`)
 }
 
 export async function deleteDriverById(driverId: EntityId) {
-  return await apiClient.deleteFn(`/v1/drivers/${driverId}`)
+  return await apiClient.deleteFn(`${endpoint}/${driverId}`)
 }
 
 export async function updateDriver(data: DriverUpdateSchemaType) {
   const { id: driverId, ...fields } = data
   return await apiClient.putFn<Driver>(
-    `/v1/drivers/${driverId}`,
+    `${endpoint}/${driverId}`,
     toDriverApiFormData(fields)
   )
 }
 
 export async function createDriver(input: DriverCreateSchemaType) {
-  return await apiClient.postFn<Driver>(
-    "/v1/drivers",
-    toDriverApiFormData(input)
-  )
+  return await apiClient.postFn<Driver>(endpoint, toDriverApiFormData(input))
 }
 
 export async function recordDriverTest(input: RecordTestResult) {
   return await apiClient.putFn<Driver>(
-    `/v1/drivers/${input.driverId}/tests/${input.testType}`,
+    `${endpoint}/${input.driverId}/tests/${input.testType}`,
     {
       status: input.status,
       tested_on: input.testedOn ?? null,
