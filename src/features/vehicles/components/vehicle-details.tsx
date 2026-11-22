@@ -4,9 +4,11 @@ import React from "react"
 import { Link } from "@tanstack/react-router"
 import { toast } from "sonner"
 import {
+  ArrowLeft,
   CalendarClock,
   CheckCircle2,
   Cog,
+  Copy,
   Fingerprint,
   Fuel,
   Gauge,
@@ -14,71 +16,183 @@ import {
   Package,
   Palette,
   Phone,
+  Sparkles,
+  UserRound,
   UserRoundPlus,
   Users,
 } from "lucide-react"
-import { vehicleAssignDriverFn } from "../services"
+import { vehicleAssignDriverFn, vehicleUnAssignDriverFn } from "../services"
 import { engineLabel, humanize, vehicleName } from "../format"
 import { VehicleStatusIndicator } from "./vehicle-status-indicator"
-import { ColorValue, PlateNumber, VehicleIconTile } from "./vehicle-visuals"
+import { PlateNumber, VehicleIconTile, carColor } from "./vehicle-visuals"
 import type { Vehicle, VehicleDriver } from "../types"
+import type { EntityId } from "@/schemas"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
-import { PageBackButton } from "@/components/page-header"
 import { DriverPicker } from "@/features/drivers/components"
+import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
 import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
-import { formatNumber, generateAvatorFallback } from "@/lib/format"
+import {
+  formatDateTime,
+  formatNumber,
+  generateAvatorFallback,
+} from "@/lib/format"
+import { cn } from "@/lib/utils"
+
+type IconType = React.ComponentType<{ className?: string }>
 
 type VehicleDetailsProps = {
   vehicle: Vehicle
 }
 
-const dateTime = (value: Date | string | undefined) =>
-  value ? new Date(value).toLocaleString() : "-"
-
 export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
+  return (
+    <div className="flex w-full flex-col gap-6 pb-10">
+      <Link
+        to="/vehicles"
+        className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="size-4" />
+        All vehicles
+      </Link>
+
+      <Hero vehicle={vehicle} />
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <Section
+            icon={Fingerprint}
+            title="Specifications"
+            description="Identification and powertrain"
+          >
+            <div className="grid gap-x-10 gap-y-6 md:grid-cols-2">
+              <SpecGroup title="Identification">
+                <SpecRow label="Vehicle number">
+                  <span className="font-mono">{vehicle.number}</span>
+                </SpecRow>
+                <SpecRow label="Make">
+                  {vehicle.car_model.car_brand.name}
+                </SpecRow>
+                <SpecRow label="Model">{vehicle.car_model.name}</SpecRow>
+                <SpecRow label="Type">{vehicle.category.name}</SpecRow>
+                <SpecRow label="Year">{vehicle.year}</SpecRow>
+              </SpecGroup>
+
+              <SpecGroup title="Powertrain">
+                <SpecRow label="Engine">
+                  {engineLabel(vehicle.engine_type)}
+                </SpecRow>
+                <SpecRow label="Transmission">
+                  {humanize(vehicle.gearbox)}
+                </SpecRow>
+                <SpecRow label="Drive train">
+                  {vehicle.drive_train.name}
+                </SpecRow>
+                <SpecRow label="Axles">{vehicle.total_axles ?? "–"}</SpecRow>
+                <SpecRow label="Cylinders">{vehicle.cylinders}</SpecRow>
+              </SpecGroup>
+            </div>
+          </Section>
+
+          <Section
+            icon={Palette}
+            title="Appearance & cabin"
+            description="Paint, trim and seating"
+          >
+            <div className="grid gap-3 sm:grid-cols-3">
+              <ColorTile label="Exterior" value={vehicle.color} />
+              <ColorTile label="Interior" value={vehicle.interior_color} />
+              <div className="flex items-center gap-3 rounded-lg border p-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                  <Users className="size-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs text-muted-foreground">Seats</p>
+                  <p className="text-sm font-medium tabular-nums">
+                    {vehicle.seats}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          <FeaturesSection features={vehicle.features} />
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-4">
+          <DriverPanel vehicle={vehicle} />
+          <RecordPanel vehicle={vehicle} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Hero ---------- */
+
+function Hero({ vehicle }: { vehicle: Vehicle }) {
   const isTruck = vehicle.category.is_truck
+  const { copyToClipboard } = useCopyToClipboard()
 
   return (
-    <div className="space-y-6">
-      {/* Hero */}
-      <Card className="gap-0 overflow-hidden py-0">
-        <div className="flex flex-col gap-5 p-5 md:flex-row md:items-start md:justify-between">
-          <div className="flex min-w-0 items-start gap-4">
-            <div className="-ml-2 pt-1">
-              <PageBackButton />
-            </div>
-            <VehicleIconTile isTruck={isTruck} size="lg" />
-            <div className="min-w-0 space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-2xl font-bold tracking-tight">
-                  {vehicleName(vehicle)}
-                </h1>
-                <VehicleStatusIndicator status={vehicle.status} />
+    <section className="overflow-hidden rounded-xl border bg-card shadow-xs">
+      <div className="relative isolate p-5 sm:p-6">
+        {/* Soft brand wash, kept behind content and out of the a11y tree */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(60% 140% at 0% 0%, color-mix(in oklab, var(--primary) 9%, transparent), transparent 70%)",
+          }}
+        />
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="flex min-w-0 items-start gap-4 sm:gap-5">
+            <VehicleIconTile
+              isTruck={isTruck}
+              className="size-16 rounded-2xl ring-1 ring-primary/15 [&_svg]:size-8"
+            />
+            <div className="min-w-0 space-y-3">
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+                  {vehicle.category.name}
+                  <span className="mx-1.5 text-border">/</span>
+                  <span className="font-mono normal-case">
+                    {vehicle.number}
+                  </span>
+                </p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
+                    {vehicleName(vehicle)}
+                    <span className="ml-2 font-normal text-muted-foreground">
+                      {vehicle.year}
+                    </span>
+                  </h1>
+                  <VehicleStatusIndicator status={vehicle.status} />
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {vehicle.number} · {vehicle.category.name} · {vehicle.year}
-              </p>
-              <div className="flex flex-wrap items-center gap-2 pt-1">
-                <PlateNumber value={vehicle.plate_number} size="lg" />
-                {vehicle.second_plate_number && (
-                  <PlateNumber value={vehicle.second_plate_number} size="lg" />
-                )}
+              <div className="flex flex-wrap items-center gap-2">
+                {[vehicle.plate_number, vehicle.second_plate_number]
+                  .filter((plate): plate is string => !!plate)
+                  .map((plate) => (
+                    <button
+                      key={plate}
+                      type="button"
+                      onClick={() => copyToClipboard(plate)}
+                      title="Copy plate number"
+                      className="group inline-flex items-center gap-1.5 rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                    >
+                      <PlateNumber value={plate} size="lg" />
+                      <Copy className="size-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
+                    </button>
+                  ))}
               </div>
             </div>
           </div>
+
           <Can permission="vehicles:edit">
             <Button asChild className="shrink-0 self-start">
               <Link
@@ -91,174 +205,112 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
             </Button>
           </Can>
         </div>
-
-        {/* Key metrics */}
-        <div className="grid grid-cols-2 divide-x divide-y border-t bg-muted/30 md:grid-cols-4 md:divide-y-0">
-          <Stat
-            icon={Gauge}
-            label="Engine capacity"
-            value={formatNumber(vehicle.tank_capacity)}
-            unit="cc"
-          />
-          <Stat
-            icon={Fuel}
-            label="Fuel economy"
-            value={formatNumber(vehicle.fuel_consumption_rate)}
-            unit="km/L"
-          />
-          {isTruck ? (
-            <Stat
-              icon={Package}
-              label="Tonnage capacity"
-              value={
-                vehicle.tonnage_capacity != null
-                  ? formatNumber(vehicle.tonnage_capacity)
-                  : "-"
-              }
-              unit={vehicle.tonnage_capacity != null ? "t" : undefined}
-            />
-          ) : (
-            <Stat icon={Users} label="Seats" value={vehicle.seats ?? "-"} />
-          )}
-          <Stat icon={Cog} label="Cylinders" value={vehicle.cylinders ?? "-"} />
-        </div>
-      </Card>
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left column */}
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Specifications</CardTitle>
-              <CardDescription>
-                Identification, powertrain and appearance
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <SpecGroup icon={Fingerprint} title="Identification">
-                <DetailItem label="Vehicle number" value={vehicle.number} />
-                <DetailItem
-                  label="Plate number"
-                  value={
-                    <span className="font-mono">{vehicle.plate_number}</span>
-                  }
-                />
-                {isTruck && (
-                  <DetailItem
-                    label="Second plate"
-                    value={
-                      vehicle.second_plate_number ? (
-                        <span className="font-mono">
-                          {vehicle.second_plate_number}
-                        </span>
-                      ) : (
-                        "-"
-                      )
-                    }
-                  />
-                )}
-                <DetailItem
-                  label="Make"
-                  value={vehicle.car_model.car_brand.name}
-                />
-                <DetailItem label="Model" value={vehicle.car_model.name} />
-                <DetailItem label="Type" value={vehicle.category.name} />
-                <DetailItem label="Year" value={vehicle.year} />
-              </SpecGroup>
-
-              <SpecGroup icon={Cog} title="Powertrain">
-                <DetailItem
-                  label="Engine type"
-                  value={engineLabel(vehicle.engine_type)}
-                />
-                <DetailItem
-                  label="Transmission"
-                  value={humanize(vehicle.gearbox)}
-                />
-                <DetailItem
-                  label="Drive train"
-                  value={vehicle.drive_train.name}
-                />
-                <DetailItem label="Axles" value={vehicle.total_axles ?? "-"} />
-              </SpecGroup>
-
-              <SpecGroup icon={Palette} title="Appearance">
-                <DetailItem
-                  label="Exterior color"
-                  value={<ColorValue name={vehicle.color} />}
-                />
-                <DetailItem
-                  label="Interior color"
-                  value={<ColorValue name={vehicle.interior_color} />}
-                />
-                {isTruck && (
-                  <DetailItem label="Seats" value={vehicle.seats ?? "-"} />
-                )}
-              </SpecGroup>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Features</CardTitle>
-              <CardDescription>
-                {vehicle.features.length
-                  ? `${vehicle.features.length} equipped`
-                  : "No features recorded for this vehicle"}
-              </CardDescription>
-            </CardHeader>
-            {vehicle.features.length > 0 && (
-              <CardContent className="flex flex-wrap gap-2">
-                {vehicle.features.map((feat) => (
-                  <Badge
-                    key={feat.id}
-                    variant="secondary"
-                    className="gap-1.5 py-1 font-normal capitalize"
-                  >
-                    <CheckCircle2 className="text-primary" aria-hidden />
-                    {feat.name}
-                  </Badge>
-                ))}
-              </CardContent>
-            )}
-          </Card>
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-6">
-          <DriverPanel vehicle={vehicle} />
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <CalendarClock className="size-4 text-muted-foreground" />
-                Record
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <dl className="space-y-3 text-sm">
-                <RecordRow
-                  label="Created"
-                  value={dateTime(vehicle.created_at)}
-                />
-                <RecordRow
-                  label="Last updated"
-                  value={dateTime(vehicle.updated_at)}
-                />
-                <RecordRow
-                  label="Vehicle ID"
-                  value={
-                    <span className="font-mono text-xs break-all">
-                      {vehicle.id}
-                    </span>
-                  }
-                />
-              </dl>
-            </CardContent>
-          </Card>
-        </div>
       </div>
+
+      {/* Cells draw their own right/bottom borders; the negative margins tuck
+          the outer ones under the section's clipped edge. */}
+      <dl className="-mr-px -mb-px grid grid-cols-2 border-t bg-muted/30 md:grid-cols-4">
+        <Metric
+          icon={Gauge}
+          label="Engine capacity"
+          value={formatNumber(vehicle.tank_capacity)}
+          unit="cc"
+        />
+        <Metric
+          icon={Fuel}
+          label="Fuel economy"
+          value={formatNumber(vehicle.fuel_consumption_rate)}
+          unit="km/L"
+        />
+        {isTruck ? (
+          <Metric
+            icon={Package}
+            label="Payload"
+            value={
+              vehicle.tonnage_capacity != null
+                ? formatNumber(vehicle.tonnage_capacity)
+                : "–"
+            }
+            unit={vehicle.tonnage_capacity != null ? "t" : undefined}
+          />
+        ) : (
+          <Metric icon={Users} label="Seats" value={vehicle.seats} />
+        )}
+        <Metric
+          icon={Cog}
+          label="Drive"
+          value={vehicle.drive_train.name}
+          unit={humanize(vehicle.gearbox)}
+        />
+      </dl>
+    </section>
+  )
+}
+
+function Metric({
+  icon: Icon,
+  label,
+  value,
+  unit,
+}: {
+  icon: IconType
+  label: string
+  value: React.ReactNode
+  unit?: string
+}) {
+  return (
+    <div className="min-w-0 border-r border-b px-5 py-4">
+      <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icon className="size-3.5 shrink-0" />
+        <span className="truncate">{label}</span>
+      </dt>
+      <dd className="mt-1 flex items-baseline gap-1.5 truncate">
+        <span className="text-xl font-semibold tracking-tight tabular-nums">
+          {value}
+        </span>
+        {unit && (
+          <span className="truncate text-sm text-muted-foreground">{unit}</span>
+        )}
+      </dd>
     </div>
+  )
+}
+
+/* ---------- Features ---------- */
+
+function FeaturesSection({ features }: { features: Vehicle["features"] }) {
+  return (
+    <Section
+      icon={Sparkles}
+      title="Features"
+      description="Equipment fitted to this vehicle"
+      aside={
+        features.length > 0 && (
+          <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary tabular-nums">
+            {features.length}
+          </span>
+        )
+      }
+    >
+      {features.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {features.map((feat) => (
+            <Badge
+              key={feat.id}
+              variant="secondary"
+              className="gap-1.5 py-1 font-normal capitalize"
+            >
+              <CheckCircle2 className="text-primary" aria-hidden />
+              {feat.name}
+            </Badge>
+          ))}
+        </div>
+      ) : (
+        <p className="rounded-lg border border-dashed px-4 py-6 text-center text-sm text-muted-foreground">
+          No features recorded for this vehicle
+        </p>
+      )}
+    </Section>
   )
 }
 
@@ -271,6 +323,13 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
   )
   const [isEditing, setIsEditing] = React.useState(!vehicle.driver)
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+
+  function refresh(driverIds: (EntityId | undefined)[]) {
+    queryInvalidator.vehicles.details(vehicle.id).invalidate()
+    driverIds.forEach((id) => {
+      if (id != null) queryInvalidator.drivers.details(id).invalidate()
+    })
+  }
 
   async function assignDriver() {
     if (!driver) {
@@ -285,8 +344,25 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
     if (isSuccess) {
       toast.success(message)
       setIsEditing(false)
-      queryInvalidator.vehicles.details(vehicle.id).invalidate()
-      queryInvalidator.drivers.details(driver.id).invalidate()
+      refresh([driver.id, vehicle.driver?.id])
+    } else {
+      toast.error(error?.message)
+    }
+  }
+
+  async function unassignDriver() {
+    const current = vehicle.driver
+    if (!current) return
+    setIsSubmitting(true)
+    const { isSuccess, error, message } = await vehicleUnAssignDriverFn({
+      data: { id: vehicle.id },
+    })
+    setIsSubmitting(false)
+    if (isSuccess) {
+      toast.success(message)
+      setDriver(null)
+      setIsEditing(true)
+      refresh([current.id])
     } else {
       toast.error(error?.message)
     }
@@ -295,204 +371,286 @@ function DriverPanel({ vehicle }: { vehicle: Vehicle }) {
   if (vehicle.driver && !isEditing) {
     const d = vehicle.driver
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Assigned driver</CardTitle>
-          <CardAction>
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setDriver(null)
-                setIsEditing(true)
-              }}
-            >
-              Change
-            </Button>
-          </CardAction>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="size-11">
-              <AvatarFallback>
+      <Section icon={UserRound} title="Assigned driver">
+        <div className="space-y-4">
+          <Link
+            to="/drivers/$driverId/view"
+            params={{ driverId: d.id }}
+            className="group -m-2 flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted/60"
+          >
+            <Avatar className="size-12">
+              {d.photo_url && <AvatarImage src={d.photo_url} alt="" />}
+              <AvatarFallback className="bg-primary/10 font-medium text-primary">
                 {generateAvatorFallback(d.full_name)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="truncate font-medium capitalize">{d.full_name}</p>
-              <p className="text-xs text-muted-foreground">{d.number}</p>
+              <p className="truncate font-medium capitalize group-hover:text-primary">
+                {d.full_name}
+              </p>
+              <p className="font-mono text-xs text-muted-foreground">
+                {d.number}
+              </p>
             </div>
-          </div>
-          <div className="space-y-1 rounded-lg border bg-muted/30 p-1">
-            <ContactLink
-              icon={Phone}
-              href={`tel:${d.phone.replace(/\s/g, "")}`}
-              value={d.phone}
-            />
-            {d.email && (
-              <ContactLink
-                icon={Mail}
-                href={`mailto:${d.email}`}
-                value={d.email}
-              />
+          </Link>
+
+          <div className="grid grid-cols-2 gap-2">
+            <Button asChild variant="outline" size="sm">
+              <a href={`tel:${d.phone.replace(/\s/g, "")}`} title={d.phone}>
+                <Phone />
+                Call
+              </a>
+            </Button>
+            {d.email ? (
+              <Button asChild variant="outline" size="sm">
+                <a href={`mailto:${d.email}`} title={d.email}>
+                  <Mail />
+                  Email
+                </a>
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" disabled>
+                <Mail />
+                No email
+              </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+
+          <dl className="divide-y rounded-lg border px-3 text-sm">
+            <InfoRow inset label="Phone" value={d.phone} />
+            {d.email && <InfoRow inset label="Email" value={d.email} />}
+          </dl>
+
+          <div className="flex items-center justify-end gap-1 border-t pt-3">
+            <Can permission="vehicles:unassign">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="text-muted-foreground hover:text-destructive"
+                disabled={isSubmitting}
+                onClick={unassignDriver}
+              >
+                Unassign
+              </Button>
+            </Can>
+            <Can permission="vehicles:assign">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={isSubmitting}
+                onClick={() => {
+                  setDriver(null)
+                  setIsEditing(true)
+                }}
+              >
+                Change driver
+              </Button>
+            </Can>
+          </div>
+        </div>
+      </Section>
     )
   }
 
   return (
-    <Card className="border-dashed">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserRoundPlus className="size-4 text-muted-foreground" />
-          {vehicle.driver ? "Change driver" : "Assign driver"}
-        </CardTitle>
-        <CardDescription>
-          {vehicle.driver
-            ? `Replace ${vehicle.driver.full_name} on this vehicle`
-            : "This vehicle has no driver yet"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex">
-        <DriverPicker
-          value={driver?.id}
-          onSelected={(selected) => {
-            if (selected)
-              setDriver({ ...selected, full_name: selected.full_name })
-            else setDriver(null)
-          }}
-        />
-      </CardContent>
-      <CardFooter className="gap-2">
-        {vehicle.driver && (
-          <Button
-            className="flex-1"
-            variant="outline"
-            onClick={() => {
-              setDriver(vehicle.driver)
-              setIsEditing(false)
-            }}
-          >
-            Cancel
-          </Button>
-        )}
-        <Button
-          className="flex-1"
-          onClick={() => assignDriver()}
-          disabled={!driver || isSubmitting}
-        >
-          {isSubmitting ? "Assigning…" : "Assign"}
-        </Button>
-      </CardFooter>
-    </Card>
+    <Section
+      icon={UserRoundPlus}
+      title={vehicle.driver ? "Change driver" : "Assign a driver"}
+      description={
+        vehicle.driver
+          ? `Replace ${vehicle.driver.full_name} on this vehicle`
+          : "This vehicle has no driver yet"
+      }
+    >
+      <Can
+        permission="vehicles:assign"
+        fallbackText="You don't have permission to assign drivers."
+      >
+        <div className="space-y-3">
+          <div className="flex">
+            <DriverPicker
+              value={driver?.id}
+              onSelected={(selected) => {
+                if (selected)
+                  setDriver({ ...selected, full_name: selected.full_name })
+                else setDriver(null)
+              }}
+            />
+          </div>
+          <div className="flex gap-2">
+            {vehicle.driver && (
+              <Button
+                className="flex-1"
+                variant="outline"
+                onClick={() => {
+                  setDriver(vehicle.driver)
+                  setIsEditing(false)
+                }}
+              >
+                Cancel
+              </Button>
+            )}
+            <Button
+              className="flex-1"
+              onClick={() => assignDriver()}
+              disabled={!driver || isSubmitting}
+            >
+              {isSubmitting ? "Assigning…" : "Assign driver"}
+            </Button>
+          </div>
+        </div>
+      </Can>
+    </Section>
   )
 }
 
-/* ---------- Small pieces ---------- */
+/* ---------- Record ---------- */
 
-type IconType = React.ComponentType<{ className?: string }>
+function RecordPanel({ vehicle }: { vehicle: Vehicle }) {
+  const { copyToClipboard } = useCopyToClipboard()
 
-function Stat({
-  icon: Icon,
-  label,
-  value,
-  unit,
-}: {
-  icon: IconType
-  label: string
-  value: React.ReactNode
-  unit?: string
-}) {
   return (
-    <div className="flex items-center gap-3 px-5 py-4">
-      <Icon className="size-5 shrink-0 text-muted-foreground" />
-      <div className="min-w-0">
-        <p className="truncate text-xs text-muted-foreground">{label}</p>
-        <p className="text-xl font-semibold tabular-nums">
-          {value}
-          {unit && (
-            <span className="ml-1 text-sm font-normal text-muted-foreground">
-              {unit}
-            </span>
-          )}
-        </p>
-      </div>
-    </div>
+    <Section icon={CalendarClock} title="Record">
+      <dl className="divide-y text-sm">
+        <InfoRow
+          label="Created"
+          value={formatDateTime(vehicle.created_at) || "–"}
+        />
+        <InfoRow
+          label="Last updated"
+          value={formatDateTime(vehicle.updated_at) || "–"}
+        />
+        <InfoRow
+          label="Vehicle ID"
+          value={
+            <button
+              type="button"
+              onClick={() => copyToClipboard(String(vehicle.id))}
+              title="Copy vehicle ID"
+              className="group inline-flex max-w-full items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground"
+            >
+              <span className="truncate">{vehicle.id}</span>
+              <Copy className="size-3 shrink-0 opacity-60 group-hover:opacity-100" />
+            </button>
+          }
+        />
+      </dl>
+    </Section>
   )
 }
 
-function SpecGroup({
+/* ---------- Building blocks ---------- */
+
+function Section({
   icon: Icon,
   title,
+  description,
+  aside,
   children,
 }: {
   icon: IconType
   title: string
+  description?: string
+  aside?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
-    <section>
-      <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-        <Icon className="size-3.5" />
-        {title}
-      </h3>
-      <dl className="grid gap-x-6 gap-y-4 rounded-lg border p-4 sm:grid-cols-2 xl:grid-cols-3">
-        {children}
-      </dl>
+    <section className="overflow-hidden rounded-xl border bg-card shadow-xs">
+      <div className="flex items-start justify-between gap-3 border-b px-5 py-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <Icon className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-sm leading-8 font-semibold">{title}</h2>
+            {description && (
+              <p className="-mt-1 truncate text-xs text-muted-foreground">
+                {description}
+              </p>
+            )}
+          </div>
+        </div>
+        {aside && <div className="shrink-0 pt-1.5">{aside}</div>}
+      </div>
+      <div className="p-5">{children}</div>
     </section>
   )
 }
 
-function DetailItem({
-  label,
-  value,
+function SpecGroup({
+  title,
+  children,
 }: {
-  label: string
-  value: React.ReactNode
+  title: string
+  children: React.ReactNode
 }) {
   return (
     <div className="min-w-0">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 text-sm font-medium wrap-break-word">{value}</dd>
+      <h3 className="mb-1 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+        {title}
+      </h3>
+      <dl className="divide-y divide-dashed text-sm">{children}</dl>
     </div>
   )
 }
 
-function RecordRow({
+function SpecRow({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-2.5">
+      <dt className="shrink-0 text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 truncate text-right font-medium">{children}</dd>
+    </div>
+  )
+}
+
+function InfoRow({
   label,
   value,
+  inset = false,
 }: {
   label: string
   value: React.ReactNode
+  /** Keep full padding on the first/last row (for bordered lists). */
+  inset?: boolean
 }) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div
+      className={cn(
+        "flex items-center justify-between gap-4 py-2.5",
+        !inset && "first:pt-0 last:pb-0"
+      )}
+    >
       <dt className="shrink-0 text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 text-right">{value}</dd>
+      <dd className="min-w-0 truncate text-right font-medium">{value}</dd>
     </div>
   )
 }
 
-function ContactLink({
-  icon: Icon,
-  href,
-  value,
-}: {
-  icon: IconType
-  href: string
-  value: string
-}) {
+function ColorTile({ label, value }: { label: string; value: string }) {
+  const { label: name, hex } = carColor(value)
   return (
-    <a
-      href={href}
-      className="flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm hover:bg-background"
-      target="_blank"
-    >
-      <Icon className="size-4 shrink-0 text-muted-foreground" />
-      <span className="truncate">{value}</span>
-    </a>
+    <div className="flex items-center gap-3 rounded-lg border p-3">
+      <span
+        aria-hidden
+        className={cn(
+          "size-10 shrink-0 rounded-md border shadow-inner",
+          !hex &&
+            "bg-[repeating-linear-gradient(45deg,var(--color-muted),var(--color-muted)_4px,transparent_4px,transparent_8px)]"
+        )}
+        style={hex ? { backgroundColor: hex } : undefined}
+      />
+      <div className="min-w-0">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="truncate text-sm font-medium">{value ? name : "–"}</p>
+      </div>
+    </div>
   )
 }
