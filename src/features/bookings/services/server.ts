@@ -23,7 +23,7 @@ export async function getBookings(input: BookingListSearchParams) {
   const params = generateApiSearchParams(input)
 
   const response = await apiClient.getPaginatedFn<Booking[]>(
-    `/v1/bookings/?${params}`
+    `/v1/bookings?${params}`
   )
   if (response.success) {
     return{ data: response.data, pagination: response.pagination }

@@ -16,7 +16,7 @@ export async function getVehicles(input: VehicleListSearchParams) {
   const params = generateApiSearchParams(input)
 
   const response = await apiClient.getPaginatedFn<Vehicle[]>(
-    `${endpoint}/?${params}`
+    `${endpoint}?${params}`
   )
 
   if (response.success) {
