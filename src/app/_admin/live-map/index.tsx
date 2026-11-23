@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react"
 import type { ShipmentStatus } from "@/features/shipments/enums"
+import type { ShipmentSearchParamsInput } from "@/features/shipments/schemas"
 import type { Shipment } from "@/features/shipments/types"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { ModuleIcon } from "@/components/icons"
@@ -51,6 +52,10 @@ import { formatDateTime, generateAvatorFallback } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { stripSchemaDefaults } from "@/lib/search-params"
 
+// The map has no pager: load the biggest page the API allows (100)
+const mapQueryOptions = (search: ShipmentSearchParamsInput) =>
+  shipmentsActiveQueryOptions({ ...search, page: 1, perPage: 100 })
+
 export const Route = createFileRoute("/_admin/live-map/")({
   component: RouteComponent,
   errorComponent: DefaultCatchBoundary,
@@ -59,7 +64,7 @@ export const Route = createFileRoute("/_admin/live-map/")({
   search: { middlewares: [stripSchemaDefaults(ShipmentSearchParams)] },
   loaderDeps: ({ search }) => ({ search }),
   loader: ({ context, deps: { search } }) =>
-    context.queryClient.prefetchQuery(shipmentsActiveQueryOptions(search)),
+    context.queryClient.prefetchQuery(mapQueryOptions(search)),
 })
 
 const REFRESH_INTERVAL_MS = 30_000
@@ -95,7 +100,7 @@ const elapsedSince = (date?: Date | string) => {
 function RouteComponent() {
   const search = Route.useSearch()
   const { data, isLoading, isFetching, refetch, dataUpdatedAt } = useQuery({
-    ...shipmentsActiveQueryOptions(search),
+    ...mapQueryOptions(search),
     refetchInterval: REFRESH_INTERVAL_MS,
   })
   const shipments = useMemo(() => data?.data ?? [], [data])

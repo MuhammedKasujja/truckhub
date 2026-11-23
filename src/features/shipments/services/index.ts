@@ -14,6 +14,7 @@ import {
   endShipment,
   getShipments,
   getShipmentById,
+  getActiveShipments,
   dispatchShipment,
   shipmentAssignDriver,
   recordShipmentDetails,
@@ -28,6 +29,17 @@ export const getShipmentsFn = createServerFn()
   .validator(ShipmentSearchParams)
   .handler(async ({ data }) => {
     const response = await getShipments(data)
+    if (response.error) {
+      const { message, erroCode, statusCode } = response.error
+      throw new ApiError(message, statusCode, erroCode)
+    }
+    return { data: response.data, pagination: response.pagination }
+  })
+
+export const getActiveShipmentsFn = createServerFn()
+  .validator(ShipmentSearchParams)
+  .handler(async ({ data }) => {
+    const response = await getActiveShipments(data)
     if (response.error) {
       const { message, erroCode, statusCode } = response.error
       throw new ApiError(message, statusCode, erroCode)

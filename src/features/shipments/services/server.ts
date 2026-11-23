@@ -29,10 +29,10 @@ function explainVehicleConflict<T>(response: ApiResponse<T>): ApiResponse<T> {
   return message ? { ...response, error: { ...error, message } } : response
 }
 
-export async function getShipments(input: ShipmentSearchParamsInput) {
+async function listShipments(path: string, input: ShipmentSearchParamsInput) {
   const params = generateApiSearchParams(input)
   const response = await apiClient.getPaginatedFn<Shipment[]>(
-    `${endpoint}?${params}`
+    `${path}?${params}`
   )
 
   if (response.success) {
@@ -40,6 +40,15 @@ export async function getShipments(input: ShipmentSearchParamsInput) {
   }
 
   return { error: response.error }
+}
+
+export async function getShipments(input: ShipmentSearchParamsInput) {
+  return await listShipments(endpoint, input)
+}
+
+/** Trips on the road (dispatched or in progress); the backend sets the status. */
+export async function getActiveShipments(input: ShipmentSearchParamsInput) {
+  return await listShipments(`${endpoint}/active`, input)
 }
 
 export async function getShipmentById(unitId: EntityId) {

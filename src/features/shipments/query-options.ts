@@ -1,6 +1,10 @@
 import { EntityId } from "@/schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { getShipmentByIdFn, getShipmentsFn } from "./services"
+import {
+  getActiveShipmentsFn,
+  getShipmentByIdFn,
+  getShipmentsFn,
+} from "./services"
 import {
   ShipmentSearchParamsInput,
   QuotationShipmentSearchParams,
@@ -62,10 +66,7 @@ export const shipmentsActiveQueryOptions = (
 ) =>
   queryOptions({
     queryKey: shipmentsQueryKeys.active(search),
-    queryFn: () =>
-      getShipmentsFn({
-        data: { ...search, status: ["in_progress", "dispatched"] },
-      }),
+    queryFn: () => getActiveShipmentsFn({ data: search }),
   })
 
 /** Trips behind their plan, whatever their status: late to start, or overdue. */
