@@ -39,6 +39,7 @@ function Metric({
 
 export function VehicleCard({ vehicle: v }: { vehicle: Vehicle }) {
   const isTruck = v.category.is_truck
+  const hasTonnage = v.tonnage_capacity != null
   const extraFeatures = v.features.length - MAX_FEATURES
 
   return (
@@ -80,13 +81,11 @@ export function VehicleCard({ vehicle: v }: { vehicle: Vehicle }) {
           value={formatNumber(v.fuel_consumption_rate)}
           unit="km/L"
         />
-        {isTruck ? (
+        {hasTonnage ? (
           <Metric
-            label="Payload"
-            value={
-              v.tonnage_capacity != null ? formatNumber(v.tonnage_capacity) : "-"
-            }
-            unit={v.tonnage_capacity != null ? "t" : undefined}
+            label="Tonnage"
+            value={formatNumber(v.tonnage_capacity)}
+            unit="t"
           />
         ) : (
           <Metric label="Seats" value={v.seats ?? "-"} />
