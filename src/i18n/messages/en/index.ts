@@ -29,7 +29,11 @@ const en = {
   app_name: "Truckhub",
   welcome_back: "Welcome back",
   login_successfully: "Login successfully",
-  welcome_back_info: "Login into Truckhub",
+  welcome_back_info: "Sign in with your staff account to continue.",
+  login_failed: "Could not sign in. Please try again.",
+  login_title: "Sign in",
+  login_restricted_notice:
+    "Restricted to authorised staff. Contact your administrator if you can't sign in.",
   search: "Search",
   search_system: "Search Truckhub",
   payment: "Payment",
