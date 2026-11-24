@@ -49,6 +49,8 @@ type VehicleDetailsProps = {
 }
 
 export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
+  const hasTonnage = vehicle.tonnage_capacity != null
+
   return (
     <div className="flex w-full flex-col gap-6 pb-10">
       <Link
@@ -100,19 +102,29 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
           <Section
             icon={Palette}
             title="Appearance & cabin"
-            description="Paint, trim and seating"
+            description={
+              hasTonnage ? "Paint, trim and payload" : "Paint, trim and seating"
+            }
           >
             <div className="grid gap-3 sm:grid-cols-3">
               <ColorTile label="Exterior" value={vehicle.color} />
               <ColorTile label="Interior" value={vehicle.interior_color} />
               <div className="flex items-center gap-3 rounded-lg border p-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <Users className="size-5" />
+                  {hasTonnage ? (
+                    <Package className="size-5" />
+                  ) : (
+                    <Users className="size-5" />
+                  )}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Seats</p>
+                  <p className="text-xs text-muted-foreground">
+                    {hasTonnage ? "Tonnage" : "Seats"}
+                  </p>
                   <p className="text-sm font-medium tabular-nums">
-                    {vehicle.seats}
+                    {hasTonnage
+                      ? `${formatNumber(vehicle.tonnage_capacity)} t`
+                      : vehicle.seats}
                   </p>
                 </div>
               </div>
