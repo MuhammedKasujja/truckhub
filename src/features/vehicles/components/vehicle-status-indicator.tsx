@@ -16,7 +16,7 @@ export function VehicleStatusIndicator({
 
   return (
     <Status variant={tone} className={cn("gap-1.5 py-0.5", className)}>
-      <StatusIndicator />
+      {status == 'on_trip' &&<StatusIndicator /> }
       <StatusLabel>{label}</StatusLabel>
     </Status>
   )
