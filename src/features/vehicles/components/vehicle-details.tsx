@@ -146,7 +146,7 @@ export function VehicleDetails({ vehicle }: VehicleDetailsProps) {
 /* ---------- Hero ---------- */
 
 function Hero({ vehicle }: { vehicle: Vehicle }) {
-  const isTruck = vehicle.category.is_truck
+  const hasTonnage = vehicle.tonnage_capacity != null
   const { copyToClipboard } = useCopyToClipboard()
 
   return (
@@ -164,7 +164,7 @@ function Hero({ vehicle }: { vehicle: Vehicle }) {
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="flex min-w-0 items-start gap-4 sm:gap-5">
             <VehicleIconTile
-              isTruck={isTruck}
+              isTruck={hasTonnage}
               className="size-16 rounded-2xl ring-1 ring-primary/15 [&_svg]:size-8"
             />
             <div className="min-w-0 space-y-3">
@@ -234,16 +234,12 @@ function Hero({ vehicle }: { vehicle: Vehicle }) {
           value={formatNumber(vehicle.fuel_consumption_rate)}
           unit="km/L"
         />
-        {isTruck ? (
+        {hasTonnage ? (
           <Metric
             icon={Package}
-            label="Payload"
-            value={
-              vehicle.tonnage_capacity != null
-                ? formatNumber(vehicle.tonnage_capacity)
-                : "–"
-            }
-            unit={vehicle.tonnage_capacity != null ? "t" : undefined}
+            label="Tonnage"
+            value={formatNumber(vehicle.tonnage_capacity)}
+            unit="t"
           />
         ) : (
           <Metric icon={Users} label="Seats" value={vehicle.seats} />
