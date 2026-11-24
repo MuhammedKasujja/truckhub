@@ -1,6 +1,7 @@
 import { z } from "zod"
-import { createServerFn } from "@tanstack/react-start"
 import { getDashboardStatistics } from "./server"
+import { createServerFn } from "@tanstack/react-start"
+import { apiTransformSingle } from "@/lib/api-response-serializer"
 
 const DashboardPeriodSchema = z.object({
   from: z.string(),
@@ -12,5 +13,5 @@ export const getDashboardStatisticsFn = createServerFn({
 })
   .validator(DashboardPeriodSchema)
   .handler(async ({ data }) => {
-    return getDashboardStatistics(data)
+    return apiTransformSingle(getDashboardStatistics(data))
   })

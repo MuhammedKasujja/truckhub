@@ -22,6 +22,18 @@ export async function apiResponseTransform<T>(
   return { data: result.data, message: result.message }
 }
 
+/** Returns the Entity only, or throws so the query shows as failed. */
+export async function apiTransformSingle<T>(call: Promise<ApiResponse<T>>): Promise<T> {
+  const result = await call
+  if (!result.isSuccess || result.error) {
+    throw new ApiError(
+      result.error?.message ?? "Couldn't load the data",
+      result.error?.statusCode ?? 400
+    )
+  }
+  return result.data as T
+}
+
 export async function apiResponseEntity<T>(
   apiCall: Promise<ApiResponse<T>>
 ): Promise<T | undefined> {

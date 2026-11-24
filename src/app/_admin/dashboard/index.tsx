@@ -1,6 +1,6 @@
 import { parseISO } from "date-fns"
 import { useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   BanknoteIcon,
@@ -67,8 +67,7 @@ function RouteComponent() {
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const period = useMemo(() => resolveDashboardPeriod(search), [search])
-  const { data: response } = useQuery(dashboardQueryOptions(period))
-  const data = response?.data
+  const { data } = useSuspenseQuery(dashboardQueryOptions(period))
 
   const periodLabel =
     search.range === "custom"
