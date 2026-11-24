@@ -32,6 +32,8 @@ export type AutoCompleteFieldProps<T extends FieldValues> = {
   disabled?: boolean
   emptyPlaceholder?: string
   className?: string
+  /** Called after the user picks an option (not on form reset). */
+  onValueChange?: (value: Option["value"]) => void
 }
 
 export function AutoCompleteField<T extends FieldValues>({
@@ -45,6 +47,7 @@ export function AutoCompleteField<T extends FieldValues>({
   emptyPlaceholder = "No results found.",
   className,
   disabled = false,
+  onValueChange,
 }: AutoCompleteFieldProps<T>) {
   const [open, setOpen] = React.useState(false)
 
@@ -100,6 +103,7 @@ export function AutoCompleteField<T extends FieldValues>({
                           value={option.label.toLowerCase()} // cmdk expects string // this is used for filtering
                           onSelect={() => {
                             field.onChange(option.value)
+                            onValueChange?.(option.value)
                             setOpen(false)
                           }}
                         >

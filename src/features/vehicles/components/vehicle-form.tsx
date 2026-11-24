@@ -23,7 +23,6 @@ import {
   ColorPickerField,
   NumberField,
   PlateNumberField,
-  TextField,
   YearPickerField,
 } from "@/components/ui/form-fields"
 import { useTranslation } from "@/i18n"
@@ -120,7 +119,7 @@ export function VehicleForm({ initialData, onCancel }: VehicleFormProps) {
   const driveTrain = vehicleCofig?.drive_trains.find(
     (d) => d.id === values.drive_train_id
   )
-  const isTruck = !!vehicleCategory?.is_truck
+  const isTruck = vehicleCategory?.type === "truck"
   const filledCount = REQUIRED_FIELDS.filter((f) => isFilled(values[f])).length
   const progress = Math.round((filledCount / REQUIRED_FIELDS.length) * 100)
   const featureCount = selectedFeatures?.length ?? 0
@@ -152,6 +151,12 @@ export function VehicleForm({ initialData, onCancel }: VehicleFormProps) {
               label={tr("common.car_brand")}
               control={form.control}
               name={"car_brand_id"}
+              onValueChange={(brandId) => {
+                // The old model belongs to the previous brand; clearing it
+                // resets the category, which drops truck-only fields
+                if (brandId !== values.car_brand_id)
+                  form.setValue("car_model_id", undefined)
+              }}
               placeholder="Select brand"
               emptyPlaceholder="No brand found"
               options={
@@ -208,10 +213,9 @@ export function VehicleForm({ initialData, onCancel }: VehicleFormProps) {
               control={form.control}
             />
             {isTruck ? (
-              <TextField
+              <PlateNumberField
                 label={"Trailer plate number"}
                 name={"second_plate_number"}
-                placeholder="Optional"
                 control={form.control}
                 required={false}
               />
