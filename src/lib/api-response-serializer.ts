@@ -12,18 +12,23 @@ import { ApiError, ApiResponse } from "@/types"
 
 export async function apiResponseTransform<T>(
   apiCall: Promise<ApiResponse<T>>
-): Promise<{ data?: T; message?: string | null }> {
+): Promise<{ data: T; message?: string | null }> {
   const result = await apiCall
 
-  if (result.error) {
-    throw new ApiError(result.error.message, result.error.statusCode ?? 400)
+  if (!result.isSuccess || result.error) {
+    throw new ApiError(
+      result.error?.message ?? "Couldn't load the data",
+      result.error?.statusCode ?? 400
+    )
   }
 
-  return { data: result.data, message: result.message }
+  return { data: result.data! as T, message: result.message }
 }
 
 /** Returns the Entity only, or throws so the query shows as failed. */
-export async function apiTransformSingle<T>(call: Promise<ApiResponse<T>>): Promise<T> {
+export async function apiTransformSingle<T>(
+  call: Promise<ApiResponse<T>>
+): Promise<T> {
   const result = await call
   if (!result.isSuccess || result.error) {
     throw new ApiError(
