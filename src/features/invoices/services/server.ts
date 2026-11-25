@@ -1,12 +1,12 @@
 import { api } from "@/lib/api"
+import { EntityId } from "@/schemas"
 import * as apiClient from "@/lib/api-client"
-import { EntityId, SearchQuery } from "@/schemas"
-import { Invoice, InvoiceActivity, InvoiceStatistics } from "../types"
 import { generateApiSearchParams } from "@/lib/search-params"
+import { Invoice, InvoiceActivity, InvoiceStatistics } from "../types"
 import {
+  VoidInvoiceInput,
   InvoiceCreateInput,
   InvoiceListSearchParams,
-  VoidInvoiceInput,
 } from "../schemas"
 
 const endpoint = "/v1/invoices"

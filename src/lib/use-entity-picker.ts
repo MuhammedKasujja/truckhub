@@ -4,6 +4,7 @@ import {
   useMutation,
   useQueryClient,
   useInfiniteQuery,
+  type DefaultError,
   type UseQueryOptions,
 } from "@tanstack/react-query"
 import { Pagination } from "@/types"
@@ -48,7 +49,11 @@ export interface EntityPickerBaseConfig<
   /** Existing queryOptions factories, returning the RAW envelope —
    *  unwrapped internally via `select`, so cache entries stay identical to
    *  what the rest of the app reads/writes for this entity. */
-  detailQueryOptions: (id: string) => UseQueryOptions<DetailResponse<T>>
+  // Key typed `any`: entities may use `as const` tuple keys, and the hook only
+  // forwards the options to useQuery / the cache.
+  detailQueryOptions: (
+    id: string
+  ) => UseQueryOptions<DetailResponse<T>, DefaultError, DetailResponse<T>, any>
 
   getOptionValue: (item: T) => string
 

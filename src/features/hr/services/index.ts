@@ -1,52 +1,41 @@
-import { createServerFn } from "@tanstack/react-start"
 import z from "zod"
+import { createServerFn } from "@tanstack/react-start"
 import {
-  CompensationSetSchema,
-  DepartmentCreateSchema,
-  DepartmentUpdateSchema,
-  LeaveBalanceAdjustSchema,
-  LeaveBalanceQuerySchema,
-  LeaveDecisionSchema,
-  LeaveRequestCreateSchema,
-  LeaveRequestSearchSchema,
-  LeaveTypeCreateSchema,
-  LeaveTypeUpdateSchema,
-  MyLeaveRequestSchema,
-  PayComponentCreateSchema,
-  PayComponentUpdateSchema,
-  PayrollRunCreateSchema,
-  PayrollRunPaySchema,
-  PayrollRunSearchSchema,
-  PayslipLineCreateSchema,
-  PayslipLineRemoveSchema,
-  PublicHolidayCreateSchema,
-  StaffComponentsSetSchema,
   StaffCreateSchema,
   StaffSearchSchema,
-  StaffTerminateSchema,
   StaffUpdateSchema,
-  SystemAccessGrantSchema,
+  LeaveDecisionSchema,
+  PayrollRunPaySchema,
+  MyLeaveRequestSchema,
+  StaffTerminateSchema,
+  CompensationSetSchema,
+  LeaveTypeCreateSchema,
+  LeaveTypeUpdateSchema,
   TaxBandsReplaceSchema,
+  DepartmentCreateSchema,
+  DepartmentUpdateSchema,
+  PayrollRunCreateSchema,
+  PayrollRunSearchSchema,
+  LeaveBalanceQuerySchema,
+  PayslipLineCreateSchema,
+  PayslipLineRemoveSchema,
+  SystemAccessGrantSchema,
+  LeaveBalanceAdjustSchema,
+  LeaveRequestCreateSchema,
+  LeaveRequestSearchSchema,
+  PayComponentCreateSchema,
+  PayComponentUpdateSchema,
+  StaffComponentsSetSchema,
+  PublicHolidayCreateSchema,
 } from "../schemas"
 import * as hr from "./server"
-import type { ApiPaginatedResponse, ApiResponse } from "@/types"
 import { ApiError } from "@/types"
 import { EntityIdSchema } from "@/schemas"
+import type { ApiPaginatedResponse } from "@/types"
+import { apiTransformSingle } from "@/lib/api-response-serializer"
 
 /** Backend code for "this login has no staff record". Not an error on the self-service page. */
 const NO_STAFF_PROFILE = "STAFF_PROFILE_NOT_FOUND"
-
-/** Returns the data of a read, or throws so the query shows as failed. */
-async function read<T>(call: Promise<ApiResponse<T>>): Promise<T> {
-  const result = await call
-  if (!result.isSuccess || result.error) {
-    throw new ApiError(
-      result.error?.message ?? "Couldn't load the data",
-      result.error?.statusCode ?? 400
-    )
-  }
-  return result.data as T
-}
 
 async function readPage<T>(call: Promise<ApiPaginatedResponse<T>>) {
   const result = await call
@@ -84,7 +73,7 @@ export const getStaffListFn = createServerFn()
 
 export const getStaffFn = createServerFn()
   .validator(EntityIdSchema)
-  .handler(({ data }) => read(hr.getStaff(data.id)))
+  .handler(({ data }) => apiTransformSingle(hr.getStaff(data.id)))
 
 export const createStaffFn = createServerFn({ method: "POST" })
   .validator(StaffCreateSchema)
@@ -112,7 +101,7 @@ export const revokeSystemAccessFn = createServerFn({ method: "POST" })
 
 export const getStaffCompensationFn = createServerFn()
   .validator(EntityIdSchema)
-  .handler(({ data }) => read(hr.getStaffCompensation(data.id)))
+  .handler(({ data }) => apiTransformSingle(hr.getStaffCompensation(data.id)))
 
 export const setStaffCompensationFn = createServerFn({ method: "POST" })
   .validator(CompensationSetSchema)
@@ -125,7 +114,7 @@ export const setStaffComponentsFn = createServerFn({ method: "POST" })
 /* --------------------------------- Leave ---------------------------------- */
 
 export const getLeaveTypesFn = createServerFn().handler(() =>
-  read(hr.getLeaveTypes())
+  apiTransformSingle(hr.getLeaveTypes())
 )
 
 export const createLeaveTypeFn = createServerFn({ method: "POST" })
@@ -142,7 +131,7 @@ export const deleteLeaveTypeFn = createServerFn({ method: "POST" })
 
 export const getPublicHolidaysFn = createServerFn()
   .validator(z.object({ year: z.number().int().optional() }))
-  .handler(({ data }) => read(hr.getPublicHolidays(data.year)))
+  .handler(({ data }) => apiTransformSingle(hr.getPublicHolidays(data.year)))
 
 export const createPublicHolidayFn = createServerFn({ method: "POST" })
   .validator(PublicHolidayCreateSchema)
@@ -154,7 +143,9 @@ export const deletePublicHolidayFn = createServerFn({ method: "POST" })
 
 export const getLeaveBalancesFn = createServerFn()
   .validator(LeaveBalanceQuerySchema)
-  .handler(({ data }) => read(hr.getLeaveBalances(data.staff_id, data.year)))
+  .handler(({ data }) =>
+    apiTransformSingle(hr.getLeaveBalances(data.staff_id, data.year))
+  )
 
 export const adjustLeaveBalanceFn = createServerFn({ method: "POST" })
   .validator(LeaveBalanceAdjustSchema)
@@ -183,7 +174,7 @@ export const cancelLeaveRequestFn = createServerFn({ method: "POST" })
 /* -------------------------------- Payroll --------------------------------- */
 
 export const getPayComponentsFn = createServerFn().handler(() =>
-  read(hr.getPayComponents())
+  apiTransformSingle(hr.getPayComponents())
 )
 
 export const createPayComponentFn = createServerFn({ method: "POST" })
@@ -199,7 +190,7 @@ export const deletePayComponentFn = createServerFn({ method: "POST" })
   .handler(({ data }) => hr.deletePayComponent(data.id))
 
 export const getTaxBandsFn = createServerFn().handler(() =>
-  read(hr.getTaxBands())
+  apiTransformSingle(hr.getTaxBands())
 )
 
 export const replaceTaxBandsFn = createServerFn({ method: "POST" })
@@ -212,7 +203,7 @@ export const getPayrollRunsFn = createServerFn()
 
 export const getPayrollRunFn = createServerFn()
   .validator(EntityIdSchema)
-  .handler(({ data }) => read(hr.getPayrollRun(data.id)))
+  .handler(({ data }) => apiTransformSingle(hr.getPayrollRun(data.id)))
 
 export const createPayrollRunFn = createServerFn({ method: "POST" })
   .validator(PayrollRunCreateSchema)
@@ -236,7 +227,7 @@ export const cancelPayrollRunFn = createServerFn({ method: "POST" })
 
 export const getPayslipFn = createServerFn()
   .validator(EntityIdSchema)
-  .handler(({ data }) => read(hr.getPayslip(data.id)))
+  .handler(({ data }) => apiTransformSingle(hr.getPayslip(data.id)))
 
 export const addPayslipLineFn = createServerFn({ method: "POST" })
   .validator(PayslipLineCreateSchema)
@@ -252,16 +243,16 @@ export const removePayslipLineFn = createServerFn({ method: "POST" })
 export const getMyStaffRecordFn = createServerFn().handler(async () => {
   const result = await hr.getMyStaffRecord()
   if (result.error?.code === NO_STAFF_PROFILE) return null
-  return read(Promise.resolve(result))
+  return apiTransformSingle(Promise.resolve(result))
 })
 
 export const getMyLeaveTypesFn = createServerFn().handler(() =>
-  read(hr.getMyLeaveTypes())
+  apiTransformSingle(hr.getMyLeaveTypes())
 )
 
 export const getMyLeaveBalancesFn = createServerFn()
   .validator(z.object({ year: z.number().int().optional() }))
-  .handler(({ data }) => read(hr.getMyLeaveBalances(data.year)))
+  .handler(({ data }) => apiTransformSingle(hr.getMyLeaveBalances(data.year)))
 
 export const getMyLeaveRequestsFn = createServerFn().handler(async () => {
   const { data } = await readPage(hr.getMyLeaveRequests())
@@ -277,5 +268,5 @@ export const cancelMyLeaveFn = createServerFn({ method: "POST" })
   .handler(({ data }) => hr.cancelMyLeave(data.id))
 
 export const getMyPayslipsFn = createServerFn().handler(() =>
-  read(hr.getMyPayslips())
+  apiTransformSingle(hr.getMyPayslips())
 )
