@@ -6,6 +6,7 @@ import {
   ChevronDown,
   FileText,
   Loader2,
+  PenLine,
   UserRound,
   XCircle,
 } from "lucide-react"
@@ -18,6 +19,7 @@ import {
 } from "../../hooks/use-quotation-actions"
 import { QuotationStatusIndicator } from "./quotation-status-indicator"
 import type { Quotation } from "../../types"
+import { ComposeEmailDialog } from "@/features/emails/components/compose-email-dialog"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Can } from "@/components/has-permission"
 import { ActionIcon } from "@/components/icons"
@@ -102,6 +104,7 @@ function QuotationActions({ quotation }: { quotation: Quotation }) {
   const quotationId = quotation.id
   const allowed = quotationActions(quotation.status)
   const [confirm, setConfirm] = useState<"reject" | "cancel">()
+  const [openCompose, setOpenCompose] = useState(false)
 
   // Sends are tracked on the version the client is being quoted
   const sendCount =
@@ -144,6 +147,18 @@ function QuotationActions({ quotation }: { quotation: Quotation }) {
           )}
           {sendCount > 0 ? "Resend email" : "Send email"}
         </Button>
+      </Can>
+      <Can permission="mailing:compose">
+        <Button variant="outline" onClick={() => setOpenCompose(true)}>
+          <PenLine className="size-4" />
+          Compose email
+        </Button>
+        <ComposeEmailDialog
+          open={openCompose}
+          onOpenChange={setOpenCompose}
+          context={{ quotationId, clientId: quotation.client.id }}
+          title={`Email about quotation ${quotation.number}`}
+        />
       </Can>
       <Button variant="outline" asChild>
         <Link to="/quotations/$quotationId/pdf" params={{ quotationId }}>

@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start"
 import {
   ChevronsUpDownIcon,
   LogOutIcon,
+  MailIcon,
   PanelLeftCloseIcon,
   SettingsIcon,
   TruckIcon,
@@ -106,6 +107,12 @@ export const sidebarSections: SidebarSection[] = [
         url: "/quotations",
         icon: getModuleIcon("Quotations"),
         permission: ModuleAccess.quotations,
+      },
+      {
+        title: "routes.compose_email",
+        url: "/emails/compose",
+        icon: MailIcon,
+        permission: "mailing:compose",
       },
     ],
   },

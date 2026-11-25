@@ -151,6 +151,7 @@ const en = {
     logout: "Logout",
   },
   routes: {
+    compose_email: "Compose email",
     drivers: "Drivers",
     clients: "Clients",
     settings: "Settings",

@@ -9,6 +9,7 @@ import { VehicleModulePermissions } from "./vehicle_permissions";
 import { PaymentModulePermissions } from "./payment_permissions";
 import { BillingModulePermissions } from "./billing_permissions";
 import { InvoiceModulePermissions } from "./invoice_permissions";
+import { MailingModulePermissions } from "./mailing_permissions";
 import { ServiceModulePermissions } from "./services_permissions";
 import { ShipmentModulePermissions } from "./shipment_permissions";
 import { QuotationModulePermissions } from "./quotation_permissions";
@@ -23,6 +24,7 @@ export const KeyNamedPermissions = {
   ...DashboardModulePermissions,
   ...QuotationModulePermissions,
   ...InvoiceModulePermissions,
+  ...MailingModulePermissions,
   ...ShipmentModulePermissions,
   ...UserModulePermissions,
   // ...BookingModulePermissions,
@@ -68,6 +70,7 @@ export const SystemPermissions = {
   dashboard: DashboardModulePermissions,
   quotations: QuotationModulePermissions,
   invoices: InvoiceModulePermissions,
+  mailing: MailingModulePermissions,
   shipment: ShipmentModulePermissions,
   // bookings: BookingModulePermissions,
   services: ServiceModulePermissions,

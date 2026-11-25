@@ -27,6 +27,7 @@ import { Route as AdminClientsRatesRouteImport } from './app/_admin/clients/rate
 import { Route as AdminDashboardIndexRouteImport } from './app/_admin/dashboard/index'
 import { Route as AdminDriversIndexRouteImport } from './app/_admin/drivers/index'
 import { Route as AdminDriversNewRouteImport } from './app/_admin/drivers/new'
+import { Route as AdminEmailsComposeRouteImport } from './app/_admin/emails/compose'
 import { Route as AdminInvoicesIndexRouteImport } from './app/_admin/invoices/index'
 import { Route as AdminInvoicesCreateRouteImport } from './app/_admin/invoices/create'
 import { Route as AdminLiveMapIndexRouteImport } from './app/_admin/live-map/index'
@@ -207,6 +208,11 @@ const AdminDriversIndexRoute = AdminDriversIndexRouteImport.update({
 const AdminDriversNewRoute = AdminDriversNewRouteImport.update({
   id: '/drivers/new',
   path: '/drivers/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminEmailsComposeRoute = AdminEmailsComposeRouteImport.update({
+  id: '/emails/compose',
+  path: '/emails/compose',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminInvoicesIndexRoute = AdminInvoicesIndexRouteImport.update({
@@ -743,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/emails/compose': typeof AdminEmailsComposeRoute
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
@@ -854,6 +861,7 @@ export interface FileRoutesByTo {
   '/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/clients/rates': typeof AdminClientsRatesRoute
   '/drivers/new': typeof AdminDriversNewRoute
+  '/emails/compose': typeof AdminEmailsComposeRoute
   '/invoices/create': typeof AdminInvoicesCreateRoute
   '/rides/live': typeof AdminRidesLiveRoute
   '/rides/new': typeof AdminRidesNewRoute
@@ -967,6 +975,7 @@ export interface FileRoutesById {
   '/_admin/settings/vehicle-config': typeof AdminSettingsVehicleConfigRouteRouteWithChildren
   '/_admin/clients/rates': typeof AdminClientsRatesRoute
   '/_admin/drivers/new': typeof AdminDriversNewRoute
+  '/_admin/emails/compose': typeof AdminEmailsComposeRoute
   '/_admin/invoices/create': typeof AdminInvoicesCreateRoute
   '/_admin/rides/live': typeof AdminRidesLiveRoute
   '/_admin/rides/new': typeof AdminRidesNewRoute
@@ -1080,6 +1089,7 @@ export interface FileRouteTypes {
     | '/settings/vehicle-config'
     | '/clients/rates'
     | '/drivers/new'
+    | '/emails/compose'
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
@@ -1191,6 +1201,7 @@ export interface FileRouteTypes {
     | '/settings/vehicle-config'
     | '/clients/rates'
     | '/drivers/new'
+    | '/emails/compose'
     | '/invoices/create'
     | '/rides/live'
     | '/rides/new'
@@ -1303,6 +1314,7 @@ export interface FileRouteTypes {
     | '/_admin/settings/vehicle-config'
     | '/_admin/clients/rates'
     | '/_admin/drivers/new'
+    | '/_admin/emails/compose'
     | '/_admin/invoices/create'
     | '/_admin/rides/live'
     | '/_admin/rides/new'
@@ -1536,6 +1548,13 @@ declare module '@tanstack/react-router' {
       path: '/drivers/new'
       fullPath: '/drivers/new'
       preLoaderRoute: typeof AdminDriversNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_admin/emails/compose': {
+      id: '/_admin/emails/compose'
+      path: '/emails/compose'
+      fullPath: '/emails/compose'
+      preLoaderRoute: typeof AdminEmailsComposeRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/_admin/invoices/': {
@@ -2374,6 +2393,7 @@ interface AdminRouteRouteChildren {
   AdminShipmentsRouteRoute: typeof AdminShipmentsRouteRouteWithChildren
   AdminClientsRatesRoute: typeof AdminClientsRatesRoute
   AdminDriversNewRoute: typeof AdminDriversNewRoute
+  AdminEmailsComposeRoute: typeof AdminEmailsComposeRoute
   AdminInvoicesCreateRoute: typeof AdminInvoicesCreateRoute
   AdminRidesLiveRoute: typeof AdminRidesLiveRoute
   AdminRidesNewRoute: typeof AdminRidesNewRoute
@@ -2434,6 +2454,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminShipmentsRouteRoute: AdminShipmentsRouteRouteWithChildren,
   AdminClientsRatesRoute: AdminClientsRatesRoute,
   AdminDriversNewRoute: AdminDriversNewRoute,
+  AdminEmailsComposeRoute: AdminEmailsComposeRoute,
   AdminInvoicesCreateRoute: AdminInvoicesCreateRoute,
   AdminRidesLiveRoute: AdminRidesLiveRoute,
   AdminRidesNewRoute: AdminRidesNewRoute,

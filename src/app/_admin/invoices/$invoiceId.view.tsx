@@ -10,6 +10,7 @@ import {
   Download,
   FileText,
   Loader2,
+  PenLine,
   PiggyBank,
   Receipt,
   UserRound,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import type { Invoice } from "@/features/invoices/types"
+import { ComposeEmailDialog } from "@/features/emails/components/compose-email-dialog"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Can } from "@/components/has-permission"
 import { ModuleAccess } from "@/features/auth/permissions"
@@ -233,6 +235,7 @@ function InvoiceActions({ invoice }: { invoice: Invoice }) {
   const tr = useTranslation()
   const [openPayment, setOpenPayment] = useState(false)
   const [openVoid, setOpenVoid] = useState(false)
+  const [openCompose, setOpenCompose] = useState(false)
   // Draft, cancelled and void invoices are neither emailed nor voided
   const isCharged = isChargedInvoice(invoice.status)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -308,6 +311,18 @@ function InvoiceActions({ invoice }: { invoice: Invoice }) {
           </Button>
         </Can>
       )}
+      <Can permission={"mailing:compose"}>
+        <Button variant="outline" onClick={() => setOpenCompose(true)}>
+          <PenLine className="size-4" />
+          Compose email
+        </Button>
+        <ComposeEmailDialog
+          open={openCompose}
+          onOpenChange={setOpenCompose}
+          context={{ invoiceId: invoice.id, clientId: invoice.client.id }}
+          title={`Email about invoice ${invoice.number}`}
+        />
+      </Can>
       {isDeletableInvoice(invoice.status) && (
         <Can permission={"invoices:delete"}>
           <Button variant="destructive" onClick={() => setOpenDelete(true)}>

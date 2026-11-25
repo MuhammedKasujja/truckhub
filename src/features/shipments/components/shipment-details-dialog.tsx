@@ -56,6 +56,8 @@ import {
 import type { Hue } from "./shipment-hues"
 import type { ShipmentStatus } from "../enums"
 import type { Shipment } from "../types"
+import { ComposeEmailDialog } from "@/features/emails/components/compose-email-dialog"
+import { Can } from "@/components/has-permission"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -324,8 +326,10 @@ function DetailsHeader({
           </div>
         </div>
 
-        {primary && (
-          <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-2">
+          <ComposeTripEmailButton shipment={shipment} />
+          {primary && (
+            <>
             <Button onClick={() => onAction(primary.key)} className="shadow-sm">
               <primary.icon className="size-4" />
               {primary.label}
@@ -351,8 +355,9 @@ function DetailsHeader({
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </DialogHeader>
 
       {/* Key numbers */}
@@ -1113,5 +1118,24 @@ function EmptySlot({
         </Button>
       )}
     </div>
+  )
+}
+
+/** Write an email about this trip; its route, driver and dates can be inserted with @. */
+function ComposeTripEmailButton({ shipment }: { shipment: Shipment }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <Can permission="mailing:compose">
+      <Button variant="outline" className="bg-background/70" onClick={() => setOpen(true)}>
+        <Mail className="size-4" />
+        Email
+      </Button>
+      <ComposeEmailDialog
+        open={open}
+        onOpenChange={setOpen}
+        context={{ tripId: shipment.id }}
+        title={`Email about trip ${shipment.number ?? ""}`.trim()}
+      />
+    </Can>
   )
 }

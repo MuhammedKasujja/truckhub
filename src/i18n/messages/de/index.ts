@@ -2,6 +2,7 @@ const de = {
   app_name: "Truckhub",
   services: "Services",
   routes: {
+    compose_email: "E-Mail verfassen",
     drivers: "Drivers",
     passengers: "Passengers",
     settings: "Settings",
