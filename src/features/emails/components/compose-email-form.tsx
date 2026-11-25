@@ -5,6 +5,7 @@ import { createEntityMention, refreshMentions } from "../mentions/entity-mention
 import { useComposeEmail, usePreviewComposedEmail } from "../hooks/use-compose-email"
 import { ComposeEmailSchema } from "../schemas"
 import { EmailChipsInput } from "./email-chips-input"
+import { EmailInput } from "./email-input"
 import type { ComposeAttachment } from "../schemas"
 import type { ComposeContext } from "../types"
 import type { Editor } from "@tiptap/react"
@@ -158,20 +159,14 @@ export function ComposeEmailForm({ context = {}, onSent, onCancel, className }: 
             </button>
           )}
         </div>
-        <Input
+        <EmailInput
           id="compose-to"
-          type="email"
-          list="compose-to-suggestions"
           value={to}
-          onChange={(e) => setTo(e.target.value)}
+          onChange={setTo}
+          suggestions={suggestions}
           placeholder="name@example.com"
-          aria-invalid={!!errors.to}
+          invalid={!!errors.to}
         />
-        <datalist id="compose-to-suggestions">
-          {suggestions.map((email) => (
-            <option key={email} value={email} />
-          ))}
-        </datalist>
         {errors.to && <p className="text-destructive text-xs">{errors.to}</p>}
       </div>
 

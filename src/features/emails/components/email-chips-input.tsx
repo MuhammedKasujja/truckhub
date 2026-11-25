@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { z } from "zod"
+import { useDialogPortalContainer } from "./email-input"
 import {
   Combobox,
   ComboboxChip,
@@ -32,9 +33,7 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
   const anchor = useComboboxAnchor()
   const [draft, setDraft] = useState("")
   const [invalid, setInvalid] = useState(false)
-  // A modal Radix dialog/sheet blocks clicks outside its content, so the
-  // popup has to be portalled inside it rather than into <body>.
-  const [container, setContainer] = useState<HTMLElement | null>(null)
+  const portal = useDialogPortalContainer()
 
   // A valid typed address that isn't a suggestion yet becomes the first item,
   // so Enter picks it the same way it picks a suggestion.
@@ -58,7 +57,7 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
 
   return (
     <div
-      ref={(el) => setContainer(el?.closest<HTMLElement>('[data-slot="dialog-content"], [data-slot="sheet-content"]') ?? null)}
+      ref={portal.ref}
       className="grid gap-1.5"
     >
       <Label htmlFor={id}>{label}</Label>
@@ -106,7 +105,7 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
             onBlur={() => commit()}
           />
         </ComboboxChips>
-        <ComboboxContent anchor={anchor} container={container ?? undefined}>
+        <ComboboxContent anchor={anchor} container={portal.container}>
           <ComboboxList>
             {(email: string) => (
               <ComboboxItem key={email} value={email}>
