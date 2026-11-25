@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react"
 import {
+  Banknote,
   Building2,
   Car,
   ChevronRight,
@@ -30,6 +31,7 @@ type Props = SuggestionProps<MentionItem, MentionSelection> & {
 const ICONS: Record<MentionType, React.ComponentType<{ className?: string }>> = {
   invoice: ReceiptText,
   quotation: FileText,
+  payment: Banknote,
   trip: Truck,
   client: Building2,
   driver: UserRound,

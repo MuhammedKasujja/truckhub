@@ -15,7 +15,10 @@ import {
 } from "@/features/payments/schemas"
 import { ApiError } from "@/types"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
-import { apiResponseTransform } from "@/lib/api-response-serializer"
+import {
+  apiResponseTransform,
+  apiTransformSingle,
+} from "@/lib/api-response-serializer"
 
 export const getPaymentsFn = createServerFn()
   .validator(PaymentSearchParamsCache)
@@ -36,9 +39,7 @@ export const getPaymentsByQueryFn = createServerFn()
 
 export const getPaymentDetailsFn = createServerFn()
   .validator(EntityIdSchema)
-  .handler(async ({ data }) => {
-    return getPaymentById(data.id)
-  })
+  .handler(({ data }) => apiTransformSingle(getPaymentById(data.id)))
 
 export const deletePaymentFn = createServerFn()
   .validator(EntityIdSchema)

@@ -7,6 +7,7 @@ import type { SystemUser } from "@/features/users/types"
 import type { Vehicle } from "@/features/vehicles/types"
 import type { Driver } from "@/features/drivers/types"
 import type { Client } from "@/features/clients/types"
+import type { Payment } from "@/features/payments/types"
 import { getInvoicesFn } from "@/features/invoices/services"
 import { invoiceDetailsQueryOptions } from "@/features/invoices/query-options"
 import { getQuotationsFn } from "@/features/quotations/services"
@@ -22,11 +23,14 @@ import { getDriversByQueryFn } from "@/features/drivers/services"
 import { driverProfileQueryOptions } from "@/features/drivers/queries"
 import { getClientsByQueryFn } from "@/features/clients/services"
 import { clientProfileQueryOptions } from "@/features/clients/query-options"
+import { getPaymentsFn } from "@/features/payments/services"
+import { paymentDetailsQueryOptions } from "@/features/payments/query-options"
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format"
 
 export const MENTION_TYPES = [
   "invoice",
   "quotation",
+  "payment",
   "trip",
   "client",
   "driver",
@@ -62,7 +66,8 @@ type MentionEntity<T> = {
 }
 
 const PER_TYPE = 5
-const LIST = { page: 1, perPage: PER_TYPE } as const
+// The API rejects per_page below 10 (422), so ask for 10 and show the first PER_TYPE
+const LIST = { page: 1, perPage: 10 } as const
 
 const money = (v?: string | number | null) => (v == null || v === "" ? "" : formatMoney(v))
 const date = (v?: string | Date | null) => formatDate(v)
@@ -125,6 +130,28 @@ const quotation: MentionEntity<Quotation> = {
     { path: "purpose", label: "Purpose", get: (q) => quotationVersion(q).purpose },
     { path: "client.name", label: "Client name", get: (q) => q.client.name },
     { path: "contact.name", label: "Contact name", get: (q) => q.contact?.name },
+  ],
+}
+
+const payment: MentionEntity<Payment> = {
+  type: "payment",
+  label: "Payment",
+  aliases: ["payment", "pay", "receipt"],
+  search: async (q) => {
+    const res = await getPaymentsFn({ data: { ...LIST, search: q } })
+    return hits(res.data, "payment", (p) => p.id, (p) => p.number, (p) => p.client.fullname)
+  },
+  detail: (qc, id) => qc.fetchQuery(paymentDetailsQueryOptions(id)),
+  fields: [
+    { path: "number", label: "Number", get: (p) => p.number },
+    { path: "amount", label: "Amount", get: (p) => money(p.amount) },
+    { path: "paid_at", label: "Paid on", get: (p) => date(p.paid_at) },
+    { path: "method", label: "Method", get: (p) => p.method.replaceAll("_", " ") },
+    { path: "transaction_ref", label: "Transaction reference", get: (p) => p.transaction_ref },
+    { path: "status", label: "Status", get: (p) => p.status.replaceAll("_", " ") },
+    { path: "invoice.number", label: "Invoice number", get: (p) => p.entity.number },
+    { path: "invoice.balance_due", label: "Invoice balance due", get: (p) => money(p.entity.balance_due) },
+    { path: "client.name", label: "Client name", get: (p) => p.client.fullname },
   ],
 }
 
@@ -251,6 +278,7 @@ const user: MentionEntity<SystemUser> = {
 export const MENTION_REGISTRY: Record<MentionType, MentionEntity<any>> = {
   invoice,
   quotation,
+  payment,
   trip,
   client,
   driver,

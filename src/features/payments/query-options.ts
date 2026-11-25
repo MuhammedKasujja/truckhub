@@ -1,13 +1,18 @@
 import { PaymentListSearchParams } from "./schemas"
 import { queryOptions } from "@tanstack/react-query"
-import { getPaymentsFn, getPaymentsStatisticsFn } from "./services"
+import {
+  getPaymentDetailsFn,
+  getPaymentsFn,
+  getPaymentsStatisticsFn,
+} from "./services"
+import type { EntityId } from "@/schemas"
 
 export const paymentsQueryKeys = {
   all: () => ["payments"],
   list: () => [...paymentsQueryKeys.all(), "list"],
   details: () => [...paymentsQueryKeys.all(), "detail"],
   statistics: () => [...paymentsQueryKeys.list(), "statistics"],
-  detail: (id: string) => [...paymentsQueryKeys.details(), id],
+  detail: (id: EntityId) => [...paymentsQueryKeys.details(), id],
 } as const
 
 export const paymentsQueryOptions = (search: PaymentListSearchParams) =>
@@ -20,4 +25,10 @@ export const paymentStatisticsQueryOptions = () =>
   queryOptions({
     queryKey: paymentsQueryKeys.statistics(),
     queryFn: () => getPaymentsStatisticsFn(),
+  })
+
+export const paymentDetailsQueryOptions = (id: EntityId) =>
+  queryOptions({
+    queryKey: paymentsQueryKeys.detail(id),
+    queryFn: () => getPaymentDetailsFn({ data: { id } }),
   })

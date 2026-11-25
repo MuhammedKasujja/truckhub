@@ -44,7 +44,7 @@ export async function getPaymentsByQuery(query: SearchQuery) {
 }
 
 export async function getPaymentById(paymentId: EntityId) {
-  return await apiClient.getFn<Payment>(`/v1/payments/${paymentId}`)
+  return await apiClient.getFn<Payment>(`/v1/billing/payments/${paymentId}`)
 }
 
 export async function deletePaymentById(paymentId: EntityId) {
