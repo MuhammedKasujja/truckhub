@@ -435,6 +435,15 @@ export class QueryInvalidator {
     }),
   }
 
+  emailTemplates = {
+    list: {
+      invalidate: () =>
+        this.queryClient.invalidateQueries({
+          queryKey: queryKeys.emailTemplates.list(),
+        }),
+    },
+  }
+
   bankAccounts = {
     list: {
       invalidate: () =>

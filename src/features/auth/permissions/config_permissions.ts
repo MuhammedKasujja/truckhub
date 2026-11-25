@@ -50,6 +50,14 @@ export const ConfigModulePermissions = {
     "document_types:create",
     "document_types:update",
   ],
+  // Email templates
+  "config:email_templates:view": [
+    "email_templates:catalog",
+    "email_templates:list",
+    "email_templates:view",
+    "email_templates:preview",
+  ],
+  "config:email_templates:edit": ["email_templates:update", "email_templates:reset"],
   // tax_rates routes
   "config:tax_rates:view": ["tax_rates:read", "tax_rates:view"],
   "config:tax_rates:create": ["tax_rates:create"],

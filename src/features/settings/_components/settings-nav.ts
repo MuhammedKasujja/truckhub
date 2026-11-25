@@ -10,6 +10,7 @@ import {
   UserIcon,
   Building2,
   ListOrdered,
+  Mail,
   SquareSigma,
   SlidersHorizontal,
 } from "lucide-react"
@@ -104,6 +105,13 @@ export const settingsNav: SettingsNavGroup[] = [
         icon: FileText,
         to: "/settings/pdf-templates",
         base: "/settings/pdf-templates",
+      },
+      {
+        label: "Email templates",
+        icon: Mail,
+        to: "/settings/email-templates",
+        base: "/settings/email-templates",
+        permission: "config:email_templates:view",
       },
       {
         label: "Document types",

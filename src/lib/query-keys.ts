@@ -19,6 +19,7 @@ import { maintenanceQueryKeys } from "@/features/maintanence/query-options"
 import { pricingQueryKeys } from "@/features/settings/pricing/query-options"
 import { islandsQueryKeys } from "@/features/settings/islands/query-options"
 import { taxRateQueryKeys } from "@/features/settings/tax-rates/query-options"
+import { emailTemplateQueryKeys } from "@/features/settings/email-templates/query-options"
 import { bookingRoutesQueryKeys } from "@/features/settings/booking-routes/query-options"
 import { tonnageQueryKeys } from "@/features/settings/vehicle-config/tonnage/query-options"
 import { carBrandQueryKeys } from "@/features/settings/vehicle-config/car-brand/query-options"
@@ -63,4 +64,5 @@ export const queryKeys = {
   shipments: shipmentsQueryKeys,
   banks: banksQueryKeys,
   bankAccounts: bankAccountsQueryKeys,
+  emailTemplates: emailTemplateQueryKeys,
 }
