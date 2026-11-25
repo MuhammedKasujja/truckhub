@@ -1,8 +1,17 @@
-import { useState } from "react"
-import { X } from "lucide-react"
+import { useMemo, useState } from "react"
 import { z } from "zod"
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "@/components/ui/combobox"
 import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
 
 type Props = {
   id: string
@@ -15,66 +24,99 @@ type Props = {
 
 const isEmail = (v: string) => z.email().safeParse(v).success
 
-/** Several email addresses: Enter, comma or leaving the field turns the text into a chip. */
+/**
+ * Several email addresses as chips. Pick a suggestion, or type an address and
+ * press Enter / comma (or leave the field). Pasting a list splits it.
+ */
 export function EmailChipsInput({ id, label, value, onChange, suggestions = [], error }: Props) {
+  const anchor = useComboboxAnchor()
   const [draft, setDraft] = useState("")
   const [invalid, setInvalid] = useState(false)
+  // A modal Radix dialog/sheet blocks clicks outside its content, so the
+  // popup has to be portalled inside it rather than into <body>.
+  const [container, setContainer] = useState<HTMLElement | null>(null)
+
+  // A valid typed address that isn't a suggestion yet becomes the first item,
+  // so Enter picks it the same way it picks a suggestion.
+  const items = useMemo(() => {
+    const typed = draft.trim()
+    const base = suggestions.filter((s) => !value.includes(s))
+    return isEmail(typed) && !base.includes(typed) && !value.includes(typed) ? [typed, ...base] : base
+  }, [draft, suggestions, value])
 
   function commit(text = draft) {
     const parts = text.split(/[\s,;]+/).map((p) => p.trim()).filter(Boolean)
     if (!parts.length) return
     const bad = parts.filter((p) => !isEmail(p))
     const good = parts.filter((p) => isEmail(p) && !value.includes(p))
-    if (good.length) onChange([...value, ...good])
+    if (good.length) onChange([...value, ...new Set(good)])
     setDraft(bad.join(", "))
     setInvalid(bad.length > 0)
   }
 
+  const message = invalid ? "Not a valid email address" : error
+
   return (
-    <div className="grid gap-1.5">
+    <div
+      ref={(el) => setContainer(el?.closest<HTMLElement>('[data-slot="dialog-content"], [data-slot="sheet-content"]') ?? null)}
+      className="grid gap-1.5"
+    >
       <Label htmlFor={id}>{label}</Label>
-      <div
-        className={cn(
-          "border-input focus-within:ring-ring/50 flex min-h-9 flex-wrap items-center gap-1 rounded-md border px-2 py-1 focus-within:ring-[3px]",
-          (invalid || error) && "border-destructive"
-        )}
+      <Combobox
+        multiple
+        autoHighlight
+        items={items}
+        value={value}
+        onValueChange={(next) => {
+          onChange(next)
+          setInvalid(false)
+        }}
+        inputValue={draft}
+        onInputValueChange={(text) => {
+          setDraft(text)
+          setInvalid(false)
+        }}
       >
-        {value.map((email) => (
-          <span key={email} className="bg-secondary flex items-center gap-1 rounded px-1.5 py-0.5 text-xs">
-            {email}
-            <button type="button" aria-label={`Remove ${email}`} onClick={() => onChange(value.filter((e) => e !== email))}>
-              <X className="size-3" />
-            </button>
-          </span>
-        ))}
-        <input
-          id={id}
-          list={`${id}-suggestions`}
-          value={draft}
-          onChange={(e) => {
-            setDraft(e.target.value)
-            setInvalid(false)
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === ",") {
-              e.preventDefault()
-              commit()
-            } else if (e.key === "Backspace" && !draft && value.length) {
-              onChange(value.slice(0, -1))
+        <ComboboxChips ref={anchor}>
+          <ComboboxValue>
+            {(selected: string[]) =>
+              selected.map((email) => <ComboboxChip key={email}>{email}</ComboboxChip>)
             }
-          }}
-          onBlur={() => commit()}
-          className="min-w-32 flex-1 bg-transparent py-0.5 text-sm outline-none"
-        />
-        <datalist id={`${id}-suggestions`}>
-          {suggestions.filter((s) => !value.includes(s)).map((email) => (
-            <option key={email} value={email} />
-          ))}
-        </datalist>
-      </div>
-      {(invalid || error) && (
-        <p className="text-destructive text-xs">{invalid ? "Not a valid email address" : error}</p>
-      )}
+          </ComboboxValue>
+          <ComboboxChipsInput
+            id={id}
+            aria-invalid={!!message || undefined}
+            onKeyDown={(e) => {
+              if (e.key === ",") {
+                e.preventDefault()
+                commit()
+              } else if (e.key === "Enter" && draft.trim() && !items.length) {
+                // Nothing to pick: flag the text instead of submitting the form.
+                e.preventDefault()
+                commit()
+              }
+            }}
+            onPaste={(e) => {
+              const text = e.clipboardData.getData("text")
+              if (/[\s,;]/.test(text.trim())) {
+                e.preventDefault()
+                commit(`${draft} ${text}`)
+              }
+            }}
+            onBlur={() => commit()}
+          />
+        </ComboboxChips>
+        <ComboboxContent anchor={anchor} container={container ?? undefined}>
+          <ComboboxList>
+            {(email: string) => (
+              <ComboboxItem key={email} value={email}>
+                {email}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+      {message && <p className="text-destructive text-xs">{message}</p>}
     </div>
   )
 }
