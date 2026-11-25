@@ -3,7 +3,7 @@ import {
   ClientCreateSchema,
   ClientUpdateSchema,
   ClientContactsSchema,
-} from "../../src/features/clients/schemas"features/clients/schemas"rc/features/clients/schemas"features/clients/schemas"
+} from "../../src/features/clients/schemas"
 import type { ClientContactInput } from "../../src/features/clients/schemas"
 
 const contact = (overrides: Partial<ClientContactInput> = {}) => ({
