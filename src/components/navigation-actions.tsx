@@ -14,11 +14,13 @@ import { logoutFn } from "@/features/auth/services"
 import { RefreshButton } from "./refresh-button"
 import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
+import { useTranslation } from "@/i18n"
 import { useAuth } from "@/components/providers/auth-context"
 import { generateAvatorFallback } from "@/lib/format"
 import { useServerFn } from "@tanstack/react-start"
 import { NotificationDropdown } from "./notifications-dropdown"
 import { Can } from "@/components/has-permission"
+import { ActionIcon } from "./icons"
 
 export function NavigationActions() {
   return (
@@ -66,6 +68,27 @@ function ProfileDropdown() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+export function ComposeEmailButton() {
+  const tr = useTranslation()
+  const label = tr("routes.compose_email")
+
+  return (
+    <Can permission="mailing:compose">
+      <Button
+        asChild
+        variant="outline"
+        size="icon-xs"
+        aria-label={label}
+        title={label}
+      >
+        <Link to="/emails/compose">
+         <ActionIcon action="email"/>
+        </Link>
+      </Button>
+    </Can>
   )
 }
 

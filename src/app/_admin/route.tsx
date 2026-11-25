@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/auth"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import {
+  ComposeEmailButton,
   NavigationActions,
   NavigationButtons,
 } from "@/components/navigation-actions"
@@ -61,6 +62,7 @@ function RouteComponent() {
                 <div className="flex items-center gap-2">
                   <GlobalSearchDialog />
                   <CreateEntityDialog />
+                  <ComposeEmailButton />
                 </div>
                 <NavigationActions />
               </div>
