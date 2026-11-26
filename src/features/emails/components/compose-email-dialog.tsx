@@ -15,14 +15,19 @@ type Props = {
   title?: string
 }
 
-export function ComposeEmailDialog({ open, onOpenChange, context, title = "Compose email" }: Props) {
+export function ComposeEmailDialog({
+  open,
+  onOpenChange,
+  context,
+  title = "New email",
+}: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[92vh] flex-col overflow-y-auto sm:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent className="flex max-h-[92vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
+        <DialogHeader className="gap-1 border-b px-6 pt-5 pb-4">
+          <DialogTitle className="text-base">{title}</DialogTitle>
           <DialogDescription>
-            Type @ to insert an invoice, quotation, trip, client, driver, vehicle or user, then pick one of its values.
+            Type @ to insert details from any record.
           </DialogDescription>
         </DialogHeader>
         {/* Remounted on open, so each email starts empty */}
@@ -31,6 +36,7 @@ export function ComposeEmailDialog({ open, onOpenChange, context, title = "Compo
             context={context}
             onSent={() => onOpenChange(false)}
             onCancel={() => onOpenChange(false)}
+            className="min-h-0 flex-1"
           />
         )}
       </DialogContent>

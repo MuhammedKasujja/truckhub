@@ -16,7 +16,9 @@ export function useDialogPortalContainer() {
   const [container, setContainer] = useState<HTMLElement | undefined>()
   const ref = (el: HTMLElement | null) =>
     setContainer(
-      el?.closest<HTMLElement>('[data-slot="dialog-content"], [data-slot="sheet-content"]') ?? undefined
+      el?.closest<HTMLElement>(
+        '[data-slot="dialog-content"], [data-slot="sheet-content"]'
+      ) ?? undefined
     )
   return { ref, container }
 }
@@ -31,7 +33,14 @@ type Props = {
 }
 
 /** One email address: free text, with known addresses offered as suggestions. */
-export function EmailInput({ id, value, onChange, suggestions = [], placeholder, invalid }: Props) {
+export function EmailInput({
+  id,
+  value,
+  onChange,
+  suggestions = [],
+  placeholder,
+  invalid,
+}: Props) {
   const { ref, container } = useDialogPortalContainer()
 
   return (

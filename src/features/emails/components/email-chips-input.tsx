@@ -21,6 +21,9 @@ type Props = {
   onChange: (emails: string[]) => void
   suggestions?: string[]
   error?: string
+  /** For a layout that shows the label beside the field */
+  hideLabel?: boolean
+  placeholder?: string
 }
 
 const isEmail = (v: string) => z.email().safeParse(v).success
@@ -29,7 +32,16 @@ const isEmail = (v: string) => z.email().safeParse(v).success
  * Several email addresses as chips. Pick a suggestion, or type an address and
  * press Enter / comma (or leave the field). Pasting a list splits it.
  */
-export function EmailChipsInput({ id, label, value, onChange, suggestions = [], error }: Props) {
+export function EmailChipsInput({
+  id,
+  label,
+  value,
+  onChange,
+  suggestions = [],
+  error,
+  hideLabel,
+  placeholder,
+}: Props) {
   const anchor = useComboboxAnchor()
   const [draft, setDraft] = useState("")
   const [invalid, setInvalid] = useState(false)
@@ -40,11 +52,16 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
   const items = useMemo(() => {
     const typed = draft.trim()
     const base = suggestions.filter((s) => !value.includes(s))
-    return isEmail(typed) && !base.includes(typed) && !value.includes(typed) ? [typed, ...base] : base
+    return isEmail(typed) && !base.includes(typed) && !value.includes(typed)
+      ? [typed, ...base]
+      : base
   }, [draft, suggestions, value])
 
   function commit(text = draft) {
-    const parts = text.split(/[\s,;]+/).map((p) => p.trim()).filter(Boolean)
+    const parts = text
+      .split(/[\s,;]+/)
+      .map((p) => p.trim())
+      .filter(Boolean)
     if (!parts.length) return
     const bad = parts.filter((p) => !isEmail(p))
     const good = parts.filter((p) => isEmail(p) && !value.includes(p))
@@ -56,11 +73,8 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
   const message = invalid ? "Not a valid email address" : error
 
   return (
-    <div
-      ref={portal.ref}
-      className="grid gap-1.5"
-    >
-      <Label htmlFor={id}>{label}</Label>
+    <div ref={portal.ref} className="grid gap-1.5">
+      {!hideLabel && <Label htmlFor={id}>{label}</Label>}
       <Combobox
         multiple
         autoHighlight
@@ -79,11 +93,15 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
         <ComboboxChips ref={anchor}>
           <ComboboxValue>
             {(selected: string[]) =>
-              selected.map((email) => <ComboboxChip key={email}>{email}</ComboboxChip>)
+              selected.map((email) => (
+                <ComboboxChip key={email}>{email}</ComboboxChip>
+              ))
             }
           </ComboboxValue>
           <ComboboxChipsInput
             id={id}
+            aria-label={hideLabel ? label : undefined}
+            placeholder={value.length ? undefined : placeholder}
             aria-invalid={!!message || undefined}
             onKeyDown={(e) => {
               if (e.key === ",") {
@@ -115,7 +133,7 @@ export function EmailChipsInput({ id, label, value, onChange, suggestions = [], 
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
-      {message && <p className="text-destructive text-xs">{message}</p>}
+      {message && <p className="text-xs text-destructive">{message}</p>}
     </div>
   )
 }
