@@ -41,8 +41,20 @@ function appOrigin() {
   }
   const configured = process.env.PUBLIC_APP_URL
   if (configured) return configured.replace(/\/+$/, "")
-  return getRequestUrl({ xForwardedHost: true }).origin
+  const requestUrl = getRequestUrl({ xForwardedHost: true })
+  // Dev (`pnpm dev` / `just dev`) opened on localhost: a phone can't reach
+  // that, but the dev server listens on all interfaces, so use the LAN IP
+  if (LOOPBACK_HOSTS.has(requestUrl.hostname)) {
+    const ip = lanIp()
+    if (ip) {
+      requestUrl.hostname = ip
+      return requestUrl.origin
+    }
+  }
+  return requestUrl.origin
 }
+
+const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"])
 
 const sessionIdSchema = z.object({ id: z.uuid() })
 
