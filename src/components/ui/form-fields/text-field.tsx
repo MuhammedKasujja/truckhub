@@ -19,6 +19,7 @@ export type TextFieldProps<F extends FieldValues> = {
   type?: InputType
   required?: boolean
   readOnly?: boolean
+  className?: string
 }
 
 export function TextField<T extends FieldValues>({
@@ -30,6 +31,7 @@ export function TextField<T extends FieldValues>({
   required = true,
   readOnly = false,
   description,
+  className
 }: Readonly<TextFieldProps<T>>) {
   return (
     <Controller
@@ -51,6 +53,7 @@ export function TextField<T extends FieldValues>({
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}
             autoComplete="off"
+            className={className}
           />
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

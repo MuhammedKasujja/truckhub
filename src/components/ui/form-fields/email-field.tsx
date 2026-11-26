@@ -9,6 +9,7 @@ export function EmailField<F extends FieldValues>({
   label,
   placeholder,
   required = true,
+  className
 }: Readonly<EmailFieldProps<F>>) {
   return (
     <TextField
@@ -18,6 +19,7 @@ export function EmailField<F extends FieldValues>({
       label={label}
       required={required}
       type={"email"}
+      className={className}
     />
   );
 }

@@ -18,6 +18,7 @@ type PasswordFieldProps<F extends FieldValues> = {
   description?: string
   required?: boolean
   showIcon?: boolean
+  className?: string
 }
 
 export function PasswordField<F extends FieldValues>({
@@ -28,6 +29,7 @@ export function PasswordField<F extends FieldValues>({
   required = true,
   description,
   showIcon = true,
+  className
 }: Readonly<PasswordFieldProps<F>>) {
   const [show, setShow] = React.useState(false)
   return (
@@ -40,7 +42,7 @@ export function PasswordField<F extends FieldValues>({
             {label}
             {required && <RequiredLabelIcon />}
           </FieldLabel>
-          <InputGroup>
+          <InputGroup className={className}>
             <InputGroupInput
               {...field}
               type={show ? 'text' : 'password'}

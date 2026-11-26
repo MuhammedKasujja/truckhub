@@ -51,12 +51,14 @@ export function LoginForm() {
           name="email"
           control={form.control}
           placeholder="user@mail.com"
+          className="h-10"
         />
         <PasswordField
           label={tr("common.form.password")}
           name="password"
           control={form.control}
           placeholder="••••••••"
+          className="h-10"
         />
         <SubmitButton
           className="w-full"
