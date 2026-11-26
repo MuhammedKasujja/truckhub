@@ -127,61 +127,183 @@ export function ChangeLicenceDialog({ driver, open, onOpenChange }: Props) {
         if (!isPending) onOpenChange(next)
       }}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-xl">
         <form
           onSubmit={(e) => {
             e.stopPropagation()
             void form.handleSubmit(onSubmit)(e)
           }}
-          className="space-y-5"
+          className="flex min-h-0 flex-1 flex-col"
         >
-          <DialogHeader>
+          <DialogHeader className="p-4 pr-12">
             <DialogTitle>Change licence</DialogTitle>
             <DialogDescription>
               The current licence ({license.license_number}, valid until{" "}
-              {formatDate(license.expiry_date)}) is kept in the history with
-              its copy.
+              {formatDate(license.expiry_date)}) is kept in the history with its
+              copy.
             </DialogDescription>
           </DialogHeader>
 
-          <Controller
-            control={control}
-            name="reason"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`${id}-reason`}>Reason</FieldLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger id={`${id}-reason`} className="w-full">
-                    <SelectValue placeholder="Choose a reason" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LICENSE_CHANGE_REASONS.map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {LICENSE_REASON_LABELS[r]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 pb-4">
             <Controller
               control={control}
-              name="licenseNumber"
+              name="reason"
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={`${id}-number`}>
-                    Licence number
+                  <FieldLabel htmlFor={`${id}-reason`}>Reason</FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger id={`${id}-reason`} className="w-full">
+                      <SelectValue placeholder="Choose a reason" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LICENSE_CHANGE_REASONS.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {LICENSE_REASON_LABELS[r]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Controller
+                control={control}
+                name="licenseNumber"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={`${id}-number`}>
+                      Licence number
+                    </FieldLabel>
+                    <Input
+                      id={`${id}-number`}
+                      {...field}
+                      className="font-mono uppercase"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                control={control}
+                name="expiryDate"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={`${id}-expiry`}>
+                      Expiry date
+                    </FieldLabel>
+                    <DatePicker
+                      id={`${id}-expiry`}
+                      format="P"
+                      value={toDate(field.value)}
+                      startDate={today}
+                      endDate={LATEST_EXPIRY}
+                      minDate={today}
+                      placeholder="Pick a date"
+                      aria-invalid={fieldState.invalid}
+                      onDateChanged={(d) => {
+                        field.onChange(toInput(d))
+                        field.onBlur()
+                      }}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+
+            <Controller
+              control={control}
+              name="licenseClasses"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <LicenceCategoryPicker
+                    value={field.value}
+                    onChange={(next) => {
+                      field.onChange(next)
+                      field.onBlur()
+                    }}
+                    needed={needed}
+                    labelledBy={`${id}-classes`}
+                    labelSlot={
+                      <FieldLabel id={`${id}-classes`}>
+                        Licence categories
+                      </FieldLabel>
+                    }
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            {gaps.length > 0 && (
+              <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+                <CircleAlert className="mt-0.5 size-4 shrink-0" />
+                <span>
+                  This licence doesn't cover{" "}
+                  {gaps.map((t) => labelFor("vehicleType", t)).join(", ")},
+                  which the driver is down for. You can still save it with a
+                  note, and the driver will be flagged.
+                </span>
+              </p>
+            )}
+
+            <Controller
+              control={control}
+              name="effectiveFrom"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={`${id}-effective`}>
+                    Effective from (optional)
                   </FieldLabel>
-                  <Input
-                    id={`${id}-number`}
+                  <DatePicker
+                    id={`${id}-effective`}
+                    format="P"
+                    value={toDate(field.value)}
+                    startDate={EARLIEST_DATE}
+                    endDate={today}
+                    placeholder={`Today (${formatDate(todayDateInput())})`}
+                    onDateChanged={(d) => field.onChange(toInput(d))}
+                  />
+                  <FieldDescription>
+                    When the new licence took effect. Leave empty for today.
+                  </FieldDescription>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="notes"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={`${id}-notes`}>
+                    Notes {gaps.length > 0 ? "(required)" : "(optional)"}
+                  </FieldLabel>
+                  <Textarea
+                    id={`${id}-notes`}
                     {...field}
-                    className="font-mono uppercase"
+                    value={field.value ?? ""}
+                    maxLength={LICENSE_NOTES_MAX}
+                    placeholder={
+                      gaps.length > 0
+                        ? "e.g. Truck category to be added after the test in March"
+                        : "e.g. Renewed after the old licence expired"
+                    }
                     aria-invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (
@@ -190,25 +312,23 @@ export function ChangeLicenceDialog({ driver, open, onOpenChange }: Props) {
                 </Field>
               )}
             />
+
             <Controller
               control={control}
-              name="expiryDate"
+              name="licenseCopy"
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={`${id}-expiry`}>Expiry date</FieldLabel>
-                  <DatePicker
-                    id={`${id}-expiry`}
-                    format="P"
-                    value={toDate(field.value)}
-                    startDate={today}
-                    endDate={LATEST_EXPIRY}
-                    minDate={today}
-                    placeholder="Pick a date"
-                    aria-invalid={fieldState.invalid}
-                    onDateChanged={(d) => {
-                      field.onChange(toInput(d))
-                      field.onBlur()
-                    }}
+                  <FieldLabel htmlFor={`${id}-copy`}>
+                    Photocopy of the new licence
+                  </FieldLabel>
+                  <DocumentFilePicker
+                    id={`${id}-copy`}
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    invalid={fieldState.invalid}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -218,123 +338,7 @@ export function ChangeLicenceDialog({ driver, open, onOpenChange }: Props) {
             />
           </div>
 
-          <Controller
-            control={control}
-            name="licenseClasses"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <LicenceCategoryPicker
-                  value={field.value}
-                  onChange={(next) => {
-                    field.onChange(next)
-                    field.onBlur()
-                  }}
-                  needed={needed}
-                  labelledBy={`${id}-classes`}
-                  labelSlot={
-                    <FieldLabel id={`${id}-classes`}>
-                      Licence categories
-                    </FieldLabel>
-                  }
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          {gaps.length > 0 && (
-            <p className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
-              <CircleAlert className="mt-0.5 size-4 shrink-0" />
-              <span>
-                This licence doesn't cover{" "}
-                {gaps.map((t) => labelFor("vehicleType", t)).join(", ")}, which
-                the driver is down for. You can still save it with a note, and
-                the driver will be flagged.
-              </span>
-            </p>
-          )}
-
-          <Controller
-            control={control}
-            name="effectiveFrom"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`${id}-effective`}>
-                  Effective from (optional)
-                </FieldLabel>
-                <DatePicker
-                  id={`${id}-effective`}
-                  format="P"
-                  value={toDate(field.value)}
-                  startDate={EARLIEST_DATE}
-                  endDate={today}
-                  placeholder={`Today (${formatDate(todayDateInput())})`}
-                  onDateChanged={(d) => field.onChange(toInput(d))}
-                />
-                <FieldDescription>
-                  When the new licence took effect. Leave empty for today.
-                </FieldDescription>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="notes"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`${id}-notes`}>
-                  Notes {gaps.length > 0 ? "(required)" : "(optional)"}
-                </FieldLabel>
-                <Textarea
-                  id={`${id}-notes`}
-                  {...field}
-                  value={field.value ?? ""}
-                  maxLength={LICENSE_NOTES_MAX}
-                  placeholder={
-                    gaps.length > 0
-                      ? "e.g. Truck category to be added after the test in March"
-                      : "e.g. Renewed after the old licence expired"
-                  }
-                  aria-invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="licenseCopy"
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`${id}-copy`}>
-                  Photocopy of the new licence
-                </FieldLabel>
-                <DocumentFilePicker
-                  id={`${id}-copy`}
-                  name={field.name}
-                  ref={field.ref}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  invalid={fieldState.invalid}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <DialogFooter>
+          <DialogFooter className="m-0">
             <DialogClose asChild>
               <Button type="button" variant="outline" disabled={isPending}>
                 Cancel
