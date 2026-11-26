@@ -1,10 +1,11 @@
 import * as apiClient from "@/lib/api-client"
-import { Driver, DriverRow } from "@/features/drivers/types"
+import { Driver, DriverRow, LicenseRead } from "@/features/drivers/types"
 import {
   RecordTestResult,
   DriverCreateSchemaType,
   DriverListSearchParams,
   DriverUpdateSchemaType,
+  LicenseChangeRequest,
 } from "@/features/drivers/schemas"
 import { EntityId, SearchQuery } from "@/schemas"
 import { toDriverApiFormData } from "../driver-form-data"
@@ -71,5 +72,14 @@ export async function recordDriverTest(input: RecordTestResult) {
       tested_on: input.testedOn ?? null,
       notes: input.notes ?? null,
     }
+  )
+}
+
+/** Replace the driver's current licence; the old one is kept as history. */
+export async function changeDriverLicense(input: LicenseChangeRequest) {
+  const { id: driverId, ...fields } = input
+  return await apiClient.postFn<LicenseRead>(
+    `${endpoint}/${driverId}/licenses`,
+    toDriverApiFormData(fields)
   )
 }

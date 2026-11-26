@@ -76,7 +76,7 @@ function RouteComponent() {
         <PageTitle>Edit driver</PageTitle>
         <PageDescription>
           {data.number ? `${data.number} · ` : ""}
-          Update the driver's details, licence and screening.
+          Update the driver's details and screening.
         </PageDescription>
       </PageHeader>
       <DriverRegistrationForm
@@ -85,12 +85,18 @@ function RouteComponent() {
         avatarSrc={data.photo_url}
         isSubmitting={isPending}
         onCancel={back}
+        driverId={driverId}
         onSubmit={({ payload }) => {
-          // Test results are recorded one at a time from the driver's page
+          // Test results are recorded one at a time from the driver's page,
+          // and the licence is changed there too, keeping its history
           const {
             drug_alcohol_test: _drugAlcohol,
             skills_test: _skills,
             practical_test: _practical,
+            license_number: _licenseNumber,
+            license_classes: _licenseClasses,
+            license_expiry: _licenseExpiry,
+            license_copy: _licenseCopy,
             ...fields
           } = payload
           mutate({ id: driverId, ...fields })

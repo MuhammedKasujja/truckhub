@@ -14,6 +14,7 @@ import type { DriverPolicy } from "./components/driver-policy"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 import { DEFAULT_DRIVER_POLICY } from "./components/driver-policy"
 import { getFiltersStateSchema, getSortingStateSchema } from "@/lib/parsers"
+import { LICENSE_CHANGE_REASONS } from "./enums"
 
 /* ------------------------------------------------------------------ */
 /* API                                                                 */
@@ -145,6 +146,75 @@ export type RecordTestResultInput = z.input<typeof recordTestResultSchema>
 export type RecordTestResult = z.output<typeof recordTestResultSchema>
 
 export type DriverUpdateSchemaType = z.infer<typeof DriverUpdateSchema>
+
+export const LICENSE_NOTES_MAX = 1000
+
+/**
+ * Replace a driver's current licence. The old one is kept as history.
+ * `needed` is the driver's vehicle types: a licence that leaves one of them
+ * uncovered is allowed, but only with a note saying why (as the API checks).
+ */
+export function buildLicenseChangeSchema(needed: readonly VehicleType[]) {
+  return z
+    .object({
+      licenseNumber: z
+        .string()
+        .trim()
+        .min(3, "Enter the licence number")
+        .max(50, "Licence number is too long"),
+      licenseClasses: z
+        .array(z.enum(VEHICLE_TYPES))
+        .min(1, "Select at least one licence category"),
+      expiryDate: z
+        .string()
+        .min(1, "Enter the expiry date")
+        .refine((v) => v > todayDateInput(), "Licence has expired"),
+      /** Empty means today. */
+      effectiveFrom: z.string().optional(),
+      reason: z.enum(LICENSE_CHANGE_REASONS, {
+        message: "Choose why the licence is changing",
+      }),
+      notes: z
+        .string()
+        .trim()
+        .max(
+          LICENSE_NOTES_MAX,
+          `Keep notes under ${LICENSE_NOTES_MAX} characters`
+        )
+        .optional(),
+      licenseCopy: licenseCopyFile,
+    })
+    .superRefine((data, ctx) => {
+      const gaps = uncoveredVehicleTypes(needed, data.licenseClasses)
+      if (gaps.length > 0 && !data.notes) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["notes"],
+          message: `Explain why the licence doesn't cover ${gaps
+            .map((t) => labelFor("vehicleType", t))
+            .join(", ")}`,
+        })
+      }
+    })
+}
+
+export type LicenseChangeFormValues = z.input<
+  ReturnType<typeof buildLicenseChangeSchema>
+>
+
+/** Body for POST /drivers/{id}/licenses, files included. */
+export const LicenseChangeRequestSchema = z.object({
+  id: IDSchema,
+  license_number: z.string().trim().min(3).max(50),
+  license_classes: z.array(z.enum(VEHICLE_TYPES)).min(1),
+  expiry_date: z.string().min(1),
+  effective_from: z.string().optional(),
+  reason: z.enum(LICENSE_CHANGE_REASONS),
+  notes: z.string().max(LICENSE_NOTES_MAX).optional(),
+  license_copy: licenseCopyFile,
+})
+
+export type LicenseChangeRequest = z.infer<typeof LicenseChangeRequestSchema>
 
 export const DriverSearchParamsCache = z.object({
   sort: getSortingStateSchema<DriverRow>().default([
@@ -306,10 +376,15 @@ export function buildDriverSchema(
       licenseClasses: z
         .array(z.enum(VEHICLE_TYPES))
         .min(1, "Select at least one licence category"),
-      licenseExpiry: z
-        .string()
-        .min(1, "Enter the licence expiry date")
-        .refine((v) => new Date(v) > new Date(), "Licence has expired"),
+      // When editing, the licence is read-only (it is changed from the
+      // driver's page), so an expired one must not block saving the rest.
+      licenseExpiry:
+        mode === "edit"
+          ? z.string()
+          : z
+              .string()
+              .min(1, "Enter the licence expiry date")
+              .refine((v) => new Date(v) > new Date(), "Licence has expired"),
       licenseCopy:
         mode === "edit" ? licenseCopyFile.optional() : licenseCopyFile,
 
@@ -343,6 +418,9 @@ export function buildDriverSchema(
         })
 
         // The licence must cover every vehicle type the driver can drive.
+        // Not when editing: the licence is read-only there, and a licence
+        // changed with a note may already leave a gap.
+        if (mode === "edit") return
         const missing = uncoveredVehicleTypes(
           data.vehicleTypes.map((v) => v.vehicleType),
           data.licenseClasses

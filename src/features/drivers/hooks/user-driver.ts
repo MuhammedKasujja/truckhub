@@ -2,6 +2,7 @@ import { toast } from "sonner"
 import { EntityId } from "@/schemas"
 import { driverProfileQueryOptions } from "../queries"
 import {
+  changeDriverLicenseFn,
   createDriverFn,
   recordDriverTestFn,
   updateDriverFn,
@@ -11,6 +12,7 @@ import { useQueryInvalidator } from "@/hooks/use-query-invalidator"
 import {
   DriverCreateSchemaType,
   DriverUpdateSchemaType,
+  LicenseChangeRequest,
   RecordTestResultInput,
 } from "../schemas"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
@@ -83,4 +85,21 @@ export function useRecordDriverTest() {
   const { isPending, execute } = useRecordDriverTestBase()
   const recordTest = (data: RecordTestResultInput) => execute({ data })
   return { isPending, recordTest }
+}
+
+/** Replace a driver's current licence. The old one moves to the history. */
+export function useChangeDriverLicense() {
+  const invalidator = useQueryInvalidator()
+  return useMutation({
+    mutationFn: (input: LicenseChangeRequest) =>
+      changeDriverLicenseFn({ data: toDriverRequestFormData(input) }),
+    onSuccess: (result, input) => {
+      toast.success(result.message ?? "Licence changed")
+      invalidator.drivers.details(input.id).invalidate()
+      invalidator.drivers.list.invalidate()
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
 }

@@ -17,6 +17,7 @@ import {
   IdCard,
   Link2Off,
   PencilIcon,
+  RefreshCw,
   ShieldCheck,
   UserRound,
 } from "lucide-react"
@@ -27,13 +28,17 @@ import {
   driverHealthAnswers,
   driverTest,
 } from "../driver-record"
-import { VEHICLE_ICONS } from "./driver-registration-form"
+import { VEHICLE_ICONS } from "./licence-fields"
 import { VEHICLE_TYPES, labelFor } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
 import { RecordTestDialog } from "./record-test-dialog"
+import {
+  ChangeLicenceDialog,
+  LICENSE_REASON_LABELS,
+} from "./change-licence-dialog"
 import type { TestStatus, VehicleType } from "./driver-options"
 import type { DriverPolicy } from "./driver-policy"
-import type { Driver } from "../types"
+import type { Driver, LicenseRead } from "../types"
 import type { TestType } from "../enums"
 import { DocumentsPanel } from "@/features/documents/components/documents-panel"
 import type { Vehicle } from "@/features/vehicles/types"
@@ -87,6 +92,7 @@ export function DriverDetails({
   }))
   const results = tests.map((t) => t.status)
   const [recordingType, setRecordingType] = React.useState<TestType>()
+  const [changingLicence, setChangingLicence] = React.useState(false)
   const recording = tests.find((t) => t.type === recordingType)
   const passed = results.filter((t) => t === "passed").length
   const status = selectionStatus(results)
@@ -316,7 +322,29 @@ export function DriverDetails({
                   />
                 ))}
               </div>
+              {license.notes && (
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Note:</span>{" "}
+                  {license.notes}
+                </p>
+              )}
+              <LicenceHistory licenses={driver.license_history} />
+              <Can permission="drivers:licenses:change">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setChangingLicence(true)}
+                >
+                  <RefreshCw />
+                  Change licence
+                </Button>
+              </Can>
             </div>
+            <ChangeLicenceDialog
+              driver={driver}
+              open={changingLicence}
+              onOpenChange={setChangingLicence}
+            />
           </Section>
 
           {/* Health */}
@@ -678,6 +706,41 @@ function StatTile({
         </p>
       </div>
     </div>
+  )
+}
+
+/** Earlier licences, newest first. Collapsed so the card stays short. */
+function LicenceHistory({ licenses }: { licenses: LicenseRead[] }) {
+  if (licenses.length === 0) return null
+  return (
+    <details className="group rounded-lg border">
+      <summary className="cursor-pointer list-none px-3 py-2 text-xs font-medium text-muted-foreground select-none hover:text-foreground">
+        Earlier licences ({licenses.length})
+      </summary>
+      <ul className="divide-y border-t">
+        {licenses.map((l) => (
+          <li key={l.id} className="space-y-0.5 px-3 py-2 text-xs">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <span className="font-mono text-sm">{l.license_number}</span>
+              <span className="text-muted-foreground">
+                {formatDate(l.effective_from)} –{" "}
+                {l.ended_on ? formatDate(l.ended_on) : "now"}
+              </span>
+            </div>
+            <p className="text-muted-foreground">
+              {[
+                LICENSE_REASON_LABELS[l.change_reason],
+                l.license_classes
+                  .map((t) => labelFor("vehicleType", t))
+                  .join(", "),
+                `expired ${formatDate(l.expiry_date)}`,
+              ].join(" · ")}
+            </p>
+            {l.notes && <p>{l.notes}</p>}
+          </li>
+        ))}
+      </ul>
+    </details>
   )
 }
 

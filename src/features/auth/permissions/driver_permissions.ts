@@ -7,6 +7,8 @@ export const DriverModulePermissions = {
   "drivers:delete": ["drivers:delete"],
   "drivers:edit": ["drivers:update", "drivers:view"],
   "drivers:tests:record": ["drivers:tests:record"],
+  // Replace the current licence; the old one is kept as history
+  "drivers:licenses:change": ["drivers:licenses:change"],
   // A driver's documents
   "drivers:documents:view": ["drivers:documents:read"],
   "drivers:documents:upload": ["drivers:documents:upload"],

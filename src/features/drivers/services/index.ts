@@ -3,6 +3,7 @@ import {
   DriverCreateSchema,
   DriverSearchParamsCache,
   recordTestResultSchema,
+  LicenseChangeRequestSchema,
 } from "@/features/drivers/schemas"
 import { createServerFn } from "@tanstack/react-start"
 import { EntityIdSchema, SearchQuerySchema } from "@/schemas"
@@ -15,6 +16,7 @@ import {
   getDriversByQuery,
   getDriverDetailsById,
   recordDriverTest,
+  changeDriverLicense,
 } from "./server"
 import { ApiError } from "@/types"
 import { driverRequestInput } from "../driver-form-data"
@@ -76,4 +78,10 @@ export const recordDriverTestFn = createServerFn({ method: "POST" })
   .validator(recordTestResultSchema)
   .handler(async ({ data }) => {
     return apiResponseTransform(recordDriverTest(data))
+  })
+
+export const changeDriverLicenseFn = createServerFn({ method: "POST" })
+  .validator(driverRequestInput(LicenseChangeRequestSchema))
+  .handler(async ({ data }) => {
+    return apiResponseTransform(changeDriverLicense(data))
   })

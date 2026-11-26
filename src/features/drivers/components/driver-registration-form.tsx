@@ -1,17 +1,14 @@
 import * as React from "react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Link } from "@tanstack/react-router"
 import {
-  Bike,
-  Bus,
-  BusFront,
   Car,
   Check,
   Cigarette,
   CircleAlert,
   CircleCheck,
   FileCheck2,
-  FileText,
   FlaskConical,
   GraduationCap,
   HeartPulse,
@@ -19,10 +16,7 @@ import {
   Loader2,
   Pill,
   Plus,
-  Truck,
-  Upload,
   UserRound,
-  Van,
   X,
 } from "lucide-react"
 import {
@@ -33,6 +27,11 @@ import {
   toOptions,
 } from "./driver-options"
 import { DEFAULT_DRIVER_POLICY } from "./driver-policy"
+import {
+  DocumentFilePicker,
+  LicenceCategoryPicker,
+  VEHICLE_ICONS,
+} from "./licence-fields"
 import {
   HEALTH_QUESTIONS,
   ageOn,
@@ -67,11 +66,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { formatDate } from "@/lib/format"
 import { cn } from "@/lib/utils"
-import {
-  PhoneCaptureButton,
-  usePhoneCaptureAction,
-} from "@/features/phone-capture"
+import { usePhoneCaptureAction } from "@/features/phone-capture"
 import { SUPPORTED_IMAGE_EXTENSIONS } from "@/config/constants"
 
 /* ------------------------------------------------------------------ */
@@ -443,73 +440,22 @@ function FileField({
     <Controller
       control={control}
       name={name}
-      render={({ field, fieldState }) => {
-        const file = field.value as File | undefined
-        return (
-          <Field data-invalid={fieldState.invalid} className={className}>
-            <FieldLabel htmlFor={name}>{label}</FieldLabel>
-            {file ? (
-              <div className="flex items-center gap-3 rounded-lg border bg-card p-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                  <FileText className="size-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{file.name}</p>
-                  <p className="text-xs text-muted-foreground tabular-nums">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label="Remove file"
-                  onClick={() => field.onChange(undefined)}
-                >
-                  <X />
-                </Button>
-              </div>
-            ) : (
-              <label
-                htmlFor={name}
-                className={cn(
-                  "flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed px-4 py-5 text-center transition-colors hover:border-primary/40 hover:bg-primary/5",
-                  fieldState.invalid && "border-destructive/60"
-                )}
-              >
-                <Upload className="size-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Click to upload</span>
-                <span className="text-xs text-muted-foreground">
-                  JPG, PNG or PDF · up to 5MB
-                </span>
-              </label>
-            )}
-            <input
-              id={name}
-              type="file"
-              accept=".jpg,.jpeg,.png,.pdf"
-              className="sr-only"
-              name={field.name}
-              ref={field.ref}
-              onBlur={field.onBlur}
-              onChange={(e) => {
-                field.onChange(e.target.files?.[0])
-                e.target.value = ""
-              }}
-              aria-invalid={fieldState.invalid}
-            />
-            {!file && (
-              <PhoneCaptureButton
-                accept=".jpg,.jpeg,.png,.pdf"
-                onFile={(picked) => field.onChange(picked)}
-                className="self-start"
-              />
-            )}
-            {description && <FieldDescription>{description}</FieldDescription>}
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )
-      }}
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid} className={className}>
+          <FieldLabel htmlFor={name}>{label}</FieldLabel>
+          <DocumentFilePicker
+            id={name}
+            name={field.name}
+            ref={field.ref}
+            value={field.value as File | undefined}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            invalid={fieldState.invalid}
+          />
+          {description && <FieldDescription>{description}</FieldDescription>}
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
     />
   )
 }
@@ -714,15 +660,6 @@ function HealthQuestion({
   )
 }
 
-export const VEHICLE_ICONS: Record<VehicleType, IconType> = {
-  // motorcycle: Bike,
-  car: Car,
-  pickup_van: Van,
-  minibus: BusFront,
-  truck: Truck,
-  // bus: Bus,
-}
-
 const emptyVehicle = {
   vehicleType: undefined,
   yearsExperience: undefined,
@@ -863,6 +800,48 @@ function VehiclesField({
   )
 }
 
+/** The current licence, shown read-only while editing a driver. */
+function ReadOnlyLicence({
+  number,
+  expiry,
+  categories,
+  driverId,
+}: {
+  number: string
+  expiry: string
+  categories: VehicleType[]
+  driverId?: string
+}) {
+  return (
+    <div className="space-y-3">
+      <dl className="grid gap-3 text-sm sm:grid-cols-3">
+        <div>
+          <dt className="text-xs text-muted-foreground">Licence number</dt>
+          <dd className="font-mono font-medium">{number || "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-xs text-muted-foreground">Expires</dt>
+          <dd className="font-medium">{expiry ? formatDate(expiry) : "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-xs text-muted-foreground">Categories</dt>
+          <dd className="font-medium">
+            {categories.map((t) => labelFor("vehicleType", t)).join(", ") ||
+              "—"}
+          </dd>
+        </div>
+      </dl>
+      {driverId && (
+        <Button asChild size="sm" variant="outline">
+          <Link to="/drivers/$driverId/view" params={{ driverId }}>
+            Change licence on the driver's page
+          </Link>
+        </Button>
+      )}
+    </div>
+  )
+}
+
 /**
  * The categories the licence covers. Categories needed for the driver's
  * vehicle types are marked, and any that are missing are flagged.
@@ -878,106 +857,29 @@ function LicenceCategoriesField({
     <Controller
       control={control}
       name="licenseClasses"
-      render={({ field, fieldState }) => {
-        const selected: VehicleType[] = field.value
-        const missing = uncoveredVehicleTypes(needed, selected)
-        const toggle = (type: VehicleType) => {
-          field.onChange(
-            selected.includes(type)
-              ? selected.filter((t) => t !== type)
-              : [...selected, type]
-          )
-          field.onBlur()
-        }
-        return (
-          <Field data-invalid={fieldState.invalid}>
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
+      render={({ field, fieldState }) => (
+        <Field data-invalid={fieldState.invalid}>
+          <LicenceCategoryPicker
+            value={field.value}
+            onChange={(next) => {
+              field.onChange(next)
+              field.onBlur()
+            }}
+            needed={needed}
+            labelledBy="licenseClasses-label"
+            labelSlot={
               <FieldLabel id="licenseClasses-label">
                 Licence categories
               </FieldLabel>
-              {missing.length > 0 && (
-                <button
-                  type="button"
-                  className="text-xs font-medium text-primary hover:underline"
-                  onClick={() => {
-                    field.onChange([...new Set([...selected, ...missing])])
-                    field.onBlur()
-                  }}
-                >
-                  Add{" "}
-                  {missing.map((t) => labelFor("vehicleType", t)).join(", ")}
-                </button>
-              )}
-            </div>
-            <div
-              role="group"
-              aria-labelledby="licenseClasses-label"
-              className="grid grid-cols-2 gap-2 sm:grid-cols-3"
-            >
-              {VEHICLE_TYPES.map((type) => {
-                const Icon = VEHICLE_ICONS[type]
-                const isSelected = selected.includes(type)
-                const isNeeded = needed.includes(type)
-                return (
-                  <button
-                    key={type}
-                    type="button"
-                    role="checkbox"
-                    aria-checked={isSelected}
-                    onClick={() => toggle(type)}
-                    className={cn(
-                      "flex items-center gap-2.5 rounded-lg border bg-card px-3 py-2.5 text-left text-sm transition-colors outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring/50",
-                      isSelected &&
-                        "border-primary bg-primary/5 hover:bg-primary/5",
-                      isNeeded &&
-                        !isSelected &&
-                        "border-dashed border-destructive/50"
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        "flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-input",
-                        isSelected &&
-                          "border-primary bg-primary text-primary-foreground"
-                      )}
-                    >
-                      {isSelected && <Check className="size-3" />}
-                    </span>
-                    <Icon
-                      className={cn(
-                        "size-4 shrink-0 text-muted-foreground",
-                        isSelected && "text-primary"
-                      )}
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-medium">
-                        {labelFor("vehicleType", type)}
-                      </span>
-                      {isNeeded && (
-                        <span
-                          className={cn(
-                            "block text-[11px]",
-                            isSelected
-                              ? "text-muted-foreground"
-                              : "text-destructive"
-                          )}
-                        >
-                          {isSelected ? "Drives this" : "Needed"}
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-            <FieldDescription>
-              Select every category the licence covers. It must cover each
-              vehicle type the driver can be assigned.
-            </FieldDescription>
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )
-      }}
+            }
+          />
+          <FieldDescription>
+            Select every category the licence covers. It must cover each
+            vehicle type the driver can be assigned.
+          </FieldDescription>
+          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+        </Field>
+      )}
     />
   )
 }
@@ -1387,6 +1289,11 @@ type DriverRegistrationFormProps = {
   onCancel?: () => void
   /** For mutations that don't return a promise (e.g. `mutate`). */
   isSubmitting?: boolean
+  /**
+   * When editing: the driver's id. The licence is read-only in edit mode and
+   * links to the driver's page, where it is changed with its history kept.
+   */
+  driverId?: string
 }
 
 export function DriverRegistrationForm({
@@ -1399,6 +1306,7 @@ export function DriverRegistrationForm({
   onSubmit,
   onCancel,
   isSubmitting: isSubmittingProp = false,
+  driverId,
 }: DriverRegistrationFormProps) {
   const isEdit = mode === "edit"
   const { minAge, maxAge, minExperienceYears } = policy
@@ -1665,7 +1573,11 @@ export function DriverRegistrationForm({
 
           <FormSection
             id="licence"
-            description="One licence can cover several categories. It must cover every vehicle type the driver can be assigned."
+            description={
+              isEdit
+                ? "The current licence. Change it from the driver's page so the old one is kept as history."
+                : "One licence can cover several categories. It must cover every vehicle type the driver can be assigned."
+            }
             aside={
               neededCategories.length > 0 &&
               licenseCategories.length > 0 && (
@@ -1689,39 +1601,46 @@ export function DriverRegistrationForm({
               )
             }
           >
-            <div className="mb-3 grid gap-4 sm:grid-cols-2">
-              <TextField
-                control={control}
-                name="licenseNumber"
-                label="Licence number"
-                className="[&_input]:font-mono [&_input]:uppercase"
+            {isEdit ? (
+              <ReadOnlyLicence
+                number={String(values.licenseNumber ?? "")}
+                expiry={String(values.licenseExpiry ?? "")}
+                categories={licenseCategories}
+                driverId={driverId}
               />
-              <DatePickerField
-                startDate={new Date(2000, 0)}
-                endDate={new Date(2030, 11)}
-                control={control}
-                name="licenseExpiry"
-                label="Expiry date"
-                required={false}
-                format="dd/MM/yyyy"
-              />
-              <div className="sm:col-span-2">
-                <LicenceCategoriesField
+            ) : (
+              <>
+                <div className="mb-3 grid gap-4 sm:grid-cols-2">
+                  <TextField
+                    control={control}
+                    name="licenseNumber"
+                    label="Licence number"
+                    className="[&_input]:font-mono [&_input]:uppercase"
+                  />
+                  <DatePickerField
+                    startDate={new Date(2000, 0)}
+                    endDate={new Date(2030, 11)}
+                    control={control}
+                    name="licenseExpiry"
+                    label="Expiry date"
+                    required={false}
+                    format="dd/MM/yyyy"
+                  />
+                  <div className="sm:col-span-2">
+                    <LicenceCategoriesField
+                      control={control}
+                      needed={neededCategories}
+                    />
+                  </div>
+                </div>
+                <FileField
                   control={control}
-                  needed={neededCategories}
+                  name="licenseCopy"
+                  label="Licence photocopy"
+                  description="Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
                 />
-              </div>
-            </div>
-            <FileField
-              control={control}
-              name="licenseCopy"
-              label="Licence photocopy"
-              description={
-                isEdit
-                  ? "Upload only to replace the copy on file."
-                  : "Kept in the driver's portfolio. JPG, PNG or PDF, up to 5MB."
-              }
-            />
+              </>
+            )}
           </FormSection>
 
           <FormSection

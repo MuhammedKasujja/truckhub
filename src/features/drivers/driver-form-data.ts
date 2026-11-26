@@ -1,8 +1,10 @@
 import type { ZodType } from "zod"
-import type { DriverCreateSchemaType } from "./schemas"
+import type { DriverCreateSchemaType, LicenseChangeRequest } from "./schemas"
 
 /** A driver request: all or part of the body, files included. */
-type DriverRequest = Partial<DriverCreateSchemaType> & { id?: string }
+type DriverRequest =
+  | (Partial<DriverCreateSchemaType> & { id?: string })
+  | LicenseChangeRequest
 
 const FIELDS_PART = "fields"
 
