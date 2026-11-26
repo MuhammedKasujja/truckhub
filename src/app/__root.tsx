@@ -13,8 +13,6 @@ import { NotFound } from "@/components/not-found"
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary"
 import { getTranslationsData } from "@/i18n/request"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import { useEffect } from "react"
-import { useHistoryStore } from "@/store/use-navigation-history-store"
 import "@/lib/decimal-config"; // side-effect import, runs Decimal.set() early
 
 
@@ -59,10 +57,6 @@ export const Route = createRootRouteWithContext<{
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { i18n } = Route.useLoaderData()
-
-  useEffect(() => {
-    useHistoryStore.persist.rehydrate()
-  }, [])
 
   return (
     <html lang={i18n.locale} suppressHydrationWarning>

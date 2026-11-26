@@ -5,7 +5,7 @@ import { ClientForm } from "@/features/clients/components"
 import { useCreateClient } from "@/features/clients/hooks/use-client"
 import { useNavigationHistory } from "@/hooks/use-navigation-history"
 import { requirePermission } from "@/lib/auth"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/_admin/clients/new/")({
   component: RouteComponent,
@@ -14,14 +14,16 @@ export const Route = createFileRoute("/_admin/clients/new/")({
 })
 
 function RouteComponent() {
-  const { goBack } = useNavigationHistory()
+  const { goBack, canGoBack } = useNavigationHistory()
+  const navigate = useNavigate()
+  const cancel = () => (canGoBack ? goBack() : navigate({ to: "/clients" }))
   const { createClient, prefill } = useCreateClient()
   return (
     <>
       <PageHeader>
         <PageTitle>New Client</PageTitle>
         <PageAction className="flex gap-2">
-          <Button variant={"outline"} onClick={goBack}>
+          <Button variant={"outline"} onClick={cancel}>
             Cancel
           </Button>
         </PageAction>

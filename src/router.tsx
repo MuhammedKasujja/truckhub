@@ -9,6 +9,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { routeTree } from "./routeTree.gen"
 import { ApiError } from "./types"
 import { onNavigationResolved } from "./lib/navigation-listeners"
+import { trackHistoryPosition } from "./lib/history-position"
 import { logoutFn } from "./features/auth/services"
 // import qs from "query-string"
 
@@ -98,6 +99,7 @@ export function getRouter() {
   })
 
   if (typeof window !== "undefined") {
+    trackHistoryPosition(router.history)
     router.subscribe("onResolved", ({ toLocation }) =>
       onNavigationResolved(toLocation)
     )

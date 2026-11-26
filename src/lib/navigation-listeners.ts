@@ -1,5 +1,4 @@
 import { useRecentPagesStore } from "@/store/use-recent-pages-store"
-import { useHistoryStore } from "@/store/use-navigation-history-store"
 
 export function onNavigationResolved(toLocation: {
   pathname: string
@@ -11,7 +10,6 @@ export function onNavigationResolved(toLocation: {
     timestamp: Date.now(),
   }
 
-  useHistoryStore.getState().push(entry)
   useRecentPagesStore.getState().addEntry(entry)
   // future: analytics.track('page_view', entry)
 }
