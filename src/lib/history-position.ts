@@ -33,8 +33,26 @@ function writeMaxIndex(value: number) {
   sessionStorage.setItem(MAX_INDEX_KEY, String(value))
 }
 
+/**
+ * Filter, sort and pagination changes only touch the search string. Turn those
+ * pushes into replaces so back/forward move between pages, not filter states.
+ * The entry keeps the latest search, so returning to a list restores its filters.
+ */
+function replaceSearchOnlyPushes(routerHistory: RouterHistory) {
+  const push = routerHistory.push.bind(routerHistory)
+  routerHistory.push = (path, state, navigateOpts) => {
+    const nextPathname = new URL(path, window.location.origin).pathname
+    if (nextPathname === routerHistory.location.pathname) {
+      routerHistory.replace(path, state, navigateOpts)
+    } else {
+      push(path, state, navigateOpts)
+    }
+  }
+}
+
 export function trackHistoryPosition(routerHistory: RouterHistory) {
   history = routerHistory
+  replaceSearchOnlyPushes(routerHistory)
   // Old custom stack, replaced by real browser history.
   localStorage.removeItem(LEGACY_STORAGE_KEY)
 
