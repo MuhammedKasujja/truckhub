@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { RequiredLabelIcon } from "@/components/required-label-icon"
+import { cn } from "cn"
 
 export type InputType = "text" | "number" | "email" | "url" | "phone"
 
@@ -53,7 +54,7 @@ export function TextField<T extends FieldValues>({
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}
             autoComplete="off"
-            className={className}
+            className={cn("h-8",className)}
           />
           {description && <FieldDescription>{description}</FieldDescription>}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

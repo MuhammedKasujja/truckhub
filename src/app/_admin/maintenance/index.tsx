@@ -84,7 +84,7 @@ function RouteComponent() {
       {isLoading ? (
         <MaintenanceBoardSkeleton columns={search.include_cancelled ? 4 : 3} />
       ) : error ? (
-        <Empty className="h-64 border border-dashed bg-card">
+        <Empty className="border bg-card py-14">
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <TriangleAlert />

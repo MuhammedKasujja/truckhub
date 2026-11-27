@@ -1,9 +1,9 @@
-import { RotateCcw } from "lucide-react"
+import { ArchiveIcon, RotateCcw } from "lucide-react"
 import { maintanenceTypes } from "../enums"
 import type { MaintenanceType } from "../enums"
 import type { MaintenanceSearchParamsInput } from "../schemas"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
+import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Select,
   SelectContent,
@@ -11,13 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import { VehiclePicker } from "@/features/vehicles/components"
 import { useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 
 const PER_COLUMN_OPTIONS = [10, 25, 50, 100]
 export const DEFAULT_PER_COLUMN = 50
+
+const ACTIVE_CLASS =
+  "bg-primary/10 font-medium text-primary hover:bg-primary/10 hover:text-primary"
 
 type MaintenanceFilterBarProps = {
   search: MaintenanceSearchParamsInput
@@ -38,7 +40,7 @@ export function MaintenanceFilterBar({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="w-full sm:w-60">
+      <div className="w-full sm:w-56">
         <VehiclePicker
           id="maintenance-vehicle"
           aria-label="Vehicle"
@@ -49,55 +51,44 @@ export function MaintenanceFilterBar({
         />
       </div>
 
-      <div
-        role="group"
-        aria-label="Maintenance type"
-        className="inline-flex gap-0.5 rounded-lg border bg-background p-0.5"
-      >
+      <ButtonGroup aria-label="Maintenance type">
         {[undefined, ...maintanenceTypes].map(
           (type: MaintenanceType | undefined) => {
             const active = (search.type ?? undefined) === type
             return (
-              <button
+              <Button
                 key={type ?? "all"}
-                type="button"
+                variant="outline"
                 aria-pressed={active}
                 onClick={() => onSearchChange({ type })}
-                className={cn(
-                  "flex h-7 items-center rounded-md px-2.5 text-sm text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                  active &&
-                    "bg-primary/10 font-medium text-primary hover:bg-primary/10 hover:text-primary"
-                )}
+                className={cn("text-muted-foreground", active && ACTIVE_CLASS)}
               >
                 {type ? tr(`maintenance.types.${type}`) : "All types"}
-              </button>
+              </Button>
             )
           }
         )}
-      </div>
+      </ButtonGroup>
 
-      <div className="flex h-8 items-center gap-2 rounded-lg border bg-background px-2.5">
-        <Switch
-          id="maintenance-include-cancelled"
-          size="sm"
-          checked={search.include_cancelled}
-          onCheckedChange={(include_cancelled) =>
-            onSearchChange({ include_cancelled })
-          }
-        />
-        <Label
-          htmlFor="maintenance-include-cancelled"
-          className="text-sm font-normal"
-        >
-          Show cancelled
-        </Label>
-      </div>
+      <Button
+        variant="outline"
+        aria-pressed={search.include_cancelled}
+        onClick={() =>
+          onSearchChange({ include_cancelled: !search.include_cancelled })
+        }
+        className={cn(
+          "text-muted-foreground",
+          search.include_cancelled && ACTIVE_CLASS
+        )}
+      >
+        <ArchiveIcon />
+        Show cancelled
+      </Button>
 
       <div className="ml-auto flex items-center gap-2">
         {isFiltered && (
           <Button
             variant="ghost"
-            size="sm"
             onClick={() =>
               onSearchChange({
                 per_column: DEFAULT_PER_COLUMN,
@@ -118,7 +109,6 @@ export function MaintenanceFilterBar({
           }
         >
           <SelectTrigger
-            size="sm"
             aria-label="Tasks per column"
             className="w-auto gap-1.5"
           >

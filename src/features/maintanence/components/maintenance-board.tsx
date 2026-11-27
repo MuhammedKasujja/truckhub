@@ -129,7 +129,7 @@ export function MaintenanceBoard({
               <KanbanColumn
                 key={status}
                 value={status}
-                className="flex min-h-80 flex-col rounded-xl border bg-muted/40 p-2"
+                className="flex min-h-80 flex-col rounded-lg border bg-muted/40 p-2"
               >
                 <div className="flex items-center gap-2 px-1.5 pt-1 pb-2.5">
                   <span
@@ -138,7 +138,7 @@ export function MaintenanceBoard({
                   <h2 className="text-sm font-semibold">
                     {tr(`maintenance.statuses.${status}`)}
                   </h2>
-                  <span className="ml-auto rounded-full bg-background px-2 py-0.5 text-xs font-medium text-muted-foreground tabular-nums">
+                  <span className="ml-auto rounded-md bg-background px-1.5 text-xs font-medium text-muted-foreground tabular-nums">
                     {tasks.length}
                   </span>
                 </div>
@@ -216,7 +216,7 @@ export function MaintenanceBoardSkeleton({
       )}
     >
       {Array.from({ length: columns }).map((_, i) => (
-        <div key={i} className="space-y-2 rounded-xl border bg-muted/40 p-2">
+        <div key={i} className="space-y-2 rounded-lg border bg-muted/40 p-2">
           <Skeleton className="m-1.5 h-4 w-28" />
           {Array.from({ length: 3 - (i % 2) }).map((__, j) => (
             <Skeleton key={j} className="h-32 rounded-lg" />
