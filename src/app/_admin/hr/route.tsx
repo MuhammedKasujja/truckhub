@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import {
+  BriefcaseBusiness,
   Building2,
   CalendarClock,
   IdCardIcon,
@@ -30,6 +31,12 @@ const TABS: (SettingsTab & { permission: UserPermission })[] = [
     to: "/hr/departments",
     permission: "hr:staff:view",
   },
+  {
+    label: "Positions",
+    icon: BriefcaseBusiness,
+    to: "/hr/positions",
+    permission: "hr:positions:manage",
+  },
   { label: "Leave", icon: CalendarClock, to: "/hr/leave", permission: "hr:leave:view" },
   { label: "Payroll", icon: Wallet, to: "/hr/payroll", permission: "hr:payroll:view" },
   { label: "Setup", icon: Settings2, to: "/hr/setup", permission: "hr:setup:view" },
@@ -44,7 +51,7 @@ function RouteComponent() {
           <SettingsPageHeader
             icon={IdCardIcon}
             title="HR"
-            description="Staff and departments, leave, and monthly payroll."
+            description="Staff, departments and positions, leave, and monthly payroll."
             bordered={false}
           />
         }

@@ -2,7 +2,11 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate, useSearch } from "@tanstack/react-router"
 import { useQuery } from "@tanstack/react-query"
 import { KeyRound, Plus, Users } from "lucide-react"
-import { departmentsQueryOptions, staffListQueryOptions } from "../query-options"
+import {
+  departmentsQueryOptions,
+  positionsQueryOptions,
+  staffListQueryOptions,
+} from "../query-options"
 import { STAFF_STATUS_OPTIONS } from "../labels"
 import {
   FilterSelect,
@@ -38,6 +42,8 @@ export function StaffList() {
   const navigate = useNavigate({ from: "/hr/staff/" })
   const { data, isLoading, error } = useQuery(staffListQueryOptions(search))
   const { data: departments = [] } = useQuery(departmentsQueryOptions())
+  // Needs positions:read; without it the filter just has no choices
+  const { data: positions = [] } = useQuery(positionsQueryOptions())
 
   const setSearch = (updates: Partial<StaffSearch>) =>
     navigate({
@@ -57,6 +63,7 @@ export function StaffList() {
     !!search.search ||
     !!search.status ||
     !!search.department_id ||
+    !!search.position_id ||
     search.has_system_access !== undefined
 
   return (
@@ -80,6 +87,13 @@ export function StaffList() {
               value={search.department_id}
               onChange={(department_id) => setSearch({ department_id })}
               options={departments.map((d) => ({ value: d.id, label: d.name }))}
+            />
+            <FilterSelect
+              label="Position"
+              allLabel="All positions"
+              value={search.position_id}
+              onChange={(position_id) => setSearch({ position_id })}
+              options={positions.map((p) => ({ value: p.id, label: p.name }))}
             />
             <FilterSelect
               label="System access"
@@ -137,6 +151,7 @@ export function StaffList() {
                     search: "",
                     status: undefined,
                     department_id: undefined,
+                    position_id: undefined,
                     has_system_access: undefined,
                   })
                 }}
@@ -160,7 +175,7 @@ export function StaffList() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Department</TableHead>
-                  <TableHead>Job title</TableHead>
+                  <TableHead>Position</TableHead>
                   <TableHead>Hired</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Login</TableHead>
@@ -182,7 +197,7 @@ export function StaffList() {
                       </p>
                     </TableCell>
                     <TableCell>{person.department?.name ?? "—"}</TableCell>
-                    <TableCell>{person.job_title ?? "—"}</TableCell>
+                    <TableCell>{person.position?.name ?? "—"}</TableCell>
                     <TableCell className="whitespace-nowrap">
                       {formatDate(person.hire_date)}
                     </TableCell>

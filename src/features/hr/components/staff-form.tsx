@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router"
+import { useEffect } from "react"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
@@ -9,7 +10,7 @@ import {
   IdCard,
   Link2,
 } from "lucide-react"
-import { departmentsQueryOptions } from "../query-options"
+import { departmentsQueryOptions, positionsQueryOptions } from "../query-options"
 import { StaffCreateSchema, StaffUpdateSchema } from "../schemas"
 import { createStaffFn, updateStaffFn } from "../services"
 import { useHrAction } from "../use-hr-action"
@@ -18,10 +19,11 @@ import {
   GENDER_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
 } from "../labels"
+import { POSITION_CODES } from "../types"
 import { EARLIEST_DATE, OptionalSelectField } from "./hr-ui"
 import type z from "zod"
 import type { StaffPrefill, StaffSource } from "../staff-source"
-import type { Staff } from "../types"
+import type { Position, Staff } from "../types"
 import { Button } from "@/components/ui/button"
 import {
   DatePickerField,
@@ -68,7 +70,7 @@ export function toFormValues(staff?: Staff, prefill?: StaffPrefill): FormValues 
     tin: staff.tin ?? "",
     nssf_number: staff.nssf_number ?? "",
     department_id: staff.department_id,
-    job_title: staff.job_title ?? "",
+    position_id: staff.position_id,
     employment_type: staff.employment_type,
     hire_date: staff.hire_date,
     payment_method: staff.payment_method,
@@ -92,12 +94,20 @@ export function StaffForm({ staff, source, prefill }: StaffFormProps) {
   const navigate = useNavigate()
   const isEdit = !!staff
   const { data: departments = [] } = useQuery(departmentsQueryOptions())
+  const { data: positions = [] } = useQuery(positionsQueryOptions())
 
   const form = useForm<FormValues>({
     resolver: zodResolver(isEdit ? StaffUpdateSchema : StaffCreateSchema),
     defaultValues: toFormValues(staff, prefill),
   })
   const paymentMethod = useWatch({ control: form.control, name: "payment_method" })
+
+  // A staff record made from a driver starts in the Driver position
+  useEffect(() => {
+    if (isEdit || source?.kind !== "driver" || form.getValues("position_id")) return
+    const driver = positions.find((p) => p.code === POSITION_CODES.driver)
+    if (driver) form.setValue("position_id", driver.id)
+  }, [positions])
 
   const goToStaff = (id: string) =>
     navigate({ to: "/hr/staff/$staffId/view", params: { staffId: id } })
@@ -245,11 +255,13 @@ export function StaffForm({ staff, source, prefill }: StaffFormProps) {
                 options={departments.map((d) => ({ value: d.id, label: d.name }))}
                 noneLabel="No department"
               />
-              <TextField
-                label="Job title"
-                name="job_title"
+              <OptionalSelectField
+                label="Position"
+                name="position_id"
                 control={form.control}
-                required={false}
+                options={positionOptions(positions, staff?.position_id)}
+                noneLabel="No position"
+                description="Mechanics can be assigned to maintenance tasks"
               />
               <SelectField
                 label="Employment type"
@@ -339,4 +351,11 @@ export function StaffForm({ staff, source, prefill }: StaffFormProps) {
       </div>
     </form>
   )
+}
+
+/** Active positions, plus the staff member's current one even if it was switched off. */
+function positionOptions(positions: Position[], currentId?: string | null) {
+  return positions
+    .filter((p) => p.is_active || p.id === currentId)
+    .map((p) => ({ value: p.id, label: p.is_active ? p.name : `${p.name} (inactive)` }))
 }

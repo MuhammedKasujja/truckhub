@@ -13,6 +13,7 @@ import {
   getPayrollRunFn,
   getPayrollRunsFn,
   getPayslipFn,
+  getPositionsFn,
   getPublicHolidaysFn,
   getStaffCompensationFn,
   getStaffFn,
@@ -33,6 +34,7 @@ import type {
 export const hrQueryKeys = {
   all: () => ["hr"] as const,
   departments: () => [...hrQueryKeys.all(), "departments"] as const,
+  positions: () => [...hrQueryKeys.all(), "positions"] as const,
   staff: () => [...hrQueryKeys.all(), "staff"] as const,
   staffList: (search: StaffSearch) =>
     [...hrQueryKeys.staff(), "list", search] as const,
@@ -61,6 +63,21 @@ export const departmentsQueryOptions = () =>
     queryKey: hrQueryKeys.departments(),
     queryFn: () => getDepartmentsFn(),
   })
+
+export const positionsQueryOptions = () =>
+  queryOptions({
+    queryKey: hrQueryKeys.positions(),
+    queryFn: () => getPositionsFn(),
+  })
+
+/** Active staff in the Mechanic position, for assigning them to maintenance. */
+export const MECHANICS_SEARCH: StaffSearch = {
+  page: 1,
+  perPage: 100,
+  search: "",
+  status: "active",
+  position_code: "mechanic",
+}
 
 export const staffListQueryOptions = (search: StaffSearch) =>
   queryOptions({

@@ -3,6 +3,8 @@ import type {
   MaintenanceCreateInput,
   MaintenanceSearchParamsInput,
   MaintenanceUpdateInput,
+  MechanicAssignInput,
+  MechanicRefInput,
   MoveRecordInput,
   RecordBreakdownInput,
 } from "../schemas"
@@ -64,6 +66,31 @@ export async function startMaintenance(maintanenceId: EntityId) {
 export async function finishMaintenanceRecord(maintanenceId: EntityId) {
   return await apiClient.postFn<MaintenanceRecord>(
     `${endpoint}/${maintanenceId}/complete`,
+    {}
+  )
+}
+
+export async function assignMechanic({
+  maintenanceId,
+  staffId,
+  isLead,
+  notes,
+}: MechanicAssignInput) {
+  return await apiClient.postFn<MaintenanceRecord>(
+    `${endpoint}/${maintenanceId}/mechanics`,
+    { staff_id: staffId, is_lead: isLead ?? false, notes: notes || null }
+  )
+}
+
+export async function unassignMechanic({ maintenanceId, staffId }: MechanicRefInput) {
+  return await apiClient.deleteFn<MaintenanceRecord>(
+    `${endpoint}/${maintenanceId}/mechanics/${staffId}`
+  )
+}
+
+export async function setLeadMechanic({ maintenanceId, staffId }: MechanicRefInput) {
+  return await apiClient.postFn<MaintenanceRecord>(
+    `${endpoint}/${maintenanceId}/mechanics/${staffId}/lead`,
     {}
   )
 }

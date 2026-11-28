@@ -64,6 +64,7 @@ import { Route as AdminHrDepartmentsIndexRouteImport } from './app/_admin/hr/dep
 import { Route as AdminHrLeaveIndexRouteImport } from './app/_admin/hr/leave/index'
 import { Route as AdminHrPayrollIndexRouteImport } from './app/_admin/hr/payroll/index'
 import { Route as AdminHrPayrollRunIdRouteImport } from './app/_admin/hr/payroll/$runId'
+import { Route as AdminHrPositionsIndexRouteImport } from './app/_admin/hr/positions/index'
 import { Route as AdminHrSetupIndexRouteImport } from './app/_admin/hr/setup/index'
 import { Route as AdminHrStaffIndexRouteImport } from './app/_admin/hr/staff/index'
 import { Route as AdminHrStaffNewRouteImport } from './app/_admin/hr/staff/new'
@@ -405,6 +406,11 @@ const AdminHrPayrollIndexRoute = AdminHrPayrollIndexRouteImport.update({
 const AdminHrPayrollRunIdRoute = AdminHrPayrollRunIdRouteImport.update({
   id: '/payroll/$runId',
   path: '/payroll/$runId',
+  getParentRoute: () => AdminHrRouteRoute,
+} as any)
+const AdminHrPositionsIndexRoute = AdminHrPositionsIndexRouteImport.update({
+  id: '/positions/',
+  path: '/positions/',
   getParentRoute: () => AdminHrRouteRoute,
 } as any)
 const AdminHrSetupIndexRoute = AdminHrSetupIndexRouteImport.update({
@@ -804,6 +810,7 @@ export interface FileRoutesByFullPath {
   '/hr/departments/': typeof AdminHrDepartmentsIndexRoute
   '/hr/leave/': typeof AdminHrLeaveIndexRoute
   '/hr/payroll/': typeof AdminHrPayrollIndexRoute
+  '/hr/positions/': typeof AdminHrPositionsIndexRoute
   '/hr/setup/': typeof AdminHrSetupIndexRoute
   '/hr/staff/': typeof AdminHrStaffIndexRoute
   '/quotations/new/': typeof AdminQuotationsNewIndexRoute
@@ -916,6 +923,7 @@ export interface FileRoutesByTo {
   '/hr/departments': typeof AdminHrDepartmentsIndexRoute
   '/hr/leave': typeof AdminHrLeaveIndexRoute
   '/hr/payroll': typeof AdminHrPayrollIndexRoute
+  '/hr/positions': typeof AdminHrPositionsIndexRoute
   '/hr/setup': typeof AdminHrSetupIndexRoute
   '/hr/staff': typeof AdminHrStaffIndexRoute
   '/quotations/new': typeof AdminQuotationsNewIndexRoute
@@ -1030,6 +1038,7 @@ export interface FileRoutesById {
   '/_admin/hr/departments/': typeof AdminHrDepartmentsIndexRoute
   '/_admin/hr/leave/': typeof AdminHrLeaveIndexRoute
   '/_admin/hr/payroll/': typeof AdminHrPayrollIndexRoute
+  '/_admin/hr/positions/': typeof AdminHrPositionsIndexRoute
   '/_admin/hr/setup/': typeof AdminHrSetupIndexRoute
   '/_admin/hr/staff/': typeof AdminHrStaffIndexRoute
   '/_admin/quotations/new/': typeof AdminQuotationsNewIndexRoute
@@ -1144,6 +1153,7 @@ export interface FileRouteTypes {
     | '/hr/departments/'
     | '/hr/leave/'
     | '/hr/payroll/'
+    | '/hr/positions/'
     | '/hr/setup/'
     | '/hr/staff/'
     | '/quotations/new/'
@@ -1256,6 +1266,7 @@ export interface FileRouteTypes {
     | '/hr/departments'
     | '/hr/leave'
     | '/hr/payroll'
+    | '/hr/positions'
     | '/hr/setup'
     | '/hr/staff'
     | '/quotations/new'
@@ -1369,6 +1380,7 @@ export interface FileRouteTypes {
     | '/_admin/hr/departments/'
     | '/_admin/hr/leave/'
     | '/_admin/hr/payroll/'
+    | '/_admin/hr/positions/'
     | '/_admin/hr/setup/'
     | '/_admin/hr/staff/'
     | '/_admin/quotations/new/'
@@ -1809,6 +1821,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHrPayrollRunIdRouteImport
       parentRoute: typeof AdminHrRouteRoute
     }
+    '/_admin/hr/positions/': {
+      id: '/_admin/hr/positions/'
+      path: '/positions'
+      fullPath: '/hr/positions/'
+      preLoaderRoute: typeof AdminHrPositionsIndexRouteImport
+      parentRoute: typeof AdminHrRouteRoute
+    }
     '/_admin/hr/setup/': {
       id: '/_admin/hr/setup/'
       path: '/setup'
@@ -2223,6 +2242,7 @@ interface AdminHrRouteRouteChildren {
   AdminHrDepartmentsIndexRoute: typeof AdminHrDepartmentsIndexRoute
   AdminHrLeaveIndexRoute: typeof AdminHrLeaveIndexRoute
   AdminHrPayrollIndexRoute: typeof AdminHrPayrollIndexRoute
+  AdminHrPositionsIndexRoute: typeof AdminHrPositionsIndexRoute
   AdminHrSetupIndexRoute: typeof AdminHrSetupIndexRoute
   AdminHrStaffIndexRoute: typeof AdminHrStaffIndexRoute
   AdminHrStaffStaffIdEditRoute: typeof AdminHrStaffStaffIdEditRoute
@@ -2235,6 +2255,7 @@ const AdminHrRouteRouteChildren: AdminHrRouteRouteChildren = {
   AdminHrDepartmentsIndexRoute: AdminHrDepartmentsIndexRoute,
   AdminHrLeaveIndexRoute: AdminHrLeaveIndexRoute,
   AdminHrPayrollIndexRoute: AdminHrPayrollIndexRoute,
+  AdminHrPositionsIndexRoute: AdminHrPositionsIndexRoute,
   AdminHrSetupIndexRoute: AdminHrSetupIndexRoute,
   AdminHrStaffIndexRoute: AdminHrStaffIndexRoute,
   AdminHrStaffStaffIdEditRoute: AdminHrStaffStaffIdEditRoute,

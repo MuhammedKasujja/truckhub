@@ -173,6 +173,7 @@ const en = {
     "my-hr": "My HR",
     staff: "Staff",
     departments: "Departments",
+    positions: "Positions",
     leave: "Leave",
     payroll: "Payroll",
     setup: "Setup",

@@ -1,5 +1,6 @@
 import { ArchiveIcon, RotateCcw } from "lucide-react"
 import { maintanenceTypes } from "../enums"
+import { useMechanics } from "./maintenance-mechanics"
 import type { MaintenanceType } from "../enums"
 import type { MaintenanceSearchParamsInput } from "../schemas"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,7 @@ import { useTranslation } from "@/i18n"
 import { cn } from "@/lib/utils"
 
 const PER_COLUMN_OPTIONS = [10, 25, 50, 100]
+const ALL_MECHANICS = "__all__"
 export const DEFAULT_PER_COLUMN = 50
 
 const ACTIVE_CLASS =
@@ -32,8 +34,10 @@ export function MaintenanceFilterBar({
   onSearchChange,
 }: MaintenanceFilterBarProps) {
   const tr = useTranslation()
+  const { options: mechanics } = useMechanics()
   const isFiltered =
     !!search.vehicle_id ||
+    !!search.mechanic_id ||
     !!search.type ||
     search.include_cancelled ||
     search.per_column !== DEFAULT_PER_COLUMN
@@ -50,6 +54,35 @@ export function MaintenanceFilterBar({
           }
         />
       </div>
+
+      {mechanics.length > 0 && (
+        <Select
+          value={search.mechanic_id ?? ALL_MECHANICS}
+          onValueChange={(value) =>
+            onSearchChange({
+              mechanic_id: value === ALL_MECHANICS ? undefined : value,
+            })
+          }
+        >
+          <SelectTrigger
+            aria-label="Mechanic"
+            className={cn(
+              "w-full sm:w-48",
+              search.mechanic_id && "border-primary/40 text-primary"
+            )}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ALL_MECHANICS}>All mechanics</SelectItem>
+            {mechanics.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <ButtonGroup aria-label="Maintenance type">
         {[undefined, ...maintanenceTypes].map(
@@ -94,6 +127,7 @@ export function MaintenanceFilterBar({
                 per_column: DEFAULT_PER_COLUMN,
                 include_cancelled: false,
                 vehicle_id: undefined,
+                mechanic_id: undefined,
                 type: undefined,
               })
             }

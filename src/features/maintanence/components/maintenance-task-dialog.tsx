@@ -6,6 +6,7 @@ import {
   useUpdateMaintenanceRecord,
 } from "../hooks/use-maintenance"
 import { maintenanceCreateSchema, maintenanceUpdateSchema } from "../schemas"
+import { MechanicFields } from "./maintenance-mechanics"
 import {
   MaintenanceReasonField,
   MaintenanceScheduleFields,
@@ -34,7 +35,12 @@ export function CreateMaintenanceTaskDialog({
   const create = useCreateMaintenanceRecord()
   const form = useForm<MaintenanceCreateInput>({
     resolver: zodResolver(maintenanceCreateSchema),
-    defaultValues: { type: "routine", start: new Date() },
+    defaultValues: {
+      type: "routine",
+      start: new Date(),
+      mechanic_ids: [],
+      lead_mechanic_id: null,
+    },
   })
 
   function handleOpenChange(next: boolean) {
@@ -54,7 +60,10 @@ export function CreateMaintenanceTaskDialog({
       submitText="Create task"
       isSubmitting={create.isPending}
       onSubmit={form.handleSubmit((data) =>
-        create.mutate({ data }, { onSuccess: () => handleOpenChange(false) })
+        create.mutate(
+          { data: withLeadMechanic(data) },
+          { onSuccess: () => handleOpenChange(false) }
+        )
       )}
     >
       <FormGroup title="Vehicle">
@@ -71,8 +80,30 @@ export function CreateMaintenanceTaskDialog({
       <FormGroup title="Schedule">
         <MaintenanceScheduleFields control={form.control} />
       </FormGroup>
+      <FormGroup title="Mechanics">
+        <MechanicFields
+          control={form.control}
+          idsName="mechanic_ids"
+          leadName="lead_mechanic_id"
+        />
+      </FormGroup>
     </SettingsFormDialog>
   )
+}
+
+/**
+ * A lone mechanic leads the task. A lead who was later unselected is dropped,
+ * since the API would otherwise add them back to the task.
+ */
+function withLeadMechanic(data: MaintenanceCreateInput): MaintenanceCreateInput {
+  const ids = data.mechanic_ids ?? []
+  const lead =
+    data.lead_mechanic_id && ids.includes(data.lead_mechanic_id)
+      ? data.lead_mechanic_id
+      : ids.length === 1
+        ? ids[0]
+        : null
+  return { ...data, mechanic_ids: ids, lead_mechanic_id: lead }
 }
 
 /** Change the type, description or expected completion of a task. */

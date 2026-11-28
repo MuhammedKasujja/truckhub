@@ -89,8 +89,8 @@ function MyHrContent({ staff }: { staff: Staff }) {
             )}
           </div>
           <div className="grid gap-5">
-            <DetailItem icon={BriefcaseBusiness} label="Job title">
-              {staff.job_title || <MissingValue />}
+            <DetailItem icon={BriefcaseBusiness} label="Position">
+              {staff.position?.name ?? <MissingValue />}
             </DetailItem>
             <DetailItem icon={Building2} label="Department">
               {staff.department?.name ?? <MissingValue />}

@@ -133,8 +133,9 @@ export function StaffDetails({ staff }: { staff: Staff }) {
           <div>
             <h2 className="truncate text-xl font-bold tracking-tight">{staff.name}</h2>
             <p className="truncate text-sm text-muted-foreground">
-              {[staff.job_title, staff.department?.name].filter(Boolean).join(" · ") ||
-                "No job title or department"}
+              {[staff.position?.name, staff.department?.name]
+                .filter(Boolean)
+                .join(" · ") || "No position or department"}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -254,8 +255,8 @@ export function StaffDetails({ staff }: { staff: Staff }) {
               <DetailItem icon={Building2} label="Department">
                 {staff.department?.name ?? <MissingValue />}
               </DetailItem>
-              <DetailItem icon={BriefcaseBusiness} label="Job title">
-                {staff.job_title || <MissingValue />}
+              <DetailItem icon={BriefcaseBusiness} label="Position">
+                {staff.position?.name ?? <MissingValue />}
               </DetailItem>
               <DetailItem icon={ListChecks} label="Employment type">
                 {EMPLOYMENT_TYPE_LABELS[staff.employment_type]}

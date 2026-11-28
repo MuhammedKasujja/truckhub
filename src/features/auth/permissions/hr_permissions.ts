@@ -14,8 +14,9 @@ export const HrModulePermissions = {
   "hr:module": ["hr:module"],
 
   "hr:staff:view": STAFF_VIEW,
-  "hr:staff:create": ["staff:create", ...STAFF_VIEW],
-  "hr:staff:edit": ["staff:update", ...STAFF_VIEW],
+  // Picking a position needs the position list
+  "hr:staff:create": ["staff:create", "positions:read", ...STAFF_VIEW],
+  "hr:staff:edit": ["staff:update", "positions:read", ...STAFF_VIEW],
   "hr:staff:delete": ["staff:delete"],
   "hr:staff:terminate": ["staff:terminate"],
   "hr:staff:access": ["staff:access:grant", "staff:access:revoke"],
@@ -32,6 +33,14 @@ export const HrModulePermissions = {
     "departments:create",
     "departments:update",
     "departments:delete",
+  ],
+
+  "hr:positions:manage": [
+    "positions:read",
+    "positions:view",
+    "positions:create",
+    "positions:update",
+    "positions:delete",
   ],
 
   "hr:leave:view": [

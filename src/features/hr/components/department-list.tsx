@@ -220,7 +220,7 @@ function DepartmentForm({
 
   const headOptions = (staff?.data ?? []).map((s) => ({
     value: s.id,
-    label: s.job_title ? `${s.name} · ${s.job_title}` : s.name,
+    label: s.position ? `${s.name} · ${s.position.name}` : s.name,
   }))
   // The current head may be outside the first page of candidates.
   if (department?.head && !headOptions.some((o) => o.value === department.head!.id)) {

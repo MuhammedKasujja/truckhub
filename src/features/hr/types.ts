@@ -18,11 +18,27 @@ export type PayslipLineKind =
 /** Money and day counts arrive as decimal strings, e.g. "1000000.00" and "5.0". */
 export type DecimalString = string
 
+/** Position codes the app relies on; companies can rename these positions but not re-code them. */
+export const POSITION_CODES = { driver: "driver", mechanic: "mechanic" } as const
+
+export type Position = {
+  id: EntityId
+  name: string
+  code: string
+  description: string | null
+  is_active: boolean
+  /** Driver and Mechanic: can be renamed, but not re-coded, deactivated or deleted. */
+  is_system: boolean
+  created_at: string
+}
+
+export type PositionSummary = Pick<Position, "id" | "name" | "code">
+
 export type StaffSummary = {
   id: EntityId
   number: string | null
   name: string
-  job_title?: string | null
+  position?: PositionSummary | null
 }
 
 export type Department = {
@@ -52,7 +68,8 @@ export type Staff = {
   nssf_number: string | null
   department_id: EntityId | null
   department: { id: EntityId; name: string } | null
-  job_title: string | null
+  position_id: EntityId | null
+  position: PositionSummary | null
   employment_type: EmploymentType
   status: StaffStatus
   hire_date: string

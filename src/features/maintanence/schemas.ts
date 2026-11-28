@@ -10,6 +10,8 @@ export const maintenanceCreateSchema = z
     start: z.date("Required"),
     end: z.date().nullable().optional(),
     expected_end: z.date().nullable().optional(),
+    mechanic_ids: z.array(IDSchema).optional(),
+    lead_mechanic_id: IDSchema.nullable().optional(),
   })
   .refine((data) => !data.end || data.end >= data.start, {
     path: ["end"],
@@ -31,6 +33,20 @@ export const recordBreakdownSchema = z.object({
   vehicle_id: IDSchema,
   reason: z.string("Required").trim().min(3, "Too short"),
   expected_end: z.date().nullable().optional(),
+  mechanic_ids: z.array(IDSchema).optional(),
+  lead_mechanic_id: IDSchema.nullable().optional(),
+})
+
+export const mechanicAssignSchema = z.object({
+  maintenanceId: IDSchema,
+  staffId: IDSchema,
+  isLead: z.boolean().optional(),
+  notes: z.string().trim().max(500).nullable().optional(),
+})
+
+export const mechanicRefSchema = z.object({
+  maintenanceId: IDSchema,
+  staffId: IDSchema,
 })
 
 export const maintenanceMoveSchema = z.object({
@@ -43,6 +59,8 @@ export const maintenanceSearchParams = z.object({
   include_cancelled: z.boolean().default(false),
   vehicle_id: IDSchema.nullable().optional(),
   type: z.enum(maintanenceTypes).nullable().optional(),
+  /** Only tasks this mechanic (staff id) is on. */
+  mechanic_id: IDSchema.nullable().optional(),
 })
 
 export type MaintenanceSearchParamsInput = z.infer<
@@ -56,3 +74,7 @@ export type MaintenanceUpdateInput = z.infer<typeof maintenanceUpdateSchema>
 export type RecordBreakdownInput = z.infer<typeof recordBreakdownSchema>
 
 export type MoveRecordInput = z.infer<typeof maintenanceMoveSchema>
+
+export type MechanicAssignInput = z.infer<typeof mechanicAssignSchema>
+
+export type MechanicRefInput = z.infer<typeof mechanicRefSchema>

@@ -4,14 +4,19 @@ import {
   maintenanceMoveSchema,
   maintenanceSearchParams,
   maintenanceUpdateSchema,
+  mechanicAssignSchema,
+  mechanicRefSchema,
 } from "../schemas"
 import {
+  assignMechanic,
   cancleMaintenance,
   changeMaintenanceStatus,
   createMaintenanceRecord,
   finishMaintenanceRecord,
   getMaintenanceBoardView,
+  setLeadMechanic,
   startMaintenance,
+  unassignMechanic,
   updateMaintenanceRecord,
 } from "./server"
 import { apiResponseTransform } from "@/lib/api-response-serializer"
@@ -69,3 +74,15 @@ export const cancleMaintenanceRecordFn = createServerFn()
   .handler(async ({ data }) => {
     return apiResponseTransform(cancleMaintenance(data.id))
   })
+
+export const assignMechanicFn = createServerFn({ method: "POST" })
+  .validator(mechanicAssignSchema)
+  .handler(async ({ data }) => apiResponseTransform(assignMechanic(data)))
+
+export const unassignMechanicFn = createServerFn({ method: "POST" })
+  .validator(mechanicRefSchema)
+  .handler(async ({ data }) => apiResponseTransform(unassignMechanic(data)))
+
+export const setLeadMechanicFn = createServerFn({ method: "POST" })
+  .validator(mechanicRefSchema)
+  .handler(async ({ data }) => apiResponseTransform(setLeadMechanic(data)))

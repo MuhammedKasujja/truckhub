@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { ArrowUpRight, Loader2, Truck } from "lucide-react"
 import { useMoveMaintenanceRecord } from "../hooks/use-maintenance"
+import { MaintenanceMechanicsSection } from "./maintenance-mechanics"
 import {
   MaintenanceStatusLabel,
   MaintenanceTypeLabel,
@@ -119,6 +120,8 @@ export function MaintenanceDetailsSheet({
                   <ArrowUpRight className="size-4 text-muted-foreground transition-colors group-hover:text-foreground" />
                 </Link>
               </section>
+
+              <MaintenanceMechanicsSection record={record} />
 
               <section className="space-y-3">
                 <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">

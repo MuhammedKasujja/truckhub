@@ -20,6 +20,8 @@ import type {
   PayrollRunSearch,
   PayslipLineCreateSchema,
   PayslipLineRemoveSchema,
+  PositionCreateSchema,
+  PositionUpdateSchema,
   PublicHolidayCreateSchema,
   StaffComponentsSetSchema,
   StaffCreateSchema,
@@ -40,6 +42,7 @@ import type {
   PayrollRun,
   PayrollRunDetail,
   Payslip,
+  Position,
   PublicHoliday,
   Staff,
   StaffCompensation,
@@ -84,6 +87,25 @@ export async function updateDepartment({
 
 export async function deleteDepartment(id: EntityId) {
   return apiClient.deleteFn(`/v1/departments/${id}`)
+}
+
+/* ------------------------------- Positions -------------------------------- */
+
+export async function getPositions() {
+  // Positions are few; one page of 100 covers the pickers and the list.
+  return apiClient.getPaginatedFn<Position[]>("/v1/positions?per_page=100")
+}
+
+export async function createPosition(data: Out<typeof PositionCreateSchema>) {
+  return apiClient.postFn<Position>("/v1/positions", blankToNull(data))
+}
+
+export async function updatePosition({ id, ...data }: Out<typeof PositionUpdateSchema>) {
+  return apiClient.patchFn<Position>(`/v1/positions/${id}`, blankToNull(data))
+}
+
+export async function deletePosition(id: EntityId) {
+  return apiClient.deleteFn(`/v1/positions/${id}`)
 }
 
 /* --------------------------------- Staff ---------------------------------- */

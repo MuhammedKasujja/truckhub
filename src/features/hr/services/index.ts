@@ -27,6 +27,8 @@ import {
   PayComponentUpdateSchema,
   StaffComponentsSetSchema,
   PublicHolidayCreateSchema,
+  PositionCreateSchema,
+  PositionUpdateSchema,
 } from "../schemas"
 import * as hr from "./server"
 import { ApiError } from "@/types"
@@ -64,6 +66,25 @@ export const updateDepartmentFn = createServerFn({ method: "POST" })
 export const deleteDepartmentFn = createServerFn({ method: "POST" })
   .validator(EntityIdSchema)
   .handler(({ data }) => hr.deleteDepartment(data.id))
+
+/* ------------------------------- Positions -------------------------------- */
+
+export const getPositionsFn = createServerFn().handler(async () => {
+  const { data } = await readPage(hr.getPositions())
+  return data
+})
+
+export const createPositionFn = createServerFn({ method: "POST" })
+  .validator(PositionCreateSchema)
+  .handler(({ data }) => hr.createPosition(data))
+
+export const updatePositionFn = createServerFn({ method: "POST" })
+  .validator(PositionUpdateSchema)
+  .handler(({ data }) => hr.updatePosition(data))
+
+export const deletePositionFn = createServerFn({ method: "POST" })
+  .validator(EntityIdSchema)
+  .handler(({ data }) => hr.deletePosition(data.id))
 
 /* --------------------------------- Staff ---------------------------------- */
 

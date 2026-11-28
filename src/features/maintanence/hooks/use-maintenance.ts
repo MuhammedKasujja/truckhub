@@ -1,9 +1,13 @@
 import {
+  assignMechanicFn,
   changeMaintenanceStatusFn,
   createMaintenanceRecordFn,
+  setLeadMechanicFn,
+  unassignMechanicFn,
   updateMaintenanceRecordFn,
 } from "../services"
 import type { MoveRecordInput } from "../schemas"
+import type { QueryInvalidator } from "@/hooks/use-query-invalidator"
 import { createEntityActionHook } from "@/lib/create-entity-action-hook"
 
 const useMoveMaintenanceRecordBase = createEntityActionHook(
@@ -26,6 +30,17 @@ const useUpdateMaintenanceRecordBase = createEntityActionHook(
     invalidator.maintenanceBoard.refresh()
   }
 )
+
+const refreshBoard = (invalidator: QueryInvalidator) =>
+  invalidator.maintenanceBoard.refresh()
+
+const useAssignMechanicBase = createEntityActionHook(assignMechanicFn, refreshBoard)
+const useUnassignMechanicBase = createEntityActionHook(unassignMechanicFn, refreshBoard)
+const useSetLeadMechanicBase = createEntityActionHook(setLeadMechanicFn, refreshBoard)
+
+export const useAssignMechanic = () => useAssignMechanicBase()
+export const useUnassignMechanic = () => useUnassignMechanicBase()
+export const useSetLeadMechanic = () => useSetLeadMechanicBase()
 
 export const useCreateMaintenanceRecord = () => useCreateMaintenanceRecordBase()
 

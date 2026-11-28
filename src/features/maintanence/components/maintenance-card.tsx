@@ -1,4 +1,4 @@
-import { CalendarCheck, CalendarClock, Truck } from "lucide-react"
+import { CalendarCheck, CalendarClock, Truck, UserRound } from "lucide-react"
 import {
   MaintenanceTypeLabel,
   OverdueBadge,
@@ -64,6 +64,19 @@ export function MaintenanceCard({
           </span>
         )}
       </div>
+
+      {record.mechanics.length > 0 && (
+        <div
+          className="flex items-center gap-1.5 text-xs text-muted-foreground"
+          title={record.mechanics.map((m) => m.name).join(", ")}
+        >
+          <UserRound className="size-3.5 shrink-0" />
+          <span className="truncate">
+            {record.mechanics[0].name}
+            {record.mechanics.length > 1 && ` +${record.mechanics.length - 1}`}
+          </span>
+        </div>
+      )}
 
       <div className="flex items-center justify-between gap-2 border-t pt-2 text-xs text-muted-foreground tabular-nums">
         <span

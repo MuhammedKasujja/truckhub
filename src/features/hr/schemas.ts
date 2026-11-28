@@ -48,6 +48,24 @@ export const DepartmentUpdateSchema = DepartmentCreateSchema.extend({
 })
 
 
+/* ------------------------------- Positions -------------------------------- */
+
+export const PositionCreateSchema = z.object({
+  name: z.string().trim().min(1, "Required").max(120),
+  code: z
+    .string()
+    .trim()
+    .min(1, "Required")
+    .max(40)
+    .regex(/^[A-Za-z0-9_-]+$/, "Letters, numbers, - and _ only"),
+  description: optionalText,
+})
+
+export const PositionUpdateSchema = PositionCreateSchema.extend({
+  id: IDSchema,
+  is_active: z.boolean().optional(),
+})
+
 /* --------------------------------- Staff ---------------------------------- */
 
 export const StaffFormSchema = z.object({
@@ -61,7 +79,7 @@ export const StaffFormSchema = z.object({
   tin: optionalText,
   nssf_number: optionalText,
   department_id: optionalId,
-  job_title: optionalText,
+  position_id: optionalId,
   employment_type: z.enum(["full_time", "part_time", "contract", "casual"]),
   hire_date: DateSchema,
   payment_method: z.enum(["bank", "mobile_money", "cash"]),
@@ -96,6 +114,9 @@ export const StaffSearchSchema = z.object({
   search: z.string().default(""),
   status: z.enum(["active", "suspended", "terminated"]).optional(),
   department_id: z.string().optional(),
+  position_id: z.string().optional(),
+  /** e.g. "mechanic"; the same in every company, unlike a position id. */
+  position_code: z.string().optional(),
   has_system_access: z.boolean().optional(),
   /** Finds the staff record linked to a login or a driver. */
   user_id: z.string().optional(),
